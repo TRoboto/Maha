@@ -19,7 +19,6 @@ build-backend = "poetry.core.masonry.api"
 
 
 [tool.isort]
-# from https://black.readthedocs.io/en/stable/compatible_configs.html
 multi_line_output = 3
 include_trailing_comma = true
 force_grid_wrap = 0
