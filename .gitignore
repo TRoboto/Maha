@@ -130,5 +130,3 @@ dmypy.json
 
 # ignore virtualenvwrapper
 .project
-
-.vscode/
