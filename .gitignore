@@ -130,3 +130,6 @@ dmypy.json
 
 # ignore virtualenvwrapper
 .project
+
+# disable docs for now
+docs/*

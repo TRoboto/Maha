@@ -1,5 +1,5 @@
 {
-    "python.pythonPath": "/home/roboto/.virtualenvs/mahapy/bin/python",
+    "python.pythonPath": "/home/roboto/.cache/pypoetry/virtualenvs/mahapy-K8T4OYuD-py3.7",
     "python.testing.pytestArgs": [
         "tests"
     ],
@@ -17,5 +17,6 @@
         "**/*.pyc": true
     },
     "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true
+    "python.linting.enabled": true,
+    "restructuredtext.confPath": "${workspaceFolder}/docs/source"
 }
