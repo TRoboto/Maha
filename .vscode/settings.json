@@ -16,7 +16,6 @@
         "**/__pycache__": true,
         "**/*.pyc": true
     },
-    "python.linting.flake8Enabled": true,
-    "python.linting.enabled": true,
-    "restructuredtext.confPath": "${workspaceFolder}/docs/source"
+    "restructuredtext.confPath": "${workspaceFolder}/docs/source",
+    "python.analysis.typeCheckingMode": "strict",
 }
