@@ -14,6 +14,7 @@ isort = "^5.8.0"
 Sphinx = "3.5.4"
 furo = "^2021.4.11-beta.34"
 pytest = "^6.2.4"
+sphinx-copybutton = "^0.3.1"
 
 [build-system]
 requires = ["setuptools","poetry-core>=1.0.0"]
