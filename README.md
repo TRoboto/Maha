@@ -1,1 +1,1 @@
-# MahaPy
+# Maha

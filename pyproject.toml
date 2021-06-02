@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "mahapy"
+name = "maha"
 version = "0.1.0"
 description = "Arabic Processing Library"
 authors = ["TRoboto <m4bh@hotmail.com>"]

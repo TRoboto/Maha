@@ -1,4 +1,4 @@
-from mahapy import __version__
+from maha import __version__
 
 
 def test_version():
