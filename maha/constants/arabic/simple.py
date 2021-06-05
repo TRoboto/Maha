@@ -166,6 +166,8 @@ ORNATE_LEFT_PARENTHESIS: str = "\uFD3E"
 """ Arabic Ornate Left Parenthesis """
 ORNATE_RIGHT_PARENTHESIS: str = "\uFD3F"
 """ Arabic Ornate Right Parenthesis """
+ARABIC_PERCENTAGE: str = "\u066A"
+""" Arabic Percent Sign """
 
 # Word Ligatures
 LIGATURE_SALLA_KORANIC: str = "\uFDF0"
