@@ -1,6 +1,10 @@
+"""List of constant definitions."""
+
+from typing import List
+
 from .simple import *
 
-ARABIC_CHARS = [
+ARABIC_CHARS: List[str] = [
     ALEF,
     BEH,
     TEH,
@@ -39,21 +43,27 @@ ARABIC_CHARS = [
     HAMZA_YA,
     TATWEEL,
 ]
+""" List of Arabic characters """
 
-SIMPLE_HARAKAT = [
+SIMPLE_HARAKAT: List[str] = [
     FATHA,
     DAMMA,
     KASRA,
     SUKUN,
 ]
-TANWEN = [
+""" Harakat that can be written anywhere in a word"""
+
+TANWEN: List[str] = [
     FATHATAN,
     DAMMATAN,
     KASRATAN,
 ]
-HARAKAT = [SHADDA] + SIMPLE_HARAKAT + TANWEN
+""" Harakat that are written at the end of a word """
 
-ALEF_VARIATIONS = [
+HARAKAT: List[str] = [SHADDA] + SIMPLE_HARAKAT + TANWEN
+""" Common Harakat """
+
+ALEF_VARIATIONS: List[str] = [
     ALEF,
     ALEF_HAMZA_ABOVE,
     ALEF_HAMZA_BELOW,
@@ -62,13 +72,17 @@ ALEF_VARIATIONS = [
     ALEF_HAMZA_BELOW_WAVY,
     ALEF_WASLA,
 ]
-LAM_ALEF_VARIATIONS = [
+""" Variations of the letter ALEF """
+
+LAM_ALEF_VARIATIONS: List[str] = [
     LAM_ALEF,
     LAM_ALEF_HAMZA_ABOVE,
     LAM_ALEF_HAMZA_BELOW,
     LAM_ALEF_MADDA_ABOVE,
 ]
-ARABIC_NUMBERS = [
+""" Variations of the one-letter LAM_ALEF """
+
+ARABIC_NUMBERS: List[str] = [
     ARABIC_ZERO,
     ARABIC_ONE,
     ARABIC_TWO,
@@ -80,7 +94,9 @@ ARABIC_NUMBERS = [
     ARABIC_EIGHT,
     ARABIC_NINE,
 ]
-ARABIC_PUNCTUATIONS = [
+""" Arabic numbers. """
+
+ARABIC_PUNCTUATIONS: List[str] = [
     ARABIC_COMMA,
     ARABIC_SEMICOLON,
     ARABIC_QUESTION_MARK,
@@ -96,7 +112,9 @@ ARABIC_PUNCTUATIONS = [
     ORNATE_LEFT_PARENTHESIS,
     ORNATE_RIGHT_PARENTHESIS,
 ]
-ARABIC_LIGATURES = [
+""" Arabic punctuations. """
+
+ARABIC_LIGATURES: List[str] = [
     LIGATURE_SALLA_KORANIC,
     LIGATURE_QALA,
     LIGATURE_ALLAH,
@@ -112,7 +130,10 @@ ARABIC_LIGATURES = [
     LIGATURE_RIAL,
     LIGATURE_BISMILLAH,
 ]
-SMALL_HARAKAT = [
+""" Arabic ligature. """
+
+
+SMALL_HARAKAT: List[str] = [
     SMALL_TAH,
     SMALL_LAM_ALEF_YEH,
     SMALL_ZAIN,
@@ -138,7 +159,9 @@ SMALL_HARAKAT = [
     SMALL_V,
     SMALL_V_INVERTED,
 ]
-OTHER_HARAKAT = [
+""" Small harakat """
+
+OTHER_HARAKAT: List[str] = [
     SAD_SIGN,
     AIN_SIGN,
     RAHMATULLAH_SIGN,
@@ -160,4 +183,7 @@ OTHER_HARAKAT = [
     HIGH_STOP,
     HIGH_STOP_FILLED,
 ]
+""" Other harakat """
+
 ALL_HARAKAT = HARAKAT + SMALL_HARAKAT + OTHER_HARAKAT
+""" All harakat from the unicode block 0600–06FF """
