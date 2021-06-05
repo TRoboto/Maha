@@ -79,9 +79,12 @@ KASHIDA: str = TATWEEL
 """ Alias for Arabic Tatweel """
 
 # More ALEF variations
-ALEF_WASLA: str
-ALEF_HAMZA_ABOVE_WAVY: str
-ALEF_HAMZA_BELOW_WAVY: str
+ALEF_WASLA: str = "\u0671"
+""" Arabic Letter Alef Wasla """
+ALEF_HAMZA_ABOVE_WAVY: str = "\u0672"
+""" Arabic Letter Alef With Wavy Hamza Above """
+ALEF_HAMZA_BELOW_WAVY: str = "\u0673"
+""" Arabic Letter Alef With Wavy Hamza Below """
 
 # LAM ALEF
 LAM_ALEF: str = "\ufefb"
@@ -268,7 +271,7 @@ HAMZA_BELOW: str = "\u0655"
 """ Arabic Hamza Below """
 ALEF_SUBSCRIPT: str = "\u0656"
 """ Arabic Subscript Alef """
-ALEF_SUPERSCRIPT: str = "\u0656"
+ALEF_SUPERSCRIPT: str = "\u0670"
 """ Arabic Letter Superscript Alef """
 DAMMA_INVERTED: str = "\u0657"
 """ Arabic Inverted Damma """
