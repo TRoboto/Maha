@@ -26,6 +26,18 @@ def keep(
 
 
 def keep_arabic(text: str) -> str:
+    """Keeps Arabic characters :const:`~constants.arabic.compound.ARABIC_CHARS` only.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text contains Arabic characters only.
+    """
     return keep_characters(text, ARABIC_CHARS)
 
 
