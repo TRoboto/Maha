@@ -1,0 +1,6 @@
+SPACE: str = " "
+""" Space character """
+EMPTY: str = ""
+""" Empty character """
+PERCENTAGE: str = "\u066A"
+""" Arabic Percent Sign """
