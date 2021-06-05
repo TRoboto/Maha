@@ -1,7 +1,12 @@
 """
-Functions that operate on a string and remove specific characters.
+Functions that operate on a string and remove certain characters.
 """
+
+__all__ = ["remove_extra_spaces"]
+
 import re
+
+from maha.constants.general import SPACE
 
 
 def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
@@ -31,4 +36,4 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     if max_spaces != int(max_spaces):
         raise ValueError("Cannot assign a float value to 'max_spaces'")
 
-    return re.sub(" " * max_spaces + "+", " " * max_spaces, text)
+    return re.sub(SPACE * max_spaces + "+", SPACE * max_spaces, text)
