@@ -1,2 +1,2 @@
-from .extended import *
+from .compound import *
 from .simple import *
