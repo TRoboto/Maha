@@ -1,4 +1,4 @@
-"""Simple constant definitions."""
+"""Arabic simple constant definitions."""
 
 # Arabic letters
 ALEF: str = "\u0627"

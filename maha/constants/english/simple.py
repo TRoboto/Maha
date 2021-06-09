@@ -1,3 +1,5 @@
+"""English simple constant definitions."""
+
 A: str = "A"
 """ Latin Capital letter A """
 B: str = "B"

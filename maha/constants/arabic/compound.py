@@ -1,4 +1,4 @@
-"""List of constant definitions."""
+"""List of Arabic constant definitions."""
 
 from typing import List
 
@@ -94,7 +94,7 @@ ARABIC_NUMBERS: List[str] = [
     ARABIC_EIGHT,
     ARABIC_NINE,
 ]
-""" Arabic numbers. """
+""" List of eastern Arabic numerals """
 
 ARABIC_PUNCTUATIONS: List[str] = [
     ARABIC_COMMA,
