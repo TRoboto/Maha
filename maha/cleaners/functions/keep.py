@@ -49,7 +49,9 @@ def keep(
     arabic_punctuation: bool = False,
     english_punctuation: bool = False,
     use_space: bool = True,
+    custom_chars: List[str] = [],
 ):
+
     if not text:
         raise ValueError("Text cannot be empty")
 
@@ -57,11 +59,12 @@ def keep(
     current_arguments = locals()
 
     # characters to keep
-    chars_to_keep = []
+    chars_to_keep = custom_chars
 
     # Since each argument has the same name as the corresponding constant.
     # Looping through all arguments and appending constants that correspond to the
     # True arguments can work
+    # TODO: MAybe find pythonic way to do this
     for arg, value in current_arguments.items():
         const = globals().get(arg.upper())
         if const and value is True:
