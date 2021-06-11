@@ -169,3 +169,8 @@ def test_keep_characters(
     simple_text_input: str, keep_chars: str, expected: str, use_space: bool
 ):
     assert keep_characters(simple_text_input, keep_chars, use_space) == expected
+
+
+def test_keep_characters_raise_valueerror(simple_text_input: str):
+    with pytest.raises(ValueError):
+        keep_characters(simple_text_input, "")
