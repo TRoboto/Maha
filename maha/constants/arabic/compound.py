@@ -189,4 +189,4 @@ ALL_HARAKAT = HARAKAT + SMALL_HARAKAT + OTHER_HARAKAT
 """ All harakat from the unicode block 0600–06FF """
 
 ARABIC: List[str] = ARABIC_LETTERS + HARAKAT + ARABIC_NUMBERS + ARABIC_PUNCTUATIONS
-""" Common Arabic symbols """
+""" Common Arabic characters """

@@ -118,4 +118,4 @@ ENGLISH_PUNCTUATIONS: List[str] = [
 """ List of English punctuations"""
 
 ENGLISH: List[str] = ENGLISH_LETTERS + ENGLISH_NUMBERS + ENGLISH_PUNCTUATIONS
-""" Common ENGLISH symbols """
+""" Common ENGLISH characters """
