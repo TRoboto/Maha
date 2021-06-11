@@ -49,42 +49,45 @@ def keep(
     arabic_punctuations: bool = False,
     english_punctuations: bool = False,
     use_space: bool = True,
-    custom_chars: List[str] = [],
+    custom_chars: Union[List[str], str] = [],
 ):
     """Keeps only the provided characters in the given text and removes everything else.
+
+    To add a new parameter, make sure that its name is the same as the corresponding
+    constant.
 
     Parameters
     ----------
     text : str
         Text to be processed
     arabic : bool, optional
-        keep :data:`~.ARABIC` characters, by default False
+        Keep :data:`~.ARABIC` characters, by default False
     english : bool, optional
-        keep :data:`~.ENGLISH` characters, by default False
+        Keep :data:`~.ENGLISH` characters, by default False
     arabic_letters : bool, optional
-        keep :data:`~.ARABIC_LETTERS` characters, by default False
+        Keep :data:`~.ARABIC_LETTERS` characters, by default False
     english_letters : bool, optional
-        keep :data:`~.ENGLISH_LETTERS` characters, by default False
+        Keep :data:`~.ENGLISH_LETTERS` characters, by default False
     english_small_letters : bool, optional
-        keep :data:`~.ENGLISH_SMALL_LETTERS` characters, by default False
+        Keep :data:`~.ENGLISH_SMALL_LETTERS` characters, by default False
     english_capital_letters : bool, optional
-        keep :data:`~.ENGLISH_CAPITAL_LETTERS` characters, by default False
+        Keep :data:`~.ENGLISH_CAPITAL_LETTERS` characters, by default False
     numbers : bool, optional
-        keep :data:`~.NUMBERS` characters, by default False
+        Keep :data:`~.NUMBERS` characters, by default False
     harakat : bool, optional
-        keep :data:`~.HARAKAT` characters, by default False
+        Keep :data:`~.HARAKAT` characters, by default False
     all_harakat : bool, optional
-        keep :data:`~.ALL_HARAKAT` characters, by default False
+        Keep :data:`~.ALL_HARAKAT` characters, by default False
     punctuations : bool, optional
-        keep :data:`~.PUNCTUATIONS` characters, by default False
+        Keep :data:`~.PUNCTUATIONS` characters, by default False
     arabic_numbers : bool, optional
-        keep :data:`~.ARABIC_NUMBERS` characters, by default False
+        Keep :data:`~.ARABIC_NUMBERS` characters, by default False
     english_numbers : bool, optional
-        keep :data:`~.ENGLISH_NUMBERS` characters, by default False
+        Keep :data:`~.ENGLISH_NUMBERS` characters, by default False
     arabic_punctuations : bool, optional
-        keep :data:`~.ARABIC_PUNCTUATIONS` characters, by default False
+        Keep :data:`~.ARABIC_PUNCTUATIONS` characters, by default False
     english_punctuations : bool, optional
-        keep :data:`~.ENGLISH_PUNCTUATIONS` characters, by default False
+        Keep :data:`~.ENGLISH_PUNCTUATIONS` characters, by default False
     use_space : bool, optional
         False to not replace with space, check :func:`~.keep_characters`
         for more information, by default True
@@ -99,7 +102,7 @@ def keep(
     Raises
     ------
     ValueError
-        When input text is empty or no argument is set to True
+        If input text is empty or no argument is set to True
     """
 
     if not text:
@@ -107,16 +110,17 @@ def keep(
 
     # current function arguments
     current_arguments = locals()
-
+    constants = globals()
     # characters to keep
-    chars_to_keep = custom_chars
+    chars_to_keep = []
+    chars_to_keep.extend(list(custom_chars))
 
     # Since each argument has the same name as the corresponding constant.
     # Looping through all arguments and appending constants that correspond to the
     # True arguments can work
     # TODO: Maybe find a good pythonic way to do this
     for arg, value in current_arguments.items():
-        const = globals().get(arg.upper())
+        const = constants.get(arg.upper())
         if const and value is True:
             chars_to_keep += const
 
@@ -189,7 +193,10 @@ def keep_characters(
         # remove all not included harakat first
         # (to fix extra spacing between characters)
         not_included_harakat = "".join([h for h in ALL_HARAKAT if h not in chars])
-        output_text = re.sub(f"[{not_included_harakat}]", EMPTY, text)
+
+        output_text = text
+        if not_included_harakat:
+            output_text = re.sub(f"[{not_included_harakat}]", EMPTY, text)
 
         output_text = re.sub(f"[^{chars}]", SPACE, output_text)
         output_text = remove_extra_spaces(output_text)

@@ -1,7 +1,125 @@
 import pytest
 
-from maha.cleaners.functions import keep_characters
-from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, SPACE
+from maha.cleaners.functions import keep, keep_characters
+from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SEEN, SPACE
+
+
+# @pytest.mark.parametrize(
+#     "arabic,english,arabic_letters,"
+#     "english_letters,english_small_letters,english_capital_letters,"
+#     "numbers,harakat,all_harakat,punctuations,arabic_numbers,"
+#     "english_numbers, arabic_punctuations,english_punctuations",
+#     itertools.product(*(14 * ((True, False),))),
+# )
+def test_keep_with_arabic(simple_text_input: str):
+    assert (
+        keep(text=simple_text_input, arabic=True)
+        == "بِسْمِ،اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+    )
+
+
+def test_keep_with_english(simple_text_input: str):
+    assert (
+        keep(text=simple_text_input, english=True)
+        == "1. In the name of Allah,Most Gracious, Most Merciful."
+    )
+
+
+def test_keep_with_arabic_letters(simple_text_input: str):
+    assert keep(text=simple_text_input, arabic_letters=True) == "بسم الله الرحمن الرحيم"
+
+
+def test_keep_with_english_letters(simple_text_input: str):
+    assert (
+        keep(text=simple_text_input, english_letters=True)
+        == "In the name of Allah Most Gracious Most Merciful"
+    )
+
+
+def test_keep_with_english_letters_and_false_use_space(simple_text_input: str):
+    assert (
+        keep(
+            text=simple_text_input,
+            english_letters=True,
+            custom_chars=SPACE,
+            use_space=False,
+        )
+        == "In the name of AllahMost Gracious Most Merciful"
+    )
+
+
+def test_keep_with_english_small_letters(simple_text_input: str):
+    assert (
+        keep(text=simple_text_input, english_small_letters=True)
+        == "n the name of llah ost racious ost erciful"
+    )
+
+
+def test_keep_with_english_capital_letters(simple_text_input: str):
+    assert keep(text=simple_text_input, english_capital_letters=True) == "I A M G M M"
+
+
+def test_keep_with_numbers(simple_text_input: str):
+    assert keep(text=simple_text_input, numbers=True) == "1"
+
+
+def test_keep_with_harakat(simple_text_input: str):
+    assert keep(text=simple_text_input, harakat=True) == "ِ ْ ِ َّ ِ َّ ْ َ ِ َّ ِ ِ"
+
+
+def test_keep_with_all_harakat(simple_text_input: str):
+    assert (
+        keep(text=simple_text_input, all_harakat=True) == "ِ ْ ِ َّ ِ َّ ْ َٰ ِ َّ ِ ِ"
+    )
+
+
+def test_keep_with_punctuations(simple_text_input: str):
+    assert keep(text=simple_text_input, punctuations=True) == ". ، , , ."
+
+
+def test_keep_with_arabic_numbers(simple_text_input: str):
+    assert keep(text=simple_text_input, arabic_numbers=True) == ""
+
+
+def test_keep_with_english_numbers(simple_text_input: str):
+    assert keep(text=simple_text_input, english_numbers=True) == "1"
+
+
+def test_keep_with_arabic_punctuations(simple_text_input: str):
+    assert keep(text=simple_text_input, arabic_punctuations=True) == "،"
+
+
+def test_keep_with_english_punctuations(simple_text_input: str):
+    assert keep(text=simple_text_input, english_punctuations=True) == ". , , ."
+
+
+def test_keep_with_custom_characters(simple_text_input: str):
+    assert keep(text=simple_text_input, custom_chars=list("l3g")) == "ll l"
+
+
+def test_keep_should_raise_valueerror(simple_text_input: str):
+    with pytest.raises(ValueError):
+        keep("", arabic=True)
+
+    with pytest.raises(ValueError):
+        keep(simple_text_input)
+
+
+def test_keep_with_arabic_letters_and_harakat(simple_text_input: str):
+    assert (
+        keep(simple_text_input, arabic_letters=True, harakat=True)
+    ) == "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+
+
+def test_keep_with_english_letters_and_english_numbers_and_dot(simple_text_input: str):
+    assert (
+        keep(
+            simple_text_input,
+            english_letters=True,
+            english_numbers=True,
+            custom_chars=DOT,
+        )
+    ) == "1. In the name of Allah Most Gracious Most Merciful."
 
 
 @pytest.mark.parametrize(
@@ -13,6 +131,7 @@ from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, SPACE
         ("", ARABIC_NUMBERS, True),
         ("ب", BEH, True),
         ("ب", BEH, False),
+        ("بس", BEH + SEEN, False),
     ],
 )
 def test_keep_characters(
