@@ -53,36 +53,19 @@ def keep(
     if not text:
         raise ValueError("Text cannot be empty")
 
+    # current function arguments
+    current_arguments = locals()
+
     # characters to keep
     chars_to_keep = []
-    if arabic:
-        chars_to_keep += ARABIC
-    if english:
-        chars_to_keep += ENGLISH
-    if arabic_letters:
-        chars_to_keep += ARABIC_LETTERS
-    if harakat:
-        chars_to_keep += HARAKAT
-    if all_harakat:
-        chars_to_keep += ALL_HARAKAT
-    if english_letters:
-        chars_to_keep += ENGLISH_LETTERS
-    if english_small_letters:
-        chars_to_keep += ENGLISH_SMALL_LETTERS
-    if english_capital_letters:
-        chars_to_keep += ENGLISH_CAPITAL_LETTERS
-    if numbers:
-        chars_to_keep += NUMBERS
-    if arabic_numbers:
-        chars_to_keep += ARABIC_NUMBERS
-    if punctuations:
-        chars_to_keep += PUNCTUATIONS
-    if english_numbers:
-        chars_to_keep += ENGLISH_NUMBERS
-    if arabic_punctuation:
-        chars_to_keep += ARABIC_PUNCTUATIONS
-    if english_punctuation:
-        chars_to_keep += ENGLISH_PUNCTUATIONS
+
+    # Since each argument has the same name as the corresponding constant.
+    # Looping through all arguments and appending constants that correspond to the
+    # True arguments can work
+    for arg, value in current_arguments.items():
+        const = globals().get(arg.upper())
+        if const and value is True:
+            chars_to_keep += const
 
     if not chars_to_keep:
         raise ValueError("At least one argument should be True")
