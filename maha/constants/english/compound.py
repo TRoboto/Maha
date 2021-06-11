@@ -67,7 +67,7 @@ ENGLISH_CAPITAL_LETTERS: List[str] = [
 ENGLISH_LETTERS: List[str] = ENGLISH_CAPITAL_LETTERS + ENGLISH_SMALL_LETTERS
 """ List of all English letters"""
 
-NUMBERS: List[str] = [
+ENGLISH_NUMBERS: List[str] = [
     ZERO,
     ONE,
     TWO,
@@ -81,15 +81,13 @@ NUMBERS: List[str] = [
 ]
 """ List of western Arabic numerals"""
 
-PUNCTUATIONS: List[str] = [
+ENGLISH_PUNCTUATIONS: List[str] = [
     EXCLAMATION_MARK,
     QUOTATION_MARK,
     NUMBER_SIGN,
-    HASHTAG,
     DOLLAR_SIGN,
     PERCENT_SIGN,
     AND_SIGN,
-    AMPERSAND,
     APOSTROPHE,
     LEFT_PARENTHESIS,
     RIGHT_PARENTHESIS,
@@ -97,9 +95,7 @@ PUNCTUATIONS: List[str] = [
     PLUS_SIGN,
     COMMA,
     MINUS_SIGN,
-    HYPHEN_SIGN,
     DOT,
-    FULL_STOP,
     SLASH,
     COLON,
     SEMICOLON,
@@ -112,9 +108,7 @@ PUNCTUATIONS: List[str] = [
     BACKSLASH,
     RIGHT_BRACKET,
     EXPONENT_SIGN,
-    CIRCUMFLEX_ACCENT,
     UNDERSCORE,
-    LOWLINE,
     GRAVE_ACCENT,
     LEFTCURLY_BRACKET,
     VERTICAL_BAR,
@@ -122,3 +116,6 @@ PUNCTUATIONS: List[str] = [
     TILDE,
 ]
 """ List of English punctuations"""
+
+ENGLISH: List[str] = ENGLISH_LETTERS + ENGLISH_NUMBERS + ENGLISH_PUNCTUATIONS
+""" Common ENGLISH symbols """

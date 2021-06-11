@@ -4,7 +4,7 @@ from typing import List
 
 from .simple import *
 
-ARABIC_CHARS: List[str] = [
+ARABIC_LETTERS: List[str] = [
     ALEF,
     BEH,
     TEH,
@@ -187,3 +187,6 @@ OTHER_HARAKAT: List[str] = [
 
 ALL_HARAKAT = HARAKAT + SMALL_HARAKAT + OTHER_HARAKAT
 """ All harakat from the unicode block 0600–06FF """
+
+ARABIC: List[str] = ARABIC_LETTERS + HARAKAT + ARABIC_NUMBERS + ARABIC_PUNCTUATIONS
+""" Common Arabic symbols """
