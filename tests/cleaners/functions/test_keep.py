@@ -1,6 +1,13 @@
 import pytest
 
-from maha.cleaners.functions import keep, keep_characters
+from maha.cleaners.functions import (
+    keep,
+    keep_arabic_characters,
+    keep_arabic_letters,
+    keep_arabic_letters_with_harakat,
+    keep_arabic_with_english_numbers,
+    keep_characters,
+)
 from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SEEN, SPACE
 
 
@@ -120,6 +127,30 @@ def test_keep_with_english_letters_and_english_numbers_and_dot(simple_text_input
             custom_chars=DOT,
         )
     ) == "1. In the name of Allah Most Gracious Most Merciful."
+
+
+def test_keep_arabic_letters(simple_text_input: str):
+    assert keep_arabic_letters(text=simple_text_input) == "بسم الله الرحمن الرحيم"
+
+
+def test_keep_arabic_characters(simple_text_input: str):
+    assert (
+        keep_arabic_characters(text=simple_text_input)
+        == "بِسْمِ،اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+    )
+
+
+def test_keep_arabic_with_english_numbers(simple_text_input: str):
+    assert (
+        keep_arabic_with_english_numbers(text=simple_text_input)
+        == "1 بِسْمِ،اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+    )
+
+
+def test_keep_arabic_letters_with_harakat(simple_text_input: str):
+    assert (
+        keep_arabic_letters_with_harakat(simple_text_input)
+    ) == "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
 
 
 @pytest.mark.parametrize(

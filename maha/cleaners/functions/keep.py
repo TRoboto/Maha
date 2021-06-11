@@ -4,8 +4,11 @@ Functions that operate on a string and remove all but certain characters.
 
 __all__ = [
     "keep",
-    "keep_arabic",
     "keep_characters",
+    "keep_arabic_letters",
+    "keep_arabic_characters",
+    "keep_arabic_with_english_numbers",
+    "keep_arabic_letters_with_harakat",
 ]
 
 import re
@@ -133,8 +136,8 @@ def keep(
     return keep_characters(text, chars_to_keep, use_space)
 
 
-def keep_arabic(text: str) -> str:
-    """Keeps Arabic characters :data:`~.ARABIC_LETTERS` only.
+def keep_arabic_letters(text: str) -> str:
+    """Keeps only Arabic letters :data:`~.ARABIC_LETTERS` in the given text.
 
     Parameters
     ----------
@@ -144,9 +147,59 @@ def keep_arabic(text: str) -> str:
     Returns
     -------
     str
-        Text contains Arabic characters only.
+        Text contains Arabic letters only.
     """
     return keep_characters(text, ARABIC_LETTERS)
+
+
+def keep_arabic_characters(text: str) -> str:
+    """Keeps only common Arabic characters :data:`~.ARABIC` in the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text contains the common Arabic characters only.
+    """
+    return keep_characters(text, ARABIC)
+
+
+def keep_arabic_with_english_numbers(text: str) -> str:
+    """Keeps only common Arabic characters :data:`~.ARABIC` and English numbers
+    :data:`~.ENGLISH_NUMBERS` in the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text contains the common Arabic characters and English numbers only.
+    """
+    return keep_characters(text, ARABIC + ENGLISH_NUMBERS)
+
+
+def keep_arabic_letters_with_harakat(text: str) -> str:
+    """Keeps only Arabic letters :data:`~.ARABIC_LETTERS` and HARAKAT :data:`~.HARAKAT`
+    in the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text contains Arabic letters with harakat only.
+    """
+    return keep_characters(text, ARABIC_LETTERS + HARAKAT)
 
 
 def keep_characters(
