@@ -46,11 +46,61 @@ def keep(
     punctuations: bool = False,
     arabic_numbers: bool = False,
     english_numbers: bool = False,
-    arabic_punctuation: bool = False,
-    english_punctuation: bool = False,
+    arabic_punctuations: bool = False,
+    english_punctuations: bool = False,
     use_space: bool = True,
     custom_chars: List[str] = [],
 ):
+    """Keeps only the provided characters in the given text and removes everything else.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+    arabic : bool, optional
+        keep :data:`~.ARABIC` characters, by default False
+    english : bool, optional
+        keep :data:`~.ENGLISH` characters, by default False
+    arabic_letters : bool, optional
+        keep :data:`~.ARABIC_LETTERS` characters, by default False
+    english_letters : bool, optional
+        keep :data:`~.ENGLISH_LETTERS` characters, by default False
+    english_small_letters : bool, optional
+        keep :data:`~.ENGLISH_SMALL_LETTERS` characters, by default False
+    english_capital_letters : bool, optional
+        keep :data:`~.ENGLISH_CAPITAL_LETTERS` characters, by default False
+    numbers : bool, optional
+        keep :data:`~.NUMBERS` characters, by default False
+    harakat : bool, optional
+        keep :data:`~.HARAKAT` characters, by default False
+    all_harakat : bool, optional
+        keep :data:`~.ALL_HARAKAT` characters, by default False
+    punctuations : bool, optional
+        keep :data:`~.PUNCTUATIONS` characters, by default False
+    arabic_numbers : bool, optional
+        keep :data:`~.ARABIC_NUMBERS` characters, by default False
+    english_numbers : bool, optional
+        keep :data:`~.ENGLISH_NUMBERS` characters, by default False
+    arabic_punctuations : bool, optional
+        keep :data:`~.ARABIC_PUNCTUATIONS` characters, by default False
+    english_punctuations : bool, optional
+        keep :data:`~.ENGLISH_PUNCTUATIONS` characters, by default False
+    use_space : bool, optional
+        False to not replace with space, check :func:`~.keep_characters`
+        for more information, by default True
+    custom_chars : List[str], optional
+        Include any other unicode character, by default empty list ``[]``
+
+    Returns
+    -------
+    str
+        Processed text
+
+    Raises
+    ------
+    ValueError
+        When input text is empty or no argument is set to True
+    """
 
     if not text:
         raise ValueError("Text cannot be empty")
@@ -64,7 +114,7 @@ def keep(
     # Since each argument has the same name as the corresponding constant.
     # Looping through all arguments and appending constants that correspond to the
     # True arguments can work
-    # TODO: MAybe find pythonic way to do this
+    # TODO: Maybe find a good pythonic way to do this
     for arg, value in current_arguments.items():
         const = globals().get(arg.upper())
         if const and value is True:
@@ -80,7 +130,7 @@ def keep(
 
 
 def keep_arabic(text: str) -> str:
-    """Keeps Arabic characters :const:`~constants.arabic.compound.ARABIC_CHARS` only.
+    """Keeps Arabic characters :data:`~.ARABIC_LETTERS` only.
 
     Parameters
     ----------
