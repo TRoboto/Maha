@@ -11,18 +11,86 @@ __all__ = [
 import re
 from typing import List, Union
 
-from maha.constants.general import EMPTY, SPACE
-
-from ...constants import ALL_HARAKAT, ARABIC_CHARS, ARABIC_NUMBERS
+from ...constants import (
+    ALL_HARAKAT,
+    ARABIC,
+    ARABIC_LETTERS,
+    ARABIC_NUMBERS,
+    ARABIC_PUNCTUATIONS,
+    EMPTY,
+    ENGLISH,
+    ENGLISH_CAPITAL_LETTERS,
+    ENGLISH_LETTERS,
+    ENGLISH_NUMBERS,
+    ENGLISH_PUNCTUATIONS,
+    ENGLISH_SMALL_LETTERS,
+    HARAKAT,
+    NUMBERS,
+    PUNCTUATIONS,
+    SPACE,
+)
 from .remove import remove_extra_spaces
 
 
 def keep(
     text: str,
-    arabic=False,
-    english=False,
+    arabic: bool = False,
+    english: bool = False,
+    arabic_letters: bool = False,
+    english_letters: bool = False,
+    english_small_letters: bool = False,
+    english_capital_letters: bool = False,
+    numbers: bool = False,
+    harakat: bool = False,
+    all_harakat: bool = False,
+    punctuations: bool = False,
+    arabic_numbers: bool = False,
+    english_numbers: bool = False,
+    arabic_punctuation: bool = False,
+    english_punctuation: bool = False,
+    use_space: bool = True,
 ):
-    pass
+    if not text:
+        raise ValueError("Text cannot be empty")
+
+    # characters to keep
+    chars_to_keep = []
+    if arabic:
+        chars_to_keep += ARABIC
+    if english:
+        chars_to_keep += ENGLISH
+    if arabic_letters:
+        chars_to_keep += ARABIC_LETTERS
+    if harakat:
+        chars_to_keep += HARAKAT
+    if all_harakat:
+        chars_to_keep += ALL_HARAKAT
+    if english_letters:
+        chars_to_keep += ENGLISH_LETTERS
+    if english_small_letters:
+        chars_to_keep += ENGLISH_SMALL_LETTERS
+    if english_capital_letters:
+        chars_to_keep += ENGLISH_CAPITAL_LETTERS
+    if numbers:
+        chars_to_keep += NUMBERS
+    if arabic_numbers:
+        chars_to_keep += ARABIC_NUMBERS
+    if punctuations:
+        chars_to_keep += PUNCTUATIONS
+    if english_numbers:
+        chars_to_keep += ENGLISH_NUMBERS
+    if arabic_punctuation:
+        chars_to_keep += ARABIC_PUNCTUATIONS
+    if english_punctuation:
+        chars_to_keep += ENGLISH_PUNCTUATIONS
+
+    if not chars_to_keep:
+        raise ValueError("At least one argument should be True")
+
+    # remove duplicates
+    chars_to_keep = list(set(chars_to_keep))
+
+    return keep_characters(text, chars_to_keep, use_space)
 
 
 def keep_arabic(text: str) -> str:
@@ -38,7 +106,7 @@ def keep_arabic(text: str) -> str:
     str
         Text contains Arabic characters only.
     """
-    return keep_characters(text, ARABIC_CHARS)
+    return keep_characters(text, ARABIC_LETTERS)
 
 
 def keep_characters(
