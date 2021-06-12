@@ -14,7 +14,7 @@ __all__ = [
 import re
 from typing import List, Union
 
-from ...constants import (
+from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
     ARABIC_LETTERS,
@@ -32,6 +32,7 @@ from ...constants import (
     PUNCTUATIONS,
     SPACE,
 )
+
 from .remove import remove_extra_spaces
 
 
@@ -54,7 +55,7 @@ def keep(
     use_space: bool = True,
     custom_chars: Union[List[str], str] = [],
 ):
-    """Keeps only the provided characters in the given text and removes everything else.
+    """Keeps only certain characters in the given text and removes everything else.
 
     To add a new parameter, make sure that its name is the same as the corresponding
     constant.
@@ -208,10 +209,15 @@ def keep_characters(
 
     """Keeps only the input characters ``chars`` in the given text ``text``
 
-    This works by replacing all characters except the input ``chars`` with a space,
+    By default, this works by replacing all characters except the input ``chars`` with a space,
     which means space is kept. This is to help separate texts when unwanted characters
-    are present without spaces such as 'end.start', which will be converted to
-    'end start' if English characters are to be kept.
+    are present without spaces. For example, 'end.start' will be converted to
+    'end start' if English letters :data:`~.ENGLISH_LETTERS` are passed to ``chars``.
+    To disable this behavior, set ``use_space`` to False.
+
+    .. note::
+        Extra spaces (more than one space) are removed by default if ``use_space`` is
+        set to True.
 
     Parameters
     ----------
@@ -230,7 +236,7 @@ def keep_characters(
     Raises
     ------
     ValueError
-        When ``chars`` is empty
+        If no ``chars`` are provided
     """
 
     if not chars:
@@ -248,6 +254,7 @@ def keep_characters(
         not_included_harakat = "".join([h for h in ALL_HARAKAT if h not in chars])
 
         output_text = text
+        # replace harakat with empty character
         if not_included_harakat:
             output_text = re.sub(f"[{not_included_harakat}]", EMPTY, text)
 

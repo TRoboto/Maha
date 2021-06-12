@@ -11,13 +11,6 @@ from maha.cleaners.functions import (
 from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SEEN, SPACE
 
 
-# @pytest.mark.parametrize(
-#     "arabic,english,arabic_letters,"
-#     "english_letters,english_small_letters,english_capital_letters,"
-#     "numbers,harakat,all_harakat,punctuations,arabic_numbers,"
-#     "english_numbers, arabic_punctuations,english_punctuations",
-#     itertools.product(*(14 * ((True, False),))),
-# )
 def test_keep_with_arabic(simple_text_input: str):
     assert (
         keep(text=simple_text_input, arabic=True)
