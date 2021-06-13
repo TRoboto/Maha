@@ -14,7 +14,7 @@ from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SEEN, SPACE
 def test_keep_with_arabic(simple_text_input: str):
     assert (
         keep(text=simple_text_input, arabic=True)
-        == "بِسْمِ،اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+        == "بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     )
 
 
@@ -129,14 +129,14 @@ def test_keep_arabic_letters(simple_text_input: str):
 def test_keep_arabic_characters(simple_text_input: str):
     assert (
         keep_arabic_characters(text=simple_text_input)
-        == "بِسْمِ،اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+        == "بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     )
 
 
 def test_keep_arabic_with_english_numbers(simple_text_input: str):
     assert (
         keep_arabic_with_english_numbers(text=simple_text_input)
-        == "1 بِسْمِ،اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
+        == "1 بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     )
 
 
