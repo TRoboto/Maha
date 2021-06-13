@@ -6,6 +6,11 @@ __all__ = [
     "remove",
     "remove_characters",
     "remove_extra_spaces",
+    "remove_punctuations",
+    "remove_english",
+    "remove_all_harakat",
+    "remove_harakat",
+    "remove_numbers",
 ]
 
 import re
@@ -193,6 +198,86 @@ def remove_characters(
         output_text = re.sub(f"[{chars}]", EMPTY, text)
 
     return output_text.strip()
+
+
+def remove_punctuations(text: str) -> str:
+    """Removes all punctuations :data:`~.PUNCTUATIONS` from the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text with punctuations removed.
+    """
+    return remove_characters(text, PUNCTUATIONS)
+
+
+def remove_english(text: str) -> str:
+    """Removes all english characters :data:`~.ENGLISH` from the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text with english removed.
+    """
+    return remove_characters(text, ENGLISH)
+
+
+def remove_all_harakat(text: str) -> str:
+    """Removes all harakat :data:`~.ALL_HARAKAT` from the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text with all harakat removed.
+    """
+    return remove_characters(text, ALL_HARAKAT)
+
+
+def remove_harakat(text: str) -> str:
+    """Removes common harakat :data:`~.HARAKAT` from the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text with common harakat removed.
+    """
+    return remove_characters(text, HARAKAT)
+
+
+def remove_numbers(text: str) -> str:
+    """Removes all numbers :data:`~.NUMBERS` from the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text with numbers removed.
+    """
+    return remove_characters(text, NUMBERS)
 
 
 def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:

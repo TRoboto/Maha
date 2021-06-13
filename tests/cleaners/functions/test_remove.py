@@ -1,6 +1,15 @@
 import pytest
 
-from maha.cleaners.functions import remove, remove_characters, remove_extra_spaces
+from maha.cleaners.functions import (
+    remove,
+    remove_all_harakat,
+    remove_characters,
+    remove_english,
+    remove_extra_spaces,
+    remove_harakat,
+    remove_numbers,
+    remove_punctuations,
+)
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -28,6 +37,12 @@ def test_remove_with_arabic(simple_text_input: str):
 
 def test_remove_with_english(simple_text_input: str):
     processed_text = remove(text=simple_text_input, english=True)
+    assert processed_text == "بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
+    assert list_not_in_string(ENGLISH, processed_text)
+
+
+def test_remove_english(simple_text_input: str):
+    processed_text = remove_english(text=simple_text_input)
     assert processed_text == "بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
     assert list_not_in_string(ENGLISH, processed_text)
 
@@ -108,6 +123,15 @@ def test_remove_with_numbers(simple_text_input: str):
     assert list_not_in_string(NUMBERS, processed_text)
 
 
+def test_remove_numbers(simple_text_input: str):
+    processed_text = remove_numbers(text=simple_text_input)
+    assert (
+        processed_text
+        == ". بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ In the name of Allah,Most Gracious, Most Merciful."
+    )
+    assert list_not_in_string(NUMBERS, processed_text)
+
+
 def test_remove_with_harakat(simple_text_input: str):
     processed_text = remove(text=simple_text_input, harakat=True)
     assert (
@@ -117,8 +141,17 @@ def test_remove_with_harakat(simple_text_input: str):
     assert list_not_in_string(HARAKAT, processed_text)
 
 
-def test_remove_with_all_harakat(simple_text_input: str):
-    processed_text = remove(text=simple_text_input, all_harakat=True)
+def test_remove_harakat(simple_text_input: str):
+    processed_text = remove_harakat(text=simple_text_input)
+    assert (
+        processed_text
+        == "1. بسم،الله الرحمٰن الرحيم In the name of Allah,Most Gracious, Most Merciful."
+    )
+    assert list_not_in_string(HARAKAT, processed_text)
+
+
+def test_remove_all_harakat(simple_text_input: str):
+    processed_text = remove_all_harakat(text=simple_text_input)
     assert (
         processed_text
         == "1. بسم،الله الرحمن الرحيم In the name of Allah,Most Gracious, Most Merciful."
@@ -128,6 +161,15 @@ def test_remove_with_all_harakat(simple_text_input: str):
 
 def test_remove_with_punctuations(simple_text_input: str):
     processed_text = remove(text=simple_text_input, punctuations=True)
+    assert (
+        processed_text
+        == "1 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ In the name of Allah Most Gracious Most Merciful"
+    )
+    assert list_not_in_string(PUNCTUATIONS, processed_text)
+
+
+def test_remove_punctuations(simple_text_input: str):
+    processed_text = remove_punctuations(text=simple_text_input)
     assert (
         processed_text
         == "1 بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ In the name of Allah Most Gracious Most Merciful"
