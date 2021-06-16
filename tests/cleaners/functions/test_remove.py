@@ -413,7 +413,7 @@ def test_remove_with_emails(input_text: str, expected: str):
         ("http://www.web.edu.jo", ""),
         ("https://web.edu.jo", ""),
         ("https://www.web.edu.jo", ""),
-        ("https://www.web.cooiuty.noo", ""),
+        ("https://www.web.notwebsite.noo", ""),
         ("www.web.notwebsite.noo", "www.web.notwebsite.noo"),
         ("www.web.website.com", ""),
     ],
