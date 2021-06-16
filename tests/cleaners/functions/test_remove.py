@@ -9,6 +9,7 @@ from maha.cleaners.functions import (
     remove_harakat,
     remove_numbers,
     remove_punctuations,
+    remove_tatweel,
 )
 from maha.constants import (
     ALL_HARAKAT,
@@ -26,6 +27,7 @@ from maha.constants import (
     NUMBERS,
     PUNCTUATIONS,
 )
+from maha.constants.arabic.simple import TATWEEL
 from tests.utils import list_not_in_string
 
 
@@ -217,6 +219,13 @@ def test_remove_with_custom_characters(simple_text_input: str):
         == "1. بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ In h nam of Allah,Mo Graciou , Mo M rciful."
     )
     assert list_not_in_string(list("test"), processed_text)
+
+
+def test_remove_tatweel():
+    text = "تطويــــل"
+    processed_text = remove_tatweel(text=text)
+    assert processed_text == "تطويل"
+    assert TATWEEL not in processed_text
 
 
 def test_remove_with_hashtags_simple(simple_text_input: str):

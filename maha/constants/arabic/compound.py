@@ -41,9 +41,8 @@ ARABIC_LETTERS: List[str] = [
     HAMZA,
     HAMZA_WAW,
     HAMZA_YA,
-    TATWEEL,
 ]
-""" List of Arabic characters """
+""" List of Arabic letters """
 
 SIMPLE_HARAKAT: List[str] = [
     FATHA,

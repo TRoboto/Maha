@@ -11,6 +11,7 @@ __all__ = [
     "remove_all_harakat",
     "remove_harakat",
     "remove_numbers",
+    "remove_tatweel",
     "remove_patterns",
 ]
 
@@ -44,6 +45,7 @@ from maha.constants import (
     PATTERN_MENTIONS,
     PUNCTUATIONS,
     SPACE,
+    TATWEEL,
 )
 
 
@@ -58,6 +60,7 @@ def remove(
     numbers: bool = False,
     harakat: bool = False,
     all_harakat: bool = False,
+    tatweel: bool = False,
     punctuations: bool = False,
     arabic_numbers: bool = False,
     english_numbers: bool = False,
@@ -103,6 +106,8 @@ def remove(
         Remove :data:`~.HARAKAT` characters, by default False
     all_harakat : bool, optional
         Remove :data:`~.ALL_HARAKAT` characters, by default False
+    tatweel : bool, optional
+        Remove :data:`~.TATWEEL` character, by default False
     punctuations : bool, optional
         Remove :data:`~.PUNCTUATIONS` characters, by default False
     arabic_numbers : bool, optional
@@ -169,7 +174,6 @@ def remove(
     patterns_to_remove = []
     patterns_to_remove.extend(custom_patterns)
 
-    #
     # Since each argument has the same name as the corresponding constant
     # (But, patterns should be prefixed with "PATTERN_" to match the actual pattern.)
     # Looping through all arguments and appending constants that correspond to the
@@ -192,19 +196,47 @@ def remove(
     # remove using patterns
     if patterns_to_remove:
         output = remove_patterns(output, patterns_to_remove)
-    # remove duplicates
+
     if chars_to_remove:
+        # check for constants that cannot be replaced with a space
+        if all_harakat:
+            output = remove_characters(output, ALL_HARAKAT, False)
+        elif harakat:
+            output = remove_characters(output, HARAKAT, False)
+        if tatweel:
+            output = remove_characters(output, TATWEEL, False)
+
+        # remove duplicates
         chars_to_remove = list(set(chars_to_remove))
         output = remove_characters(output, chars_to_remove, use_space)
+
     return output
 
 
 def remove_hash_keep_tag(text: str):
+    # TODO: Add function that removes only the hash sign from the hashtag
     pass
 
 
 def remove_hashtags_at_end(text: str):
+    # TODO: Add function that removes only hashtags that appear at the end of a text
     pass
+
+
+def remove_tatweel(text: str) -> str:
+    """Removes tatweel symbol :data:`~.TATWEEL` from the given text.
+
+    Parameters
+    ----------
+    text : str
+        Text to process
+
+    Returns
+    -------
+    str
+        Text with tatweel symbol removed.
+    """
+    return remove_characters(text, TATWEEL, False)
 
 
 def remove_emails(text: str) -> str:
@@ -318,7 +350,7 @@ def remove_all_harakat(text: str) -> str:
     str
         Text with all harakat removed.
     """
-    return remove_characters(text, ALL_HARAKAT)
+    return remove_characters(text, ALL_HARAKAT, False)
 
 
 def remove_harakat(text: str) -> str:
@@ -334,7 +366,7 @@ def remove_harakat(text: str) -> str:
     str
         Text with common harakat removed.
     """
-    return remove_characters(text, HARAKAT)
+    return remove_characters(text, HARAKAT, False)
 
 
 def remove_numbers(text: str) -> str:
@@ -442,16 +474,8 @@ def remove_characters(
     if use_space:
         # remove space character if included
         chars = chars.replace(SPACE, EMPTY)
-        # remove all included harakat first
-        # (to fix extra spacing between characters)
-        included_harakat = "".join([h for h in ALL_HARAKAT if h in chars])
 
-        output_text = text
-        # replace harakat with empty character
-        if included_harakat:
-            output_text = re.sub(f"[{included_harakat}]", EMPTY, text)
-
-        output_text = re.sub(f"[{chars}]", SPACE, output_text)
+        output_text = re.sub(f"[{chars}]", SPACE, text)
         output_text = remove_extra_spaces(output_text)
     else:
         output_text = re.sub(f"[{chars}]", EMPTY, text)
