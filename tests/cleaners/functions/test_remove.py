@@ -24,14 +24,6 @@ from maha.constants import (
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
     NUMBERS,
-    PATTERN_ARABIC_HASHTAGS,
-    PATTERN_ARABIC_MENTIONS,
-    PATTERN_EMAILS,
-    PATTERN_ENGLISH_HASHTAGS,
-    PATTERN_ENGLISH_MENTIONS,
-    PATTERN_HASHTAGS,
-    PATTERN_LINKS,
-    PATTERN_MENTIONS,
     PUNCTUATIONS,
 )
 from tests.utils import list_not_in_string
@@ -389,6 +381,45 @@ def test_remove_with_english_mentions(input_text: str, expected: str):
 )
 def test_remove_with_arabic_mentions(input_text: str, expected: str):
     processed_text = remove(text=input_text, arabic_mentions=True)
+    assert processed_text == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        ("@test", "@test"),
+        ("email@web.com", ""),
+        ("email123-d@web-1.edu.jo", ""),
+        ("email@web.co.uk", ""),
+        ("email@web", "email@web"),
+    ],
+)
+def test_remove_with_emails(input_text: str, expected: str):
+    processed_text = remove(text=input_text, emails=True)
+    assert processed_text == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        (".test.", ".test."),
+        ("web.com", ""),
+        ("web-1.edu.jo", ""),
+        ("web.co.uk", ""),
+        ("www.web.edu.jo", ""),
+        ("http://web.edu.jo", ""),
+        ("http://www.web.edu.jo", ""),
+        ("https://web.edu.jo", ""),
+        ("https://www.web.edu.jo", ""),
+        ("https://www.web.cooiuty.noo", ""),
+        ("www.web.notwebsite.noo", "www.web.notwebsite.noo"),
+        ("www.web.website.com", ""),
+    ],
+)
+def test_remove_with_links(input_text: str, expected: str):
+    processed_text = remove(text=input_text, links=True)
     assert processed_text == expected
 
 
