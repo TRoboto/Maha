@@ -4,10 +4,15 @@ from maha.cleaners.functions import (
     remove,
     remove_all_harakat,
     remove_characters,
+    remove_emails,
     remove_english,
     remove_extra_spaces,
     remove_harakat,
+    remove_hashtags,
+    remove_links,
+    remove_mentions,
     remove_numbers,
+    remove_patterns,
     remove_punctuations,
     remove_tatweel,
 )
@@ -17,6 +22,7 @@ from maha.constants import (
     ARABIC_LETTERS,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
+    EMPTY,
     ENGLISH,
     ENGLISH_CAPITAL_LETTERS,
     ENGLISH_LETTERS,
@@ -221,6 +227,13 @@ def test_remove_with_custom_characters(simple_text_input: str):
     assert list_not_in_string(list("test"), processed_text)
 
 
+def test_remove_with_tatweel(simple_text_input: str):
+    processed_text = remove(text=simple_text_input, tatweel=True)
+    assert processed_text == simple_text_input.strip()
+    processed_text = remove(text="تطويــــل", tatweel=True)
+    assert TATWEEL not in processed_text
+
+
 def test_remove_tatweel():
     text = "تطويــــل"
     processed_text = remove_tatweel(text=text)
@@ -263,6 +276,11 @@ def test_remove_with_hashtags_with_arabic(simple_text_input: str):
 def test_remove_with_hashtag(input_text: str, expected: str):
     processed_text = remove(text=input_text, hashtags=True)
     assert processed_text == expected
+
+
+def test_remove_hashtags():
+    assert remove_hashtags("#test") == EMPTY
+    assert remove_hashtags("#هاشتاق") == EMPTY
 
 
 @pytest.mark.parametrize(
@@ -347,6 +365,11 @@ def test_remove_with_mentions(input_text: str, expected: str):
     assert processed_text == expected
 
 
+def test_remove_mentions():
+    assert remove_mentions("@test") == EMPTY
+    assert remove_mentions("@منشن") == EMPTY
+
+
 @pytest.mark.parametrize(
     "input_text, expected",
     [
@@ -415,6 +438,10 @@ def test_remove_with_emails(input_text: str, expected: str):
     assert processed_text == expected
 
 
+def test_remove_emails():
+    assert remove_emails("email@web.com") == EMPTY
+
+
 @pytest.mark.parametrize(
     "input_text, expected",
     [
@@ -436,6 +463,10 @@ def test_remove_with_emails(input_text: str, expected: str):
 def test_remove_with_links(input_text: str, expected: str):
     processed_text = remove(text=input_text, links=True)
     assert processed_text == expected
+
+
+def test_remove_links():
+    assert remove_links("web.com") == EMPTY
 
 
 def test_remove_should_raise_valueerror(simple_text_input: str):
@@ -473,6 +504,17 @@ def test_remove_characters(
 def test_remove_characters_raise_valueerror(simple_text_input: str):
     with pytest.raises(ValueError):
         remove_characters(simple_text_input, "")
+
+
+def test_remove_patterns(simple_text_input: str):
+    processed_text = remove_patterns(simple_text_input, "[\u0600-\u06FF]+")
+    assert processed_text == "1. In the name of Allah,Most Gracious, Most Merciful."
+    assert list_not_in_string(ARABIC, processed_text)
+
+
+def test_remove_patterns_raise_valueerror(simple_text_input: str):
+    with pytest.raises(ValueError):
+        remove_patterns(simple_text_input, "")
 
 
 @pytest.mark.parametrize(

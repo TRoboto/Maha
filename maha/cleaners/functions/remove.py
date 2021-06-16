@@ -13,6 +13,10 @@ __all__ = [
     "remove_numbers",
     "remove_tatweel",
     "remove_patterns",
+    "remove_emails",
+    "remove_hashtags",
+    "remove_links",
+    "remove_mentions",
 ]
 
 from typing import List, Union
@@ -418,7 +422,8 @@ def remove_patterns(
         raise ValueError("'chars' cannot be empty.")
 
     # convert list to str
-    patterns = "|".join(patterns)
+    if isinstance(patterns, list):
+        patterns = "|".join(patterns)
 
     output_text = re.sub(patterns, EMPTY, text)
 
@@ -468,7 +473,8 @@ def remove_characters(
         raise ValueError("'chars' cannot be empty.")
 
     # convert list to str
-    chars = "".join(chars)
+    if isinstance(chars, list):
+        chars = "".join(chars)
     chars = re.escape(chars)
 
     if use_space:
