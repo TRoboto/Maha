@@ -379,7 +379,7 @@ def remove_patterns(
     Raises
     ------
     ValueError
-        If no ``chars`` are provided
+        If no ``patterns`` are provided
     """
 
     if not patterns:
