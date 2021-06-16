@@ -1,4 +1,5 @@
 """ Regular expersion patterns """
+
 PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n)(#[\wأ-ي-]+)"
 PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n)(@[\wأ-ي-]+)"
 # (?:\s|^|\*|\n)(@[\wأ-ي][-أ-يa-zA-Z0-9_][-\wأ-ي_]*)

@@ -24,6 +24,14 @@ from maha.constants import (
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
     NUMBERS,
+    PATTERN_ARABIC_HASHTAGS,
+    PATTERN_ARABIC_MENTIONS,
+    PATTERN_EMAILS,
+    PATTERN_ENGLISH_HASHTAGS,
+    PATTERN_ENGLISH_MENTIONS,
+    PATTERN_HASHTAGS,
+    PATTERN_LINKS,
+    PATTERN_MENTIONS,
     PUNCTUATIONS,
 )
 from tests.utils import list_not_in_string
@@ -217,6 +225,171 @@ def test_remove_with_custom_characters(simple_text_input: str):
         == "1. بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ In h nam of Allah,Mo Graciou , Mo M rciful."
     )
     assert list_not_in_string(list("test"), processed_text)
+
+
+def test_remove_with_hashtags_simple(simple_text_input: str):
+    processed_text = remove(text=simple_text_input, hashtags=True)
+    assert processed_text == simple_text_input.strip()
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        ("# test", "# test"),
+        ("#test", ""),
+        ("#هاشتاق", ""),
+        ("test hashtag #hashtag_mid in middle ", "test hashtag in middle"),
+        ("تجربة #هاشتاق3 في النصف", "تجربة في النصف"),
+        ("#hashtag_start at start ", "at start"),
+        ("#هاشتاق في البداية", "في البداية"),
+        ("#hashtag #hashtag more than #hashtag one #hashtag", "more than one"),
+        ("#هايشتاقhashtag في البداية", "في البداية"),
+        ("#هاشتاق #هاشتاق اكثر من  #هاشتاق واحد #هاشتاق", "اكثر من واحد"),
+        ("test at end #hashtag_end3 3 ", "test at end 3"),
+        ("في النهاية #هاشتاق3", "في النهاية"),
+        ("test at end #34hashtag-end123", "test at end"),
+        ("test at endline #hashtag\ntest", "test at endline \ntest"),
+        ("#123", ""),
+    ],
+)
+def test_remove_with_hashtag(input_text: str, expected: str):
+    processed_text = remove(text=input_text, hashtags=True)
+    assert processed_text == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        ("# test", "# test"),
+        ("#test", ""),
+        ("#هاشتاق", "#هاشتاق"),
+        ("test hashtag #hashtag_mid in middle ", "test hashtag in middle"),
+        ("تجربة #هاشتاق3 في النصف", "تجربة #هاشتاق3 في النصف"),
+        ("#hashtag_start at start ", "at start"),
+        ("#هاشتاق في البداية", "#هاشتاق في البداية"),
+        ("#hashtag #hashtag more than #hashtag one #hashtag", "more than one"),
+        ("#هايشتاقhashtag في البداية", "#هايشتاقhashtag في البداية"),
+        ("test at end #hashtag_end3 3 ", "test at end 3"),
+        ("في النهاية #هاشتاق3", "في النهاية #هاشتاق3"),
+        ("test at end #34hashtag-end123", "test at end"),
+        ("test at endline #hashtag\ntest", "test at endline \ntest"),
+        ("#123", ""),
+    ],
+)
+def test_remove_with_english_hashtag(input_text: str, expected: str):
+    processed_text = remove(text=input_text, english_hashtags=True)
+    assert processed_text == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        ("# test", "# test"),
+        ("#test", "#test"),
+        ("#منشن", ""),
+        ("test hashtag #hashtag_mid in middle ", "test hashtag #hashtag_mid in middle"),
+        ("تجربة #هاشتاق3 في النصف", "تجربة في النصف"),
+        (
+            "#hashtag #hashtag more than #hashtag one #hashtag",
+            "#hashtag #hashtag more than #hashtag one #hashtag",
+        ),
+        ("#هاشتاق #هاشتاق اكثر من  #هاشتاق واحد #هاشتاق", "اكثر من واحد"),
+        ("#hashtag_start at start ", "#hashtag_start at start"),
+        ("#هاشتاق في البداية", "في البداية"),
+        ("#هاشتاقhashtag في البداية", "#هاشتاقhashtag في البداية"),
+        ("test at end #hashtag_end3 3 ", "test at end #hashtag_end3 3"),
+        ("في النهاية #هاشتاق3", "في النهاية"),
+        ("test at end #34hashtag-end123", "test at end #34hashtag-end123"),
+        ("test at endline #hashtag\ntest", "test at endline #hashtag\ntest"),
+        ("#123", "#123"),
+    ],
+)
+def test_remove_with_arabic_hashtag(input_text: str, expected: str):
+    processed_text = remove(text=input_text, arabic_hashtags=True)
+    assert processed_text == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        ("@ test", "@ test"),
+        ("@test", ""),
+        ("@منشن", ""),
+        ("email@web.com", "email@web.com"),
+        ("test mention @mention_mid in middle ", "test mention in middle"),
+        ("تجربة @منشن3 في النصف", "تجربة في النصف"),
+        ("@mention_start at start ", "at start"),
+        ("@منشن في البداية", "في البداية"),
+        ("@هايشتاقmention في البداية", "في البداية"),
+        ("test at end @mention_end3 3 ", "test at end 3"),
+        ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+        ("في النهاية @منشن3", "في النهاية"),
+        ("test at end @34mention-end123", "test at end"),
+        ("test at endline @mention\ntest", "test at endline \ntest"),
+        ("@123", ""),
+        ("@mention @mention more than @mention one @mention", "more than one"),
+        ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+    ],
+)
+def test_remove_with_mentions(input_text: str, expected: str):
+    processed_text = remove(text=input_text, mentions=True)
+    assert processed_text == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        ("@ test", "@ test"),
+        ("@test", ""),
+        ("@منشن", "@منشن"),
+        ("test mention @mention_mid in middle ", "test mention in middle"),
+        ("تجربة @منشن3 في النصف", "تجربة @منشن3 في النصف"),
+        ("@mention_start at start ", "at start"),
+        ("@منشن في البداية", "@منشن في البداية"),
+        ("@mention @mention more than @mention one @mention", "more than one"),
+        ("@هايشتاقmention في البداية", "@هايشتاقmention في البداية"),
+        ("test at end @mention_end3 3 ", "test at end 3"),
+        ("في النهاية @منشن3", "في النهاية @منشن3"),
+        ("test at end @34mention-end123", "test at end"),
+        ("test at endline @mention\ntest", "test at endline \ntest"),
+        ("@123", ""),
+    ],
+)
+def test_remove_with_english_mentions(input_text: str, expected: str):
+    processed_text = remove(text=input_text, english_mentions=True)
+    assert processed_text == expected
+
+
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("test", "test"),
+        ("@ test", "@ test"),
+        ("@test", "@test"),
+        ("@منشن", ""),
+        ("email@web.com", "email@web.com"),
+        ("test mention @mention_mid in middle", "test mention @mention_mid in middle"),
+        ("تجربة @منشن3 في النصف", "تجربة في النصف"),
+        ("@mention_start at start", "@mention_start at start"),
+        ("@منشن في البداية", "في البداية"),
+        ("@هايشتاقmention في البداية", "@هايشتاقmention في البداية"),
+        ("test at end @mention_end3 3", "test at end @mention_end3 3"),
+        ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+        ("في النهاية @منشن3", "في النهاية"),
+        ("test at end @34mention-end123", "test at end @34mention-end123"),
+        ("test at endline @mention\ntest", "test at endline @mention\ntest"),
+        ("@123", "@123"),
+        ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+    ],
+)
+def test_remove_with_arabic_mentions(input_text: str, expected: str):
+    processed_text = remove(text=input_text, arabic_mentions=True)
+    assert processed_text == expected
 
 
 def test_remove_should_raise_valueerror(simple_text_input: str):
