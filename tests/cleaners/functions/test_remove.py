@@ -224,6 +224,12 @@ def test_remove_with_hashtags_simple(simple_text_input: str):
     assert processed_text == simple_text_input.strip()
 
 
+def test_remove_with_hashtags_with_arabic(simple_text_input: str):
+    simple_text_input += " #hashtag"
+    processed_text = remove(text=simple_text_input, hashtags=True, arabic=True)
+    assert list_not_in_string(ARABIC, processed_text)
+
+
 @pytest.mark.parametrize(
     "input_text, expected",
     [
