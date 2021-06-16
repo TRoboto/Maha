@@ -478,9 +478,6 @@ def remove_characters(
     chars = re.escape(chars)
 
     if use_space:
-        # remove space character if included
-        chars = chars.replace(SPACE, EMPTY)
-
         output_text = re.sub(f"[{chars}]", SPACE, text)
         output_text = remove_extra_spaces(output_text)
     else:
