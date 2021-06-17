@@ -11,7 +11,6 @@ __all__ = [
     "keep_arabic_letters_with_harakat",
 ]
 
-import re
 from typing import List, Union
 
 from maha.constants import (
@@ -35,6 +34,7 @@ from maha.constants import (
 )
 
 from .remove import remove_extra_spaces
+from .replace import replace_characters, replace_characters_except
 
 
 def keep(
@@ -245,7 +245,6 @@ def keep_characters(
 
     # convert list to str
     chars = "".join(chars)
-    chars = re.escape(chars)
 
     if use_space:
         # remove all not included harakat first or tatweel
@@ -257,11 +256,11 @@ def keep_characters(
         output_text = text
         # replace harakat with empty character
         if not_included_harakat:
-            output_text = re.sub(f"[{not_included_harakat}]", EMPTY, text)
+            output_text = replace_characters(text, not_included_harakat, EMPTY)
 
-        output_text = re.sub(f"[^{chars}]", SPACE, output_text)
+        output_text = replace_characters_except(output_text, chars, SPACE)
         output_text = remove_extra_spaces(output_text)
     else:
-        output_text = re.sub(f"[^{chars}]", EMPTY, text)
+        output_text = replace_characters_except(text, chars, EMPTY)
 
     return output_text.strip()

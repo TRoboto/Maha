@@ -21,9 +21,6 @@ __all__ = [
 
 from typing import List, Union
 
-# To enjoy infinite width lookbehind
-import regex as re
-
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -52,6 +49,8 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
+
+from .replace import replace_characters, replace_pattern
 
 
 def remove(
@@ -430,7 +429,7 @@ def remove_patterns(
     if isinstance(patterns, list):
         patterns = "|".join(patterns)
 
-    output_text = re.sub(patterns, EMPTY, text)
+    output_text = replace_pattern(text, patterns, EMPTY)
 
     if remove_spaces:
         output_text = remove_extra_spaces(output_text)
@@ -480,13 +479,12 @@ def remove_characters(
     # convert list to str
     if isinstance(chars, list):
         chars = "".join(chars)
-    chars = str(re.escape(chars))
 
     if use_space:
-        output_text = re.sub(f"[{chars}]", SPACE, text)
+        output_text = replace_characters(text, chars, SPACE)
         output_text = remove_extra_spaces(output_text)
     else:
-        output_text = re.sub(f"[{chars}]", EMPTY, text)
+        output_text = replace_characters(text, chars, EMPTY)
 
     return output_text.strip()
 
@@ -518,4 +516,4 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     if max_spaces != int(max_spaces):
         raise ValueError("Cannot assign a float value to 'max_spaces'")
 
-    return re.sub(SPACE * max_spaces + "+", SPACE * max_spaces, text)
+    return replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
