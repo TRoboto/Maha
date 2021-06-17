@@ -487,6 +487,12 @@ def test_remove_with_random_input(simple_text_input: str):
     )
 
 
+def test_remove_with_emojis(simple_text_input: str):
+    processed_text = remove(simple_text_input, emojis=True)
+    assert processed_text == simple_text_input.strip()
+    assert remove("😎", emojis=True) == EMPTY
+
+
 @pytest.mark.parametrize(
     "expected, chars_to_remove, use_space",
     [
