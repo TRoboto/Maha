@@ -1,8 +1,11 @@
 """ Regular expersion patterns """
 
 PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n)(#[\wأ-ي-]+)"
+""" Pattern that matches Arabic and English hashtags """
+
 PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n)(@[\wأ-ي-]+)"
-# (?:\s|^|\*|\n)(@[\wأ-ي][-أ-يa-zA-Z0-9_][-\wأ-ي_]*)
+""" Pattern that matches Arabic and English mentions """
+# Old: (?:\s|^|\*|\n)(@[\wأ-ي][-أ-يa-zA-Z0-9_][-\wأ-ي_]*)
 
 # Adopted from https://gist.github.com/gruber/8891611
 PATTERN_LINKS: str = r"""
@@ -54,3 +57,29 @@ PATTERN_LINKS: str = r"""
 
 # Adopted from https://emailregex.com/
 PATTERN_EMAILS: str = r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)"
+""" Pattern that matches emails """
+
+# Adopted from https://gist.github.com/slowkow/7a7f61f495e3dbb7e3d767f97bd7304b
+PATTERN_EMOJIS: str = (
+    "["
+    "\U0001F600-\U0001F64F"  # emoticons
+    "\U0001F300-\U0001F5FF"  # symbols & pictographs
+    "\U0001F680-\U0001F6FF"  # transport & map symbols
+    "\U0001F1E0-\U0001F1FF"  # flags (iOS)
+    "\U00002500-\U00002BEF"  # chinese char
+    "\U00002702-\U000027B0"
+    "\U00002702-\U000027B0"
+    "\U000024C2-\U0001F251"
+    "\U0001f926-\U0001f937"
+    "\U00010000-\U0010ffff"
+    "\u2640-\u2642"
+    "\u2600-\u2B55"
+    "\u200d"
+    "\u23cf"
+    "\u23e9"
+    "\u231a"
+    "\ufe0f"  # dingbats
+    "\u3030"
+    "]+"
+)
+""" Pattern that matches emojis """

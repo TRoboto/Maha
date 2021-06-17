@@ -42,6 +42,7 @@ from maha.constants import (
     PATTERN_ARABIC_HASHTAGS,
     PATTERN_ARABIC_MENTIONS,
     PATTERN_EMAILS,
+    PATTERN_EMOJIS,
     PATTERN_ENGLISH_HASHTAGS,
     PATTERN_ENGLISH_MENTIONS,
     PATTERN_HASHTAGS,
@@ -78,6 +79,7 @@ def remove(
     hashtags: bool = False,
     links: bool = False,
     mentions: bool = False,
+    emojis: bool = False,
     use_space: bool = True,
     custom_chars: Union[List[str], str] = [],
     custom_patterns: List[str] = [],
@@ -145,6 +147,9 @@ def remove(
         by default False
     mentions : bool, optional
         Remove Arabic hashtags using the pattern :data:`~.PATTERN_MENTIONS`,
+        by default False
+    emojis : bool, optional
+        Remove emojis using the pattern :data:`~.PATTERN_EMOJIS`,
         by default False
     use_space : bool, optional
         False to not replace with space, check :func:`~.remove_characters`
@@ -475,7 +480,7 @@ def remove_characters(
     # convert list to str
     if isinstance(chars, list):
         chars = "".join(chars)
-    chars = re.escape(chars)
+    chars = str(re.escape(chars))
 
     if use_space:
         output_text = re.sub(f"[{chars}]", SPACE, text)
