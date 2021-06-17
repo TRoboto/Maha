@@ -31,6 +31,7 @@ from maha.constants import (
     NUMBERS,
     PUNCTUATIONS,
     SPACE,
+    TATWEEL,
 )
 
 from .remove import remove_extra_spaces
@@ -247,11 +248,11 @@ def keep_characters(
     chars = re.escape(chars)
 
     if use_space:
-        # remove space character if included
-        chars = chars.replace(SPACE, EMPTY)
-        # remove all not included harakat first
+        # remove all not included harakat first or tatweel
         # (to fix extra spacing between characters)
-        not_included_harakat = "".join([h for h in ALL_HARAKAT if h not in chars])
+        not_included_harakat = "".join(
+            [h for h in ALL_HARAKAT + [TATWEEL] if h not in chars]
+        )
 
         output_text = text
         # replace harakat with empty character

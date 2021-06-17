@@ -146,6 +146,10 @@ def test_keep_arabic_letters_with_harakat(simple_text_input: str):
     ) == "بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ"
 
 
+def test_keep_with_arabic_and_tatweel():
+    assert keep("تطويـــل", arabic=True) == "تطويل"
+
+
 @pytest.mark.parametrize(
     "expected, keep_chars, use_space",
     [
