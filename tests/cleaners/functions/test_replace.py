@@ -39,6 +39,17 @@ def test_replace_characters(simple_text_input: str):
     assert "REPLACE" in processedtext
 
 
+def test_replace_characters_with_list(simple_text_input: str):
+    processedtext = replace_characters(simple_text_input, list("Mma"), "REPLACE")
+    assert list_not_in_string(list("Mma"), processedtext)
+    assert "REPLACE" in processedtext
+
+
 def test_replace_characters_except(simple_text_input: str):
     processedtext = replace_characters_except(simple_text_input, "Mma", EMPTY)
+    assert list_only_in_string(list("Mma"), processedtext)
+
+
+def test_replace_characters_except_with_list(simple_text_input: str):
+    processedtext = replace_characters_except(simple_text_input, list("Mma"), EMPTY)
     assert list_only_in_string(list("Mma"), processedtext)

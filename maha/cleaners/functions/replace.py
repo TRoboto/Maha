@@ -8,7 +8,7 @@ __all__ = [
     "replace_pattern",
 ]
 
-from typing import List
+from typing import List, Union
 
 # To enjoy infinite width lookbehind
 import regex as re
@@ -35,7 +35,9 @@ def replace_pattern(text: str, pattern: str, with_value: str) -> str:
     return re.sub(pattern, with_value, text)
 
 
-def replace_characters(text: str, characters: str, with_value: str) -> str:
+def replace_characters(
+    text: str, characters: Union[List[str], str], with_value: str
+) -> str:
     """Replaces the input ``characters`` in the given text with the given value
 
     Parameters
@@ -56,7 +58,9 @@ def replace_characters(text: str, characters: str, with_value: str) -> str:
     return replace_pattern(text, f"[{characters}]", with_value)
 
 
-def replace_characters_except(text: str, characters: str, with_value: str) -> str:
+def replace_characters_except(
+    text: str, characters: Union[List[str], str], with_value: str
+) -> str:
     """Replaces everything except the input ``characters`` in the given text
     with the given value
 
