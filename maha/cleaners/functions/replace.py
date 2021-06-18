@@ -53,7 +53,7 @@ def replace_characters(text: str, characters: str, with_value: str) -> str:
         Processed text
     """
     characters = str(re.escape(characters))
-    return re.sub(f"[{characters}]", with_value, text)
+    return replace_pattern(text, f"[{characters}]", with_value)
 
 
 def replace_characters_except(text: str, characters: str, with_value: str) -> str:
@@ -75,7 +75,7 @@ def replace_characters_except(text: str, characters: str, with_value: str) -> st
         Processed text
     """
     characters = str(re.escape(characters))
-    return re.sub(f"[^{characters}]", with_value, text)
+    return replace_pattern(text, f"[^{characters}]", with_value)
 
 
 def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
@@ -96,9 +96,9 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
         Processed text
     """
 
-    exp = "|".join(map(re.escape, keys))
+    pattern = "|".join(map(re.escape, keys))
 
     def func(match):
         return values[keys.index(match.group(0))]
 
-    return re.sub(exp, func, text)
+    return replace_pattern(text, pattern, func)
