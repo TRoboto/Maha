@@ -20,6 +20,7 @@ from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
     ARABIC_LETTERS,
+    ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
     EMPTY,
@@ -32,8 +33,8 @@ from maha.constants import (
     HARAKAT,
     NUMBERS,
     PUNCTUATIONS,
+    TATWEEL,
 )
-from maha.constants.arabic.simple import TATWEEL
 from tests.utils import list_not_in_string
 
 
@@ -239,6 +240,13 @@ def test_remove_tatweel():
     processed_text = remove_tatweel(text=text)
     assert processed_text == "تطويل"
     assert TATWEEL not in processed_text
+
+
+def test_remove_with_ligtures():
+    text = "ﷲ اكبر"
+    processed_text = remove(text=text, arabic_ligatures=True)
+    assert processed_text == "اكبر"
+    assert list_not_in_string(ARABIC_LIGATURES, processed_text)
 
 
 def test_remove_with_hashtags_simple(simple_text_input: str):

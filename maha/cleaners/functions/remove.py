@@ -25,6 +25,7 @@ from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
     ARABIC_LETTERS,
+    ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
     EMPTY,
@@ -70,6 +71,7 @@ def remove(
     english_numbers: bool = False,
     arabic_punctuations: bool = False,
     english_punctuations: bool = False,
+    arabic_ligatures: bool = False,
     arabic_hashtags: bool = False,
     arabic_mentions: bool = False,
     emails: bool = False,
@@ -123,6 +125,8 @@ def remove(
         Remove :data:`~.ARABIC_PUNCTUATIONS` characters, by default False
     english_punctuations : bool, optional
         Remove :data:`~.ENGLISH_PUNCTUATIONS` characters, by default False
+    arabic_ligatures : bool, optional
+        Remove :data:`~.ARABIC_LIGATURES` words, by default False
     arabic_hashtags : bool, optional
         Remove Arabic hashtags using the pattern :data:`~.PATTERN_ARABIC_HASHTAGS`,
         by default False
