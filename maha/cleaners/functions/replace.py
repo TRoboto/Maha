@@ -89,9 +89,9 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     ----------
     text : str
         Text to process
-    keys : Iterable[str]
+    keys :
         Characters to be replaced
-    values : Iterable[str]
+    values :
         Characters to be replace with
 
     Returns
