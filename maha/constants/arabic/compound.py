@@ -116,7 +116,7 @@ ARABIC_NUMBERS: List[str] = [
     ARABIC_EIGHT,
     ARABIC_NINE,
 ]
-""" List of eastern Arabic numerals """
+""" List of eastern Arabic numerals, a.k.a Indic numerals  """
 
 ARABIC_PUNCTUATIONS: List[str] = [
     ARABIC_COMMA,

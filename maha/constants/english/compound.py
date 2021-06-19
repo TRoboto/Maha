@@ -79,7 +79,7 @@ ENGLISH_NUMBERS: List[str] = [
     EIGHT,
     NINE,
 ]
-""" List of western Arabic numerals"""
+""" List of western Arabic numerals, a.k.a Arabic numerals"""
 
 ENGLISH_PUNCTUATIONS: List[str] = [
     EXCLAMATION_MARK,
