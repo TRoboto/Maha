@@ -1,4 +1,5 @@
 from maha.cleaners.functions import (
+    convert_arabic_numbers_to_english,
     replace_characters,
     replace_characters_except,
     replace_pairs,
@@ -26,6 +27,13 @@ def test_replace_pairs(simple_text_input: str):
         replace_pairs("142", ENGLISH_NUMBERS, ARABIC_NUMBERS)
         == ARABIC_ONE + ARABIC_FOUR + ARABIC_TWO
     )
+
+
+def test_convert_arabic_numbers_to_english():
+    processedtext = convert_arabic_numbers_to_english(
+        "".join(ARABIC_NUMBERS) + " simple"
+    )
+    assert processedtext == "".join(ENGLISH_NUMBERS) + " simple"
 
 
 def test_replace_pattern(simple_text_input: str):

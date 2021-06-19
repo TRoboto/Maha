@@ -6,12 +6,33 @@ __all__ = [
     "replace_characters_except",
     "replace_pairs",
     "replace_pattern",
+    "convert_arabic_numbers_to_english",
 ]
 
 from typing import List, Union
 
 # To enjoy infinite width lookbehind
 import regex as re
+
+from maha.constants import ARABIC_NUMBERS, ENGLISH_NUMBERS
+
+
+def convert_arabic_numbers_to_english(text: str):
+    """Converts Arabic numbers :data:`~.ARABIC_NUMBERS` to the corresponding English
+    numbers :data:`~.ENGLISH_NUMBERS`
+
+    Parameters
+    ----------
+    text : str
+        Text to process
+
+    Returns
+    -------
+    str
+        Processed text with all occurrences of Arabic numbers converted
+        to English numbers
+    """
+    return replace_pairs(text, ARABIC_NUMBERS, ENGLISH_NUMBERS)
 
 
 def replace_pattern(text: str, pattern: str, with_value: str) -> str:
