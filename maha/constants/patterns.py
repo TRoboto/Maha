@@ -83,3 +83,9 @@ PATTERN_EMOJIS: str = (
     "]+"
 )
 """ Pattern that matches emojis """
+
+PATTERN_SPACES: str = r"[\u00A0\u1680\u2000-\u200B\u202F\u205F\u3000\uFEFF]"
+"""
+Pattern that matches space variations. Normal space is not included.
+Taken from: https://jkorpela.fi/chars/spaces.html
+"""

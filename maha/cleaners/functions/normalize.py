@@ -15,6 +15,8 @@ from maha.constants import (
     LAM,
     LAM_ALEF_VARIATIONS,
     LAM_ALEF_VARIATIONS_NORMALIZED,
+    PATTERN_SPACES,
+    SPACE,
     TEH_MARBUTA,
     WAW,
     WAW_VARIATIONS,
@@ -22,7 +24,7 @@ from maha.constants import (
     YEH_VARIATIONS,
 )
 
-from .replace import replace_characters, replace_pairs
+from .replace import replace_characters, replace_pairs, replace_pattern
 
 
 def normalize(
@@ -33,6 +35,7 @@ def normalize(
     yeh: bool = False,
     teh_marbuta: bool = False,
     ligatures: bool = False,
+    spaces: bool = False,
 ) -> str:
     """Normalizes characters in the given text
 
@@ -57,6 +60,9 @@ def normalize(
     ligatures : bool, optional
         Normalize :data:`~.ARABIC_LIGATURES` characters to the corresponding indices
         in :data:`~.ARABIC_LIGATURES_NORMALIZED`, by default False
+    spaces : bool, optional
+        Normalize space variations using the pattern :data:`~.PATTERN_SPACES`,
+        by default False
 
     Returns
     -------
@@ -71,7 +77,7 @@ def normalize(
     if not text:
         raise ValueError("Text cannot be empty")
 
-    if not (lam_alef or alef or waw or yeh or teh_marbuta or ligatures):
+    if not (lam_alef or alef or waw or yeh or teh_marbuta or ligatures or spaces):
         raise ValueError("At least one argument should be True")
 
     output = text
@@ -87,6 +93,8 @@ def normalize(
         output = replace_characters(output, TEH_MARBUTA, HEH)
     if ligatures:
         output = replace_pairs(output, ARABIC_LIGATURES, ARABIC_LIGATURES_NORMALIZED)
+    if spaces:
+        output = replace_pattern(output, PATTERN_SPACES, SPACE)
 
     return output
 

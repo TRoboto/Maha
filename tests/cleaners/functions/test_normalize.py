@@ -1,7 +1,7 @@
 import pytest
 
 from maha.cleaners.functions import normalize, normalize_lam_alef
-from maha.constants import ALEF, ALEF_VARIATIONS, EMPTY
+from maha.constants import ALEF, ALEF_VARIATIONS, EMPTY, SPACE
 
 
 def test_normalize_with_alef():
@@ -75,6 +75,19 @@ def test_normalize_with_teh_marbuta(input: str, expected: str):
 )
 def test_normalize_with_ligatures(input: str, expected: str):
     processedtext = normalize(input, ligatures=True)
+    assert processedtext == expected
+
+
+@pytest.mark.parametrize(
+    "input,expected",
+    [
+        ("test", "test"),
+        ("\u00A0", SPACE),
+        ("\u1680\u2000\u2005\u200B\u202F\u205F\u3000\uFEFF", "".join([SPACE] * 8)),
+    ],
+)
+def test_normalize_with_spaces(input: str, expected: str):
+    processedtext = normalize(input, spaces=True)
     assert processedtext == expected
 
 
