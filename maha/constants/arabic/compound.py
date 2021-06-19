@@ -81,6 +81,29 @@ LAM_ALEF_VARIATIONS: List[str] = [
 ]
 """ Variations of the one-letter LAM_ALEF """
 
+LAM_ALEF_VARIATIONS_NORMALIZED: List[str] = [
+    LAM + ALEF,
+    LAM + ALEF_HAMZA_ABOVE,
+    LAM + ALEF_HAMZA_BELOW,
+    LAM + ALEF_MADDA_ABOVE,
+]
+""" Normalized variations of the one-letter LAM_ALEF """
+
+WAW_VARIATIONS: List[str] = [
+    WAW,
+    SMALL_WAW,
+    HAMZA_WAW,
+]
+""" Variations of the letter WAW """
+
+YEH_VARIATIONS: List[str] = [
+    YEH,
+    ALEF_MAKSURA,
+    HAMZA_YA,
+    SMALL_YEH,
+]
+""" Variations of the letter YEH """
+
 ARABIC_NUMBERS: List[str] = [
     ARABIC_ZERO,
     ARABIC_ONE,
@@ -129,8 +152,25 @@ ARABIC_LIGATURES: List[str] = [
     LIGATURE_RIAL,
     LIGATURE_BISMILLAH,
 ]
-""" Arabic ligature. """
+""" Arabic word ligatures. """
 
+ARABIC_LIGATURES_NORMALIZED: List[str] = [
+    LIGATURE_SALLA_KORANIC,  # TODO: Find the normalized version for this
+    LIGATURE_QALA,  # TODO: Find the normalized version for this
+    "الله",
+    "اكبر",
+    "محمد",
+    LIGATURE_SALAM,  # TODO: Find the normalized version for this
+    "رسول",
+    "عليه",
+    "وسلم",
+    "صلى",
+    "صلى الله عليه وسلم",
+    "جل جلاله",
+    "ريال",
+    "بسم الله الرحمن الرحيم",
+]
+""" Arabic normalized word ligatures. """
 
 SMALL_HARAKAT: List[str] = [
     SMALL_TAH,
@@ -151,12 +191,12 @@ SMALL_HARAKAT: List[str] = [
     SMALL_ZERO_RECTANGULAR_HIGH,
     SMALL_DOTLESS_HEAD_HIGH,
     SMALL_MADDA,
-    SMALL_WAW,
-    SMALL_YEH_LOW,
     SMALL_YEH_HIGH,
     SMALL_NOON,
     SMALL_V,
     SMALL_V_INVERTED,
+    SMALL_LIGATURE_SALLA_KORANIC,
+    SMALL_LIGATURE_QALA,
 ]
 """ Small harakat """
 
