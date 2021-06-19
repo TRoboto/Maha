@@ -1,6 +1,7 @@
 import pytest
 
 from maha.cleaners.functions import (
+    reduce_repeated_substring,
     remove,
     remove_all_harakat,
     remove_characters,
@@ -240,6 +241,30 @@ def test_remove_tatweel():
     processed_text = remove_tatweel(text=text)
     assert processed_text == "تطويل"
     assert TATWEEL not in processed_text
+
+
+def test_reduce_repeated_substring_default():
+    processed_text = reduce_repeated_substring(text="heeeeey")
+    assert processed_text == "heey"
+
+
+@pytest.mark.parametrize(
+    "input, expected, min_repeated, reduce_to",
+    [
+        ("h hhhhh hh", "h hh hh", 3, 2),
+        ("heheh hehehehehe he", "heh he he", 2, 1),
+        ("ههههههههههه", "هه", 3, 2),
+        ("heeellloooooooo", "helo", 2, 1),
+        ("heeelloooooooo", "hello", 3, 1),
+    ],
+)
+def test_reduce_repeated_substring(
+    input: str, expected: str, min_repeated: int, reduce_to: int
+):
+    processed_text = reduce_repeated_substring(
+        text=input, min_repeated=min_repeated, reduce_to=reduce_to
+    )
+    assert processed_text == expected
 
 
 def test_remove_with_ligtures():

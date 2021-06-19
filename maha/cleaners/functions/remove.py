@@ -17,10 +17,12 @@ __all__ = [
     "remove_hashtags",
     "remove_links",
     "remove_mentions",
+    "reduce_repeated_substring",
 ]
 
 from typing import List, Union
 
+from maha.cleaners.utils import check_positive_integer
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -223,6 +225,46 @@ def remove(
         output = remove_characters(output, chars_to_remove, use_space)
 
     return output
+
+
+def reduce_repeated_substring(
+    text: str, min_repeated: int = 3, reduce_to: int = 2
+) -> str:
+    """Reduces consecutive substring repeated ``min_repeated`` times to ``reduce_to``
+    times. For example with the default arguments, 'hhhhhh' is reduced to 'hh'
+
+    TODO: Maybe change the implemention for 50x speed
+    https://stackoverflow.com/questions/29481088/how-can-i-tell-if-a-string-repeats-itself-in-python/29489919#29489919
+
+    Parameters
+    ----------
+    text : str
+        Text to process
+    min_repeated : int, optional
+        Minimum number of consecutive repeated substring to consider, by default 3
+    reduce_to : int, optional
+        Number of substring to keep, by default 2
+
+    Returns
+    -------
+    str
+        Processed text
+
+    Raises
+    ------
+    ValueError
+        If non positive integer is passed or ``reduce_to`` is greater than
+        ``min_repeated``
+    """
+    check_positive_integer(min_repeated, "min_repeated")
+    check_positive_integer(reduce_to, "reduce_to")
+
+    # * This might be unnecessary but for consistency with the function description
+    if reduce_to > min_repeated:
+        raise ValueError("`reduce_to` cannot be greater than `min_repeated`")
+
+    pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
+    return replace_pattern(text, pattern, r"\1" * reduce_to)
 
 
 def remove_hash_keep_tag(text: str):
@@ -514,10 +556,7 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     ValueError
         When a negative or float value is assigned to ``max_spaces``
     """
-    if max_spaces < 1:
-        raise ValueError("'max_spaces' should be greater than 0")
 
-    if max_spaces != int(max_spaces):
-        raise ValueError("Cannot assign a float value to 'max_spaces'")
+    check_positive_integer(max_spaces, "max_spaces")
 
     return replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
