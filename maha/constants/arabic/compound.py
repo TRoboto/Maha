@@ -160,7 +160,7 @@ ARABIC_LIGATURES_NORMALIZED: List[str] = [
     "الله",
     "اكبر",
     "محمد",
-    LIGATURE_SALAM,  # TODO: Find the normalized version for this
+    "صلى الله عليه وسلم",
     "رسول",
     "عليه",
     "وسلم",
