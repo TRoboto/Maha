@@ -108,6 +108,14 @@ def keep(
     ------
     ValueError
         If input text is empty or no argument is set to True
+
+    Example
+    -------
+    .. code-block:: python
+
+        >>> text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
+        >>> arabic_text = keep(text, arabic=True)
+        بسم الله الرحمن الرحيم
     """
 
     if not text:
