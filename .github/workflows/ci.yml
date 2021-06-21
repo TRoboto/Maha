@@ -28,34 +28,14 @@ jobs:
           python-version: ${{ matrix.python }}
 
       - name: Install Poetry
-        run: |
-          pip install wheel
-          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+        uses: snok/install-poetry@v1.1.6
 
-      - name: Setup cache variables
-        shell: bash
-        id: cache-vars
-        run: |
-          export PATH="$HOME/.poetry/bin:$PATH"
-          echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
-          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
-
-      - name: Setup Poetry cache
+      - name: Load cached venv
+        id: cached-poetry-dependencies
         uses: actions/cache@v2
         with:
-          path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
-          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
-
-      - name: Add macOS dependencies to PATH
-        if: runner.os == 'macOS'
-        shell: bash
-        run: |
-          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
-
-      - name: Add Windows dependencies to PATH
-        if: runner.os == 'Windows'
-        run: |
-          $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
+          path: .venv
+          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
 
       - name: Install maha
         run: |
@@ -66,6 +46,3 @@ jobs:
 
       - name: Run module doctests
         run: poetry run pytest --cov-append --doctest-modules maha
-
-      - name: Upload coverage
-        uses: codecov/codecov-action@v1
