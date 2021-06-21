@@ -30,15 +30,7 @@ jobs:
       - name: Install Poetry
         uses: snok/install-poetry@v1.1.6
 
-      - name: Load cached venv
-        id: cached-poetry-dependencies
-        uses: actions/cache@v2
-        with:
-          path: .venv
-          key: venv-${{ runner.os }}-${{ hashFiles('**/poetry.lock') }}
-
       - name: Install dependencies if cache does not exist
-        if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install
 
       - name: Run tests
