@@ -1,3 +1,5 @@
+import pytest
+
 from maha.cleaners.functions import (
     convert_arabic_numbers_to_english,
     replace_characters,
@@ -18,15 +20,21 @@ from maha.constants import (
 from tests.utils import list_not_in_string, list_only_in_string
 
 
-def test_replace_pairs(simple_text_input: str):
+def test_replace_pairs_simple(simple_text_input: str):
     processedtext = replace_pairs(
         simple_text_input, ENGLISH_SMALL_LETTERS, ENGLISH_CAPITAL_LETTERS
     )
     assert list_not_in_string(ENGLISH_SMALL_LETTERS, processedtext)
-    assert (
-        replace_pairs("142", ENGLISH_NUMBERS, ARABIC_NUMBERS)
-        == ARABIC_ONE + ARABIC_FOUR + ARABIC_TWO
-    )
+
+
+def test_replace_pairs():
+    processedtext = replace_pairs("142", ENGLISH_NUMBERS, ARABIC_NUMBERS)
+    assert processedtext == ARABIC_ONE + ARABIC_FOUR + ARABIC_TWO
+
+
+def test_replace_pairs_raises_valueerror():
+    with pytest.raises(ValueError):
+        replace_pairs("142", ["A", "B"], ["C"])
 
 
 def test_convert_arabic_numbers_to_english():
