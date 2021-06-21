@@ -80,13 +80,13 @@ def normalize(
 
         >>> text = "عن أبي هريرة"
         >>> normalize(text, alef=True, teh_marbuta=True)
-        عن ابي هريره
+        'عن ابي هريره'
         
     .. code-block:: python
 
         >>> text = "قال رسول الله ﷺ"
         >>> normalize(text, ligatures=True)
-        قال رسول الله صلى الله عليه وسلم
+        'قال رسول الله صلى الله عليه وسلم'
     """
     if not text:
         raise ValueError("Text cannot be empty")
@@ -136,13 +136,13 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
 
         >>> text = "السﻻم عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَﻷلأ وَجْهُه"
         >>> normalize_lam_alef(text)
-        السلام عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَلألأ وَجْهُه
+        'السلام عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَلألأ وَجْهُه'
     
     .. code-block:: python
 
         >>> text = "اﻵن يا أصحابي"
         >>> normalize_lam_alef(text, keep_hamza=False)
-        الان يا أصحابي
+        'الان يا أصحابي'
     """
     if keep_hamza:
         output = replace_pairs(
