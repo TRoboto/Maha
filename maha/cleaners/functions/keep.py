@@ -114,8 +114,8 @@ def keep(
     .. code-block:: python
 
         >>> text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
-        >>> arabic_text = keep(text, arabic=True)
-        بسم الله الرحمن الرحيم
+        >>> keep(text, arabic_letters=True)
+        'بسم الله الرحمن الرحيم'
     """
 
     if not text:
