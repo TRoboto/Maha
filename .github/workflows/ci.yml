@@ -1,0 +1,71 @@
+name: CI
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  test:
+    runs-on: ${{ matrix.os }}
+    env:
+      DISPLAY: :0
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+        python: [3.7, 3.8, 3.9]
+
+    steps:
+      - name: Checkout the repository
+        uses: actions/checkout@v2
+
+      - name: Setup Python ${{ matrix.python }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python }}
+
+      - name: Install Poetry
+        run: |
+          pip install wheel
+          curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+
+      - name: Setup cache variables
+        shell: bash
+        id: cache-vars
+        run: |
+          export PATH="$HOME/.poetry/bin:$PATH"
+          echo "::set-output name=poetry-venv-dir::$(poetry config virtualenvs.path)"
+          echo "::set-output name=date::$(/bin/date -u "+%m%w%Y")"
+
+      - name: Setup Poetry cache
+        uses: actions/cache@v2
+        with:
+          path: ${{ steps.cache-vars.outputs.poetry-venv-dir }}
+          key: ${{ runner.os }}-poetry-${{ env.pythonLocation }}-${{ hashFiles('pyproject.toml') }}-${{ hashFiles('poetry.lock') }}
+
+      - name: Add macOS dependencies to PATH
+        if: runner.os == 'macOS'
+        shell: bash
+        run: |
+          echo "$HOME/.poetry/bin" >> $GITHUB_PATH
+
+      - name: Add Windows dependencies to PATH
+        if: runner.os == 'Windows'
+        run: |
+          $env:Path = "$env:USERPROFILE\.poetry\bin;$($env:PATH)"
+
+      - name: Install maha
+        run: |
+          poetry install
+
+      - name: Run tests
+        run: poetry run pytest
+
+      - name: Run module doctests
+        run: poetry run pytest --cov-append --doctest-modules maha
+
+      - name: Upload coverage
+        uses: codecov/codecov-action@v1
