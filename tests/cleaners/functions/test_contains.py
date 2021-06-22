@@ -143,5 +143,5 @@ def test_contains_pattern():
 
 
 def test_contains_characters(simple_text_input: str):
-    assert is_true(contains_characters(simple_text_input, ["name"]))
-    assert is_false(contains_characters(simple_text_input, ["hi"]))
+    assert is_true(contains_characters(simple_text_input, "m"))
+    assert is_false(contains_characters(simple_text_input, ["K", "J"]))
