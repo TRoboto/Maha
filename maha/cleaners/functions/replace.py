@@ -79,7 +79,7 @@ def replace_pattern(
 
     .. code-block:: python 
 
-        >>> text = 'ذهبت الفتاه إلى المدرسه'
+        >>> text = "ذهبت الفتاه إلى المدرسه"
         >>> replace_pattern(text, 'ه( |$)' , 'ة')
         'ذهبت الفتاةإلى المدرسة'
     """
