@@ -39,7 +39,7 @@ def convert_arabic_numbers_to_english(text: str):
         >>> text = '٣'
         >>> convert_arabic_numbers_to_english(text)
         '3'
-    
+
     .. code-block:: python
 
         >>> text = '١٠'
@@ -68,16 +68,16 @@ def replace_pattern(
     -------
     str
         Processed text
-    
+
     Examples
     --------
-    .. code-block:: python 
+    .. code-block:: python
 
         >>> text = 'ولقد حصلت على ١٠ من ١٠ '
         >>> replace_pattern(text, '١٠', 'عشرة')
         'ولقد حصلت على عشرة من عشرة '
 
-    .. code-block:: python 
+    .. code-block:: python
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
         >>> replace_pattern(text, 'ه( |$)' , 'ة')
@@ -176,10 +176,10 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     ------
     ValueError
         If keys and values are of different lengths
-    
+
     Example
     -------
-    ..  code-block:: python 
+    ..  code-block:: python
 
         >>> text = 'وقال مؤمن هذا أمر مؤقت'
         >>> replace_pairs(text, ['ؤ'] ,['و'])
