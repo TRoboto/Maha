@@ -9,7 +9,7 @@ __all__ = [
     "convert_arabic_numbers_to_english",
 ]
 
-from typing import List, Union
+from typing import Callable, List, Union
 
 # To enjoy infinite width lookbehind
 import regex as re
@@ -49,7 +49,9 @@ def convert_arabic_numbers_to_english(text: str):
     return replace_pairs(text, ARABIC_NUMBERS, ENGLISH_NUMBERS)
 
 
-def replace_pattern(text: str, pattern: str, with_value: str) -> str:
+def replace_pattern(
+    text: str, pattern: str, with_value: Union[Callable[..., str], str]
+) -> str:
     """Matches characters from the input text using the given ``pattern``
     and replaces all matched characters with the given value.
 
@@ -163,12 +165,17 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     keys :
         Characters to be replaced
     values :
-        Characters to be replace with
+        Characters to be replaced with
 
     Returns
     -------
     str
         Processed text
+
+    Raises
+    ------
+    ValueError
+        If keys and values are of different lengths
     
     Example
     -------
@@ -177,10 +184,13 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
         >>> text = 'وقال مؤمن هذا أمر مؤقت'
         >>> replace_pairs(text, ['ؤ'] ,['و'])
         'وقال مومن هذا أمر موقت'
-
     """
 
-    pattern = "|".join(map(re.escape, keys))
+    if len(keys) != len(values):
+        raise ValueError("'keys' and 'values' should have the same length")
+
+    escaped = [str(re.escape(c)) for c in keys]
+    pattern = "|".join(escaped)
 
     def func(match):
         return values[keys.index(match.group(0))]
