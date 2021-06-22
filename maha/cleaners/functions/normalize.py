@@ -81,7 +81,7 @@ def normalize(
         >>> text = "عن أبي هريرة"
         >>> normalize(text, alef=True, teh_marbuta=True)
         'عن ابي هريره'
-        
+
     .. code-block:: python
 
         >>> text = "قال رسول الله ﷺ"
@@ -129,7 +129,7 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
     -------
     str
         Normalized text
-    
+
     Examples
     --------
     .. code-block:: python
@@ -137,7 +137,7 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
         >>> text = "السﻻم عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَﻷلأ وَجْهُه"
         >>> normalize_lam_alef(text)
         'السلام عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَلألأ وَجْهُه'
-    
+
     .. code-block:: python
 
         >>> text = "اﻵن يا أصحابي"
