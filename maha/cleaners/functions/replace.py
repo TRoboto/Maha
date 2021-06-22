@@ -14,7 +14,7 @@ from typing import Callable, List, Union
 # To enjoy infinite width lookbehind
 import regex as re
 
-from maha.constants import ARABIC_NUMBERS, ENGLISH_NUMBERS
+from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, ENGLISH_NUMBERS
 
 
 def convert_arabic_numbers_to_english(text: str):
