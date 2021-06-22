@@ -31,6 +31,20 @@ def convert_arabic_numbers_to_english(text: str):
     str
         Processed text with all occurrences of Arabic numbers converted
         to English numbers
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> text = '٣'
+        >>> convert_arabic_numbers_to_english(text)
+        '3'
+    
+    .. code-block:: python
+
+        >>> text = '١٠'
+        >>> convert_arabic_numbers_to_english(text)
+        '10'
     """
     return replace_pairs(text, ARABIC_NUMBERS, ENGLISH_NUMBERS)
 
@@ -52,6 +66,20 @@ def replace_pattern(text: str, pattern: str, with_value: str) -> str:
     -------
     str
         Processed text
+    
+    Examples
+    --------
+    .. code-block:: python 
+
+        >>> text = 'ولقد حصلت على ١٠ من ١٠ '
+        >>> replace_pattern(text, '١٠', 'عشرة')
+        'ولقد حصلت على عشرة من عشرة '
+
+    .. code-block:: python 
+
+        >>> text = 'ذهبت الفتاه إلى المدرسه'
+        >>> replace_pattern(text, 'ه( |$)' , 'ة')
+        'ذهبت الفتاةإلى المدرسة'
     """
     return re.sub(pattern, with_value, text)
 
@@ -74,6 +102,20 @@ def replace_characters(
     -------
     str
         Processed text
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> text = 'حصل الولد على معدل 50%'
+        >>> replace_characters(text, '%' , ' بالمئة')
+        'حصل الولد على معدل 50 بالمئة'
+
+    .. code-block:: python
+
+        >>> text = 'ولقد كلف هذا المنتج 100 $'
+        >>> replace_characters(text, '$','دولار')
+        'ولقد كلف هذا المنتج 100 دولار'
     """
     characters = str(re.escape(characters))
     return replace_pattern(text, f"[{characters}]", with_value)
@@ -98,6 +140,14 @@ def replace_characters_except(
     -------
     str
         Processed text
+
+    Example
+    -------
+    .. code-block:: python
+
+        >>> text = 'لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم'
+        >>> replace_characters_except(text, ARABIC_LETTERS + [' '] ,'')
+        'ليت الذين تحب العين رؤيتهم'
     """
     characters = str(re.escape(characters))
     return replace_pattern(text, f"[^{characters}]", with_value)
@@ -119,6 +169,15 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     -------
     str
         Processed text
+    
+    Example
+    -------
+    ..  code-block:: python 
+
+        >>> text = 'وقال مؤمن هذا أمر مؤقت'
+        >>> replace_pairs(text, ['ؤ'] ,['و'])
+        'وقال مومن هذا أمر موقت'
+
     """
 
     pattern = "|".join(map(re.escape, keys))
