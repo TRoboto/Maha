@@ -62,7 +62,7 @@ def replace_pattern(
     pattern :
         Pattern used to match characters from the text
     with_value :
-        Value to replace the matched characters with
+        Value to replace the matched characters with 
 
     Returns
     -------
