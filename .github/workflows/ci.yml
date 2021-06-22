@@ -10,13 +10,11 @@ on:
 jobs:
   test:
     runs-on: ${{ matrix.os }}
-    env:
-      DISPLAY: :0
     strategy:
       fail-fast: false
       matrix:
         os: [ubuntu-latest, macos-latest, windows-latest]
-        python: [3.7, 3.8, 3.9]
+        python: [3.6, 3.7, 3.8, 3.9]
 
     steps:
       - name: Checkout the repository
@@ -27,8 +25,13 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Install Poetry
-        uses: snok/install-poetry@v1.1.6
+      - name: Python Poetry Action
+        uses: abatilo/actions-poetry@v2.1.0
+
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: poetry install
