@@ -234,7 +234,6 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
 
 
 def contains_characters(text: str, chars: Union[List[str], str]) -> bool:
-
     """Check for the input characters ``chars`` in the given text ``text``
 
     Parameters
@@ -264,4 +263,4 @@ def contains_characters(text: str, chars: Union[List[str], str]) -> bool:
     else:
         chars = str(re.escape(chars))
 
-    return contains_patterns(text, f"({chars})")
+    return contains_patterns(text, f"[{chars}]")
