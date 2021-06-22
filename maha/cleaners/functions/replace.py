@@ -91,7 +91,7 @@ def replace_characters(
 ) -> str:
     """Replaces the input ``characters`` in the given text with the given value
 
-    Parameters
+    Parameters 
     ----------
     text : str
         Text to process
