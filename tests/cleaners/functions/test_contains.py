@@ -1,0 +1,147 @@
+import pytest
+
+from maha.cleaners.functions import contains, contains_characters, contains_patterns
+from maha.constants import PATTERN_EMAILS
+from tests.utils import is_false, is_true
+
+
+def test_contains_with_arabic(simple_text_input: str):
+    assert is_true(contains(simple_text_input, arabic=True))
+
+
+def test_contains_with_english(simple_text_input: str):
+    assert is_true(contains(simple_text_input, english=True))
+
+
+def test_contains_with_arabic_letters(simple_text_input: str):
+    assert is_true(contains(simple_text_input, arabic_letters=True))
+
+
+def test_contains_with_english_letters(simple_text_input: str):
+    assert is_true(contains(simple_text_input, english_letters=True))
+
+
+def test_contains_with_english_small_letters(simple_text_input: str):
+    assert is_true(contains(simple_text_input, english_small_letters=True))
+
+
+def test_contains_with_english_capital_letters(simple_text_input: str):
+    assert is_true(contains(simple_text_input, english_capital_letters=True))
+
+
+def test_contains_with_numbers(simple_text_input: str):
+    assert is_true(contains(simple_text_input, numbers=True))
+
+
+def test_contains_with_harakat(simple_text_input: str):
+    assert is_true(contains(simple_text_input, harakat=True))
+
+
+def test_contains_with_all_harakat(simple_text_input: str):
+    assert is_true(contains(simple_text_input, all_harakat=True))
+
+
+def test_contains_with_tatweel(simple_text_input: str):
+    assert is_false(contains(simple_text_input, tatweel=True))
+
+
+def test_contains_with_punctuations(simple_text_input: str):
+    assert is_true(contains(simple_text_input, punctuations=True))
+
+
+def test_contains_with_arabic_numbers(simple_text_input: str):
+    assert is_false(contains(simple_text_input, arabic_numbers=True))
+
+
+def test_contains_with_english_numbers(simple_text_input: str):
+    assert is_true(contains(simple_text_input, english_numbers=True))
+
+
+def test_contains_with_arabic_punctuations(simple_text_input: str):
+    assert is_true(contains(simple_text_input, arabic_punctuations=True))
+
+
+def test_contains_with_english_punctuations(simple_text_input: str):
+    assert is_true(contains(simple_text_input, english_punctuations=True))
+
+
+def test_contains_with_arabic_ligatures(simple_text_input: str):
+    assert is_false(contains(simple_text_input, arabic_ligatures=True))
+
+
+def test_contains_with_arabic_hashtags(simple_text_input: str):
+    assert is_false(contains(simple_text_input, arabic_hashtags=True))
+
+
+def test_contains_with_arabic_mentions(simple_text_input: str):
+    assert is_false(contains(simple_text_input, arabic_mentions=True))
+
+
+def test_contains_with_emails(simple_text_input: str):
+    assert is_false(contains(simple_text_input, emails=True))
+
+
+def test_contains_with_english_hashtags_simple(simple_text_input: str):
+    assert is_false(contains(simple_text_input, english_hashtags=True))
+
+
+def test_contains_with_english_hashtags():
+    assert is_true(contains("#hi", english_hashtags=True))
+
+
+def test_contains_with_english_mentions(simple_text_input: str):
+    assert is_false(contains(simple_text_input, english_mentions=True))
+
+
+def test_contains_with_hashtags(simple_text_input: str):
+    assert is_false(contains(simple_text_input, hashtags=True))
+
+
+def test_contains_with_links(simple_text_input: str):
+    assert is_false(contains(simple_text_input, links=True))
+
+
+def test_contains_with_mentions(simple_text_input: str):
+    assert is_false(contains(simple_text_input, mentions=True))
+
+
+def test_contains_with_emojis(simple_text_input: str):
+    assert is_false(contains(simple_text_input, emojis=True))
+
+
+@pytest.mark.parametrize(
+    "input, chars, expected",
+    [
+        ("Hello", "l", True),
+        ("Hello", "d", False),
+        ("مرحبا", "ر", True),
+        ("مرحبا", "ل", False),
+    ],
+)
+def test_contains_with_custom_char(input: str, chars, expected: bool):
+    assert contains(input, custom_chars=chars) == expected
+
+
+@pytest.mark.parametrize(
+    "pattern, expected",
+    [
+        ("[A-F]", True),
+        (["[A-F]"], True),
+        (PATTERN_EMAILS, False),
+        ([PATTERN_EMAILS], False),
+    ],
+)
+def test_contains_with_custom_patterns(
+    simple_text_input: str, pattern: str, expected: bool
+):
+    assert contains(simple_text_input, custom_patterns=pattern) == expected
+
+
+def test_contains_pattern():
+    assert is_true(contains_patterns("email@web.com", PATTERN_EMAILS))
+    assert is_false(contains_patterns("web.com", PATTERN_EMAILS))
+
+
+def test_contains_characters(simple_text_input: str):
+    assert is_true(contains_characters(simple_text_input, ["name"]))
+    assert is_false(contains_characters(simple_text_input, ["hi"]))

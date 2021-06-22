@@ -1,4 +1,4 @@
-from typing import List
+from typing import Any, List
 
 
 def list_in_string(char_list: List[str], text: str):
@@ -16,3 +16,13 @@ def list_only_in_string(char_list: List[str], text: str):
 def list_not_in_string(char_list: List[str], text: str):
     """Returns true if all input characters are not in the given text"""
     return all(c not in text for c in char_list)
+
+
+def is_true(expression: Any):
+    """Returns true if the input expression evaluates to true"""
+    return expression == True
+
+
+def is_false(expression: Any):
+    """Returns true if the input expression evaluates to false"""
+    return expression == False

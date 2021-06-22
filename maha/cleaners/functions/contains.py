@@ -70,7 +70,7 @@ def contains(
     mentions: bool = False,
     emojis: bool = False,
     custom_chars: Union[List[str], str] = [],
-    custom_patterns: List[str] = [],
+    custom_patterns: Union[List[str], str] = [],
 ) -> Union[Dict[str, bool], bool]:
 
     """Check for certain characters or patterns in the given text.
@@ -143,7 +143,7 @@ def contains(
         by default False
     custom_chars : Union[List[str], str], optional
         Include any other unicode character, by default empty list ``[]``
-    custom_patterns : List[str], optional
+    custom_patterns : Union[List[str], str], optional
         Include any other regular expression patterns, by default empty list ``[]``
 
     Returns
@@ -260,6 +260,8 @@ def contains_characters(text: str, chars: Union[List[str], str]) -> bool:
 
     # convert list to str
     if isinstance(chars, list):
-        chars = "".join(chars)
+        chars = "|".join(str(re.escape(c)) for c in chars)
+    else:
+        chars = str(re.escape(chars))
 
-    return contains_patterns(text, f"[{chars}]")
+    return contains_patterns(text, f"({chars})")
