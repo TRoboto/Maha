@@ -145,3 +145,15 @@ def test_contains_pattern():
 def test_contains_characters(simple_text_input: str):
     assert is_true(contains_characters(simple_text_input, "m"))
     assert is_false(contains_characters(simple_text_input, ["K", "J"]))
+
+
+def test_contains_with_multiple_inputs(simple_text_input: str):
+    output = contains(
+        simple_text_input, arabic=True, harakat=True, arabic_hashtags=True
+    )
+
+    assert type(output) == dict
+    assert len(output) == 3
+    assert is_true(output["arabic"])
+    assert is_true(output["harakat"])
+    assert is_false(output["arabic_hashtags"])
