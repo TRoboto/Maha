@@ -4,7 +4,6 @@ from maha.cleaners.functions import (
     reduce_repeated_substring,
     remove,
     remove_all_harakat,
-    remove_characters,
     remove_emails,
     remove_english,
     remove_extra_spaces,
@@ -15,6 +14,7 @@ from maha.cleaners.functions import (
     remove_numbers,
     remove_patterns,
     remove_punctuations,
+    remove_strings,
     remove_tatweel,
 )
 from maha.constants import (
@@ -221,7 +221,7 @@ def test_remove_with_english_punctuations(simple_text_input: str):
 
 
 def test_remove_with_custom_characters(simple_text_input: str):
-    processed_text = remove(text=simple_text_input, custom_chars="test")
+    processed_text = remove(text=simple_text_input, custom_strings="test")
     assert (
         processed_text
         == "1. بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ In h nam of Allah,Mo Graciou , Mo M rciful."
@@ -534,15 +534,15 @@ def test_remove_with_emojis(simple_text_input: str):
         ("1.    In the name of Allah,Most Gracious, Most Merciful.", ARABIC, False),
     ],
 )
-def test_remove_characters(
+def test_remove_strings(
     simple_text_input: str, chars_to_remove: str, expected: str, use_space: bool
 ):
-    assert remove_characters(simple_text_input, chars_to_remove, use_space) == expected
+    assert remove_strings(simple_text_input, chars_to_remove, use_space) == expected
 
 
-def test_remove_characters_raise_valueerror(simple_text_input: str):
+def test_remove_strings_raise_valueerror(simple_text_input: str):
     with pytest.raises(ValueError):
-        remove_characters(simple_text_input, "")
+        remove_strings(simple_text_input, "")
 
 
 def test_remove_patterns(simple_text_input: str):

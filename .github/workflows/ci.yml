@@ -28,12 +28,14 @@ jobs:
       - name: Python Poetry Action
         uses: abatilo/actions-poetry@v2.1.0
 
-      - uses: actions/cache@v2
-        with:
-          path: ~/.cache/pypoetry/virtualenvs
-          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
+      # - uses: actions/cache@v2
+      #   id: cached-poetry-dependencies
+      #   with:
+      #     path: ~/.cache/pypoetry/virtualenvs
+      #     key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
+        # if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
         run: poetry install
 
       - name: Run tests

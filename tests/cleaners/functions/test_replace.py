@@ -2,8 +2,8 @@ import pytest
 
 from maha.cleaners.functions import (
     convert_arabic_numbers_to_english,
-    replace_characters,
-    replace_characters_except,
+    replace,
+    replace_except,
     replace_pairs,
     replace_pattern,
 )
@@ -49,23 +49,23 @@ def test_replace_pattern(simple_text_input: str):
     assert list_only_in_string(ENGLISH_CAPITAL_LETTERS, processedtext)
 
 
-def test_replace_characters(simple_text_input: str):
-    processedtext = replace_characters(simple_text_input, "Mma", "REPLACE")
+def test_replace(simple_text_input: str):
+    processedtext = replace(simple_text_input, "Most", "REPLACE")
+    assert "REPLACE" in processedtext
+    assert "Most" not in processedtext
+
+
+def test_replace_with_list(simple_text_input: str):
+    processedtext = replace(simple_text_input, list("Mma"), "REPLACE")
     assert list_not_in_string(list("Mma"), processedtext)
     assert "REPLACE" in processedtext
 
 
-def test_replace_characters_with_list(simple_text_input: str):
-    processedtext = replace_characters(simple_text_input, list("Mma"), "REPLACE")
-    assert list_not_in_string(list("Mma"), processedtext)
-    assert "REPLACE" in processedtext
-
-
-def test_replace_characters_except(simple_text_input: str):
-    processedtext = replace_characters_except(simple_text_input, "Mma", EMPTY)
+def test_replace_except(simple_text_input: str):
+    processedtext = replace_except(simple_text_input, "Mma", EMPTY)
     assert list_only_in_string(list("Mma"), processedtext)
 
 
-def test_replace_characters_except_with_list(simple_text_input: str):
-    processedtext = replace_characters_except(simple_text_input, list("Mma"), EMPTY)
+def test_replace_except_with_list(simple_text_input: str):
+    processedtext = replace_except(simple_text_input, list("Mma"), EMPTY)
     assert list_only_in_string(list("Mma"), processedtext)

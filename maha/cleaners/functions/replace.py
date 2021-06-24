@@ -2,8 +2,8 @@
 Functions that operate on a string and replace specific characters with others.
 """
 __all__ = [
-    "replace_characters",
-    "replace_characters_except",
+    "replace",
+    "replace_except",
     "replace_pairs",
     "replace_pattern",
     "convert_arabic_numbers_to_english",
@@ -39,7 +39,6 @@ def convert_arabic_numbers_to_english(text: str):
         >>> text = '٣'
         >>> convert_arabic_numbers_to_english(text)
         '3'
-    
     .. code-block:: python
 
         >>> text = '١٠'
@@ -68,16 +67,16 @@ def replace_pattern(
     -------
     str
         Processed text
-    
+
     Examples
     --------
-    .. code-block:: python 
+    .. code-block:: python
 
         >>> text = 'ولقد حصلت على ١٠ من ١٠ '
         >>> replace_pattern(text, '١٠', 'عشرة')
         'ولقد حصلت على عشرة من عشرة '
 
-    .. code-block:: python 
+    .. code-block:: python
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
         >>> replace_pattern(text, 'ه( |$)' , 'ة')
@@ -86,19 +85,17 @@ def replace_pattern(
     return re.sub(pattern, with_value, text)
 
 
-def replace_characters(
-    text: str, characters: Union[List[str], str], with_value: str
-) -> str:
-    """Replaces the input ``characters`` in the given text with the given value
+def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
+    """Replaces the input ``strings`` in the given text with the given value
 
     Parameters
     ----------
     text : str
         Text to process
-    characters :
-        Characters to replace
+    strings :
+        Strings to replace
     with_value :
-        Value to replace the input characters with
+        Value to replace the input strings with
 
     Returns
     -------
@@ -110,33 +107,36 @@ def replace_characters(
     .. code-block:: python
 
         >>> text = 'حصل الولد على معدل 50%'
-        >>> replace_characters(text, '%' , ' بالمئة')
+        >>> replace(text, '%' , ' بالمئة')
         'حصل الولد على معدل 50 بالمئة'
 
     .. code-block:: python
 
         >>> text = 'ولقد كلف هذا المنتج 100 $'
-        >>> replace_characters(text, '$','دولار')
+        >>> replace(text, '$','دولار')
         'ولقد كلف هذا المنتج 100 دولار'
     """
-    characters = str(re.escape(characters))
-    return replace_pattern(text, f"[{characters}]", with_value)
+    # convert list to str
+    if isinstance(strings, list):
+        strings = "|".join(str(re.escape(c)) for c in strings)
+    else:
+        strings = str(re.escape(strings))
+
+    return replace_pattern(text, f"({strings})", with_value)
 
 
-def replace_characters_except(
-    text: str, characters: Union[List[str], str], with_value: str
-) -> str:
-    """Replaces everything except the input ``characters`` in the given text
+def replace_except(text: str, strings: Union[List[str], str], with_value: str) -> str:
+    """Replaces everything except the input ``strings`` in the given text
     with the given value
 
     Parameters
     ----------
     text : str
         Text to process
-    characters :
-        Characters to preserve (not replace)
+    strings :
+        Strings to preserve (not replace)
     with_value :
-        Value to replace all other characters with.
+        Value to replace all other strings with.
 
     Returns
     -------
@@ -148,11 +148,23 @@ def replace_characters_except(
     .. code-block:: python
 
         >>> text = 'لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم'
-        >>> replace_characters_except(text, ARABIC_LETTERS + [' '] ,'')
+        >>> replace_except(text, ARABIC_LETTERS + [' '] ,'')
         'ليت الذين تحب العين رؤيتهم'
     """
-    characters = str(re.escape(characters))
-    return replace_pattern(text, f"[^{characters}]", with_value)
+    # convert list to str
+    if isinstance(strings, list):
+        strings = "|".join(str(re.escape(c)) for c in strings)
+    else:
+        strings = str(re.escape(strings))
+
+    # To include the end
+    strings += "|$"
+
+    return replace_pattern(
+        text,
+        f"(.*?)({strings})",
+        lambda m: with_value + m.groups()[1] if m.groups()[0] else m.groups()[1],
+    )
 
 
 def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
@@ -163,9 +175,9 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     text : str
         Text to process
     keys :
-        Characters to be replaced
+        Strings to be replaced
     values :
-        Characters to be replaced with
+        Strings to be replaced with
 
     Returns
     -------
@@ -176,10 +188,10 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     ------
     ValueError
         If keys and values are of different lengths
-    
+
     Example
     -------
-    ..  code-block:: python 
+    ..  code-block:: python
 
         >>> text = 'وقال مؤمن هذا أمر مؤقت'
         >>> replace_pairs(text, ['ؤ'] ,['و'])

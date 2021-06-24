@@ -24,7 +24,7 @@ from maha.constants import (
     YEH_VARIATIONS,
 )
 
-from .replace import replace_characters, replace_pairs, replace_pattern
+from .replace import replace, replace_pairs, replace_pattern
 
 
 def normalize(
@@ -81,7 +81,7 @@ def normalize(
         >>> text = "عن أبي هريرة"
         >>> normalize(text, alef=True, teh_marbuta=True)
         'عن ابي هريره'
-        
+
     .. code-block:: python
 
         >>> text = "قال رسول الله ﷺ"
@@ -96,15 +96,15 @@ def normalize(
 
     output = text
     if lam_alef:
-        output = replace_characters(output, LAM_ALEF_VARIATIONS, LAM + ALEF)
+        output = replace(output, LAM_ALEF_VARIATIONS, LAM + ALEF)
     if alef:
-        output = replace_characters(output, ALEF_VARIATIONS, ALEF)
+        output = replace(output, ALEF_VARIATIONS, ALEF)
     if waw:
-        output = replace_characters(output, WAW_VARIATIONS, WAW)
+        output = replace(output, WAW_VARIATIONS, WAW)
     if yeh:
-        output = replace_characters(output, YEH_VARIATIONS, YEH)
+        output = replace(output, YEH_VARIATIONS, YEH)
     if teh_marbuta:
-        output = replace_characters(output, TEH_MARBUTA, HEH)
+        output = replace(output, TEH_MARBUTA, HEH)
     if ligatures:
         output = replace_pairs(output, ARABIC_LIGATURES, ARABIC_LIGATURES_NORMALIZED)
     if spaces:
@@ -129,7 +129,7 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
     -------
     str
         Normalized text
-    
+
     Examples
     --------
     .. code-block:: python
@@ -137,7 +137,7 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
         >>> text = "السﻻم عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَﻷلأ وَجْهُه"
         >>> normalize_lam_alef(text)
         'السلام عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَلألأ وَجْهُه'
-    
+
     .. code-block:: python
 
         >>> text = "اﻵن يا أصحابي"
@@ -149,7 +149,7 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
             text, LAM_ALEF_VARIATIONS, LAM_ALEF_VARIATIONS_NORMALIZED
         )
     else:
-        output = replace_characters(text, LAM_ALEF_VARIATIONS, LAM + ALEF)
+        output = replace(text, LAM_ALEF_VARIATIONS, LAM + ALEF)
 
     return output
 
