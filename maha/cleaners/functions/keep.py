@@ -54,7 +54,7 @@ def keep(
     arabic_punctuations: bool = False,
     english_punctuations: bool = False,
     use_space: bool = True,
-    custom_strings: Union[List[str], str] = [],
+    custom_strings: Union[List[str], str] = None,
 ):
     """Keeps only certain characters in the given text and removes everything else.
 
@@ -97,7 +97,7 @@ def keep(
         False to not replace with space, check :func:`~.keep_strings`
         for more information, by default True
     custom_strings : List[str], optional
-        Include any other string(s), by default empty list ``[]``
+        Include any other string(s), by default None
 
     Returns
     -------
@@ -120,6 +120,8 @@ def keep(
 
     if not text:
         raise ValueError("Text cannot be empty")
+
+    custom_strings = custom_strings or []
 
     # current function arguments
     current_arguments = locals()

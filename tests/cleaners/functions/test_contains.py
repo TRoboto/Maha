@@ -152,7 +152,7 @@ def test_contains_with_multiple_inputs(simple_text_input: str):
         simple_text_input, arabic=True, harakat=True, arabic_hashtags=True
     )
 
-    assert type(output) == dict
+    assert type(output) is dict
     assert len(output) == 3
     assert is_true(output["arabic"])
     assert is_true(output["harakat"])

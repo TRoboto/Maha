@@ -20,9 +20,9 @@ def list_not_in_string(char_list: List[str], text: str):
 
 def is_true(expression: Any):
     """Returns true if the input expression evaluates to true"""
-    return expression == True
+    return expression is True
 
 
 def is_false(expression: Any):
     """Returns true if the input expression evaluates to false"""
-    return expression == False
+    return expression is False

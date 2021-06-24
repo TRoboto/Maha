@@ -84,8 +84,8 @@ def remove(
     mentions: bool = False,
     emojis: bool = False,
     use_space: bool = True,
-    custom_strings: Union[List[str], str] = [],
-    custom_patterns: Union[List[str], str] = [],
+    custom_strings: Union[List[str], str] = None,
+    custom_patterns: Union[List[str], str] = None,
 ):
 
     """Removes certain characters from the given text.
@@ -160,9 +160,9 @@ def remove(
         False to not replace with space, check :func:`~.remove_strings`
         for more information, by default True
     custom_strings : Union[List[str], str], optional
-        Include any other string(s), by default empty list ``[]``
+        Include any other string(s), by default None
     custom_patterns , optional
-        Include any other regular expression patterns, by default empty list ``[]``
+        Include any other regular expression patterns, by default None
 
     Returns
     -------
@@ -176,6 +176,9 @@ def remove(
     """
     if not text:
         raise ValueError("Text cannot be empty")
+
+    custom_strings = custom_strings or []
+    custom_patterns = custom_patterns or []
 
     # current function arguments
     current_arguments = locals()

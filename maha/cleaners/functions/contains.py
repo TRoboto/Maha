@@ -69,8 +69,8 @@ def contains(
     links: bool = False,
     mentions: bool = False,
     emojis: bool = False,
-    custom_strings: Union[List[str], str] = [],
-    custom_patterns: Union[List[str], str] = [],
+    custom_strings: Union[List[str], str] = None,
+    custom_patterns: Union[List[str], str] = None,
 ) -> Union[Dict[str, bool], bool]:
 
     """Check for certain characters, strings or patterns in the given text.
@@ -142,9 +142,9 @@ def contains(
         Check for emojis using the pattern :data:`~.PATTERN_EMOJIS`,
         by default False
     custom_strings : Union[List[str], str], optional
-        Include any other string(s), by default empty list ``[]``
+        Include any other string(s), by default None
     custom_patterns : Union[List[str], str], optional
-        Include any other regular expression patterns, by default empty list ``[]``
+        Include any other regular expression patterns, by default None
 
     Returns
     -------
@@ -163,6 +163,9 @@ def contains(
     """
     if not text:
         raise ValueError("Text cannot be empty")
+
+    custom_strings = custom_strings or []
+    custom_patterns = custom_patterns or []
 
     # current function arguments
     current_arguments = locals()
