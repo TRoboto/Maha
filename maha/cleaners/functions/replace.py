@@ -14,8 +14,7 @@ from typing import Callable, List, Union
 # To enjoy infinite width lookbehind
 import regex as re
 
-from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, ENGLISH_NUMBERS, EMPTY, SPACE
-
+from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, EMPTY, ENGLISH_NUMBERS, SPACE
 
 
 def convert_arabic_numbers_to_english(text: str):
@@ -40,6 +39,7 @@ def convert_arabic_numbers_to_english(text: str):
         >>> text = '٣'
         >>> convert_arabic_numbers_to_english(text)
         '3'
+
     .. code-block:: python
 
         >>> text = '١٠'
@@ -80,7 +80,7 @@ def replace_pattern(
     .. code-block:: python
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
-        >>> replace_pattern(text, 'ه( |$)' , ' ة').strip()
+        >>> replace_pattern(text, 'ه( |$)' , 'ة ').strip()
         'ذهبت الفتاة إلى المدرسة'
     """
     return re.sub(pattern, with_value, text)
