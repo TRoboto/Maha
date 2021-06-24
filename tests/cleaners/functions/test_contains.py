@@ -1,6 +1,6 @@
 import pytest
 
-from maha.cleaners.functions import contains, contains_characters, contains_patterns
+from maha.cleaners.functions import contain_strings, contains, contains_patterns
 from maha.constants import PATTERN_EMAILS
 from tests.utils import is_false, is_true
 
@@ -119,7 +119,7 @@ def test_contains_with_emojis(simple_text_input: str):
     ],
 )
 def test_contains_with_custom_char(input: str, chars, expected: bool):
-    assert contains(input, custom_chars=chars) == expected
+    assert contains(input, custom_strings=chars) == expected
 
 
 @pytest.mark.parametrize(
@@ -142,9 +142,9 @@ def test_contains_pattern():
     assert is_false(contains_patterns("web.com", PATTERN_EMAILS))
 
 
-def test_contains_characters(simple_text_input: str):
-    assert is_true(contains_characters(simple_text_input, "m"))
-    assert is_false(contains_characters(simple_text_input, ["K", "J"]))
+def test_contain_strings(simple_text_input: str):
+    assert is_true(contain_strings(simple_text_input, "Most"))
+    assert is_false(contain_strings(simple_text_input, ["most", "J"]))
 
 
 def test_contains_with_multiple_inputs(simple_text_input: str):

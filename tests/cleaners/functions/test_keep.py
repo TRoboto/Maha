@@ -6,7 +6,7 @@ from maha.cleaners.functions import (
     keep_arabic_letters,
     keep_arabic_letters_with_harakat,
     keep_arabic_with_english_numbers,
-    keep_characters,
+    keep_strings,
 )
 from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SEEN, SPACE
 
@@ -41,7 +41,7 @@ def test_keep_with_english_letters_and_false_use_space(simple_text_input: str):
         keep(
             text=simple_text_input,
             english_letters=True,
-            custom_chars=SPACE,
+            custom_strings=SPACE,
             use_space=False,
         )
         == "In the name of AllahMost Gracious Most Merciful"
@@ -94,7 +94,11 @@ def test_keep_with_english_punctuations(simple_text_input: str):
 
 
 def test_keep_with_custom_characters(simple_text_input: str):
-    assert keep(text=simple_text_input, custom_chars=list("l3g")) == "ll l"
+    assert keep(text=simple_text_input, custom_strings=list("l3g")) == "ll l"
+
+
+def test_keep_with_custom_strings(simple_text_input: str):
+    assert keep(text=simple_text_input, custom_strings="Allah") == "Allah"
 
 
 def test_keep_should_raise_valueerror(simple_text_input: str):
@@ -117,7 +121,7 @@ def test_keep_with_english_letters_and_english_numbers_and_dot(simple_text_input
             simple_text_input,
             english_letters=True,
             english_numbers=True,
-            custom_chars=DOT,
+            custom_strings=DOT,
         )
     ) == "1. In the name of Allah Most Gracious Most Merciful."
 
@@ -159,15 +163,15 @@ def test_keep_with_arabic_and_tatweel():
         ("", ARABIC_NUMBERS, True),
         ("ب", BEH, True),
         ("ب", BEH, False),
-        ("بس", BEH + SEEN, False),
+        ("Allah", "Allah", False),
     ],
 )
-def test_keep_characters(
+def test_keep_strings(
     simple_text_input: str, keep_chars: str, expected: str, use_space: bool
 ):
-    assert keep_characters(simple_text_input, keep_chars, use_space) == expected
+    assert keep_strings(simple_text_input, keep_chars, use_space) == expected
 
 
-def test_keep_characters_raise_valueerror(simple_text_input: str):
+def test_keep_strings_raise_valueerror(simple_text_input: str):
     with pytest.raises(ValueError):
-        keep_characters(simple_text_input, "")
+        keep_strings(simple_text_input, "")

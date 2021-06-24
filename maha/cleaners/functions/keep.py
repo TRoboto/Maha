@@ -4,7 +4,7 @@ Functions that operate on a string and remove all but certain characters.
 
 __all__ = [
     "keep",
-    "keep_characters",
+    "keep_strings",
     "keep_arabic_letters",
     "keep_arabic_characters",
     "keep_arabic_with_english_numbers",
@@ -34,7 +34,7 @@ from maha.constants import (
 )
 
 from .remove import remove_extra_spaces
-from .replace import replace_characters, replace_characters_except
+from .replace import replace, replace_except
 
 
 def keep(
@@ -54,7 +54,7 @@ def keep(
     arabic_punctuations: bool = False,
     english_punctuations: bool = False,
     use_space: bool = True,
-    custom_chars: Union[List[str], str] = [],
+    custom_strings: Union[List[str], str] = [],
 ):
     """Keeps only certain characters in the given text and removes everything else.
 
@@ -94,10 +94,10 @@ def keep(
     english_punctuations : bool, optional
         Keep :data:`~.ENGLISH_PUNCTUATIONS` characters, by default False
     use_space : bool, optional
-        False to not replace with space, check :func:`~.keep_characters`
+        False to not replace with space, check :func:`~.keep_strings`
         for more information, by default True
-    custom_chars : List[str], optional
-        Include any other unicode character, by default empty list ``[]``
+    custom_strings : List[str], optional
+        Include any other string(s), by default empty list ``[]``
 
     Returns
     -------
@@ -126,7 +126,10 @@ def keep(
     constants = globals()
     # characters to keep
     chars_to_keep = []
-    chars_to_keep.extend(list(custom_chars))
+
+    if isinstance(custom_strings, str):
+        custom_strings = [custom_strings]
+    chars_to_keep.extend(list(custom_strings))
 
     # Since each argument has the same name as the corresponding constant.
     # Looping through all arguments and appending constants that correspond to the
@@ -143,7 +146,7 @@ def keep(
     # remove duplicates
     chars_to_keep = list(set(chars_to_keep))
 
-    return keep_characters(text, chars_to_keep, use_space)
+    return keep_strings(text, chars_to_keep, use_space)
 
 
 def keep_arabic_letters(text: str) -> str:
@@ -159,7 +162,7 @@ def keep_arabic_letters(text: str) -> str:
     str
         Text contains Arabic letters only.
     """
-    return keep_characters(text, ARABIC_LETTERS)
+    return keep_strings(text, ARABIC_LETTERS)
 
 
 def keep_arabic_characters(text: str) -> str:
@@ -175,7 +178,7 @@ def keep_arabic_characters(text: str) -> str:
     str
         Text contains the common Arabic characters only.
     """
-    return keep_characters(text, ARABIC)
+    return keep_strings(text, ARABIC)
 
 
 def keep_arabic_with_english_numbers(text: str) -> str:
@@ -192,7 +195,7 @@ def keep_arabic_with_english_numbers(text: str) -> str:
     str
         Text contains the common Arabic characters and English numbers only.
     """
-    return keep_characters(text, ARABIC + ENGLISH_NUMBERS)
+    return keep_strings(text, ARABIC + ENGLISH_NUMBERS)
 
 
 def keep_arabic_letters_with_harakat(text: str) -> str:
@@ -209,19 +212,19 @@ def keep_arabic_letters_with_harakat(text: str) -> str:
     str
         Text contains Arabic letters with harakat only.
     """
-    return keep_characters(text, ARABIC_LETTERS + HARAKAT)
+    return keep_strings(text, ARABIC_LETTERS + HARAKAT)
 
 
-def keep_characters(
-    text: str, chars: Union[List[str], str], use_space: bool = True
+def keep_strings(
+    text: str, strings: Union[List[str], str], use_space: bool = True
 ) -> str:
 
-    """Keeps only the input characters ``chars`` in the given text ``text``
+    """Keeps only the input strings ``strings`` in the given text ``text``
 
-    By default, this works by replacing all characters except the input ``chars`` with a space,
-    which means space is kept. This is to help separate texts when unwanted characters
-    are present without spaces. For example, 'end.start' will be converted to
-    'end start' if English letters :data:`~.ENGLISH_LETTERS` are passed to ``chars``.
+    By default, this works by replacing all strings except the input ``strings`` with
+    a space, which means space is kept. This is to help separate texts when unwanted
+    strings are present without spaces. For example, 'end.start' will be converted to
+    'end start' if English letters :data:`~.ENGLISH_LETTERS` are passed to ``strings``.
     To disable this behavior, set ``use_space`` to False.
 
     .. note::
@@ -232,43 +235,42 @@ def keep_characters(
     ----------
     text : str
         Text to be processed
-    chars : Union[List[str], str]
-        list of characters to keep
+    strings : Union[List[str], str]
+        list of strings to keep
     use_space :
         False to not replace with space, defaults to True
 
     Returns
     -------
     str
-        Text that contains only the input characters.
+        Text that contains only the input strings.
 
     Raises
     ------
     ValueError
-        If no ``chars`` are provided
+        If no ``strings`` are provided
     """
 
-    if not chars:
-        raise ValueError("'chars' cannot be empty.")
+    if not strings:
+        raise ValueError("'strings' cannot be empty.")
 
-    # convert list to str
-    chars = "".join(chars)
+    # convert str to list
+    if isinstance(strings, str):
+        strings = [strings]
 
     if use_space:
         # remove all not included harakat first or tatweel
         # (to fix extra spacing between characters)
-        not_included_harakat = "".join(
-            [h for h in ALL_HARAKAT + [TATWEEL] if h not in chars]
-        )
+        not_included_harakat = [h for h in ALL_HARAKAT + [TATWEEL] if h not in strings]
 
         output_text = text
         # replace harakat with empty character
         if not_included_harakat:
-            output_text = replace_characters(text, not_included_harakat, EMPTY)
+            output_text = replace(text, not_included_harakat, EMPTY)
 
-        output_text = replace_characters_except(output_text, chars, SPACE)
+        output_text = replace_except(output_text, strings, SPACE)
         output_text = remove_extra_spaces(output_text)
     else:
-        output_text = replace_characters_except(text, chars, EMPTY)
+        output_text = replace_except(text, strings, EMPTY)
 
     return output_text.strip()

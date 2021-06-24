@@ -4,7 +4,7 @@ Functions that operate on a string and remove certain characters.
 
 __all__ = [
     "remove",
-    "remove_characters",
+    "remove_strings",
     "remove_extra_spaces",
     "remove_punctuations",
     "remove_english",
@@ -53,7 +53,7 @@ from maha.constants import (
     TATWEEL,
 )
 
-from .replace import replace_characters, replace_pattern
+from .replace import replace, replace_pattern
 
 
 def remove(
@@ -84,8 +84,8 @@ def remove(
     mentions: bool = False,
     emojis: bool = False,
     use_space: bool = True,
-    custom_chars: Union[List[str], str] = [],
-    custom_patterns: List[str] = [],
+    custom_strings: Union[List[str], str] = [],
+    custom_patterns: Union[List[str], str] = [],
 ):
 
     """Removes certain characters from the given text.
@@ -157,11 +157,11 @@ def remove(
         Remove emojis using the pattern :data:`~.PATTERN_EMOJIS`,
         by default False
     use_space : bool, optional
-        False to not replace with space, check :func:`~.remove_characters`
+        False to not replace with space, check :func:`~.remove_strings`
         for more information, by default True
-    custom_chars : Union[List[str], str], optional
-        Include any other unicode character, by default empty list ``[]``
-    custom_patterns : List[str], optional
+    custom_strings : Union[List[str], str], optional
+        Include any other string(s), by default empty list ``[]``
+    custom_patterns , optional
         Include any other regular expression patterns, by default empty list ``[]``
 
     Returns
@@ -183,9 +183,13 @@ def remove(
 
     # characters to remove
     chars_to_remove = []
-    chars_to_remove.extend(list(custom_chars))
+    chars_to_remove.extend(list(custom_strings))
     # patterns to remove
     patterns_to_remove = []
+
+    if isinstance(custom_patterns, str):
+        custom_patterns = [custom_patterns]
+
     patterns_to_remove.extend(custom_patterns)
 
     # Since each argument has the same name as the corresponding constant
@@ -214,15 +218,15 @@ def remove(
     if chars_to_remove:
         # check for constants that cannot be replaced with a space
         if all_harakat:
-            output = remove_characters(output, ALL_HARAKAT, False)
+            output = remove_strings(output, ALL_HARAKAT, False)
         elif harakat:
-            output = remove_characters(output, HARAKAT, False)
+            output = remove_strings(output, HARAKAT, False)
         if tatweel:
-            output = remove_characters(output, TATWEEL, False)
+            output = remove_strings(output, TATWEEL, False)
 
         # remove duplicates
         chars_to_remove = list(set(chars_to_remove))
-        output = remove_characters(output, chars_to_remove, use_space)
+        output = remove_strings(output, chars_to_remove, use_space)
 
     return output
 
@@ -290,7 +294,7 @@ def remove_tatweel(text: str) -> str:
     str
         Text with tatweel symbol removed.
     """
-    return remove_characters(text, TATWEEL, False)
+    return remove_strings(text, TATWEEL, False)
 
 
 def remove_emails(text: str) -> str:
@@ -372,7 +376,7 @@ def remove_punctuations(text: str) -> str:
     str
         Text with punctuations removed.
     """
-    return remove_characters(text, PUNCTUATIONS)
+    return remove_strings(text, PUNCTUATIONS)
 
 
 def remove_english(text: str) -> str:
@@ -388,7 +392,7 @@ def remove_english(text: str) -> str:
     str
         Text with english removed.
     """
-    return remove_characters(text, ENGLISH)
+    return remove_strings(text, ENGLISH)
 
 
 def remove_all_harakat(text: str) -> str:
@@ -404,7 +408,7 @@ def remove_all_harakat(text: str) -> str:
     str
         Text with all harakat removed.
     """
-    return remove_characters(text, ALL_HARAKAT, False)
+    return remove_strings(text, ALL_HARAKAT, False)
 
 
 def remove_harakat(text: str) -> str:
@@ -420,7 +424,7 @@ def remove_harakat(text: str) -> str:
     str
         Text with common harakat removed.
     """
-    return remove_characters(text, HARAKAT, False)
+    return remove_strings(text, HARAKAT, False)
 
 
 def remove_numbers(text: str) -> str:
@@ -436,7 +440,7 @@ def remove_numbers(text: str) -> str:
     str
         Text with numbers removed.
     """
-    return remove_characters(text, NUMBERS)
+    return remove_strings(text, NUMBERS)
 
 
 def remove_patterns(
@@ -483,16 +487,16 @@ def remove_patterns(
     return output_text.strip()
 
 
-def remove_characters(
-    text: str, chars: Union[List[str], str], use_space: bool = True
+def remove_strings(
+    text: str, strings: Union[List[str], str], use_space: bool = True
 ) -> str:
 
-    """Removes the input characters ``chars`` in the given text ``text``
+    """Removes the input strings ``strings`` in the given text ``text``
 
-    This works by replacing all input characters ``chars`` with a space,
+    This works by replacing all input strings ``strings`` with a space,
     which means space cannot be removed. This is to help separate texts when unwanted
-    characters are present without spaces. For example, 'end.start' will be converted
-    to 'end start' if dot :data:`~.DOT` is passed to ``chars``.
+    strings are present without spaces. For example, 'end.start' will be converted
+    to 'end start' if dot :data:`~.DOT` is passed to ``strings``.
     To disable this behavior, set ``use_space`` to False.
 
     .. note::
@@ -503,34 +507,34 @@ def remove_characters(
     ----------
     text : str
         Text to be processed
-    chars : Union[List[str], str]
-        list of characters to remove
+    strings : Union[List[str], str]
+        list of strings to remove
     use_space :
         False to not replace with space, defaults to True
 
     Returns
     -------
     str
-        Text with input characters removed.
+        Text with input strings removed.
 
     Raises
     ------
     ValueError
-        If no ``chars`` are provided
+        If no ``strings`` are provided
     """
 
-    if not chars:
-        raise ValueError("'chars' cannot be empty.")
+    if not strings:
+        raise ValueError("'strings' cannot be empty.")
 
-    # convert list to str
-    if isinstance(chars, list):
-        chars = "".join(chars)
+    # convert str to list
+    if isinstance(strings, str):
+        strings = [strings]
 
     if use_space:
-        output_text = replace_characters(text, chars, SPACE)
+        output_text = replace(text, strings, SPACE)
         output_text = remove_extra_spaces(output_text)
     else:
-        output_text = replace_characters(text, chars, EMPTY)
+        output_text = replace(text, strings, EMPTY)
 
     return output_text.strip()
 

@@ -5,7 +5,7 @@ Functions that operate on a string and check for values contained in it
 __all__ = [
     "contains",
     "contains_patterns",
-    "contains_characters",
+    "contain_strings",
 ]
 from typing import Dict, List, Union
 
@@ -69,11 +69,11 @@ def contains(
     links: bool = False,
     mentions: bool = False,
     emojis: bool = False,
-    custom_chars: Union[List[str], str] = [],
+    custom_strings: Union[List[str], str] = [],
     custom_patterns: Union[List[str], str] = [],
 ) -> Union[Dict[str, bool], bool]:
 
-    """Check for certain characters or patterns in the given text.
+    """Check for certain characters, strings or patterns in the given text.
 
     To add a new parameter, make sure that its name is the same as the corresponding
     constant. For the patterns, only remove the prefix PATTERN_ from the parameter name
@@ -141,8 +141,8 @@ def contains(
     emojis : bool, optional
         Check for emojis using the pattern :data:`~.PATTERN_EMOJIS`,
         by default False
-    custom_chars : Union[List[str], str], optional
-        Include any other unicode character, by default empty list ``[]``
+    custom_strings : Union[List[str], str], optional
+        Include any other string(s), by default empty list ``[]``
     custom_patterns : Union[List[str], str], optional
         Include any other regular expression patterns, by default empty list ``[]``
 
@@ -177,15 +177,15 @@ def contains(
     for arg, value in current_arguments.items():
         const = constants.get(arg.upper())
         if const and value is True:
-            output[arg] = contains_characters(text, const)
+            output[arg] = contain_strings(text, const)
             continue
         # check for pattern
         pattern = constants.get("PATTERN_" + arg.upper())
         if pattern and value is True:
             output[arg] = contains_patterns(text, pattern)
 
-    if custom_chars:
-        output["custom_chars"] = contains_characters(text, custom_chars)
+    if custom_strings:
+        output["custom_strings"] = contain_strings(text, custom_strings)
     if custom_patterns:
         output["custom_patterns"] = contains_patterns(text, custom_patterns)
 
@@ -233,14 +233,14 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     return bool(re.search(patterns, text))
 
 
-def contains_characters(text: str, chars: Union[List[str], str]) -> bool:
-    """Check for the input characters ``chars`` in the given text ``text``
+def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
+    """Check for the input strings ``strings`` in the given text ``text``
 
     Parameters
     ----------
     text : str
         Text to be processed
-    chars : Union[List[str], str]
+    strings : Union[List[str], str]
         list of characters to check for
 
     Returns
@@ -251,16 +251,16 @@ def contains_characters(text: str, chars: Union[List[str], str]) -> bool:
     Raises
     ------
     ValueError
-        If no ``chars`` are provided
+        If no ``strings`` are provided
     """
 
-    if not chars:
-        raise ValueError("'chars' cannot be empty.")
+    if not strings:
+        raise ValueError("'strings' cannot be empty.")
 
     # convert list to str
-    if isinstance(chars, list):
-        chars = "|".join(str(re.escape(c)) for c in chars)
+    if isinstance(strings, list):
+        strings = "|".join(str(re.escape(c)) for c in strings)
     else:
-        chars = str(re.escape(chars))
+        strings = str(re.escape(strings))
 
-    return contains_patterns(text, f"[{chars}]")
+    return contains_patterns(text, f"({strings})")
