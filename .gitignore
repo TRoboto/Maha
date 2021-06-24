@@ -133,3 +133,6 @@ dmypy.json
 
 # disable docs for now
 docs/*
+
+# ignore .vscode
+.vscode
