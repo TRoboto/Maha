@@ -14,7 +14,7 @@ from typing import Callable, List, Union
 # To enjoy infinite width lookbehind
 import regex as re
 
-from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, ENGLISH_NUMBERS
+from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, EMPTY, ENGLISH_NUMBERS, SPACE
 
 
 def convert_arabic_numbers_to_english(text: str):
@@ -80,8 +80,8 @@ def replace_pattern(
     .. code-block:: python
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
-        >>> replace_pattern(text, 'ه( |$)' , 'ة')
-        'ذهبت الفتاةإلى المدرسة'
+        >>> replace_pattern(text, 'ه( |$)' , 'ة ').strip()
+        'ذهبت الفتاة إلى المدرسة'
     """
     return re.sub(pattern, with_value, text)
 
@@ -149,7 +149,7 @@ def replace_except(text: str, strings: Union[List[str], str], with_value: str) -
     .. code-block:: python
 
         >>> text = 'لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم'
-        >>> replace_except(text, ARABIC_LETTERS + [' '] ,'')
+        >>> replace_except(text, ARABIC_LETTERS + [SPACE] , EMPTY)
         'ليت الذين تحب العين رؤيتهم'
     """
     # convert list to str
@@ -194,9 +194,9 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     -------
     ..  code-block:: python
 
-        >>> text = 'وقال مؤمن هذا أمر مؤقت'
-        >>> replace_pairs(text, ['ؤ'] ,['و'])
-        'وقال مومن هذا أمر موقت'
+        >>> text = 'شلونك يا محمد؟'
+        >>> replace_pairs(text, ['شلونك'] , ['كيف حالك'])
+        'كيف حالك يا محمد؟'
     """
 
     if len(keys) != len(values):
