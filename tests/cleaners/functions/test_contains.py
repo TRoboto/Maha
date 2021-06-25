@@ -82,6 +82,12 @@ def test_contains_with_arabic_ligatures(simple_text_input: str):
     assert is_false(contains(simple_text_input, arabic_ligatures=True))
 
 
+def test_contains_with_persian(simple_text_input: str):
+    assert is_false(contains(simple_text_input, persian=True))
+    assert is_true(contains(simple_text_input + "گ", persian=True))
+    assert is_true(contains("۱", persian=True))
+
+
 def test_contains_with_arabic_hashtags(simple_text_input: str):
     assert is_false(contains(simple_text_input, arabic_hashtags=True))
 

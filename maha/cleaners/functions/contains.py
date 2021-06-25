@@ -38,6 +38,7 @@ from maha.constants import (
     PATTERN_HASHTAGS,
     PATTERN_LINKS,
     PATTERN_MENTIONS,
+    PERSIAN,
     PUNCTUATIONS,
     SPACE,
     TATWEEL,
@@ -64,6 +65,7 @@ def contains(
     arabic_punctuations: bool = False,
     english_punctuations: bool = False,
     arabic_ligatures: bool = False,
+    persian: bool = False,
     arabic_hashtags: bool = False,
     arabic_mentions: bool = False,
     emails: bool = False,
@@ -122,6 +124,8 @@ def contains(
         Check for :data:`~.ENGLISH_PUNCTUATIONS` characters, by default False
     arabic_ligatures : bool, optional
         Check for :data:`~.ARABIC_LIGATURES` words, by default False
+    persian : bool, optional
+        Check for :data:`~.PERSIAN` characters, by default False
     arabic_hashtags : bool, optional
         Check for Arabic hashtags using the pattern :data:`~.PATTERN_ARABIC_HASHTAGS`,
         by default False
