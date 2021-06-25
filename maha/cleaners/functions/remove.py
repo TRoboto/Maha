@@ -237,8 +237,9 @@ def remove(
 def reduce_repeated_substring(
     text: str, min_repeated: int = 3, reduce_to: int = 2
 ) -> str:
-    """Reduces consecutive substring repeated ``min_repeated`` times to ``reduce_to``
-    times. For example with the default arguments, 'hhhhhh' is reduced to 'hh'
+    """Reduces consecutive substrings that are repeated at least ``min_repeated`` times
+    to `reduce_to`` times. For example with the default arguments, 'hhhhhh' is
+    reduced to 'hh'
 
     TODO: Maybe change the implemention for 50x speed
     https://stackoverflow.com/questions/29481088/how-can-i-tell-if-a-string-repeats-itself-in-python/29489919#29489919
