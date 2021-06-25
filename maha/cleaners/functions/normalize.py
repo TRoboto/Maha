@@ -3,11 +3,13 @@ Special functions that convert similar characters into one common character
 (Characters that roughly have the same shape)
 """
 
-__all__ = ["normalize", "normalize_lam_alef"]
+__all__ = ["normalize", "normalize_lam_alef", "normalize_small_alef"]
 
 
 from maha.constants import (
     ALEF,
+    ALEF_MADDA_ABOVE,
+    ALEF_SUPERSCRIPT,
     ALEF_VARIATIONS,
     ARABIC_LIGATURES,
     ARABIC_LIGATURES_NORMALIZED,
@@ -15,6 +17,7 @@ from maha.constants import (
     LAM,
     LAM_ALEF_VARIATIONS,
     LAM_ALEF_VARIATIONS_NORMALIZED,
+    MADDAH_ABOVE,
     PATTERN_SPACES,
     SPACE,
     TEH_MARBUTA,
@@ -116,7 +119,7 @@ def normalize(
 def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
     """Normalize :data:`~.LAM_ALEF_VARIATIONS` to
     :data:`~.LAM_ALEF_VARIATIONS_NORMALIZED` If ``keep_hamza`` is True. Otherwise,
-    normalize to to :data:`~.LAM` and :data:`~.ALEF`
+    normalize to :data:`~.LAM` and :data:`~.ALEF`
 
     Parameters
     ----------
@@ -150,6 +153,41 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
         )
     else:
         output = replace(text, LAM_ALEF_VARIATIONS, LAM + ALEF)
+
+    return output
+
+
+def normalize_small_alef(
+    text: str, keep_madda: bool = True, normalize_end: bool = False
+) -> str:
+    """Normalize :data:`~.ALEF_SUPERSCRIPT` to :data:`~.ALEF`. If ``keep_madda`` is True
+    and :data:`~.ALEF_SUPERSCRIPT` is followed by :data:`HAMZA_ABOVE`, then normalize
+    to :data:`~.ALEF_MADDA_ABOVE`
+
+    Parameters
+    ----------
+    text : str
+        Text to process
+    keep_madda : bool, optional
+        True to preserve madda character, by default True
+    normalize_end : bool, optional
+        True to normalize :data:`~.ALEF_SUPERSCRIPT` that appear at the end of a word,
+        by default False
+
+    Returns
+    -------
+    str
+        Normalized text
+    """
+    output = text
+    if keep_madda:
+        output = replace_pairs(
+            text, [ALEF_SUPERSCRIPT + MADDAH_ABOVE], [ALEF_MADDA_ABOVE]
+        )
+    if not normalize_end:
+        output = replace_pattern(output, r"{}(?!\s|$)".format(ALEF_SUPERSCRIPT), ALEF)
+    else:
+        output = replace(output, ALEF_SUPERSCRIPT, ALEF)
 
     return output
 
