@@ -26,6 +26,8 @@ from maha.constants import (
     ENGLISH_PUNCTUATIONS,
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
+    LAM_ALEF,
+    LAM_ALEF_VARIATIONS,
     NUMBERS,
     PATTERN_ARABIC_HASHTAGS,
     PATTERN_ARABIC_MENTIONS,
@@ -54,6 +56,8 @@ def contains(
     harakat: bool = False,
     all_harakat: bool = False,
     tatweel: bool = False,
+    lam_alef_variations: bool = False,
+    lam_alef: bool = False,
     punctuations: bool = False,
     arabic_numbers: bool = False,
     english_numbers: bool = False,
@@ -102,6 +106,10 @@ def contains(
         Check for :data:`~.ALL_HARAKAT` characters, by default False
     tatweel : bool, optional
         Check for :data:`~.TATWEEL` character, by default False
+    lam_alef_variations : bool, optional
+        Check for :data:`~.LAM_ALEF_VARIATIONS` characters, by default False
+    lam_alef : bool, optional
+        Check for :data:`~.LAM_ALEF` character, by default False
     punctuations : bool, optional
         Check for :data:`~.PUNCTUATIONS` characters, by default False
     arabic_numbers : bool, optional

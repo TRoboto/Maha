@@ -43,6 +43,19 @@ def test_contains_with_all_harakat(simple_text_input: str):
 
 def test_contains_with_tatweel(simple_text_input: str):
     assert is_false(contains(simple_text_input, tatweel=True))
+    assert is_true(contains("تطويــل", tatweel=True))
+
+
+def test_contains_with_lam_alef(simple_text_input: str):
+    assert is_false(contains(simple_text_input, lam_alef=True))
+    assert is_true(contains("هﻻ", lam_alef=True))
+    assert is_false(contains("هﻷ", lam_alef=True))
+
+
+def test_contains_with_lam_alef_variations(simple_text_input: str):
+    assert is_false(contains(simple_text_input, lam_alef_variations=True))
+    assert is_true(contains("هﻻ", lam_alef_variations=True))
+    assert is_true(contains("هﻷ", lam_alef_variations=True))
 
 
 def test_contains_with_punctuations(simple_text_input: str):
