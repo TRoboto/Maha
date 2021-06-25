@@ -357,9 +357,9 @@ def remove_emails(text: str) -> str:
 
     .. code-block:: python
 
-        >>> text = "يمكن اسخدام الإيميل الشخصي، كمثال user1998@gmail.com"
+        >>> text = "يمكن استخدام الإيميل الشخصي، كمثال user1998@gmail.com"
         >>> remove_emails(text)
-        'يمكن اسخدام الإيميل الشخصي، كمثال'
+        'يمكن استخدام الإيميل الشخصي، كمثال'
     """
     return remove_patterns(text, PATTERN_EMAILS)
 
@@ -434,9 +434,9 @@ def remove_mentions(text: str) -> str:
 
     .. code-block:: python
 
-        >>> text = "@test لو سمحت صديقنا تزرونا على المعرض لاستلام الجائزة"
+        >>> text = "@test لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة"
         >>> remove_mentions(text)
-        'لو سمحت صديقنا تزرونا على المعرض لاستلام الجائزة'
+        'لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة'
     """
     return remove_patterns(text, PATTERN_MENTIONS)
 
@@ -534,9 +534,9 @@ def remove_harakat(text: str) -> str:
 
     .. code-block:: python
 
-        >>> text = "ألا تَرَى: كلَّ مَنْ تَرجو وتَأمَلُهُ =مِنَ البَرِيَّةِ (مسكينُ بْنُ مسكينِ)"
+        >>> text = "ألا تَرَى: كلَّ مَنْ تَرجو وتَأمَلُهُ مِنَ البَرِيَّةِ (مسكينُ بْنُ مسكينِ)"
         >>> remove_harakat(text)
-        'ألا ترى: كل من ترجو وتأمله =من البرية (مسكين بن مسكين)'
+        'ألا ترى: كل من ترجو وتأمله من البرية (مسكين بن مسكين)'
     """
     return remove_strings(text, HARAKAT, False)
 
