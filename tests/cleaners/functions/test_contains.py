@@ -1,6 +1,11 @@
 import pytest
 
-from maha.cleaners.functions import contain_strings, contains, contains_patterns
+from maha.cleaners.functions import (
+    contain_strings,
+    contains,
+    contains_patterns,
+    contains_repeated_substring,
+)
 from maha.constants import PATTERN_EMAILS
 from tests.utils import is_false, is_true
 
@@ -126,6 +131,29 @@ def test_contains_with_mentions(simple_text_input: str):
 
 def test_contains_with_emojis(simple_text_input: str):
     assert is_false(contains(simple_text_input, emojis=True))
+
+
+def test_contains_repeated_substring_simple(simple_text_input: str):
+    assert is_false(contains_repeated_substring(simple_text_input))
+
+
+@pytest.mark.parametrize(
+    "input,expected,min_repeated",
+    [
+        ("", False, 1),
+        ("Hellllo", True, 4),
+        ("Hellllo", False, 5),
+        ("Hi hihihi", True, 3),
+        ("هاهاها مضحك", True, 3),
+    ],
+)
+def test_contains_repeated_substring(input: str, expected: bool, min_repeated: int):
+    assert contains_repeated_substring(input, min_repeated) is expected
+
+
+def test_contains_repeated_substring_raise_value_error():
+    with pytest.raises(ValueError):
+        contains_repeated_substring("", min_repeated=0)
 
 
 @pytest.mark.parametrize(

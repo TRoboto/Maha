@@ -6,6 +6,7 @@ __all__ = [
     "contains",
     "contains_patterns",
     "contain_strings",
+    "contains_repeated_substring",
 ]
 from typing import Dict, List, Union
 
@@ -43,6 +44,8 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
+
+from ..utils import check_positive_integer
 
 
 def contains(
@@ -87,7 +90,7 @@ def contains(
     Parameters
     ----------
     text : str
-        Text to be processed
+        Text to check
     arabic : bool, optional
         Check for :data:`~.ARABIC` characters, by default False
     english : bool, optional
@@ -213,6 +216,33 @@ def contains(
     return output
 
 
+def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
+    """Check for consecutive substrings that are repeated at least ``min_repeated``
+    times. For example with the default arguments, the text 'hhhhhh' should return True
+
+    Parameters
+    ----------
+    text : str
+        Text to check
+    min_repeated : int, optional
+        Minimum number of consecutive repeated substring to consider, by default 3
+
+    Returns
+    -------
+    bool
+        True if the input text contains consecutive substrings, otherwise False
+
+    Raises
+    ------
+    ValueError
+        If non positive integer is passed
+    """
+    check_positive_integer(min_repeated, "min_repeated")
+
+    pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
+    return contains_patterns(text, pattern)
+
+
 def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     """Check for matched characters in the given text ``text`` using the input
     patterns ``patterns``
@@ -223,7 +253,7 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     Parameters
     ----------
     text : str
-        Text to process
+        Text to check
     patterns : Union[List[str], str]
         Pattern(s) to use
 
@@ -254,7 +284,7 @@ def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
     Parameters
     ----------
     text : str
-        Text to be processed
+        Text to check
     strings : Union[List[str], str]
         list of characters to check for
 
