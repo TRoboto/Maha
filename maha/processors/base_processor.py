@@ -1,13 +1,13 @@
-""" The base for all cleaners """
+""" The base for all processors """
 
 __all__ = [
-    "BaseCleaner",
+    "BaseProcessor",
 ]
 
 from functools import partial
 from typing import Callable, List, Union
 
-from ..functions import (
+from maha.cleaners.functions import (
     contains,
     keep,
     normalize,
@@ -16,12 +16,20 @@ from ..functions import (
     replace_pairs,
     replace_pattern,
 )
-from ..utils import negate
+from maha.utils import negate
 
 
-class BaseCleaner:
+class BaseProcessor:
+    """Base class for all processors. It contains almost all functions needed for the
+    processors.
+
+    Parameters
+    ----------
+    text : Union[List[str], str]
+        A text or list of strings to process
+    """
+
     def __init__(self, text: Union[List[str], str]) -> None:
-
         self.lines = []
         if isinstance(text, str):
             self.lines = [text]
@@ -41,7 +49,7 @@ class BaseCleaner:
 
     @classmethod
     def from_string(cls, text: str, sep: str = None):
-        """Creates a new cleaner from the given text. Separate the text by the input
+        """Creates a new processor from the given text. Separate the text by the input
         ``sep`` argument if provided.
 
         Parameters
@@ -54,8 +62,8 @@ class BaseCleaner:
         Returns
         -------
         TODO: What should be the return type here?
-        Subclass of :class:`BaseCleaner`
-            A new cleaner class
+        Subclass of :class:`BaseProcessor`
+            A new processor class
         """
         out = text
         if sep:
@@ -64,7 +72,7 @@ class BaseCleaner:
 
     @classmethod
     def from_list(cls, lines: List[str]):
-        """Creates a new cleaner from the given list of strings.
+        """Creates a new processor from the given list of strings.
 
         Parameters
         ----------
@@ -74,8 +82,8 @@ class BaseCleaner:
         Returns
         -------
         TODO: What should be the return type here?
-        Subclass of :class:`BaseCleaner`
-            A new cleaner class
+        Subclass of :class:`BaseProcessor`
+            A new processor class
         """
         return cls(lines)
 

@@ -44,8 +44,7 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
-
-from ..utils import check_positive_integer
+from maha.utils import check_positive_integer
 
 
 def contains(

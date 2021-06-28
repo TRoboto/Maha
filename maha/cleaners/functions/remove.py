@@ -22,7 +22,6 @@ __all__ = [
 
 from typing import List, Union
 
-from maha.cleaners.utils import check_positive_integer
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -52,6 +51,7 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
+from maha.utils import check_positive_integer
 
 from .replace import replace, replace_pattern
 
