@@ -133,6 +133,25 @@ def test_contains_with_emojis(simple_text_input: str):
     assert is_false(contains(simple_text_input, emojis=True))
 
 
+def test_contains_with_operator_and(simple_text_input: str):
+    assert is_false(
+        contains(simple_text_input, punctuations=True, hashtags=True, operator="and")
+    )
+
+
+def test_contains_with_operator_or(simple_text_input: str):
+    assert is_true(
+        contains(simple_text_input, punctuations=True, hashtags=True, operator="or")
+    )
+
+
+def test_contains_with_operator_raises_valueerror(simple_text_input: str):
+    with pytest.raises(ValueError):
+        contains(simple_text_input, hashtags=True, operator="xor")
+    with pytest.raises(ValueError):
+        contains(simple_text_input, punctuations=True, hashtags=True, operator="")
+
+
 def test_contains_repeated_substring_simple(simple_text_input: str):
     assert is_false(contains_repeated_substring(simple_text_input))
 

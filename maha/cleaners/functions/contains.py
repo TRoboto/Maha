@@ -80,6 +80,7 @@ def contains(
     emojis: bool = False,
     custom_strings: Union[List[str], str] = None,
     custom_patterns: Union[List[str], str] = None,
+    operator: str = None,
 ) -> Union[Dict[str, bool], bool]:
 
     """Check for certain characters, strings or patterns in the given text.
@@ -160,12 +161,17 @@ def contains(
         Include any other string(s), by default None
     custom_patterns : Union[List[str], str], optional
         Include any other regular expression patterns, by default None
+    operator : bool, optional
+        When multiple arguments are set to True, this operator is used  to combine
+        the output into a boolean. Takes 'and' or 'or', by default None
 
     Returns
     -------
     Union[Dict[str, bool], bool]
         * If one argument is set to True, a boolean value is returned. True if the text
         contains it, False otherwise.
+        * If ``operator`` is set and more than one argument is set to True, a boolean
+        value that combines the result with the "and/or" operator is returned.
         * If more than one argument is set to True, a dictionary is returned where
         the keys are the True passed arguments and the corresponding values are
         booleans. True if the text contains the argument, False otherwise.
@@ -178,6 +184,9 @@ def contains(
     """
     if not text:
         raise ValueError("Text cannot be empty")
+
+    if operator is not None and operator not in ["or", "and"]:
+        raise ValueError("`operator` can only take 'and' or 'or'")
 
     custom_strings = custom_strings or []
     custom_patterns = custom_patterns or []
@@ -212,6 +221,10 @@ def contains(
 
     if len(output) == 1:
         output = list(output.values())[0]
+    elif operator == "and":
+        output = all(list(output.values()))
+    elif operator == "or":
+        output = any(list(output.values()))
 
     return output
 
