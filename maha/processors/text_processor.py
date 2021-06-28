@@ -4,8 +4,7 @@ from .base_processor import BaseProcessor
 
 
 class TextProcessor(BaseProcessor):
-    """Text class for all processors. It contains almost all functions needed for the
-    processors.
+    """For processing text input.
 
     Parameters
     ----------
