@@ -6,6 +6,7 @@ __all__ = [
     "contains",
     "contains_patterns",
     "contain_strings",
+    "contains_repeated_substring",
 ]
 from typing import Dict, List, Union
 
@@ -26,6 +27,8 @@ from maha.constants import (
     ENGLISH_PUNCTUATIONS,
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
+    LAM_ALEF,
+    LAM_ALEF_VARIATIONS,
     NUMBERS,
     PATTERN_ARABIC_HASHTAGS,
     PATTERN_ARABIC_MENTIONS,
@@ -36,10 +39,12 @@ from maha.constants import (
     PATTERN_HASHTAGS,
     PATTERN_LINKS,
     PATTERN_MENTIONS,
+    PERSIAN,
     PUNCTUATIONS,
     SPACE,
     TATWEEL,
 )
+from maha.utils import check_positive_integer
 
 
 def contains(
@@ -54,12 +59,15 @@ def contains(
     harakat: bool = False,
     all_harakat: bool = False,
     tatweel: bool = False,
+    lam_alef_variations: bool = False,
+    lam_alef: bool = False,
     punctuations: bool = False,
     arabic_numbers: bool = False,
     english_numbers: bool = False,
     arabic_punctuations: bool = False,
     english_punctuations: bool = False,
     arabic_ligatures: bool = False,
+    persian: bool = False,
     arabic_hashtags: bool = False,
     arabic_mentions: bool = False,
     emails: bool = False,
@@ -71,6 +79,7 @@ def contains(
     emojis: bool = False,
     custom_strings: Union[List[str], str] = None,
     custom_patterns: Union[List[str], str] = None,
+    operator: str = None,
 ) -> Union[Dict[str, bool], bool]:
 
     """Check for certain characters, strings or patterns in the given text.
@@ -81,7 +90,7 @@ def contains(
     Parameters
     ----------
     text : str
-        Text to be processed
+        Text to check
     arabic : bool, optional
         Check for :data:`~.ARABIC` characters, by default False
     english : bool, optional
@@ -102,6 +111,10 @@ def contains(
         Check for :data:`~.ALL_HARAKAT` characters, by default False
     tatweel : bool, optional
         Check for :data:`~.TATWEEL` character, by default False
+    lam_alef_variations : bool, optional
+        Check for :data:`~.LAM_ALEF_VARIATIONS` characters, by default False
+    lam_alef : bool, optional
+        Check for :data:`~.LAM_ALEF` character, by default False
     punctuations : bool, optional
         Check for :data:`~.PUNCTUATIONS` characters, by default False
     arabic_numbers : bool, optional
@@ -114,6 +127,8 @@ def contains(
         Check for :data:`~.ENGLISH_PUNCTUATIONS` characters, by default False
     arabic_ligatures : bool, optional
         Check for :data:`~.ARABIC_LIGATURES` words, by default False
+    persian : bool, optional
+        Check for :data:`~.PERSIAN` characters, by default False
     arabic_hashtags : bool, optional
         Check for Arabic hashtags using the pattern :data:`~.PATTERN_ARABIC_HASHTAGS`,
         by default False
@@ -145,12 +160,17 @@ def contains(
         Include any other string(s), by default None
     custom_patterns : Union[List[str], str], optional
         Include any other regular expression patterns, by default None
+    operator : bool, optional
+        When multiple arguments are set to True, this operator is used  to combine
+        the output into a boolean. Takes 'and' or 'or', by default None
 
     Returns
     -------
     Union[Dict[str, bool], bool]
         * If one argument is set to True, a boolean value is returned. True if the text
         contains it, False otherwise.
+        * If ``operator`` is set and more than one argument is set to True, a boolean
+        value that combines the result with the "and/or" operator is returned.
         * If more than one argument is set to True, a dictionary is returned where
         the keys are the True passed arguments and the corresponding values are
         booleans. True if the text contains the argument, False otherwise.
@@ -163,6 +183,9 @@ def contains(
     """
     if not text:
         raise ValueError("Text cannot be empty")
+
+    if operator is not None and operator not in ["or", "and"]:
+        raise ValueError("`operator` can only take 'and' or 'or'")
 
     custom_strings = custom_strings or []
     custom_patterns = custom_patterns or []
@@ -197,8 +220,39 @@ def contains(
 
     if len(output) == 1:
         output = list(output.values())[0]
+    elif operator == "and":
+        output = all(list(output.values()))
+    elif operator == "or":
+        output = any(list(output.values()))
 
     return output
+
+
+def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
+    """Check for consecutive substrings that are repeated at least ``min_repeated``
+    times. For example with the default arguments, the text 'hhhhhh' should return True
+
+    Parameters
+    ----------
+    text : str
+        Text to check
+    min_repeated : int, optional
+        Minimum number of consecutive repeated substring to consider, by default 3
+
+    Returns
+    -------
+    bool
+        True if the input text contains consecutive substrings, otherwise False
+
+    Raises
+    ------
+    ValueError
+        If non positive integer is passed
+    """
+    check_positive_integer(min_repeated, "min_repeated")
+
+    pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
+    return contains_patterns(text, pattern)
 
 
 def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
@@ -211,7 +265,7 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     Parameters
     ----------
     text : str
-        Text to process
+        Text to check
     patterns : Union[List[str], str]
         Pattern(s) to use
 
@@ -242,7 +296,7 @@ def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
     Parameters
     ----------
     text : str
-        Text to be processed
+        Text to check
     strings : Union[List[str], str]
         list of characters to check for
 

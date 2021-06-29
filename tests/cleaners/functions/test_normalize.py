@@ -1,6 +1,6 @@
 import pytest
 
-from maha.cleaners.functions import normalize, normalize_lam_alef
+from maha.cleaners.functions import normalize, normalize_lam_alef, normalize_small_alef
 from maha.constants import ALEF, ALEF_VARIATIONS, EMPTY, SPACE
 
 
@@ -96,6 +96,24 @@ def test_normalize_should_raise_valueerror(simple_text_input: str):
         normalize(EMPTY, ligatures=True)
     with pytest.raises(ValueError):
         normalize(simple_text_input)
+
+
+@pytest.mark.parametrize(
+    "input,expected,keep_madda,normalize_end",
+    [
+        ("وَٱلصَّٰٓفَّٰتِ", "وَٱلصَّآفَّاتِ", True, False),
+        ("وَٱلصَّٰٓفَّٰتِ", "وَٱلصَّآفَّاتِ", False, False),
+        ("إِلَٰهَكُم لَوَٰحِد", "إِلَاهَكُم لَوَاحِد", True, False),
+        ("الْأَعْلَىٰ", "الْأَعْلَىٰ", True, False),
+        ("ٱلأعلىٰ وَيُقذَفُونَ", "ٱلأعلىٰ وَيُقذَفُونَ", True, False),
+        ("الْأَعْلَىٰ", "الْأَعْلَىا", True, True),
+    ],
+)
+def test_normalize_small_alef(
+    input: str, expected: str, keep_madda: bool, normalize_end: bool
+):
+    processedtext = normalize_small_alef(input, keep_madda, normalize_end)
+    assert processedtext == expected
 
 
 @pytest.mark.parametrize(

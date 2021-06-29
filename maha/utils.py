@@ -1,3 +1,6 @@
+from functools import wraps
+
+
 def get_unicode(text: str) -> bytes:
     """Returns the unicode for input text
 
@@ -34,3 +37,13 @@ def check_positive_integer(value: float, var_name: str):
 
     if value != int(value):
         raise ValueError(f"Cannot assign a float value to '{var_name}'")
+
+
+def negate(f):
+    """Negates a function"""
+
+    @wraps(f)
+    def g(*args, **kwargs):
+        return not f(*args, **kwargs)
+
+    return g

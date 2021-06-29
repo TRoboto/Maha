@@ -1,6 +1,11 @@
 import pytest
 
-from maha.cleaners.functions import contain_strings, contains, contains_patterns
+from maha.cleaners.functions import (
+    contain_strings,
+    contains,
+    contains_patterns,
+    contains_repeated_substring,
+)
 from maha.constants import PATTERN_EMAILS
 from tests.utils import is_false, is_true
 
@@ -43,6 +48,19 @@ def test_contains_with_all_harakat(simple_text_input: str):
 
 def test_contains_with_tatweel(simple_text_input: str):
     assert is_false(contains(simple_text_input, tatweel=True))
+    assert is_true(contains("تطويــل", tatweel=True))
+
+
+def test_contains_with_lam_alef(simple_text_input: str):
+    assert is_false(contains(simple_text_input, lam_alef=True))
+    assert is_true(contains("هﻻ", lam_alef=True))
+    assert is_false(contains("هﻷ", lam_alef=True))
+
+
+def test_contains_with_lam_alef_variations(simple_text_input: str):
+    assert is_false(contains(simple_text_input, lam_alef_variations=True))
+    assert is_true(contains("هﻻ", lam_alef_variations=True))
+    assert is_true(contains("هﻷ", lam_alef_variations=True))
 
 
 def test_contains_with_punctuations(simple_text_input: str):
@@ -67,6 +85,12 @@ def test_contains_with_english_punctuations(simple_text_input: str):
 
 def test_contains_with_arabic_ligatures(simple_text_input: str):
     assert is_false(contains(simple_text_input, arabic_ligatures=True))
+
+
+def test_contains_with_persian(simple_text_input: str):
+    assert is_false(contains(simple_text_input, persian=True))
+    assert is_true(contains(simple_text_input + "گ", persian=True))
+    assert is_true(contains("۱", persian=True))
 
 
 def test_contains_with_arabic_hashtags(simple_text_input: str):
@@ -107,6 +131,48 @@ def test_contains_with_mentions(simple_text_input: str):
 
 def test_contains_with_emojis(simple_text_input: str):
     assert is_false(contains(simple_text_input, emojis=True))
+
+
+def test_contains_with_operator_and(simple_text_input: str):
+    assert is_false(
+        contains(simple_text_input, punctuations=True, hashtags=True, operator="and")
+    )
+
+
+def test_contains_with_operator_or(simple_text_input: str):
+    assert is_true(
+        contains(simple_text_input, punctuations=True, hashtags=True, operator="or")
+    )
+
+
+def test_contains_with_operator_raises_valueerror(simple_text_input: str):
+    with pytest.raises(ValueError):
+        contains(simple_text_input, hashtags=True, operator="xor")
+    with pytest.raises(ValueError):
+        contains(simple_text_input, punctuations=True, hashtags=True, operator="")
+
+
+def test_contains_repeated_substring_simple(simple_text_input: str):
+    assert is_false(contains_repeated_substring(simple_text_input))
+
+
+@pytest.mark.parametrize(
+    "input,expected,min_repeated",
+    [
+        ("", False, 1),
+        ("Hellllo", True, 4),
+        ("Hellllo", False, 5),
+        ("Hi hihihi", True, 3),
+        ("هاهاها مضحك", True, 3),
+    ],
+)
+def test_contains_repeated_substring(input: str, expected: bool, min_repeated: int):
+    assert contains_repeated_substring(input, min_repeated) is expected
+
+
+def test_contains_repeated_substring_raise_value_error():
+    with pytest.raises(ValueError):
+        contains_repeated_substring("", min_repeated=0)
 
 
 @pytest.mark.parametrize(

@@ -22,7 +22,6 @@ __all__ = [
 
 from typing import List, Union
 
-from maha.cleaners.utils import check_positive_integer
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -52,6 +51,7 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
+from maha.utils import check_positive_integer
 
 from .replace import replace, replace_pattern
 
@@ -173,6 +173,20 @@ def remove(
     ------
     ValueError
         If input text is empty or no argument is set to True
+
+    Examples
+    --------
+    .. code-block:: python
+
+        >>> text = "ويندوز 11 سيدعم تطبيقات نظام أندرويد. #Windows11"
+        >>> remove(text,  hashtags=True)
+        'ويندوز 11 سيدعم تطبيقات نظام أندرويد.'
+
+    .. code-block:: python
+
+        >>> text = "قَالَ رَبِّ اشْرَحْ لِي صَدْرِي.."
+        >>> remove(text, all_harakat= True, punctuations= True)
+        'قال رب اشرح لي صدري'
     """
     if not text:
         raise ValueError("Text cannot be empty")
@@ -237,8 +251,9 @@ def remove(
 def reduce_repeated_substring(
     text: str, min_repeated: int = 3, reduce_to: int = 2
 ) -> str:
-    """Reduces consecutive substring repeated ``min_repeated`` times to ``reduce_to``
-    times. For example with the default arguments, 'hhhhhh' is reduced to 'hh'
+    """Reduces consecutive substrings that are repeated at least ``min_repeated`` times
+    to `reduce_to`` times. For example with the default arguments, 'hhhhhh' is
+    reduced to 'hh'
 
     TODO: Maybe change the implemention for 50x speed
     https://stackoverflow.com/questions/29481088/how-can-i-tell-if-a-string-repeats-itself-in-python/29489919#29489919
@@ -262,6 +277,21 @@ def reduce_repeated_substring(
     ValueError
         If non positive integer is passed or ``reduce_to`` is greater than
         ``min_repeated``
+
+    Examples
+    --------
+
+    ..code-block:: python
+
+        >>> text = "ههههههههههههههه"
+        >>> reduce_repeated_substring(text)
+        'هه'
+
+    ..code-block:: python
+
+        >>> text = "ويييييييييين راححححححححححححوا"
+        >>> reduce_repeated_substring(text, reduce_to=1)
+        'وين راحوا'
     """
     check_positive_integer(min_repeated, "min_repeated")
     check_positive_integer(reduce_to, "reduce_to")
@@ -296,6 +326,15 @@ def remove_tatweel(text: str) -> str:
     -------
     str
         Text with tatweel symbol removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "الحمــــــــد لله رب العــــــــــــالمـــــــيـــــن"
+        >>> remove_tatweel(text)
+        'الحمد لله رب العالمين'
     """
     return remove_strings(text, TATWEEL, False)
 
@@ -312,6 +351,15 @@ def remove_emails(text: str) -> str:
     -------
     str
         Text with emails removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "يمكن استخدام الإيميل الشخصي، كمثال user1998@gmail.com"
+        >>> remove_emails(text)
+        'يمكن استخدام الإيميل الشخصي، كمثال'
     """
     return remove_patterns(text, PATTERN_EMAILS)
 
@@ -329,6 +377,15 @@ def remove_hashtags(text: str) -> str:
     -------
     str
         Text with hashtags removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "ويمكن القول أن مكة المكرمة من أجمل المناطق على وجه الأرض #السعودية"
+        >>> remove_hashtags(text)
+        'ويمكن القول أن مكة المكرمة من أجمل المناطق على وجه الأرض'
     """
     return remove_patterns(text, PATTERN_HASHTAGS)
 
@@ -345,6 +402,15 @@ def remove_links(text: str) -> str:
     -------
     str
         Text with links removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "لمشاهدة آخر التطورات يرجى زيارة الموقع التالي: https://github.com/TRoboto/Maha"
+        >>> remove_links(text)
+        'لمشاهدة آخر التطورات يرجى زيارة الموقع التالي:'
     """
     return remove_patterns(text, PATTERN_LINKS)
 
@@ -362,6 +428,15 @@ def remove_mentions(text: str) -> str:
     -------
     str
         Text with mentions removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "@test لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة"
+        >>> remove_mentions(text)
+        'لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة'
     """
     return remove_patterns(text, PATTERN_MENTIONS)
 
@@ -378,6 +453,15 @@ def remove_punctuations(text: str) -> str:
     -------
     str
         Text with punctuations removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "مثال على الرموز الخاصة كالتالي $ ^ & * ( ) ! @"
+        >>> remove_punctuations(text)
+        'مثال على الرموز الخاصة كالتالي'
     """
     return remove_strings(text, PUNCTUATIONS)
 
@@ -394,6 +478,15 @@ def remove_english(text: str) -> str:
     -------
     str
         Text with english removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "ومن أفضل الجامعات هي جامعة إكسفورد (Oxford University)"
+        >>> remove_english(text)
+        'ومن أفضل الجامعات هي جامعة إكسفورد'
     """
     return remove_strings(text, ENGLISH)
 
@@ -410,6 +503,15 @@ def remove_all_harakat(text: str) -> str:
     -------
     str
         Text with all harakat removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "وَٱلصَّٰٓفَّٰتِ صَفّٗا (1) فَٱلزَّٰجِرَٰتِ زَجۡرٗا"
+        >>> remove_all_harakat(text)
+        'وٱلصفت صفا (1) فٱلزجرت زجرا'
     """
     return remove_strings(text, ALL_HARAKAT, False)
 
@@ -426,6 +528,15 @@ def remove_harakat(text: str) -> str:
     -------
     str
         Text with common harakat removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "ألا تَرَى: كلَّ مَنْ تَرجو وتَأمَلُهُ مِنَ البَرِيَّةِ (مسكينُ بْنُ مسكينِ)"
+        >>> remove_harakat(text)
+        'ألا ترى: كل من ترجو وتأمله من البرية (مسكين بن مسكين)'
     """
     return remove_strings(text, HARAKAT, False)
 
@@ -442,6 +553,15 @@ def remove_numbers(text: str) -> str:
     -------
     str
         Text with numbers removed.
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "ورقم أبو تريكة في نادي الأهلي هو إثنين وعشرين (22)"
+        >>> remove_numbers(text)
+        'ورقم أبو تريكة في نادي الأهلي هو إثنين وعشرين ( )'
     """
     return remove_strings(text, NUMBERS)
 
@@ -473,6 +593,15 @@ def remove_patterns(
     ------
     ValueError
         If no ``patterns`` are provided
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "الأميرُ الغازي أرطُغرُل، أو اختصارًا أرطغرل (بالتركية: Ertuğrul)"
+        >>> remove_patterns(text, r"\(.*\)")
+        'الأميرُ الغازي أرطُغرُل، أو اختصارًا أرطغرل'
     """
 
     if not patterns:
@@ -524,6 +653,15 @@ def remove_strings(
     ------
     ValueError
         If no ``strings`` are provided
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "ومن الكلمات المحظورة السلاح"
+        >>> remove_strings(text, "السلاح")
+        'ومن الكلمات المحظورة'
     """
 
     if not strings:
@@ -562,6 +700,15 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     ------
     ValueError
         When a negative or float value is assigned to ``max_spaces``
+
+    Example
+    -------
+
+    .. code-block:: python
+
+        >>> text = "وكان صديقنا    العزيز   محمد من أفضل   الأشخاص الذين قابلتهم"
+        >>> remove_extra_spaces(text)
+        'وكان صديقنا العزيز محمد من أفضل الأشخاص الذين قابلتهم'
     """
 
     check_positive_integer(max_spaces, "max_spaces")
