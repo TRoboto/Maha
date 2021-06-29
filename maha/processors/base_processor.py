@@ -30,6 +30,16 @@ class BaseProcessor:
     """
 
     def __init__(self, text: Union[List[str], str]) -> None:
+        self.set_text(text)
+
+    def set_text(self, text: Union[List[str], str]):
+        """Overrides the text of the class. Changes ``self.lines``
+
+        Parameters
+        ----------
+        text : Union[List[str], str]
+            A text or list of strings to process
+        """
         self.lines = []
         if isinstance(text, str):
             self.lines = [text]
