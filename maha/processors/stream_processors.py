@@ -86,7 +86,7 @@ class StreamTextProcessor(BaseProcessor):
         """
         output = text
         for function in self.functions:
-            output = list(function(o for o in output if o))
+            output = list(function(output))
         return output
 
 
@@ -141,7 +141,9 @@ class StreamFileProcessor(StreamTextProcessor):
 
         self.openfile.close()
 
-    def process_and_save(self, path: Union[str, pathlib.Path], n_lines: int = 100):
+    def process_and_save(
+        self, path: Union[str, pathlib.Path], n_lines: int = 100, override: bool = False
+    ):
         """Process the input file and save the result
 
         Parameters
@@ -150,6 +152,8 @@ class StreamFileProcessor(StreamTextProcessor):
             Path to save the file
         n_lines : int, optional
             Number of lines to process at a time, by default 100
+        override : bool, optional
+            True to override the file if exists, by default False
 
         Raises
         ------
@@ -159,7 +163,7 @@ class StreamFileProcessor(StreamTextProcessor):
         if isinstance(path, str):
             path = pathlib.Path(path)
 
-        if path.is_file():
+        if not override and path.is_file():
             raise FileExistsError(f"{str(path)} exists.")
 
         with path.open("w", encoding=self.encoding) as file:
