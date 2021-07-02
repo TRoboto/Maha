@@ -2,6 +2,8 @@ import pathlib
 from functools import partial
 from typing import Callable, Iterable, List, Union
 
+from tqdm import tqdm
+
 from .base_processor import BaseProcessor
 
 
@@ -25,7 +27,32 @@ class StreamTextProcessor(BaseProcessor):
     def filter(self, fn: Callable[[str], bool]):
         self.functions.append(partial(filter, fn))
 
-    def clean(self, n_lines: int = 100):
+    def get_lines(self, n_lines: int):
+        """Returns a generator of list of string with length of ``n_lines``
+
+        Parameters
+        ----------
+        n_lines : int
+            Number of lines to yield
+
+        Yields
+        -------
+        List[str]
+            List of strings with length of ``n_lines``. The last list maybe of length
+            less than ``n_lines``.
+        """
+        selected_lines = []
+
+        for i, line in enumerate(self.lines, 1):
+            selected_lines.append(line)
+            if i % n_lines == 0:
+                yield selected_lines
+                selected_lines = []
+
+        if selected_lines:
+            yield selected_lines
+
+    def process(self, n_lines: int = 100):
         """Applies all functions in sequence to the given iterable
 
         Parameters
@@ -36,7 +63,7 @@ class StreamTextProcessor(BaseProcessor):
         Yields
         -------
         List[str]
-            A list of processed text
+            A list of processed text, it can be empty.
 
         Raises
         ------
@@ -46,18 +73,8 @@ class StreamTextProcessor(BaseProcessor):
         if len(self.functions) == 0:
             raise ValueError("No functions were selected")
 
-        selected_lines = []
-        for i, line in enumerate(self.lines):
-            if i < n_lines:
-                selected_lines.append(line)
-            else:
-                cleaned_text = self.apply_functions(selected_lines)
-                yield cleaned_text
-                selected_lines = [line]
-
-        if selected_lines:
-            cleaned_text = self.apply_functions(selected_lines)
-            yield cleaned_text
+        for lines in self.get_lines(n_lines):
+            yield self.apply_functions(lines)
 
     def apply_functions(self, text: List[str]):
         """Applies all functions in sequence to a given list of strings
@@ -69,7 +86,7 @@ class StreamTextProcessor(BaseProcessor):
         """
         output = text
         for function in self.functions:
-            output = list(function(text))
+            output = list(function(output))
         return output
 
 
@@ -80,6 +97,8 @@ class StreamFileProcessor(StreamTextProcessor):
     ----------
     file : Union[str, :obj:`pathlib.Path`]
         File to process.
+    encoding : str
+        File encoding.
 
     Raises
     ------
@@ -87,7 +106,7 @@ class StreamFileProcessor(StreamTextProcessor):
         If the file doesn't exist.
     """
 
-    def __init__(self, file: Union[str, pathlib.Path]) -> None:
+    def __init__(self, file: Union[str, pathlib.Path], encoding: str = "utf8") -> None:
 
         if isinstance(file, str):
             file = pathlib.Path(file)
@@ -95,13 +114,32 @@ class StreamFileProcessor(StreamTextProcessor):
         if not file.is_file():
             raise FileNotFoundError(f"{str(file)} doesn't exist.")
 
-        self.file = file.open("r", encoding="utf8")
+        self.encoding = encoding
+        self.file = file
+        self.openfile = file.open("r", encoding=encoding)
+        super().__init__(self.openfile)
 
-        super().__init__(self.file)
+    def get_lines(self, n_lines):
+        selected_lines = []
 
-    def clean(self, n_lines: int):
-        yield super().clean(n_lines=n_lines)
-        self.file.close()
+        with tqdm(
+            total=self.file.stat().st_size,
+            desc="Processing",
+            unit="B",
+            unit_scale=True,
+            leave=True,
+        ) as pbar:
+            for i, line in enumerate(self.lines, 1):
+                pbar.update(len(line.encode(self.encoding)))
+                selected_lines.append(line)
+                if i % n_lines == 0:
+                    yield selected_lines
+                    selected_lines = []
+
+        if selected_lines:
+            yield selected_lines
+
+        self.openfile.close()
 
 
 class FolderProcessor:
