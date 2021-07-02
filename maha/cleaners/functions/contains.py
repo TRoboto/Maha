@@ -179,10 +179,10 @@ def contains(
     Raises
     ------
     ValueError
-        If input text is empty, no argument is set to True
+        If no argument is set to True
     """
     if not text:
-        raise ValueError("Text cannot be empty")
+        return False
 
     if operator is not None and operator not in ["or", "and"]:
         raise ValueError("`operator` can only take 'and' or 'or'")
