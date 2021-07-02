@@ -66,8 +66,8 @@ class FileProcessor(TextProcessor):
 
     Parameters
     ----------
-    file : Union[str, :obj:`pathlib.Path`]
-        File to process.
+    path : Union[str, :obj:`pathlib.Path`]
+        Path of the file to process.
 
     Raises
     ------
@@ -77,15 +77,15 @@ class FileProcessor(TextProcessor):
         If the file is empty.
     """
 
-    def __init__(self, file: Union[str, pathlib.Path]) -> None:
+    def __init__(self, path: Union[str, pathlib.Path]) -> None:
 
-        if isinstance(file, str):
-            file = pathlib.Path(file)
+        if isinstance(path, str):
+            path = pathlib.Path(path)
 
-        if not file.is_file():
-            raise FileNotFoundError(f"{str(file)} doesn't exist.")
+        if not path.is_file():
+            raise FileNotFoundError(f"{str(path)} doesn't exist.")
 
-        with file.open("r", encoding="utf8") as f:
+        with path.open("r", encoding="utf8") as f:
             lines = f.readlines()
 
         if not lines:

@@ -95,8 +95,8 @@ class StreamFileProcessor(StreamTextProcessor):
 
     Parameters
     ----------
-    file : Union[str, :obj:`pathlib.Path`]
-        File to process.
+    path : Union[str, :obj:`pathlib.Path`]
+        Path of the file to process.
     encoding : str
         File encoding.
 
@@ -106,17 +106,17 @@ class StreamFileProcessor(StreamTextProcessor):
         If the file doesn't exist.
     """
 
-    def __init__(self, file: Union[str, pathlib.Path], encoding: str = "utf8") -> None:
+    def __init__(self, path: Union[str, pathlib.Path], encoding: str = "utf8") -> None:
 
-        if isinstance(file, str):
-            file = pathlib.Path(file)
+        if isinstance(path, str):
+            path = pathlib.Path(path)
 
-        if not file.is_file():
-            raise FileNotFoundError(f"{str(file)} doesn't exist.")
+        if not path.is_file():
+            raise FileNotFoundError(f"{str(path)} doesn't exist.")
 
         self.encoding = encoding
-        self.file = file
-        self.openfile = file.open("r", encoding=encoding)
+        self.file = path
+        self.openfile = path.open("r", encoding=encoding)
         super().__init__(self.openfile)
 
     def get_lines(self, n_lines):
