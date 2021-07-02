@@ -34,15 +34,15 @@ def convert_arabic_numbers_to_english(text: str):
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = '٣'
+        >>> text = "٣"
         >>> convert_arabic_numbers_to_english(text)
         '3'
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = '١٠'
+        >>> text = "١٠"
         >>> convert_arabic_numbers_to_english(text)
         '10'
     """
@@ -71,16 +71,16 @@ def replace_pattern(
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'ولقد حصلت على ١٠ من ١٠ '
-        >>> replace_pattern(text, '١٠', 'عشرة')
+        >>> text = "ولقد حصلت على ١٠ من ١٠ "
+        >>> replace_pattern(text, "١٠", "عشرة")
         'ولقد حصلت على عشرة من عشرة '
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
-        >>> replace_pattern(text, 'ه( |$)' , 'ة ').strip()
+        >>> replace_pattern(text, "ه( |$)", "ة ").strip()
         'ذهبت الفتاة إلى المدرسة'
     """
     return re.sub(pattern, with_value, text)
@@ -105,16 +105,16 @@ def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'حصل الولد على معدل 50%'
-        >>> replace(text, '%' , ' بالمئة')
+        >>> text = "حصل الولد على معدل 50%"
+        >>> replace(text, "%", " بالمئة")
         'حصل الولد على معدل 50 بالمئة'
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'ولقد كلف هذا المنتج 100 $'
-        >>> replace(text, '$','دولار')
+        >>> text = "ولقد كلف هذا المنتج 100 $"
+        >>> replace(text, "$", "دولار")
         'ولقد كلف هذا المنتج 100 دولار'
     """
     # convert list to str
@@ -146,10 +146,10 @@ def replace_except(text: str, strings: Union[List[str], str], with_value: str) -
 
     Example
     -------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم'
-        >>> replace_except(text, ARABIC_LETTERS + [SPACE] , EMPTY)
+        >>> text = "لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم"
+        >>> replace_except(text, ARABIC_LETTERS + [SPACE], EMPTY)
         'ليت الذين تحب العين رؤيتهم'
     """
     # convert list to str

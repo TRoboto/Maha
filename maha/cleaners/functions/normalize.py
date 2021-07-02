@@ -80,13 +80,13 @@ def normalize(
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "عن أبي هريرة"
         >>> normalize(text, alef=True, teh_marbuta=True)
         'عن ابي هريره'
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "قال رسول الله ﷺ"
         >>> normalize(text, ligatures=True)
@@ -136,13 +136,13 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "السﻻم عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَﻷلأ وَجْهُه"
         >>> normalize_lam_alef(text)
         'السلام عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَلألأ وَجْهُه'
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "اﻵن يا أصحابي"
         >>> normalize_lam_alef(text, keep_hamza=False)
