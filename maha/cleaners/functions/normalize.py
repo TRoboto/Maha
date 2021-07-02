@@ -33,13 +33,14 @@ from .replace import replace, replace_pairs, replace_pattern
 
 def normalize(
     text: str,
-    lam_alef: bool = False,
-    alef: bool = False,
-    waw: bool = False,
-    yeh: bool = False,
-    teh_marbuta: bool = False,
-    ligatures: bool = False,
-    spaces: bool = False,
+    lam_alef: bool = None,
+    alef: bool = None,
+    waw: bool = None,
+    yeh: bool = None,
+    teh_marbuta: bool = None,
+    ligatures: bool = None,
+    spaces: bool = None,
+    all: bool = False,
 ) -> str:
     """Normalizes characters in the given text
 
@@ -49,24 +50,26 @@ def normalize(
         Text to process
     lam_alef : bool, optional
         Normalize :data:`~.LAM_ALEF_VARIATIONS` characters to :data:`~.LAM` and
-        :data:`~.ALEF`, by default False
+        :data:`~.ALEF`, by default None
     alef : bool, optional
         Normalize :data:`~.ALEF_VARIATIONS` characters to :data:`~.ALEF`,
-        by default False
+        by default None
     waw : bool, optional
         Normalize :data:`~.WAW_VARIATIONS` characters to :data:`~.WAW`,
-        by default False
+        by default None
     yeh : bool, optional
         Normalize :data:`~.YEH_VARIATIONS` characters to :data:`~.YEH` and
-        :data:`~.ALEF`, by default False
+        :data:`~.ALEF`, by default None
     teh_marbuta : bool, optional
-        Normalize :data:`~.TEH_MARBUTA` characters to :data:`~.HEH`, by default False
+        Normalize :data:`~.TEH_MARBUTA` characters to :data:`~.HEH`, by default None
     ligatures : bool, optional
         Normalize :data:`~.ARABIC_LIGATURES` characters to the corresponding indices
-        in :data:`~.ARABIC_LIGATURES_NORMALIZED`, by default False
+        in :data:`~.ARABIC_LIGATURES_NORMALIZED`, by default None
     spaces : bool, optional
         Normalize space variations using the pattern :data:`~.PATTERN_SPACES`,
-        by default False
+        by default None
+    all : bool, optional
+        Do all normalization except the ones that are set to False, by default False
 
     Returns
     -------
@@ -91,27 +94,36 @@ def normalize(
         >>> text = "قال رسول الله ﷺ"
         >>> normalize(text, ligatures=True)
         'قال رسول الله صلى الله عليه وسلم'
+
+    .. code-block:: pycon
+
+        >>> text = "قال مؤمن: ﷽ قل هو ﷲ أحد"
+        >>> ...
+        >>> normalize(text, all=True, waw=False)
+        'قال مؤمن: بسم الله الرحمن الرحيم قل هو الله احد'
     """
     if not text:
         return EMPTY
 
-    if not (lam_alef or alef or waw or yeh or teh_marbuta or ligatures or spaces):
+    if not (
+        lam_alef or alef or waw or yeh or teh_marbuta or ligatures or spaces or all
+    ):
         raise ValueError("At least one argument should be True")
 
     output = text
-    if lam_alef:
+    if lam_alef or (all and lam_alef is not False) or (all and lam_alef is not False):
         output = replace(output, LAM_ALEF_VARIATIONS, LAM + ALEF)
-    if alef:
+    if alef or (all and alef is not False):
         output = replace(output, ALEF_VARIATIONS, ALEF)
-    if waw:
+    if waw or (all and waw is not False):
         output = replace(output, WAW_VARIATIONS, WAW)
-    if yeh:
+    if yeh or (all and yeh is not False):
         output = replace(output, YEH_VARIATIONS, YEH)
-    if teh_marbuta:
+    if teh_marbuta or (all and teh_marbuta is not False):
         output = replace(output, TEH_MARBUTA, HEH)
-    if ligatures:
+    if ligatures or (all and ligatures is not False):
         output = replace_pairs(output, ARABIC_LIGATURES, ARABIC_LIGATURES_NORMALIZED)
-    if spaces:
+    if spaces or (all and spaces is not False):
         output = replace_pattern(output, PATTERN_SPACES, SPACE)
 
     return output

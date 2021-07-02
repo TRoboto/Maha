@@ -91,6 +91,16 @@ def test_normalize_with_spaces(input: str, expected: str):
     assert processedtext == expected
 
 
+def test_normalize_all():
+    processed_text = normalize("ﷲ" + " ﷽" + " قارئ", all=True)
+    assert processed_text == "الله بسم الله الرحمن الرحيم قاري"
+
+
+def test_normalize_all_except():
+    processed_text = normalize("الله" + " ﷽" + " قارئ", all=True, yeh=False)
+    assert processed_text == "الله بسم الله الرحمن الرحيم قارئ"
+
+
 def test_normalize_should_raise_valueerror(simple_text_input: str):
     with pytest.raises(ValueError):
         normalize(simple_text_input)
