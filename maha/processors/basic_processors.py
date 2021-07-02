@@ -61,6 +61,9 @@ class TextProcessor(BaseProcessor):
 class FileProcessor(TextProcessor):
     """For processing file input.
 
+    .. note::
+        For large files (>100 MB), use :class:`~StreamFileProcessor`.
+
     Parameters
     ----------
     file : Union[str, :obj:`pathlib.Path`]
