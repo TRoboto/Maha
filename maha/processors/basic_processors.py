@@ -1,6 +1,13 @@
+""" All basic processors """
+
+__all__ = [
+    "TextProcessor",
+    "FileProcessor",
+]
+
+
 import pathlib
-from functools import reduce
-from typing import Callable, List, Union
+from typing import Any, Callable, List, Union
 
 from .base_processor import BaseProcessor
 
@@ -14,30 +21,36 @@ class TextProcessor(BaseProcessor):
         A text or list of strings to process
     """
 
+    def __init__(self, text: Union[List[str], str]) -> None:
+        self.set_lines(text)
+
     def apply(self, fn: Callable[[str], str]):
         self.lines = list(map(fn, self.lines))
 
     def filter(self, fn: Callable[[str], bool]):
         self.lines = list(filter(fn, self.lines))
 
-    def get_unique_characters(self) -> List[str]:
-        return self.reduce(lambda a, b: a | set(b), set())
+    def get_lines(self, n_lines: int = 100):
+        for i in range(0, len(self.lines), n_lines):
+            yield self.lines[i : i + n_lines]
 
-    def reduce(self, fn: Callable, init_value=None):
-        """Reduces the list of strings to a single value/list
+    def set_lines(self, text: Union[List[str], str]):
+        self.lines = []
+        if isinstance(text, str):
+            self.lines = [text]
+        else:
+            self.lines.extend(text)
 
-        .. note::
-            This function isn't intended change the internal list of lines. It can be
-            used to generate statistics about the text.
+    @property
+    def text(self) -> str:
+        """Returns the processed text joined by the newline separator ``\\n``
 
-        Parameters
-        ----------
-        fn :
-            Function to use for reduction
-        init_value :
-            Initial value to use with reduce function
+        Returns
+        -------
+        str
+            processed text
         """
-        return reduce(fn, self.lines, init_value)
+        return "\n".join(self.lines)
 
     @classmethod
     def from_string(cls, text: str, sep: str = None):

@@ -1,3 +1,9 @@
+__all__ = [
+    "StreamTextProcessor",
+    "StreamFileProcessor",
+]
+
+
 import pathlib
 from functools import partial, reduce
 from typing import Callable, Iterable, List, Union
@@ -27,20 +33,7 @@ class StreamTextProcessor(BaseProcessor):
     def filter(self, fn: Callable[[str], bool]):
         self.functions.append(partial(filter, fn))
 
-    def get_lines(self, n_lines: int):
-        """Returns a generator of list of string with length of ``n_lines``
-
-        Parameters
-        ----------
-        n_lines : int
-            Number of lines to yield
-
-        Yields
-        -------
-        List[str]
-            List of strings with length of ``n_lines``. The last list maybe of length
-            less than ``n_lines``.
-        """
+    def get_lines(self, n_lines: int = 100):
         selected_lines = []
 
         for i, line in enumerate(self.lines, 1):
@@ -88,19 +81,6 @@ class StreamTextProcessor(BaseProcessor):
         for function in self.functions:
             output = list(function(output))
         return output
-
-    def get_unique_characters(self) -> List[str]:
-        """Return the unique characters in the text
-
-        Returns
-        -------
-        List[str]
-            List of unique characters
-        """
-        a = set()
-        for line in self.get_lines(1):
-            a |= set("".join(line))
-        return list(a)
 
 
 class StreamFileProcessor(StreamTextProcessor):

@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from functools import wraps
+from typing import Any, Callable
 
 
 def get_unicode(text: str) -> bytes:
@@ -47,3 +49,20 @@ def negate(f):
         return not f(*args, **kwargs)
 
     return g
+
+    # Define Get Function Template (similar to reduce function)
+
+
+@dataclass
+class ObjectGet:
+    """Used with get function in :class:`BaseProcessor`"""
+
+    # function to use
+    func: Callable
+    # initial value
+    prev: Any
+    # name of the operation (argument name)
+    name: str
+    # Function to apply at end
+    # Defaults for post_fn, return the input
+    post_fn: Callable = lambda input: input

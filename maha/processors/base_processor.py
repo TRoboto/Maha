@@ -16,7 +16,7 @@ from maha.cleaners.functions import (
     replace_pairs,
     replace_pattern,
 )
-from maha.utils import negate
+from maha.utils import ObjectGet, negate
 
 
 class BaseProcessor:
@@ -29,39 +29,24 @@ class BaseProcessor:
         A text or list of strings to process
     """
 
-    def __init__(self, text: Union[List[str], str]) -> None:
-        self.set_text(text)
-
-    def set_text(self, text: Union[List[str], str]):
-        """Overrides the text of the class. Changes ``self.lines``
+    def get_lines(self, n_lines: int = 100):
+        """Returns a generator of list of strings with length of ``n_lines``
 
         Parameters
         ----------
-        text : Union[List[str], str]
-            A text or list of strings to process
-        """
-        self.lines = []
-        if isinstance(text, str):
-            self.lines = [text]
-        else:
-            self.lines.extend(text)
+        n_lines : int
+            Number of lines to yield, Defaults to 100
 
-    @property
-    def text(self) -> str:
-        """Returns the processed text joined by the newline separator ``\n``
-
-        Returns
+        Yields
         -------
-        str
-            processed text
+        List[str]
+            List of strings with length of ``n_lines``. The last list maybe of length
+            less than ``n_lines``.
         """
-        return "\n".join(self.lines)
+        raise NotImplementedError()
 
     def apply(self, fn: Callable[[str], str]):
         """Applies a function to every line
-
-        .. warning::
-            To be implemented in sub classes.
 
         Parameters
         ----------
@@ -73,9 +58,6 @@ class BaseProcessor:
     def filter(self, fn: Callable[[str], bool]):
         """Keeps lines for which input function is True
 
-        .. warning::
-            To be implemented in sub classes.
-
         Parameters
         ----------
         fn :
@@ -83,23 +65,78 @@ class BaseProcessor:
         """
         raise NotImplementedError()
 
-    def get_unique_characters(self) -> List[str]:
-        """Return the unique characters in the text
+    def get(
+        self,
+        unique_characters: bool = False,
+        character_length: bool = False,
+        word_length: bool = False,
+    ):
+        """Returns statistics about the provided text
 
-        .. warning::
-            To be implemented in sub classes.
+        Parameters
+        ----------
+        unique_characters : bool, optional
+            Return all unique characters, by default False
+        character_length : bool, optional
+            Return the character length of each string, by default False
+        word_length : bool, optional
+            Return the word length of each string (split by space), by default False
 
         Returns
         -------
-        List[str]
-            List of unique characters
+        Union[Dict[str, Any], Any]
+            * If one argument is set to True, its value is return
+            * If more than one argument is set to True, a dictionary is returned where
+                keys are the True passed arguments with the corresponding values
+
         """
-        raise NotImplementedError()
+
+        objects = []
+        if unique_characters:
+            objects.append(
+                ObjectGet(
+                    func=lambda prev, current: prev | set(current),
+                    prev=set(),
+                    name="unique_characters",
+                    post_fn=list,
+                )
+            )
+
+        if character_length:
+            objects.append(
+                ObjectGet(
+                    func=lambda prev, current: prev + [len(current)],
+                    prev=[],
+                    name="character_length",
+                )
+            )
+
+        if word_length:
+            objects.append(
+                ObjectGet(
+                    func=lambda prev, current: prev + [len(current.split())],
+                    prev=[],
+                    name="word_length",
+                )
+            )
+        for line in self.get_lines(1):
+            line = line[0]
+            for obj in objects:
+                obj.prev = obj.func(obj.prev, line)
+
+        output = {}
+        if len(objects) == 1:
+            output = objects[0].post_fn(objects[0].prev)
+        else:
+            for obj in objects:
+                output[obj.name] = obj.post_fn(obj.prev)
+
+        return output
 
     def print_unique_characters(self):
         """Prints all unique characters in the text"""
-        unique = self.get_unique_characters()
-        print(f"{len(unique)} unique characters were found, which are:")
+        unique = self.get(unique_characters=True)
+        print(f"{len(unique)} unique characters were found, they are:")
         print(unique)
         return self
 

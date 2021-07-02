@@ -172,7 +172,7 @@ def contains(
         * If ``operator`` is set and more than one argument is set to True, a boolean
         value that combines the result with the "and/or" operator is returned.
         * If more than one argument is set to True, a dictionary is returned where
-        the keys are the True passed arguments and the corresponding values are
+        keys are the True passed arguments and the corresponding values are
         booleans. True if the text contains the argument, False otherwise.
 
 
