@@ -144,7 +144,7 @@ class StreamFileProcessor(StreamTextProcessor):
     def process_and_save(
         self, path: Union[str, pathlib.Path], n_lines: int = 100, override: bool = False
     ):
-        """Process the input file and save the result
+        """Process the input file and save the result in the given path
 
         Parameters
         ----------
