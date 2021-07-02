@@ -141,13 +141,15 @@ class StreamFileProcessor(StreamTextProcessor):
 
         self.openfile.close()
 
-    def process_and_save(self, path: Union[str, pathlib.Path]):
+    def process_and_save(self, path: Union[str, pathlib.Path], n_lines: int = 100):
         """Process the input file and save the result
 
         Parameters
         ----------
         path : Union[str, :obj:`pathlib.Path`]
             Path to save the file
+        n_lines : int, optional
+            Number of lines to process at a time, by default 100
 
         Raises
         ------
@@ -161,8 +163,11 @@ class StreamFileProcessor(StreamTextProcessor):
             raise FileExistsError(f"{str(path)} exists.")
 
         with path.open("w", encoding=self.encoding) as file:
-            for lines in self.process():
+            for lines in self.process(n_lines):
+                if not lines:
+                    continue
                 file.write("\n".join(lines))
+                file.write("\n")
 
 
 class FolderProcessor:
