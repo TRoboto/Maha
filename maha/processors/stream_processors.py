@@ -19,7 +19,7 @@ class StreamTextProcessor(BaseProcessor):
     def __init__(self, lines: Iterable[str]) -> None:
 
         self.lines = lines
-        self.functions = []
+        self.functions: List[Callable] = []
 
     def apply(self, fn: Callable[[str], str]):
         self.functions.append(partial(map, fn))
@@ -91,7 +91,7 @@ class StreamTextProcessor(BaseProcessor):
 
 
 class StreamFileProcessor(StreamTextProcessor):
-    """For processing file input.
+    """For processing file stream input.
 
     Parameters
     ----------
