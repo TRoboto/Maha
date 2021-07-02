@@ -98,7 +98,7 @@ def normalize(
     .. code-block:: pycon
 
         >>> text = "قال مؤمن: ﷽ قل هو ﷲ أحد"
-        >>> ...
+        >>> ...  # For space
         >>> normalize(text, all=True, waw=False)
         'قال مؤمن: بسم الله الرحمن الرحيم قل هو الله احد'
     """
