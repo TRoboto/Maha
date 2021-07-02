@@ -77,6 +77,11 @@ class TextProcessor(BaseProcessor):
         """
         return TextProcessor(lines)
 
+    def remove_duplicates(self):
+        """Remove duplicate lines from text"""
+        self.lines = list(dict.fromkeys(self.lines))
+        return self
+
 
 class FileProcessor(TextProcessor):
     """For processing file input.
