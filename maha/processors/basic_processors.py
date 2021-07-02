@@ -1,5 +1,5 @@
 import pathlib
-from typing import Callable, Union
+from typing import Callable, List, Union
 
 from .base_processor import BaseProcessor
 
@@ -18,6 +18,44 @@ class TextProcessor(BaseProcessor):
 
     def filter(self, fn: Callable[[str], bool]):
         self.lines = list(filter(fn, self.lines))
+
+    @classmethod
+    def from_string(cls, text: str, sep: str = None):
+        """Creates a new processor from the given text. Separate the text by the input
+        ``sep`` argument if provided.
+
+        Parameters
+        ----------
+        text : str
+            Text to process
+        sep : str, optional
+            Separator used to split the given text, by default None
+
+        Returns
+        -------
+        TextProcessor
+            New text processor
+        """
+        out = text
+        if sep:
+            out = text.split(sep)
+        return TextProcessor(out)
+
+    @classmethod
+    def from_list(cls, lines: List[str]):
+        """Creates a new processor from the given list of strings.
+
+        Parameters
+        ----------
+        lines : List[str]
+            list of strings
+
+        Returns
+        -------
+        TextProcessor
+            New text processor
+        """
+        return TextProcessor(lines)
 
 
 class FileProcessor(TextProcessor):

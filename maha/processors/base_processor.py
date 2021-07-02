@@ -57,46 +57,6 @@ class BaseProcessor:
         """
         return "\n".join(self.lines)
 
-    @classmethod
-    def from_string(cls, text: str, sep: str = None):
-        """Creates a new processor from the given text. Separate the text by the input
-        ``sep`` argument if provided.
-
-        Parameters
-        ----------
-        text : str
-            Text to process
-        sep : str, optional
-            Separator used to split the given text, by default None
-
-        Returns
-        -------
-        TODO: What should be the return type here?
-        Subclass of :class:`BaseProcessor`
-            A new processor class
-        """
-        out = text
-        if sep:
-            out = text.split(sep)
-        return cls(out)
-
-    @classmethod
-    def from_list(cls, lines: List[str]):
-        """Creates a new processor from the given list of strings.
-
-        Parameters
-        ----------
-        lines : List[str]
-            list of strings
-
-        Returns
-        -------
-        TODO: What should be the return type here?
-        Subclass of :class:`BaseProcessor`
-            A new processor class
-        """
-        return cls(lines)
-
     def apply(self, fn: Callable[[str], str]):
         """Applies a function to every line
 
