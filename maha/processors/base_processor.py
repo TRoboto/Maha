@@ -83,6 +83,31 @@ class BaseProcessor:
         """
         raise NotImplementedError()
 
+    def reduce(self, fn: Callable, init_value=None):
+        """Reduces the list of strings to a single value/list
+
+        .. note::
+            To be implemented in sub classes.
+
+        Parameters
+        ----------
+        fn :
+            Function to use for reduction
+        init_value :
+            Initial value to use with reduce function
+        """
+        raise NotImplementedError()
+
+    def get_unique_characters(self) -> List[str]:
+        """Return the unique character in the text
+
+        Returns
+        -------
+        List[str]
+            List of unique characters
+        """
+        return list(self.reduce(lambda a, b: a | set(b), set()))
+
     def keep(
         self,
         arabic: bool = False,
