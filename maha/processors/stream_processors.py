@@ -86,7 +86,7 @@ class StreamTextProcessor(BaseProcessor):
         """
         output = text
         for function in self.functions:
-            output = list(function(output))
+            output = list(function(o for o in output if o))
         return output
 
 

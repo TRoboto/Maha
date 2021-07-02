@@ -14,7 +14,7 @@ class TextProcessor(BaseProcessor):
     """
 
     def apply(self, fn: Callable[[str], str]):
-        self.lines = list(map(fn, self.lines))
+        self.lines = [fn(line) if line else line for line in self.lines]
 
     def filter(self, fn: Callable[[str], bool]):
         self.lines = list(filter(fn, self.lines))
