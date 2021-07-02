@@ -504,9 +504,6 @@ def test_remove_links():
 
 def test_remove_should_raise_valueerror(simple_text_input: str):
     with pytest.raises(ValueError):
-        remove("", arabic=True)
-
-    with pytest.raises(ValueError):
         remove(simple_text_input)
 
 
