@@ -569,7 +569,7 @@ def remove_numbers(text: str) -> str:
 def remove_patterns(
     text: str, patterns: Union[List[str], str], remove_spaces: bool = True
 ) -> str:
-    """Removes matched characters from the given text ``text`` using input
+    r"""Removes matched characters from the given text ``text`` using input
     patterns ``patterns``
 
     .. note::
