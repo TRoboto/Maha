@@ -141,6 +141,29 @@ class StreamFileProcessor(StreamTextProcessor):
 
         self.openfile.close()
 
+    def process_and_save(self, path: Union[str, pathlib.Path]):
+        """Process the input file and save the result
+
+        Parameters
+        ----------
+        path : Union[str, :obj:`pathlib.Path`]
+            Path to save the file
+
+        Raises
+        ------
+        FileExistsError
+            If the file exists
+        """
+        if isinstance(path, str):
+            path = pathlib.Path(path)
+
+        if path.is_file():
+            raise FileExistsError(f"{str(path)} exists.")
+
+        with path.open("w", encoding=self.encoding) as file:
+            for lines in self.process():
+                file.write("\n".join(lines))
+
 
 class FolderProcessor:
     pass
