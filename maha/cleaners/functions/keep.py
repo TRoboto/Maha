@@ -114,7 +114,7 @@ def keep(
 
     .. code-block:: pycon
 
-        >>> text = "Hi"
+        >>> text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
         >>> keep(text, arabic_letters=True)
         'بسم الله الرحمن الرحيم'
     """
