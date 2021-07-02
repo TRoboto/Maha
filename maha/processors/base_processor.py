@@ -83,34 +83,25 @@ class BaseProcessor:
         """
         raise NotImplementedError()
 
-    def reduce(self, fn: Callable, init_value=None):
-        """Reduces the list of strings to a single value/list
-
-        .. note::
-            This function isn't intended change the internal list of lines. It can be
-            used to generate statistics about the text.
+    def get_unique_characters(self) -> List[str]:
+        """Return the unique characters in the text
 
         .. warning::
             To be implemented in sub classes.
-
-        Parameters
-        ----------
-        fn :
-            Function to use for reduction
-        init_value :
-            Initial value to use with reduce function
-        """
-        raise NotImplementedError()
-
-    def get_unique_characters(self) -> List[str]:
-        """Return the unique characters in the text
 
         Returns
         -------
         List[str]
             List of unique characters
         """
-        return list(self.reduce(lambda a, b: a | set(b), set()))
+        raise NotImplementedError()
+
+    def print_unique_characters(self):
+        """Prints all unique characters in the text"""
+        unique = self.get_unique_characters()
+        print(f"{len(unique)} unique characters were found, which are:")
+        print(unique)
+        return self
 
     def keep(
         self,

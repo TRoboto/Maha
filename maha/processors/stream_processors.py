@@ -1,5 +1,5 @@
 import pathlib
-from functools import partial
+from functools import partial, reduce
 from typing import Callable, Iterable, List, Union
 
 from tqdm import tqdm
@@ -89,6 +89,19 @@ class StreamTextProcessor(BaseProcessor):
             output = list(function(output))
         return output
 
+    def get_unique_characters(self) -> List[str]:
+        """Return the unique characters in the text
+
+        Returns
+        -------
+        List[str]
+            List of unique characters
+        """
+        a = set()
+        for line in self.get_lines(1):
+            a |= set("".join(line))
+        return list(a)
+
 
 class StreamFileProcessor(StreamTextProcessor):
     """For processing file stream input.
@@ -120,6 +133,9 @@ class StreamFileProcessor(StreamTextProcessor):
         super().__init__(self.openfile)
 
     def get_lines(self, n_lines):
+        # set pointer to top of the file
+        self.openfile.seek(0)
+
         selected_lines = []
 
         with tqdm(
@@ -138,8 +154,6 @@ class StreamFileProcessor(StreamTextProcessor):
 
         if selected_lines:
             yield selected_lines
-
-        self.openfile.close()
 
     def process_and_save(
         self, path: Union[str, pathlib.Path], n_lines: int = 100, override: bool = False
@@ -172,6 +186,9 @@ class StreamFileProcessor(StreamTextProcessor):
                     continue
                 file.write("\n".join(lines))
                 file.write("\n")
+
+    def __del__(self):
+        self.openfile.close()
 
 
 class FolderProcessor:

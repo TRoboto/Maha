@@ -1,4 +1,5 @@
 import pathlib
+from functools import reduce
 from typing import Callable, List, Union
 
 from .base_processor import BaseProcessor
@@ -18,6 +19,25 @@ class TextProcessor(BaseProcessor):
 
     def filter(self, fn: Callable[[str], bool]):
         self.lines = list(filter(fn, self.lines))
+
+    def get_unique_characters(self) -> List[str]:
+        return self.reduce(lambda a, b: a | set(b), set())
+
+    def reduce(self, fn: Callable, init_value=None):
+        """Reduces the list of strings to a single value/list
+
+        .. note::
+            This function isn't intended change the internal list of lines. It can be
+            used to generate statistics about the text.
+
+        Parameters
+        ----------
+        fn :
+            Function to use for reduction
+        init_value :
+            Initial value to use with reduce function
+        """
+        return reduce(fn, self.lines, init_value)
 
     @classmethod
     def from_string(cls, text: str, sep: str = None):
