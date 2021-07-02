@@ -219,6 +219,43 @@ class BaseProcessor:
 
         return self
 
+    def drop_empty_lines(self):
+        """Drop empty lines."""
+        return self.drop_lines_below_len(1)
+
+    def drop_lines_below_len(self, length: int, word_level=False):
+        """Drop lines with a number of characters/words less than the input ``length``
+
+        Parameters
+        ----------
+        length : int
+            Number of characters/words
+        word_level : bool, optional
+            True to switch to word level, which splits the text by space,
+            by default False
+        """
+        self.filter(
+            lambda line: (len(line.split()) if word_level else len(line)) >= length
+        )
+        return self
+
+    def drop_lines_above_len(self, length: int, word_level=True):
+        """Drop lines with a number of characters/words more than the input ``length``
+
+        Parameters
+        ----------
+        length : int
+            Number of characters/words
+        word_level : bool, optional
+            True to switch to word level, which splits the text by space,
+            by default False
+        """
+        filter_fn = (
+            lambda line: (len(line.split()) if word_level else len(line)) <= length
+        )
+        self.filter(filter_fn)
+        return self
+
     def filter_lines_contain(
         self,
         arabic: bool = False,
