@@ -93,8 +93,6 @@ def test_normalize_with_spaces(input: str, expected: str):
 
 def test_normalize_should_raise_valueerror(simple_text_input: str):
     with pytest.raises(ValueError):
-        normalize(EMPTY, ligatures=True)
-    with pytest.raises(ValueError):
         normalize(simple_text_input)
 
 

@@ -172,7 +172,7 @@ def remove(
     Raises
     ------
     ValueError
-        If input text is empty or no argument is set to True
+        If no argument is set to True
 
     Examples
     --------
@@ -189,7 +189,7 @@ def remove(
         'قال رب اشرح لي صدري'
     """
     if not text:
-        raise ValueError("Text cannot be empty")
+        return EMPTY
 
     custom_strings = custom_strings or []
     custom_patterns = custom_patterns or []

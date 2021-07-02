@@ -8,6 +8,7 @@ license = "MIT"
 [tool.poetry.dependencies]
 python = "^3.6.3"
 pre-commit = "^2.13.0"
+tqdm = "^4.61.1"
 
 [tool.poetry.dev-dependencies]
 black = "^21.5b1"

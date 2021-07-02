@@ -30,6 +30,16 @@ class BaseProcessor:
     """
 
     def __init__(self, text: Union[List[str], str]) -> None:
+        self.set_text(text)
+
+    def set_text(self, text: Union[List[str], str]):
+        """Overrides the text of the class. Changes ``self.lines``
+
+        Parameters
+        ----------
+        text : Union[List[str], str]
+            A text or list of strings to process
+        """
         self.lines = []
         if isinstance(text, str):
             self.lines = [text]
@@ -46,46 +56,6 @@ class BaseProcessor:
             processed text
         """
         return "\n".join(self.lines)
-
-    @classmethod
-    def from_string(cls, text: str, sep: str = None):
-        """Creates a new processor from the given text. Separate the text by the input
-        ``sep`` argument if provided.
-
-        Parameters
-        ----------
-        text : str
-            Text to process
-        sep : str, optional
-            Separator used to split the given text, by default None
-
-        Returns
-        -------
-        TODO: What should be the return type here?
-        Subclass of :class:`BaseProcessor`
-            A new processor class
-        """
-        out = text
-        if sep:
-            out = text.split(sep)
-        return cls(out)
-
-    @classmethod
-    def from_list(cls, lines: List[str]):
-        """Creates a new processor from the given list of strings.
-
-        Parameters
-        ----------
-        lines : List[str]
-            list of strings
-
-        Returns
-        -------
-        TODO: What should be the return type here?
-        Subclass of :class:`BaseProcessor`
-            A new processor class
-        """
-        return cls(lines)
 
     def apply(self, fn: Callable[[str], str]):
         """Applies a function to every line
@@ -247,6 +217,43 @@ class BaseProcessor:
 
         self.filter(negate(partial(contains, **self._arguments_except_self(locals()))))
 
+        return self
+
+    def drop_empty_lines(self):
+        """Drop empty lines."""
+        return self.drop_lines_below_len(1)
+
+    def drop_lines_below_len(self, length: int, word_level=False):
+        """Drop lines with a number of characters/words less than the input ``length``
+
+        Parameters
+        ----------
+        length : int
+            Number of characters/words
+        word_level : bool, optional
+            True to switch to word level, which splits the text by space,
+            by default False
+        """
+        self.filter(
+            lambda line: (len(line.split()) if word_level else len(line)) >= length
+        )
+        return self
+
+    def drop_lines_above_len(self, length: int, word_level=True):
+        """Drop lines with a number of characters/words more than the input ``length``
+
+        Parameters
+        ----------
+        length : int
+            Number of characters/words
+        word_level : bool, optional
+            True to switch to word level, which splits the text by space,
+            by default False
+        """
+        filter_fn = (
+            lambda line: (len(line.split()) if word_level else len(line)) <= length
+        )
+        self.filter(filter_fn)
         return self
 
     def filter_lines_contain(

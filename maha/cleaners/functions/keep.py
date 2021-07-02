@@ -107,7 +107,7 @@ def keep(
     Raises
     ------
     ValueError
-        If input text is empty or no argument is set to True
+        If no argument is set to True
 
     Example
     -------
@@ -119,7 +119,7 @@ def keep(
     """
 
     if not text:
-        raise ValueError("Text cannot be empty")
+        return EMPTY
 
     custom_strings = custom_strings or []
 

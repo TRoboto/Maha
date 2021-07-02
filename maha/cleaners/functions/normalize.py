@@ -13,6 +13,7 @@ from maha.constants import (
     ALEF_VARIATIONS,
     ARABIC_LIGATURES,
     ARABIC_LIGATURES_NORMALIZED,
+    EMPTY,
     HEH,
     LAM,
     LAM_ALEF_VARIATIONS,
@@ -75,7 +76,7 @@ def normalize(
     Raises
     ------
     ValueError
-        If input text is empty or no argument is set to True
+        If no argument is set to True
 
     Examples
     --------
@@ -92,7 +93,7 @@ def normalize(
         'قال رسول الله صلى الله عليه وسلم'
     """
     if not text:
-        raise ValueError("Text cannot be empty")
+        return EMPTY
 
     if not (lam_alef or alef or waw or yeh or teh_marbuta or ligatures or spaces):
         raise ValueError("At least one argument should be True")
