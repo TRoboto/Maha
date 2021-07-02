@@ -39,6 +39,7 @@ def convert_arabic_numbers_to_english(text: str):
         >>> text = '٣'
         >>> convert_arabic_numbers_to_english(text)
         '3'
+
     .. code-block:: python
 
         >>> text = '١٠'
