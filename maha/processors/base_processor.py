@@ -60,7 +60,7 @@ class BaseProcessor:
     def apply(self, fn: Callable[[str], str]):
         """Applies a function to every line
 
-        .. note::
+        .. warning::
             To be implemented in sub classes.
 
         Parameters
@@ -73,7 +73,7 @@ class BaseProcessor:
     def filter(self, fn: Callable[[str], bool]):
         """Keeps lines for which input function is True
 
-        .. note::
+        .. warning::
             To be implemented in sub classes.
 
         Parameters
@@ -87,6 +87,10 @@ class BaseProcessor:
         """Reduces the list of strings to a single value/list
 
         .. note::
+            This function isn't intended change the internal list of lines. It can be
+            used to generate statistics about the text.
+
+        .. warning::
             To be implemented in sub classes.
 
         Parameters
@@ -99,7 +103,7 @@ class BaseProcessor:
         raise NotImplementedError()
 
     def get_unique_characters(self) -> List[str]:
-        """Return the unique character in the text
+        """Return the unique characters in the text
 
         Returns
         -------
