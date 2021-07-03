@@ -56,7 +56,7 @@ class BaseProcessor:
         raise NotImplementedError()
 
     def filter(self, fn: Callable[[str], bool]):
-        """Keeps lines for which input function is True
+        """Keeps lines for which the input function is True
 
         Parameters
         ----------
@@ -358,8 +358,10 @@ class BaseProcessor:
         if operator is None:
             raise ValueError("operator cannot be None")
 
-        self.filter(partial(contains, **self._arguments_except_self(locals())))
-
+        arguments = locals()
+        self.filter(
+            lambda text: bool(contains(text, **self._arguments_except_self(arguments)))
+        )
         return self
 
     def _arguments_except_self(self, arguments: dict):
