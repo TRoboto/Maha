@@ -50,8 +50,6 @@ def negate(f):
 
     return g
 
-    # Define Get Function Template (similar to reduce function)
-
 
 @dataclass
 class ObjectGet:
