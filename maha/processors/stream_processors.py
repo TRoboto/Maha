@@ -162,9 +162,10 @@ class StreamFileProcessor(StreamTextProcessor):
 
         with path.open("w", encoding=self.encoding) as file:
             for lines in self.process(n_lines):
-                if not lines:
+                text = "\n".join(lines).strip("\n")
+                if not text:
                     continue
-                file.write("\n".join(lines))
+                file.write(text)
                 file.write("\n")
 
     def __del__(self):

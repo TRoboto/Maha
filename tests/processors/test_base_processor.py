@@ -1,4 +1,4 @@
-from typing import Generator
+from typing import Generator, Type
 
 import pytest
 
@@ -10,7 +10,13 @@ from maha.constants import (
     PATTERN_HASHTAGS,
     TEH_MARBUTA,
 )
+from maha.processors import BaseProcessor
 from tests.utils import list_not_in_string, list_only_in_string
+
+
+def test_base_processor_initialization():
+    with pytest.raises(TypeError):
+        BaseProcessor()
 
 
 class TestBaseProcessor:

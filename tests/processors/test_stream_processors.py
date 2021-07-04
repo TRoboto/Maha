@@ -2,6 +2,7 @@ import pathlib
 
 import pytest
 
+from maha.constants import EMPTY
 from maha.processors import StreamFileProcessor, StreamTextProcessor
 from tests.processors.test_base_processor import TestBaseProcessor
 
@@ -81,9 +82,19 @@ class TestStreamFileProcessor(TestStreamTextProcessor):
     def test_process_and_save_override(self, processor, tmp_path):
         tmpfile = tmp_path / "tmp.txt"
         processor.keep(arabic=True)
-        processor.process_and_save(tmpfile)
+        processor.process_and_save(str(tmpfile))
         processor.process_and_save(tmpfile, override=True)
 
-    def test_processor_with_string_path(self):
-        processor = StreamFileProcessor("sample_data/tweets.txt")
+    def test_processor_with_string_path(self, multiple_tweets_file):
+        processor = StreamFileProcessor(str(multiple_tweets_file))
         assert len(list(processor.get_lines())[0]) == 9
+
+    def test_processor_with_empty_returns(
+        self, multiple_tweets_file, tmp_path: pathlib.Path
+    ):
+        tmpfile = tmp_path / "tmp.txt"
+        processor = StreamFileProcessor(str(multiple_tweets_file))
+        processor.keep(custom_strings="hello")
+        processor.process_and_save(str(tmpfile))
+
+        assert tmpfile.read_text() == EMPTY

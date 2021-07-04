@@ -261,6 +261,23 @@ def test_reduce_repeated_substring_default():
     assert processed_text == "heey"
 
 
+def test_reduce_repeated_substring_raises_valueerror():
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", min_repeated=3, reduce_to=10)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", min_repeated=3.5)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", reduce_to=3.5)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", min_repeated=-1)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", reduce_to=-5)
+
+
 @pytest.mark.parametrize(
     "input, expected, min_repeated, reduce_to",
     [
