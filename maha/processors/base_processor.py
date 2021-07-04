@@ -10,6 +10,7 @@ from typing import Callable, List, Union
 
 from maha.cleaners.functions import (
     contains,
+    contains_repeated_substring,
     keep,
     normalize,
     remove,
@@ -316,6 +317,18 @@ class BaseProcessor(ABC):
             lambda line: (len(line.split()) if word_level else len(line)) <= length
         )
         self.filter(filter_fn)
+        return self
+
+    def drop_lines_with_repeated_substring(self, repeated=3):
+        """Drop lines with a number of consecutive repeated substrings
+
+        Parameters
+        ----------
+        repeated : int, optional
+            Minimum number of repetitions, by default 3
+
+        """
+        self.filter(lambda line: not contains_repeated_substring(line, repeated))
         return self
 
     def filter_lines_contain(

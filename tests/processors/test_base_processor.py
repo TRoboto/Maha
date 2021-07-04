@@ -61,13 +61,13 @@ class TestBaseProcessor:
         word_length = processor.get(word_length=True)
         assert isinstance(word_length, list)
         assert len(word_length) == 9
-        assert word_length == [17, 37, 19, 7, 7, 8, 12, 3, 11]
+        assert word_length == [17, 37, 19, 8, 7, 8, 12, 3, 11]
 
     def test_get_with_character_length(self, processor):
         char_length = processor.get(character_length=True)
         assert isinstance(char_length, list)
         assert len(char_length) == 9
-        assert char_length == [85, 212, 98, 41, 33, 46, 69, 29, 73]
+        assert char_length == [85, 212, 98, 50, 33, 46, 69, 29, 73]
 
     def test_get_with_more_than_one_input(self, processor):
         outputs = processor.get(character_length=True, word_length=True)
@@ -172,7 +172,7 @@ class TestBaseProcessor:
         assert processor.drop_lines_below_len(7, word_level=True) is processor
         assert len(self.get_processed_lines(processor)) == 8
         processor.drop_lines_below_len(8, word_level=True)
-        assert len(self.get_processed_lines(processor)) == 6
+        assert len(self.get_processed_lines(processor)) == 7
 
     def test_drop_lines_above_len(self, processor):
         assert processor.drop_lines_above_len(85) is processor
@@ -183,6 +183,10 @@ class TestBaseProcessor:
         assert len(self.get_processed_lines(processor)) == 7
         processor.drop_lines_above_len(16, word_level=True)
         assert len(self.get_processed_lines(processor)) == 6
+
+    def test_drop_lines_with_repeated_substring(self, processor):
+        assert processor.drop_lines_with_repeated_substring(3) is processor
+        assert len(self.get_processed_lines(processor)) == 8
 
     def test_filter_lines_contain(self, processor):
         assert (
