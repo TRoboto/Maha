@@ -297,7 +297,7 @@ class BaseProcessor:
         )
         return self
 
-    def drop_lines_above_len(self, length: int, word_level=True):
+    def drop_lines_above_len(self, length: int, word_level=False):
         """Drop lines with a number of characters/words more than the input ``length``
 
         Parameters
