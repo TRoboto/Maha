@@ -191,8 +191,12 @@ class TestBaseProcessor:
         assert len(self.get_processed_lines(processor)) == 6
 
     def test_drop_lines_with_repeated_substring(self, processor):
-        assert processor.drop_lines_with_repeated_substring(3) is processor
+        assert processor.drop_lines_contain_repeated_substring(3) is processor
         assert len(self.get_processed_lines(processor)) == 8
+
+    def test_drop_lines_contain_single_letter_word(self, processor):
+        assert processor.drop_lines_contain_single_letter_word() is processor
+        assert len(self.get_processed_lines(processor)) == 4
 
     def test_filter_lines_contain(self, processor):
         assert (

@@ -5,6 +5,7 @@ from maha.cleaners.functions import (
     contains,
     contains_patterns,
     contains_repeated_substring,
+    contains_single_letter_word,
 )
 from maha.constants import EMPTY, PATTERN_EMAILS
 from tests.utils import is_false, is_true
@@ -232,6 +233,28 @@ def test_contains_patterns():
 def test_contains_patterns_raises_value_error(simple_text_input: str):
     with pytest.raises(ValueError):
         contains_patterns(simple_text_input, EMPTY)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("a", True),
+        ("a", True),
+        ("و", True),
+        ("ك ", True),
+        (" و", True),
+        ("محمد و احمد", True),
+        ("محمد و", True),
+        ("how r u", True),
+        ("how r you", True),
+        ("how are u", True),
+        ("how are yo", False),
+        ("محمد واحمد", False),
+        ("ﷺ", True),
+    ],
+)
+def test_contains_single_letter_word(input: str, expected: bool):
+    assert contains_single_letter_word(input) == expected
 
 
 def test_contain_strings(simple_text_input: str):

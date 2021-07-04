@@ -7,6 +7,7 @@ __all__ = [
     "contains_patterns",
     "contain_strings",
     "contains_repeated_substring",
+    "contains_single_letter_word",
 ]
 from typing import Dict, List, Union
 
@@ -252,6 +253,24 @@ def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
     check_positive_integer(min_repeated, "min_repeated")
 
     pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
+    return contains_patterns(text, pattern)
+
+
+def contains_single_letter_word(text: str):
+    """Check for a single-letter word. For example, "how r u" should return True
+    because it contains two single-letter word, "r" and "u".
+
+    Parameters
+    ----------
+    text : str
+        Text to check
+
+    Returns
+    -------
+    bool
+        True if the input text contains single-letter word, False otherwise
+    """
+    pattern = r"\b\w\b"
     return contains_patterns(text, pattern)
 
 
