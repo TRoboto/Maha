@@ -35,6 +35,13 @@ class TextProcessor(BaseProcessor):
             yield self.lines[i : i + n_lines]
 
     def set_lines(self, text: Union[List[str], str]):
+        """Overrides text
+
+        Parameters
+        ----------
+        text : Union[List[str], str]
+            New text or list of strings
+        """
         self.lines = []
         if isinstance(text, str):
             self.lines = [text]
@@ -90,8 +97,8 @@ class TextProcessor(BaseProcessor):
         """
         return TextProcessor(lines)
 
-    def remove_duplicates(self):
-        """Remove duplicate lines from text"""
+    def drop_duplicates(self):
+        """Drops duplicate lines from text"""
         self.lines = list(dict.fromkeys(self.lines))
         return self
 
@@ -124,12 +131,12 @@ class FileProcessor(TextProcessor):
             raise FileNotFoundError(f"{str(path)} doesn't exist.")
 
         with path.open("r", encoding="utf8") as f:
-            lines = f.readlines()
+            text = f.read()
 
-        if not lines:
+        if not text:
             raise ValueError("File empty.")
 
-        super().__init__(lines)
+        super().__init__(text.split("\n"))
 
 
 class FolderProcessor:
