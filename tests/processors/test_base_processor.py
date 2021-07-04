@@ -16,15 +16,20 @@ from tests.utils import list_not_in_string, list_only_in_string
 class TestBaseProcessor:
     __test__ = False
 
+    def get_processed_lines(self, proc):
+        raise NotImplementedError()
+
+    def get_processed_text(self, proc):
+        raise NotImplementedError
+
     def test_lines_correct(self, processor):
-        assert len(processor.lines) == 9
+        assert len(list(processor.get_lines(1))) == 9
 
     def test_get_lines(self, processor):
         lines = processor.get_lines(1)
         assert isinstance(lines, Generator)
         line = next(lines)
         assert len(line) == 1
-        assert line[0] == processor.lines[0]
         assert len(list(lines)) == 8
 
     def test_get_lines_more_than_one(self, processor):
@@ -34,17 +39,17 @@ class TestBaseProcessor:
 
     def test_apply(self, processor):
         processor.apply(lambda l: l.replace("#Windows11", "Windows11"))
-        assert "#Windows11" not in processor.text
-        assert "Windows11" in processor.text
+        assert "#Windows11" not in self.get_processed_text(processor)
+        assert "Windows11" in self.get_processed_text(processor)
 
     def test_filter(self, processor):
         processor.filter(lambda l: "الصلاة" in l)
-        assert len(processor.lines) == 1
+        assert len(self.get_processed_lines(processor)) == 1
 
     def test_get_with_unique_characters(self, processor):
-        unique_chars = processor.keep(english_letters=True).get(unique_characters=True)
+        unique_chars = processor.get(unique_characters=True)
         assert isinstance(unique_chars, list)
-        assert len(unique_chars) == 36
+        assert len(unique_chars) == 91
 
     def test_get_with_word_length(self, processor):
         word_length = processor.get(word_length=True)
@@ -70,60 +75,69 @@ class TestBaseProcessor:
 
     def test_keep(self, processor):
         assert processor.keep(arabic_letters=True) is processor
-        assert len(processor.lines) == 9
-        assert len([l for l in processor.lines if l]) == 6
+        assert len(self.get_processed_lines(processor)) == 9
+        assert len([l for l in self.get_processed_lines(processor) if l]) == 6
         assert all(
-            [list_only_in_string(ARABIC_LETTERS, line) for line in processor.lines]
+            [
+                list_only_in_string(ARABIC_LETTERS, line)
+                for line in self.get_processed_lines(processor)
+            ]
         )
 
     def test_normalize(self, processor):
         assert processor.normalize(alef=True, teh_marbuta=True) is processor
-        assert len(processor.lines) == 9
-        assert list_not_in_string(ALEF_VARIATIONS[1:] + [TEH_MARBUTA], processor.text)
+        assert len(self.get_processed_lines(processor)) == 9
+        assert list_not_in_string(
+            ALEF_VARIATIONS[1:] + [TEH_MARBUTA], self.get_processed_text(processor)
+        )
 
     def test_normalize_all(self, processor):
         processor.normalize(all=True, teh_marbuta=False)
-        assert len(processor.lines) == 9
-        assert TEH_MARBUTA in processor.text
+        assert len(self.get_processed_lines(processor)) == 9
+        assert TEH_MARBUTA in self.get_processed_text(processor)
         assert list_not_in_string(
-            ALEF_VARIATIONS[1:] + ARABIC_LIGATURES, processor.text
+            ALEF_VARIATIONS[1:] + ARABIC_LIGATURES, self.get_processed_text(processor)
         )
 
     def test_replace(self, processor):
         assert processor.replace(["#Windows11", "12:00"], "TEST") is processor
-        assert len(processor.lines) == 9
-        assert processor.text.count("TEST") == 2
-        assert list_not_in_string(["#Windows11", "12:00"], processor.text)
+        assert len(self.get_processed_lines(processor)) == 9
+        assert self.get_processed_text(processor).count("TEST") == 2
+        assert list_not_in_string(
+            ["#Windows11", "12:00"], self.get_processed_text(processor)
+        )
 
     def test_replace_pattern(self, processor):
         assert processor.replace_pattern(PATTERN_HASHTAGS, "HASHTAG") is processor
-        assert len(processor.lines) == 9
-        assert processor.text.count("HASHTAG") == 6
-        assert "#Windows11" not in processor.text
+        assert len(self.get_processed_lines(processor)) == 9
+        assert self.get_processed_text(processor).count("HASHTAG") == 6
+        assert "#Windows11" not in self.get_processed_text(processor)
 
     def test_replace_pairs(self, processor):
         assert (
             processor.replace_pairs(["#Windows11", "12:00"], ["Windows11", "12"])
             is processor
         )
-        assert len(processor.lines) == 9
-        assert "Windows11" in processor.text
-        assert "12" in processor.text
-        assert "#Windows11" not in processor.text
-        assert "12:00" not in processor.text
+        assert len(self.get_processed_lines(processor)) == 9
+        assert "Windows11" in self.get_processed_text(processor)
+        assert "12" in self.get_processed_text(processor)
+        assert "#Windows11" not in self.get_processed_text(processor)
+        assert "12:00" not in self.get_processed_text(processor)
 
     def test_remove(self, processor):
         assert processor.remove(hashtags=True) is processor
-        assert len(processor.lines) == 9
-        assert "#" not in processor.text
+        assert len(self.get_processed_lines(processor)) == 9
+        assert "#" not in self.get_processed_text(processor)
 
     def test_drop_lines_contain(self, processor):
         assert (
             processor.drop_lines_contain(arabic_ligatures=True, english_letters=True)
             is processor
         )
-        assert len(processor.lines) == 3
-        assert list_not_in_string(ARABIC_LIGATURES + ENGLISH_LETTERS, processor.text)
+        assert len(self.get_processed_lines(processor)) == 3
+        assert list_not_in_string(
+            ARABIC_LIGATURES + ENGLISH_LETTERS, self.get_processed_text(processor)
+        )
 
     def test_drop_lines_contain_with_and(self, processor):
         assert (
@@ -132,46 +146,44 @@ class TestBaseProcessor:
             )
             is processor
         )
-        assert len(processor.lines) == 9
+        assert len(self.get_processed_lines(processor)) == 9
         processor.drop_lines_contain(arabic_ligatures=True, emojis=True, operator="and")
-        assert len(processor.lines) == 8
+        assert len(self.get_processed_lines(processor)) == 8
 
     def test_drop_lines_contain_raises_valueerror(self, processor):
         with pytest.raises(ValueError):
             processor.drop_lines_contain(arabic_ligatures=True, operator=None)
 
-    def test_drop_empty_lines(self, processor):
-        processor.lines.append("")
-        assert len(processor.lines) == 10
+    def test_drop_empty_lines_no_empty(self, processor):
         assert processor.drop_empty_lines() is processor
-        assert len(processor.lines) == 9
+        assert len(self.get_processed_lines(processor)) == 9
 
     def test_drop_lines_below_len(self, processor):
         assert processor.drop_lines_below_len(69) is processor
-        assert len(processor.lines) == 5
+        assert len(self.get_processed_lines(processor)) == 5
 
     def test_drop_lines_below_len_word_level(self, processor):
         assert processor.drop_lines_below_len(7, word_level=True) is processor
-        assert len(processor.lines) == 8
+        assert len(self.get_processed_lines(processor)) == 8
         processor.drop_lines_below_len(8, word_level=True)
-        assert len(processor.lines) == 6
+        assert len(self.get_processed_lines(processor)) == 6
 
     def test_drop_lines_above_len(self, processor):
         assert processor.drop_lines_above_len(85) is processor
-        assert len(processor.lines) == 7
+        assert len(self.get_processed_lines(processor)) == 7
 
     def test_drop_lines_above_len_word_level(self, processor):
         assert processor.drop_lines_above_len(17, word_level=True) is processor
-        assert len(processor.lines) == 7
+        assert len(self.get_processed_lines(processor)) == 7
         processor.drop_lines_above_len(16, word_level=True)
-        assert len(processor.lines) == 6
+        assert len(self.get_processed_lines(processor)) == 6
 
     def test_filter_lines_contain(self, processor):
         assert (
             processor.filter_lines_contain(arabic_ligatures=True, english_letters=True)
             is processor
         )
-        assert len(processor.lines) == 6
+        assert len(self.get_processed_lines(processor)) == 6
 
     def test_filter_lines_contain_with_and(self, processor):
         assert (
@@ -180,11 +192,11 @@ class TestBaseProcessor:
             )
             is processor
         )
-        assert len(processor.lines) == 1
+        assert len(self.get_processed_lines(processor)) == 1
         processor.filter_lines_contain(
             arabic_ligatures=True, english_letters=True, operator="and"
         )
-        assert len(processor.lines) == 0
+        assert len(self.get_processed_lines(processor)) == 0
 
     def test_filter_lines_contain_raises_value_error(self, processor):
         with pytest.raises(ValueError):

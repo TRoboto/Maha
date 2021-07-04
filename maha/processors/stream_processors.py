@@ -112,7 +112,7 @@ class StreamFileProcessor(StreamTextProcessor):
         self.openfile = path.open("r", encoding=encoding)
         super().__init__(self.openfile)
 
-    def get_lines(self, n_lines):
+    def get_lines(self, n_lines: int = 100):
         # set pointer to top of the file
         self.openfile.seek(0)
 

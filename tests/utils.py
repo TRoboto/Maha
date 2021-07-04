@@ -1,15 +1,19 @@
 from typing import Any, List
 
+from maha.constants import SPACE
+
 
 def list_in_string(char_list: List[str], text: str):
     """Returns true if all input characters are in the given text"""
     return all(c in text for c in char_list)
 
 
-def list_only_in_string(char_list: List[str], text: str):
+def list_only_in_string(char_list: List[str], text: str, include_space=True):
     """Returns true if the given text only contains characters from the input list
     of chars
     """
+    if include_space:
+        char_list += SPACE
     return all(c in char_list for c in text)
 
 

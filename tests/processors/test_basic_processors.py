@@ -11,6 +11,12 @@ class TestTextProcessor(TestBaseProcessor):
     def processor(self, multiple_tweets: str):
         return TextProcessor.from_string(multiple_tweets, "\n")
 
+    def get_processed_lines(self, proc):
+        return proc.lines
+
+    def get_processed_text(self, proc):
+        return proc.text
+
     def test_set_lines_list(self, processor):
         newlines = ["hi", "مرحبا"]
         processor.set_lines(newlines)
@@ -42,6 +48,12 @@ class TestTextProcessor(TestBaseProcessor):
         assert len(processor.lines) == 10
         processor.drop_duplicates()
         assert len(processor.lines) == 9
+
+    def test_drop_empty_lines(self, processor):
+        self.get_processed_lines(processor).append("")
+        assert len(self.get_processed_lines(processor)) == 10
+        assert processor.drop_empty_lines() is processor
+        assert len(self.get_processed_lines(processor)) == 9
 
 
 class TestFileProcessor(TestTextProcessor):
