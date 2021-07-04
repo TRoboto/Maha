@@ -165,13 +165,14 @@ class BaseProcessor:
 
     def normalize(
         self,
-        lam_alef: bool = False,
-        alef: bool = False,
-        waw: bool = False,
-        yeh: bool = False,
-        teh_marbuta: bool = False,
-        ligatures: bool = False,
-        spaces: bool = False,
+        lam_alef: bool = None,
+        alef: bool = None,
+        waw: bool = None,
+        yeh: bool = None,
+        teh_marbuta: bool = None,
+        ligatures: bool = None,
+        spaces: bool = None,
+        all: bool = None,
     ):
         """Applies :func:`~.normalize` to every line"""
         self.apply(partial(normalize, **self._arguments_except_self(locals())))
