@@ -42,7 +42,7 @@ jobs:
         run: poetry run pytest --cov-append --doctest-modules maha
 
       - name: Run tests
-        run: pytest --cov=maha tests/ --cov-report=html --cov-fail-under=90
+        run: poetry run pytest --cov=maha tests/ --cov-report=html --cov-fail-under=90
 
       - uses: actions/checkout@master
       - uses: codecov/codecov-action@v1
