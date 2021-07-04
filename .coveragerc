@@ -1,3 +1,6 @@
+[run]
+source=maha
+
 [report]
 exclude_lines =
     \braise NotImplementedError\b
