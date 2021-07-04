@@ -130,6 +130,12 @@ class TestBaseProcessor:
         assert "#Windows11" not in self.get_processed_text(processor)
         assert "12:00" not in self.get_processed_text(processor)
 
+    def test_reduce_repeated_substring(self, processor):
+        assert processor.reduce_repeated_substring() is processor
+        assert len(self.get_processed_lines(processor)) == 9
+        assert "هه" in self.get_processed_text(processor)
+        assert "ههه" not in self.get_processed_text(processor)
+
     def test_remove(self, processor):
         assert processor.remove(hashtags=True) is processor
         assert len(self.get_processed_lines(processor)) == 9

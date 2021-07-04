@@ -13,6 +13,7 @@ from maha.cleaners.functions import (
     contains_repeated_substring,
     keep,
     normalize,
+    reduce_repeated_substring,
     remove,
     replace,
     replace_pairs,
@@ -50,7 +51,7 @@ class BaseProcessor(ABC):
 
     @abstractmethod
     def apply(self, fn: Callable[[str], str]):
-        """Applies a function to every line
+        """Applies a function to each line
 
         Parameters
         ----------
@@ -164,7 +165,7 @@ class BaseProcessor(ABC):
         use_space: bool = True,
         custom_strings: Union[List[str], str] = None,
     ):
-        """Applies :func:`~.keep` to every line"""
+        """Applies :func:`~.keep` to each line"""
         self.apply(partial(keep, **self._arguments_except_self(locals())))
         return self
 
@@ -179,23 +180,30 @@ class BaseProcessor(ABC):
         spaces: bool = None,
         all: bool = None,
     ):
-        """Applies :func:`~.normalize` to every line"""
+        """Applies :func:`~.normalize` to each line"""
         self.apply(partial(normalize, **self._arguments_except_self(locals())))
         return self
 
     def replace(self, strings: Union[List[str], str], with_value: str):
-        """Applies :func:`~.replace` to every line"""
+        """Applies :func:`~.replace` to each line"""
         self.apply(partial(replace, **self._arguments_except_self(locals())))
         return self
 
     def replace_pattern(self, pattern: str, with_value: Union[Callable[..., str], str]):
-        """Applies :func:`~.replace_pattern` to every line"""
+        """Applies :func:`~.replace_pattern` to each line"""
         self.apply(partial(replace_pattern, **self._arguments_except_self(locals())))
         return self
 
     def replace_pairs(self, keys: List[str], values: List[str]):
-        """Applies :func:`~.replace_pairs` to every line"""
+        """Applies :func:`~.replace_pairs` to each line"""
         self.apply(partial(replace_pairs, **self._arguments_except_self(locals())))
+        return self
+
+    def reduce_repeated_substring(self, min_repeated: int = 3, reduce_to: int = 2):
+        """Applies :func:`~.reduce_repeated_substring` to each line"""
+        self.apply(
+            partial(reduce_repeated_substring, **self._arguments_except_self(locals()))
+        )
         return self
 
     def remove(
@@ -229,7 +237,7 @@ class BaseProcessor(ABC):
         custom_strings: Union[List[str], str] = None,
         custom_patterns: Union[List[str], str] = None,
     ):
-        """Applies :func:`~.remove` to every line"""
+        """Applies :func:`~.remove` to each line"""
         self.apply(partial(remove, **self._arguments_except_self(locals())))
         return self
 
