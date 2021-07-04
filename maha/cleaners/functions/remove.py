@@ -200,13 +200,16 @@ def remove(
 
     # characters to remove
     chars_to_remove = []
-    chars_to_remove.extend(list(custom_strings))
     # patterns to remove
     patterns_to_remove = []
+
+    if isinstance(custom_strings, str):
+        custom_strings = [custom_strings]
 
     if isinstance(custom_patterns, str):
         custom_patterns = [custom_patterns]
 
+    chars_to_remove.extend(custom_strings)
     patterns_to_remove.extend(custom_patterns)
 
     # Since each argument has the same name as the corresponding constant
