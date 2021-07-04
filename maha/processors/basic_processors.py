@@ -139,5 +139,9 @@ class FileProcessor(TextProcessor):
         super().__init__(text.split("\n"))
 
 
+class DataFrameProcessor:
+    pass
+
+
 class FolderProcessor:
     pass
