@@ -4,6 +4,7 @@ __all__ = [
     "BaseProcessor",
 ]
 
+from abc import ABC, abstractmethod
 from functools import partial
 from typing import Callable, List, Union
 
@@ -19,7 +20,7 @@ from maha.cleaners.functions import (
 from maha.utils import ObjectGet, negate
 
 
-class BaseProcessor:
+class BaseProcessor(ABC):
     """Base class for all processors. It contains almost all functions needed for the
     processors.
 
@@ -29,6 +30,7 @@ class BaseProcessor:
         A text or list of strings to process
     """
 
+    @abstractmethod
     def get_lines(self, n_lines: int = 100):
         """Returns a generator of list of strings with length of ``n_lines``
 
@@ -45,6 +47,7 @@ class BaseProcessor:
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def apply(self, fn: Callable[[str], str]):
         """Applies a function to every line
 
@@ -55,6 +58,7 @@ class BaseProcessor:
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def filter(self, fn: Callable[[str], bool]):
         """Keeps lines for which the input function is True
 
