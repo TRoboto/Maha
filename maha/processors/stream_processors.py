@@ -127,7 +127,7 @@ class StreamFileProcessor(StreamTextProcessor):
         ) as pbar:
             for i, line in enumerate(self.lines, 1):
                 pbar.update(len(line.encode(self.encoding)))
-                selected_lines.append(line)
+                selected_lines.append(line.strip())
                 if i % n_lines == 0:
                     yield selected_lines
                     selected_lines = []
