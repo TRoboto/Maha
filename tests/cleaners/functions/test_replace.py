@@ -1,6 +1,7 @@
 import pytest
 
 from maha.cleaners.functions import (
+    connect_single_letter_word,
     convert_arabic_numbers_to_english,
     replace,
     replace_except,
@@ -18,6 +19,45 @@ from maha.constants import (
     ENGLISH_SMALL_LETTERS,
 )
 from tests.utils import list_not_in_string, list_only_in_string
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("ب", "ب"),
+        ("b", "b"),
+        ("ب ", "ب "),
+        (" ا", " ا"),
+        ("واحد ف اربعة", "واحد فاربعة"),
+        ("ل أحمد", "لأحمد"),
+        ("محمد و احمد", "محمد واحمد"),
+        ("ثلاث و 4", "ثلاث و4"),
+        ("ف قال محمد", "فقال محمد"),
+        ("ك التي", "كالتي"),
+        ("ب كم", "بكم"),
+        ("هذا ب كم", "هذا بكم"),
+        ("هو و", "هو و"),
+        ("قالوا ت الله", "قالوا تالله"),
+    ],
+)
+def test_connect_single_letter_word_all(input, expected):
+    assert connect_single_letter_word(input, all=True) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("ثلاث و 4", "ثلاث و4"),
+        ("ف قال محمد", "فقال محمد"),
+        ("ك التي", "ك التي"),
+    ],
+)
+def test_connect_single_letter_word_all_except(input, expected):
+    assert connect_single_letter_word(input, all=True, kaf=False) == expected
+
+
+def test_connect_single_letter_word_custom():
+    assert connect_single_letter_word("How r u", custom_strings="r") == "How ru"
 
 
 def test_replace_pairs_simple(simple_text_input: str):
