@@ -9,6 +9,7 @@ from functools import partial
 from typing import Callable, List, Union
 
 from maha.cleaners.functions import (
+    connect_single_letter_word,
     contains,
     contains_repeated_substring,
     contains_single_letter_word,
@@ -183,6 +184,23 @@ class BaseProcessor(ABC):
     ):
         """Applies :func:`~.normalize` to each line"""
         self.apply(partial(normalize, **self._arguments_except_self(locals())))
+        return self
+
+    def connect_single_letter_word(
+        self,
+        waw: bool = None,
+        feh: bool = None,
+        beh: bool = None,
+        lam: bool = None,
+        kaf: bool = None,
+        teh: bool = None,
+        all: bool = None,
+        custom_strings: Union[List[str], str] = None,
+    ):
+        """Applies :func:`~.connect_single_letter_word` to each line"""
+        self.apply(
+            partial(connect_single_letter_word, **self._arguments_except_self(locals()))
+        )
         return self
 
     def replace(self, strings: Union[List[str], str], with_value: str):
