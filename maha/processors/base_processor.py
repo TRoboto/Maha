@@ -21,7 +21,7 @@ from maha.cleaners.functions import (
     replace_pairs,
     replace_pattern,
 )
-from maha.utils import ObjectGet, negate
+from maha.utils import ObjectGet
 
 
 class BaseProcessor(ABC):
@@ -305,7 +305,10 @@ class BaseProcessor(ABC):
         if operator is None:
             raise ValueError("operator cannot be None")
 
-        self.filter(negate(partial(contains, **self._arguments_except_self(locals()))))
+        arguments = locals()
+        self.filter(
+            lambda text: not contains(text, **self._arguments_except_self(arguments))
+        )
 
         return self
 
@@ -358,7 +361,11 @@ class BaseProcessor(ABC):
         self.filter(lambda line: not contains_repeated_substring(line, repeated))
         return self
 
-    def drop_lines_contain_single_letter_word(self):
+    def drop_lines_contain_single_letter_word(
+        self,
+        arabic_letters: bool = False,
+        english_letters: bool = False,
+    ):
         """Drop lines containing a single-letter word (e.g."محمد و احمد" or
         "how r u"). In Arabic, single-letter words are rare.
 
@@ -369,7 +376,13 @@ class BaseProcessor(ABC):
         See :func:`~.contains_single_letter_word`.
         See also :func:`~.connect_single_letter_word`.
         """
-        self.filter(lambda line: not contains_single_letter_word(line))
+
+        arguments = locals()
+        self.filter(
+            lambda text: not contains_single_letter_word(
+                text, **self._arguments_except_self(arguments)
+            )
+        )
         return self
 
     def filter_lines_contain(
@@ -425,4 +438,4 @@ class BaseProcessor(ABC):
 
     def _arguments_except_self(self, arguments: dict):
         """Used in combination with local() to return all arguments withoutself"""
-        return {k: v for k, v in arguments.items() if k != "self"}
+        return {k: v for k, v in arguments.items() if k not in ["self", "arguments"]}

@@ -256,21 +256,44 @@ def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
     return contains_patterns(text, pattern)
 
 
-def contains_single_letter_word(text: str):
-    """Check for a single-letter word. For example, "how r u" should return True
-    because it contains two single-letter word, "r" and "u".
+def contains_single_letter_word(
+    text: str,
+    arabic_letters: bool = False,
+    english_letters: bool = False,
+):
+    """Check for a single-letter word. For example, "how r u" should return True if
+    ``english_letters`` is set to True because it contains two single-letter word,
+    "r" and "u".
 
     Parameters
     ----------
     text : str
         Text to check
+    arabic_letters : bool, optional
+        Check for all :data:`~.ARABIC_LETTERS`, by default False
+    english_letters : bool, optional
+        Check for all :data:`~.ENGLISH_LETTERS`, by default False
 
     Returns
     -------
     bool
         True if the input text contains single-letter word, False otherwise
+
+    Raises
+    ------
+    ValueError
+        If no argument is set to True
     """
-    pattern = r"\b\w\b"
+    letters = []
+    if arabic_letters:
+        letters += ARABIC_LETTERS
+    if english_letters:
+        letters += ENGLISH_LETTERS
+
+    if not letters:
+        raise ValueError("At least one argument should be True")
+
+    pattern = r"\b[{}]\b".format("".join(letters))
     return contains_patterns(text, pattern)
 
 

@@ -13,7 +13,7 @@ def list_only_in_string(char_list: List[str], text: str, include_space=True):
     of chars
     """
     if include_space:
-        char_list += SPACE
+        char_list = char_list + [SPACE]
     return all(c in char_list for c in text)
 
 

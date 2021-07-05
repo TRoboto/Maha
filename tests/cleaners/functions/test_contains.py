@@ -239,7 +239,6 @@ def test_contains_patterns_raises_value_error(simple_text_input: str):
     "input, expected",
     [
         ("a", True),
-        ("a", True),
         ("و", True),
         ("ك ", True),
         (" و", True),
@@ -248,13 +247,56 @@ def test_contains_patterns_raises_value_error(simple_text_input: str):
         ("how r u", True),
         ("how r you", True),
         ("how are u", True),
+        ("number 1", False),
         ("how are yo", False),
         ("محمد واحمد", False),
-        ("ﷺ", True),
+        ("ﷺ", False),
     ],
 )
-def test_contains_single_letter_word(input: str, expected: bool):
-    assert contains_single_letter_word(input) == expected
+def test_contains_single_letter_word_with_arabic_and_english_letters(
+    input: str, expected: bool
+):
+    assert (
+        contains_single_letter_word(input, arabic_letters=True, english_letters=True)
+        == expected
+    )
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("a", False),
+        ("و", True),
+        ("ك ", True),
+        (" و", True),
+        ("محمد و احمد", True),
+        ("محمد و", True),
+        ("how r u", False),
+        ("how are u", False),
+        ("محمد واحمد", False),
+    ],
+)
+def test_contains_single_letter_word_with_arabic_letters(input: str, expected: bool):
+    assert contains_single_letter_word(input, arabic_letters=True) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("I", True),
+        ("I ", True),
+        (" I", True),
+        ("محمد و احمد", False),
+        ("محمد و", False),
+        ("how r u", True),
+        ("how r you", True),
+        ("how are u", True),
+        ("number 1", False),
+        ("how are yo", False),
+    ],
+)
+def test_contains_single_letter_word_with_english_letters(input: str, expected: bool):
+    assert contains_single_letter_word(input, english_letters=True) == expected
 
 
 def test_contain_strings(simple_text_input: str):

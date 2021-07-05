@@ -108,8 +108,8 @@ class TestBaseProcessor:
     def test_connect_single_letter_word(self, processor: BaseProcessor):
         assert processor.connect_single_letter_word(all=True) is processor
         assert len(self.get_processed_lines(processor)) == 9
-        processor.drop_lines_contain_single_letter_word()
-        assert len(self.get_processed_lines(processor)) == 6
+        processor.drop_lines_contain_single_letter_word(arabic_letters=True)
+        assert len(self.get_processed_lines(processor)) == 9
 
     def test_replace(self, processor: BaseProcessor):
         assert processor.replace(["#Windows11", "12:00"], "TEST") is processor
@@ -201,8 +201,11 @@ class TestBaseProcessor:
         assert len(self.get_processed_lines(processor)) == 8
 
     def test_drop_lines_contain_single_letter_word(self, processor: BaseProcessor):
-        assert processor.drop_lines_contain_single_letter_word() is processor
-        assert len(self.get_processed_lines(processor)) == 4
+        assert (
+            processor.drop_lines_contain_single_letter_word(arabic_letters=True)
+            is processor
+        )
+        assert len(self.get_processed_lines(processor)) == 7
 
     def test_filter_lines_contain(self, processor: BaseProcessor):
         assert (

@@ -41,16 +41,6 @@ def check_positive_integer(value: float, var_name: str):
         raise ValueError(f"Cannot assign a float value to '{var_name}'")
 
 
-def negate(f):
-    """Negates a function"""
-
-    @wraps(f)
-    def g(*args, **kwargs):
-        return not f(*args, **kwargs)
-
-    return g
-
-
 @dataclass
 class ObjectGet:
     """Used with get function in :class:`BaseProcessor`"""
