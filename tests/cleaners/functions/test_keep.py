@@ -8,7 +8,7 @@ from maha.cleaners.functions import (
     keep_arabic_with_english_numbers,
     keep_strings,
 )
-from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SEEN, SPACE
+from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SPACE
 
 
 def test_keep_with_arabic(simple_text_input: str):
