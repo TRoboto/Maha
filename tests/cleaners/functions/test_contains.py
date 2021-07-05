@@ -280,6 +280,11 @@ def test_contains_single_letter_word_with_arabic_letters(input: str, expected: b
     assert contains_single_letter_word(input, arabic_letters=True) == expected
 
 
+def test_contains_single_letter_word_raises_valueerror():
+    with pytest.raises(ValueError):
+        contains_single_letter_word("")
+
+
 @pytest.mark.parametrize(
     "input, expected",
     [
