@@ -7,6 +7,7 @@ __all__ = [
     "contains_patterns",
     "contain_strings",
     "contains_repeated_substring",
+    "contains_single_letter_word",
 ]
 from typing import Dict, List, Union
 
@@ -172,17 +173,17 @@ def contains(
         * If ``operator`` is set and more than one argument is set to True, a boolean
         value that combines the result with the "and/or" operator is returned.
         * If more than one argument is set to True, a dictionary is returned where
-        the keys are the True passed arguments and the corresponding values are
+        keys are the True passed arguments and the corresponding values are
         booleans. True if the text contains the argument, False otherwise.
 
 
     Raises
     ------
     ValueError
-        If input text is empty, no argument is set to True
+        If no argument is set to True
     """
     if not text:
-        raise ValueError("Text cannot be empty")
+        return False
 
     if operator is not None and operator not in ["or", "and"]:
         raise ValueError("`operator` can only take 'and' or 'or'")
@@ -252,6 +253,47 @@ def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
     check_positive_integer(min_repeated, "min_repeated")
 
     pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
+    return contains_patterns(text, pattern)
+
+
+def contains_single_letter_word(
+    text: str,
+    arabic_letters: bool = False,
+    english_letters: bool = False,
+):
+    """Check for a single-letter word. For example, "how r u" should return True if
+    ``english_letters`` is set to True because it contains two single-letter word,
+    "r" and "u".
+
+    Parameters
+    ----------
+    text : str
+        Text to check
+    arabic_letters : bool, optional
+        Check for all :data:`~.ARABIC_LETTERS`, by default False
+    english_letters : bool, optional
+        Check for all :data:`~.ENGLISH_LETTERS`, by default False
+
+    Returns
+    -------
+    bool
+        True if the input text contains single-letter word, False otherwise
+
+    Raises
+    ------
+    ValueError
+        If no argument is set to True
+    """
+    letters = []
+    if arabic_letters:
+        letters += ARABIC_LETTERS
+    if english_letters:
+        letters += ENGLISH_LETTERS
+
+    if not letters:
+        raise ValueError("At least one argument should be True")
+
+    pattern = r"\b[{}]\b".format("".join(letters))
     return contains_patterns(text, pattern)
 
 

@@ -172,24 +172,24 @@ def remove(
     Raises
     ------
     ValueError
-        If input text is empty or no argument is set to True
+        If no argument is set to True
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ويندوز 11 سيدعم تطبيقات نظام أندرويد. #Windows11"
-        >>> remove(text,  hashtags=True)
+        >>> remove(text, hashtags=True)
         'ويندوز 11 سيدعم تطبيقات نظام أندرويد.'
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "قَالَ رَبِّ اشْرَحْ لِي صَدْرِي.."
-        >>> remove(text, all_harakat= True, punctuations= True)
+        >>> remove(text, all_harakat=True, punctuations=True)
         'قال رب اشرح لي صدري'
     """
     if not text:
-        raise ValueError("Text cannot be empty")
+        return EMPTY
 
     custom_strings = custom_strings or []
     custom_patterns = custom_patterns or []
@@ -200,13 +200,16 @@ def remove(
 
     # characters to remove
     chars_to_remove = []
-    chars_to_remove.extend(list(custom_strings))
     # patterns to remove
     patterns_to_remove = []
+
+    if isinstance(custom_strings, str):
+        custom_strings = [custom_strings]
 
     if isinstance(custom_patterns, str):
         custom_patterns = [custom_patterns]
 
+    chars_to_remove.extend(custom_strings)
     patterns_to_remove.extend(custom_patterns)
 
     # Since each argument has the same name as the corresponding constant
@@ -330,7 +333,7 @@ def remove_tatweel(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "الحمــــــــد لله رب العــــــــــــالمـــــــيـــــن"
         >>> remove_tatweel(text)
@@ -355,7 +358,7 @@ def remove_emails(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "يمكن استخدام الإيميل الشخصي، كمثال user1998@gmail.com"
         >>> remove_emails(text)
@@ -381,7 +384,7 @@ def remove_hashtags(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ويمكن القول أن مكة المكرمة من أجمل المناطق على وجه الأرض #السعودية"
         >>> remove_hashtags(text)
@@ -406,7 +409,7 @@ def remove_links(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "لمشاهدة آخر التطورات يرجى زيارة الموقع التالي: https://github.com/TRoboto/Maha"
         >>> remove_links(text)
@@ -432,7 +435,7 @@ def remove_mentions(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "@test لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة"
         >>> remove_mentions(text)
@@ -457,7 +460,7 @@ def remove_punctuations(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "مثال على الرموز الخاصة كالتالي $ ^ & * ( ) ! @"
         >>> remove_punctuations(text)
@@ -482,7 +485,7 @@ def remove_english(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ومن أفضل الجامعات هي جامعة إكسفورد (Oxford University)"
         >>> remove_english(text)
@@ -507,7 +510,7 @@ def remove_all_harakat(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "وَٱلصَّٰٓفَّٰتِ صَفّٗا (1) فَٱلزَّٰجِرَٰتِ زَجۡرٗا"
         >>> remove_all_harakat(text)
@@ -532,7 +535,7 @@ def remove_harakat(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ألا تَرَى: كلَّ مَنْ تَرجو وتَأمَلُهُ مِنَ البَرِيَّةِ (مسكينُ بْنُ مسكينِ)"
         >>> remove_harakat(text)
@@ -557,7 +560,7 @@ def remove_numbers(text: str) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ورقم أبو تريكة في نادي الأهلي هو إثنين وعشرين (22)"
         >>> remove_numbers(text)
@@ -569,7 +572,7 @@ def remove_numbers(text: str) -> str:
 def remove_patterns(
     text: str, patterns: Union[List[str], str], remove_spaces: bool = True
 ) -> str:
-    """Removes matched characters from the given text ``text`` using input
+    r"""Removes matched characters from the given text ``text`` using input
     patterns ``patterns``
 
     .. note::
@@ -597,7 +600,7 @@ def remove_patterns(
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "الأميرُ الغازي أرطُغرُل، أو اختصارًا أرطغرل (بالتركية: Ertuğrul)"
         >>> remove_patterns(text, r"\(.*\)")
@@ -657,7 +660,7 @@ def remove_strings(
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ومن الكلمات المحظورة السلاح"
         >>> remove_strings(text, "السلاح")
@@ -704,7 +707,7 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     Example
     -------
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "وكان صديقنا    العزيز   محمد من أفضل   الأشخاص الذين قابلتهم"
         >>> remove_extra_spaces(text)

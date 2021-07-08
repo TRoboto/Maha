@@ -107,11 +107,12 @@ def keep(
     Raises
     ------
     ValueError
-        If input text is empty or no argument is set to True
+        If no argument is set to True
 
     Example
     -------
-    .. code-block:: python
+
+    .. code-block:: pycon
 
         >>> text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
         >>> keep(text, arabic_letters=True)
@@ -119,7 +120,7 @@ def keep(
     """
 
     if not text:
-        raise ValueError("Text cannot be empty")
+        return EMPTY
 
     custom_strings = custom_strings or []
 

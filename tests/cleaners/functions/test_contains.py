@@ -5,8 +5,9 @@ from maha.cleaners.functions import (
     contains,
     contains_patterns,
     contains_repeated_substring,
+    contains_single_letter_word,
 )
-from maha.constants import PATTERN_EMAILS
+from maha.constants import EMPTY, PATTERN_EMAILS
 from tests.utils import is_false, is_true
 
 
@@ -203,16 +204,6 @@ def test_contains_with_custom_patterns(
     assert contains(simple_text_input, custom_patterns=pattern) == expected
 
 
-def test_contains_pattern():
-    assert is_true(contains_patterns("email@web.com", PATTERN_EMAILS))
-    assert is_false(contains_patterns("web.com", PATTERN_EMAILS))
-
-
-def test_contain_strings(simple_text_input: str):
-    assert is_true(contain_strings(simple_text_input, "Most"))
-    assert is_false(contain_strings(simple_text_input, ["most", "J"]))
-
-
 def test_contains_with_multiple_inputs(simple_text_input: str):
     output = contains(
         simple_text_input, arabic=True, harakat=True, arabic_hashtags=True
@@ -223,3 +214,101 @@ def test_contains_with_multiple_inputs(simple_text_input: str):
     assert is_true(output["arabic"])
     assert is_true(output["harakat"])
     assert is_false(output["arabic_hashtags"])
+
+
+def test_contains_with_empty_string():
+    assert contains(EMPTY) == False
+
+
+def test_contains_raises_value_error(simple_text_input: str):
+    with pytest.raises(ValueError):
+        contains(simple_text_input)
+
+
+def test_contains_patterns():
+    assert is_true(contains_patterns("email@web.com", PATTERN_EMAILS))
+    assert is_false(contains_patterns("web.com", PATTERN_EMAILS))
+
+
+def test_contains_patterns_raises_value_error(simple_text_input: str):
+    with pytest.raises(ValueError):
+        contains_patterns(simple_text_input, EMPTY)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("a", True),
+        ("و", True),
+        ("ك ", True),
+        (" و", True),
+        ("محمد و احمد", True),
+        ("محمد و", True),
+        ("how r u", True),
+        ("how r you", True),
+        ("how are u", True),
+        ("number 1", False),
+        ("how are yo", False),
+        ("محمد واحمد", False),
+        ("ﷺ", False),
+    ],
+)
+def test_contains_single_letter_word_with_arabic_and_english_letters(
+    input: str, expected: bool
+):
+    assert (
+        contains_single_letter_word(input, arabic_letters=True, english_letters=True)
+        == expected
+    )
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("a", False),
+        ("و", True),
+        ("ك ", True),
+        (" و", True),
+        ("محمد و احمد", True),
+        ("محمد و", True),
+        ("how r u", False),
+        ("how are u", False),
+        ("محمد واحمد", False),
+    ],
+)
+def test_contains_single_letter_word_with_arabic_letters(input: str, expected: bool):
+    assert contains_single_letter_word(input, arabic_letters=True) == expected
+
+
+def test_contains_single_letter_word_raises_valueerror():
+    with pytest.raises(ValueError):
+        contains_single_letter_word("")
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("I", True),
+        ("I ", True),
+        (" I", True),
+        ("محمد و احمد", False),
+        ("محمد و", False),
+        ("how r u", True),
+        ("how r you", True),
+        ("how are u", True),
+        ("number 1", False),
+        ("how are yo", False),
+    ],
+)
+def test_contains_single_letter_word_with_english_letters(input: str, expected: bool):
+    assert contains_single_letter_word(input, english_letters=True) == expected
+
+
+def test_contain_strings(simple_text_input: str):
+    assert is_true(contain_strings(simple_text_input, "Most"))
+    assert is_false(contain_strings(simple_text_input, ["most", "J"]))
+
+
+def test_contain_strings_raises_value_error(simple_text_input: str):
+    with pytest.raises(ValueError):
+        contain_strings(simple_text_input, EMPTY)

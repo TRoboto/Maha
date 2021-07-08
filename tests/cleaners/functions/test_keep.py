@@ -8,7 +8,7 @@ from maha.cleaners.functions import (
     keep_arabic_with_english_numbers,
     keep_strings,
 )
-from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SEEN, SPACE
+from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SPACE
 
 
 def test_keep_with_arabic(simple_text_input: str):
@@ -102,9 +102,6 @@ def test_keep_with_custom_strings(simple_text_input: str):
 
 
 def test_keep_should_raise_valueerror(simple_text_input: str):
-    with pytest.raises(ValueError):
-        keep("", arabic=True)
-
     with pytest.raises(ValueError):
         keep(simple_text_input)
 

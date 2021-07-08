@@ -4,22 +4,27 @@ __all__ = [
     "BaseProcessor",
 ]
 
+from abc import ABC, abstractmethod
 from functools import partial
 from typing import Callable, List, Union
 
 from maha.cleaners.functions import (
+    connect_single_letter_word,
     contains,
+    contains_repeated_substring,
+    contains_single_letter_word,
     keep,
     normalize,
+    reduce_repeated_substring,
     remove,
     replace,
     replace_pairs,
     replace_pattern,
 )
-from maha.utils import negate
+from maha.utils import ObjectGet
 
 
-class BaseProcessor:
+class BaseProcessor(ABC):
     """Base class for all processors. It contains almost all functions needed for the
     processors.
 
@@ -29,69 +34,26 @@ class BaseProcessor:
         A text or list of strings to process
     """
 
-    def __init__(self, text: Union[List[str], str]) -> None:
-        self.lines = []
-        if isinstance(text, str):
-            self.lines = [text]
-        else:
-            self.lines.extend(text)
-
-    @property
-    def text(self) -> str:
-        """Returns the processed text joined by the newline separator ``\n``
-
-        Returns
-        -------
-        str
-            processed text
-        """
-        return "\n".join(self.lines)
-
-    @classmethod
-    def from_string(cls, text: str, sep: str = None):
-        """Creates a new processor from the given text. Separate the text by the input
-        ``sep`` argument if provided.
+    @abstractmethod
+    def get_lines(self, n_lines: int = 100):
+        """Returns a generator of list of strings with length of ``n_lines``
 
         Parameters
         ----------
-        text : str
-            Text to process
-        sep : str, optional
-            Separator used to split the given text, by default None
+        n_lines : int
+            Number of lines to yield, Defaults to 100
 
-        Returns
+        Yields
         -------
-        TODO: What should be the return type here?
-        Subclass of :class:`BaseProcessor`
-            A new processor class
+        List[str]
+            List of strings with length of ``n_lines``. The last list maybe of length
+            less than ``n_lines``.
         """
-        out = text
-        if sep:
-            out = text.split(sep)
-        return cls(out)
+        raise NotImplementedError()
 
-    @classmethod
-    def from_list(cls, lines: List[str]):
-        """Creates a new processor from the given list of strings.
-
-        Parameters
-        ----------
-        lines : List[str]
-            list of strings
-
-        Returns
-        -------
-        TODO: What should be the return type here?
-        Subclass of :class:`BaseProcessor`
-            A new processor class
-        """
-        return cls(lines)
-
+    @abstractmethod
     def apply(self, fn: Callable[[str], str]):
-        """Applies a function to every line
-
-        .. note::
-            To be implemented in sub classes.
+        """Applies a function to each line
 
         Parameters
         ----------
@@ -100,11 +62,9 @@ class BaseProcessor:
         """
         raise NotImplementedError()
 
+    @abstractmethod
     def filter(self, fn: Callable[[str], bool]):
-        """Keeps lines for which input function is True
-
-        .. note::
-            To be implemented in sub classes.
+        """Keeps lines for which the input function is True
 
         Parameters
         ----------
@@ -112,6 +72,81 @@ class BaseProcessor:
             Function to check
         """
         raise NotImplementedError()
+
+    def get(
+        self,
+        unique_characters: bool = False,
+        character_length: bool = False,
+        word_length: bool = False,
+    ):
+        """Returns statistics about the provided text
+
+        Parameters
+        ----------
+        unique_characters : bool, optional
+            Return all unique characters, by default False
+        character_length : bool, optional
+            Return the character length of each string, by default False
+        word_length : bool, optional
+            Return the word length of each string (split by space), by default False
+
+        Returns
+        -------
+        Union[Dict[str, Any], Any]
+            * If one argument is set to True, its value is return
+            * If more than one argument is set to True, a dictionary is returned where
+                keys are the True passed arguments with the corresponding values
+
+        """
+
+        objects = []
+        if unique_characters:
+            objects.append(
+                ObjectGet(
+                    func=lambda prev, current: prev | set(current),
+                    prev=set(),
+                    name="unique_characters",
+                    post_fn=list,
+                )
+            )
+
+        if character_length:
+            objects.append(
+                ObjectGet(
+                    func=lambda prev, current: prev + [len(current)],
+                    prev=[],
+                    name="character_length",
+                )
+            )
+
+        if word_length:
+            objects.append(
+                ObjectGet(
+                    func=lambda prev, current: prev + [len(current.split())],
+                    prev=[],
+                    name="word_length",
+                )
+            )
+        for line in self.get_lines(1):
+            line = line[0]
+            for obj in objects:
+                obj.prev = obj.func(obj.prev, line)
+
+        output = {}
+        if len(objects) == 1:
+            output = objects[0].post_fn(objects[0].prev)
+        else:
+            for obj in objects:
+                output[obj.name] = obj.post_fn(obj.prev)
+
+        return output
+
+    def print_unique_characters(self):
+        """Prints all unique characters in the text"""
+        unique = self.get(unique_characters=True)
+        print(f"{len(unique)} unique characters were found, they are:")
+        print(unique)
+        return self
 
     def keep(
         self,
@@ -132,37 +167,62 @@ class BaseProcessor:
         use_space: bool = True,
         custom_strings: Union[List[str], str] = None,
     ):
-        """Applies :func:`~.keep` to every line"""
+        """Applies :func:`~.keep` to each line"""
         self.apply(partial(keep, **self._arguments_except_self(locals())))
         return self
 
     def normalize(
         self,
-        lam_alef: bool = False,
-        alef: bool = False,
-        waw: bool = False,
-        yeh: bool = False,
-        teh_marbuta: bool = False,
-        ligatures: bool = False,
-        spaces: bool = False,
+        lam_alef: bool = None,
+        alef: bool = None,
+        waw: bool = None,
+        yeh: bool = None,
+        teh_marbuta: bool = None,
+        ligatures: bool = None,
+        spaces: bool = None,
+        all: bool = None,
     ):
-        """Applies :func:`~.normalize` to every line"""
+        """Applies :func:`~.normalize` to each line"""
         self.apply(partial(normalize, **self._arguments_except_self(locals())))
         return self
 
+    def connect_single_letter_word(
+        self,
+        waw: bool = None,
+        feh: bool = None,
+        beh: bool = None,
+        lam: bool = None,
+        kaf: bool = None,
+        teh: bool = None,
+        all: bool = None,
+        custom_strings: Union[List[str], str] = None,
+    ):
+        """Applies :func:`~.connect_single_letter_word` to each line"""
+        self.apply(
+            partial(connect_single_letter_word, **self._arguments_except_self(locals()))
+        )
+        return self
+
     def replace(self, strings: Union[List[str], str], with_value: str):
-        """Applies :func:`~.replace` to every line"""
+        """Applies :func:`~.replace` to each line"""
         self.apply(partial(replace, **self._arguments_except_self(locals())))
         return self
 
     def replace_pattern(self, pattern: str, with_value: Union[Callable[..., str], str]):
-        """Applies :func:`~.replace_pattern` to every line"""
+        """Applies :func:`~.replace_pattern` to each line"""
         self.apply(partial(replace_pattern, **self._arguments_except_self(locals())))
         return self
 
     def replace_pairs(self, keys: List[str], values: List[str]):
-        """Applies :func:`~.replace_pairs` to every line"""
+        """Applies :func:`~.replace_pairs` to each line"""
         self.apply(partial(replace_pairs, **self._arguments_except_self(locals())))
+        return self
+
+    def reduce_repeated_substring(self, min_repeated: int = 3, reduce_to: int = 2):
+        """Applies :func:`~.reduce_repeated_substring` to each line"""
+        self.apply(
+            partial(reduce_repeated_substring, **self._arguments_except_self(locals()))
+        )
         return self
 
     def remove(
@@ -196,7 +256,7 @@ class BaseProcessor:
         custom_strings: Union[List[str], str] = None,
         custom_patterns: Union[List[str], str] = None,
     ):
-        """Applies :func:`~.remove` to every line"""
+        """Applies :func:`~.remove` to each line"""
         self.apply(partial(remove, **self._arguments_except_self(locals())))
         return self
 
@@ -245,8 +305,84 @@ class BaseProcessor:
         if operator is None:
             raise ValueError("operator cannot be None")
 
-        self.filter(negate(partial(contains, **self._arguments_except_self(locals()))))
+        arguments = locals()
+        self.filter(
+            lambda text: not contains(text, **self._arguments_except_self(arguments))
+        )
 
+        return self
+
+    def drop_empty_lines(self):
+        """Drop empty lines."""
+        return self.drop_lines_below_len(1)
+
+    def drop_lines_below_len(self, length: int, word_level=False):
+        """Drop lines with a number of characters/words less than the input ``length``
+
+        Parameters
+        ----------
+        length : int
+            Number of characters/words
+        word_level : bool, optional
+            True to switch to word level, which splits the text by space,
+            by default False
+        """
+        self.filter(
+            lambda line: (len(line.split()) if word_level else len(line)) >= length
+        )
+        return self
+
+    def drop_lines_above_len(self, length: int, word_level=False):
+        """Drop lines with a number of characters/words more than the input ``length``
+
+        Parameters
+        ----------
+        length : int
+            Number of characters/words
+        word_level : bool, optional
+            True to switch to word level, which splits the text by space,
+            by default False
+        """
+        filter_fn = (
+            lambda line: (len(line.split()) if word_level else len(line)) <= length
+        )
+        self.filter(filter_fn)
+        return self
+
+    def drop_lines_contain_repeated_substring(self, repeated=3):
+        """Drop lines containing a number of consecutive repeated substrings
+
+        Parameters
+        ----------
+        repeated : int, optional
+            Minimum number of repetitions, by default 3
+
+        """
+        self.filter(lambda line: not contains_repeated_substring(line, repeated))
+        return self
+
+    def drop_lines_contain_single_letter_word(
+        self,
+        arabic_letters: bool = False,
+        english_letters: bool = False,
+    ):
+        """Drop lines containing a single-letter word (e.g."محمد و احمد" or
+        "how r u"). In Arabic, single-letter words are rare.
+
+        .. warning::
+            In English, all lines containing the letter "I" will be dropped since it is
+            considered a single-letter word
+
+        See :func:`~.contains_single_letter_word`.
+        See also :func:`~.connect_single_letter_word`.
+        """
+
+        arguments = locals()
+        self.filter(
+            lambda text: not contains_single_letter_word(
+                text, **self._arguments_except_self(arguments)
+            )
+        )
         return self
 
     def filter_lines_contain(
@@ -294,10 +430,12 @@ class BaseProcessor:
         if operator is None:
             raise ValueError("operator cannot be None")
 
-        self.filter(partial(contains, **self._arguments_except_self(locals())))
-
+        arguments = locals()
+        self.filter(
+            lambda text: bool(contains(text, **self._arguments_except_self(arguments)))
+        )
         return self
 
     def _arguments_except_self(self, arguments: dict):
         """Used in combination with local() to return all arguments withoutself"""
-        return {k: v for k, v in arguments.items() if k != "self"}
+        return {k: v for k, v in arguments.items() if k not in ["self", "arguments"]}

@@ -7,6 +7,7 @@ __all__ = [
     "replace_pairs",
     "replace_pattern",
     "convert_arabic_numbers_to_english",
+    "connect_single_letter_word",
 ]
 
 from typing import Callable, List, Union
@@ -14,7 +15,76 @@ from typing import Callable, List, Union
 # To enjoy infinite width lookbehind
 import regex as re
 
-from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, EMPTY, ENGLISH_NUMBERS, SPACE
+from maha.constants import (
+    ARABIC_LETTERS,
+    ARABIC_NUMBERS,
+    BEH,
+    EMPTY,
+    ENGLISH_NUMBERS,
+    FEH,
+    KAF,
+    LAM,
+    SPACE,
+    TEH,
+    WAW,
+)
+
+
+def connect_single_letter_word(
+    text: str,
+    waw: bool = None,
+    feh: bool = None,
+    beh: bool = None,
+    lam: bool = None,
+    kaf: bool = None,
+    teh: bool = None,
+    all: bool = None,
+    custom_strings: Union[List[str], str] = None,
+):
+    """Connects single-letter word with the letter following it.
+
+    Parameters
+    ----------
+    text : str
+        Text to process
+    waw : bool, optional
+        Connect :data:`.WAW` letter, by default None
+    feh : bool, optional
+        Connect :data:`.FEH` letter, by default None
+    beh : bool, optional
+        Connect :data:`.BEH` letter, by default None
+    lam : bool, optional
+        Connect :data:`.LAM` letter, by default None
+    kaf : bool, optional
+        Connect :data:`.KAF` letter, by default None
+    teh : bool, optional
+        Connect :data:`.TEH` letter, by default None
+    all : bool, optional
+        Connect all letter except the ones set to False, by default None
+    custom_strings : Union[List[str], str], optional
+        Include any other string(s) to connect, by default None
+    """
+    letters = []
+    if isinstance(custom_strings, str):
+        custom_strings = [custom_strings]
+
+    if waw or (all and waw is not False):
+        letters.append(WAW)
+    if feh or (all and feh is not False):
+        letters.append(FEH)
+    if beh or (all and beh is not False):
+        letters.append(BEH)
+    if lam or (all and lam is not False):
+        letters.append(LAM)
+    if kaf or (all and kaf is not False):
+        letters.append(KAF)
+    if teh or (all and teh is not False):
+        letters.append(TEH)
+    if custom_strings:
+        letters.extend(re.escape(s) for s in custom_strings)
+
+    letters = "|".join(letters)
+    return replace_pattern(text, r"(\b)({})(?:\s)(?=.)".format(letters), r"\1\2")
 
 
 def convert_arabic_numbers_to_english(text: str):
@@ -34,14 +104,15 @@ def convert_arabic_numbers_to_english(text: str):
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = '٣'
+        >>> text = "٣"
         >>> convert_arabic_numbers_to_english(text)
         '3'
-    .. code-block:: python
 
-        >>> text = '١٠'
+    .. code-block:: pycon
+
+        >>> text = "١٠"
         >>> convert_arabic_numbers_to_english(text)
         '10'
     """
@@ -70,16 +141,16 @@ def replace_pattern(
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'ولقد حصلت على ١٠ من ١٠ '
-        >>> replace_pattern(text, '١٠', 'عشرة')
+        >>> text = "ولقد حصلت على ١٠ من ١٠ "
+        >>> replace_pattern(text, "١٠", "عشرة")
         'ولقد حصلت على عشرة من عشرة '
 
-    .. code-block:: python
+    .. code-block:: pycon
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
-        >>> replace_pattern(text, 'ه( |$)' , 'ة ').strip()
+        >>> replace_pattern(text, "ه( |$)", "ة ").strip()
         'ذهبت الفتاة إلى المدرسة'
     """
     return re.sub(pattern, with_value, text)
@@ -104,16 +175,16 @@ def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
 
     Examples
     --------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'حصل الولد على معدل 50%'
-        >>> replace(text, '%' , ' بالمئة')
+        >>> text = "حصل الولد على معدل 50%"
+        >>> replace(text, "%", " بالمئة")
         'حصل الولد على معدل 50 بالمئة'
 
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'ولقد كلف هذا المنتج 100 $'
-        >>> replace(text, '$','دولار')
+        >>> text = "ولقد كلف هذا المنتج 100 $"
+        >>> replace(text, "$", "دولار")
         'ولقد كلف هذا المنتج 100 دولار'
     """
     # convert list to str
@@ -145,10 +216,10 @@ def replace_except(text: str, strings: Union[List[str], str], with_value: str) -
 
     Example
     -------
-    .. code-block:: python
+    .. code-block:: pycon
 
-        >>> text = 'لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم'
-        >>> replace_except(text, ARABIC_LETTERS + [SPACE] , EMPTY)
+        >>> text = "لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم"
+        >>> replace_except(text, ARABIC_LETTERS + [SPACE], EMPTY)
         'ليت الذين تحب العين رؤيتهم'
     """
     # convert list to str

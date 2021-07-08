@@ -1,0 +1,8 @@
+[run]
+source=maha
+
+[report]
+exclude_lines =
+    \braise NotImplementedError\b
+    \bpass\b
+    def get_unicode

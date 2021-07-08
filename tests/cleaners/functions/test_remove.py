@@ -220,13 +220,26 @@ def test_remove_with_english_punctuations(simple_text_input: str):
     assert list_not_in_string(ENGLISH_PUNCTUATIONS, processed_text)
 
 
-def test_remove_with_custom_characters(simple_text_input: str):
-    processed_text = remove(text=simple_text_input, custom_strings="test")
+def test_remove_with_custom_character(simple_text_input: str):
+    processed_text = remove(text=simple_text_input, custom_strings=list("test"))
     assert (
         processed_text
         == "1. بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ In h nam of Allah,Mo Graciou , Mo M rciful."
     )
     assert list_not_in_string(list("test"), processed_text)
+
+
+@pytest.mark.parametrize("strings", ["test", ["test"]])
+def test_remove_with_custom_characters_not_found(simple_text_input: str, strings):
+    processed_text = remove(text=simple_text_input, custom_strings=strings)
+    assert processed_text == simple_text_input.strip()
+
+
+@pytest.mark.parametrize("pattern", ["[A-Za-z]", ["[A-Za-z]"]])
+def test_remove_with_custom_patterns(simple_text_input: str, pattern):
+    processed_text = remove(text=simple_text_input, custom_patterns=pattern)
+    assert processed_text == "1. بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ , , ."
+    assert list_not_in_string(ENGLISH_LETTERS, processed_text)
 
 
 def test_remove_with_tatweel(simple_text_input: str):
@@ -246,6 +259,23 @@ def test_remove_tatweel():
 def test_reduce_repeated_substring_default():
     processed_text = reduce_repeated_substring(text="heeeeey")
     assert processed_text == "heey"
+
+
+def test_reduce_repeated_substring_raises_valueerror():
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", min_repeated=3, reduce_to=10)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", min_repeated=3.5)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", reduce_to=3.5)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", min_repeated=-1)
+
+    with pytest.raises(ValueError):
+        reduce_repeated_substring("heeeeey", reduce_to=-5)
 
 
 @pytest.mark.parametrize(
@@ -498,14 +528,16 @@ def test_remove_with_links(input_text: str, expected: str):
     assert processed_text == expected
 
 
+def test_remove_with_empty_string():
+    processed_text = remove(text=EMPTY, links=True)
+    assert processed_text == EMPTY
+
+
 def test_remove_links():
     assert remove_links("web.com") == EMPTY
 
 
 def test_remove_should_raise_valueerror(simple_text_input: str):
-    with pytest.raises(ValueError):
-        remove("", arabic=True)
-
     with pytest.raises(ValueError):
         remove(simple_text_input)
 

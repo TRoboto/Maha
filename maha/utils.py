@@ -1,4 +1,6 @@
+from dataclasses import dataclass
 from functools import wraps
+from typing import Any, Callable
 
 
 def get_unicode(text: str) -> bytes:
@@ -39,11 +41,16 @@ def check_positive_integer(value: float, var_name: str):
         raise ValueError(f"Cannot assign a float value to '{var_name}'")
 
 
-def negate(f):
-    """Negates a function"""
+@dataclass
+class ObjectGet:
+    """Used with get function in :class:`BaseProcessor`"""
 
-    @wraps(f)
-    def g(*args, **kwargs):
-        return not f(*args, **kwargs)
-
-    return g
+    # function to use
+    func: Callable
+    # initial value
+    prev: Any
+    # name of the operation (argument name)
+    name: str
+    # Function to apply at end
+    # Defaults for post_fn, return the input
+    post_fn: Callable = lambda input: input
