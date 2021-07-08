@@ -1,3 +1,3 @@
 # Maha
 
-<img src="images/logo.png" >
+<img src="images/logo.png" width= 400px>
