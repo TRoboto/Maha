@@ -87,7 +87,7 @@ def connect_single_letter_word(
     return replace_pattern(text, r"(\b)({})(?:\s)(?=.)".format(letters), r"\1\2")
 
 
-def convert_arabic_numbers_to_english(text: str):
+def arabic_numbers_to_english(text: str):
     """Converts Arabic numbers :data:`~.ARABIC_NUMBERS` to the corresponding English
     numbers :data:`~.ENGLISH_NUMBERS`
 
