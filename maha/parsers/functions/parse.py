@@ -187,6 +187,7 @@ def parse(
             # change dimension
             for dim in parsed:
                 dim.dimension = DimensionType[arg.upper()]
+                dim.is_confident = True
             output[arg] = parsed
             continue
         # check for pattern
@@ -196,6 +197,7 @@ def parse(
             # change dimension
             for dim in parsed:
                 dim.dimension = DimensionType[arg.upper()]
+                dim.is_confident = True
             output[arg] = parsed
 
     if custom_strings:
