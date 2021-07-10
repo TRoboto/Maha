@@ -331,7 +331,7 @@ def contains_single_letter_word(
 
 
 def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
-    """Check for matched strings in the given ``text`` using the input ``patterns``
+    r"""Check for matched strings in the given ``text`` using the input ``patterns``
 
     .. note::
         Use lookahead/lookbehind when substrings should not be captured or removed.
