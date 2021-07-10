@@ -66,7 +66,6 @@ def parse(
     links: bool = False,
     mentions: bool = False,
     emojis: bool = False,
-    use_space: bool = True,
     custom_strings: Union[List[str], str] = None,
     custom_patterns: Union[List[str], str] = None,
 ) -> Union[List[Dimension], Dict[str, List[Dimension]]]:
@@ -139,9 +138,6 @@ def parse(
     emojis : bool, optional
         Extract emojis using the pattern :data:`~.PATTERN_EMOJIS`,
         by default False
-    use_space : bool, optional
-        False to not replace with space, check :func:`~.remove_strings`
-        for more information, by default True
     custom_strings : Union[List[str], str], optional
         Include any other string(s), by default None
     custom_patterns , optional
@@ -190,13 +186,17 @@ def parse(
             parsed = parse_patterns(text, f"[{''.join(const)}]+")
             # change dimension
             for dim in parsed:
-                dim.dimension = DimensionType.CONSTANT
+                dim.dimension = DimensionType[arg.upper()]
             output[arg] = parsed
             continue
         # check for pattern
         pattern = constants.get("PATTERN_" + arg.upper())
         if pattern and value is True:
-            output[arg] = parse_patterns(text, pattern)
+            parsed = parse_patterns(text, pattern)
+            # change dimension
+            for dim in parsed:
+                dim.dimension = DimensionType[arg.upper()]
+            output[arg] = parsed
 
     if custom_strings:
         output["custom_strings"] = parse_strings(text, custom_strings)
@@ -248,13 +248,7 @@ def parse_patterns(text: str, patterns: Union[List[str], str]) -> List[Dimension
         start = m.start(0)
         end = m.end(0)
         value = text[start:end]
-        dim = Dimension(
-            start=start,
-            end=end,
-            value=value,
-            dimension=DimensionType.PATTERN,
-            is_confident=True,
-        )
+        dim = Dimension(start=start, end=end, value=value)
         output.append(dim)
 
     return output
@@ -298,7 +292,6 @@ def parse_strings(text: str, strings: Union[List[str], str]) -> List[Dimension]:
             start=start,
             end=end,
             value=value,
-            dimension=DimensionType.CONSTANT,
             is_confident=True,
         )
         output.append(dim)
