@@ -298,8 +298,7 @@ def contains_single_letter_word(
 
 
 def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
-    """Check for matched characters in the given text ``text`` using the input
-    patterns ``patterns``
+    """Check for matched strings in the given ``text`` using the input ``patterns``
 
     .. note::
         Use lookahead/lookbehind when substrings should not be captured or removed.
@@ -333,19 +332,19 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
 
 
 def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
-    """Check for the input strings ``strings`` in the given text ``text``
+    """Check for the input ``strings`` in the given ``text``
 
     Parameters
     ----------
     text : str
         Text to check
     strings : Union[List[str], str]
-        list of characters to check for
+        String or list of strings to check for
 
     Returns
     -------
     bool
-        True if the input characters are found in the text, False otherwise
+        True if the input string(s) are found in the text, False otherwise
 
     Raises
     ------
@@ -354,7 +353,7 @@ def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
     """
 
     if not strings:
-        raise ValueError("'strings' cannot be empty.")
+        raise ValueError("'strings cannot be empty.")
 
     # convert list to str
     if isinstance(strings, list):
