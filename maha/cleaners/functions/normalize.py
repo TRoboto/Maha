@@ -191,6 +191,14 @@ def normalize_small_alef(
     -------
     str
         Normalized text
+
+    Example
+    -------
+    .. code-block:: pycon
+
+        >>> text = "وَٱلصَّٰٓفَّٰتِ صَفّٗا"
+        >>> normalize_small_alef(text)
+        'وَٱلصَّآفَّاتِ صَفّٗا'
     """
     output = text
     if keep_madda:

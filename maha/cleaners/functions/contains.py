@@ -181,6 +181,21 @@ def contains(
     ------
     ValueError
         If no argument is set to True
+
+    Examples
+    --------
+
+    .. code-block:: pycon
+
+        >>> text = "مقاييس أداء النماذج في التعلم الآلي Machine Learning ... 🌺"
+        >>> contains(text, english=True, emails=True, emojis=True)
+        {'english': True, 'emails': False, 'emojis': True}
+
+    .. code-block:: pycon
+
+        >>> text = "قال رسول اللهﷺ إن خير أيامكم يوم الجمعة فأكثروا عليَّ من الصلاة فيه"
+        >>> contains(text, english=True)
+        False
     """
     if not text:
         return False
@@ -249,6 +264,15 @@ def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
     ------
     ValueError
         If non positive integer is passed
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "كانت اللعبة حللللللللوة جداً"
+        >>> contains_repeated_substring(text)
+        True
     """
     check_positive_integer(min_repeated, "min_repeated")
 
@@ -283,6 +307,15 @@ def contains_single_letter_word(
     ------
     ValueError
         If no argument is set to True
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "cu later my friend, ك"
+        >>> contains_single_letter_word(text, arabic_letters=True, english_letters=True)
+        True
     """
     letters = []
     if arabic_letters:
@@ -320,6 +353,15 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     ------
     ValueError
         If no ``patterns`` are provided
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "علم الهندسة (Engineering)"
+        >>> contains_patterns(text, "\([A-Za-z]+\)")
+        True
     """
 
     if not patterns:
@@ -351,6 +393,15 @@ def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
     ------
     ValueError
         If no ``strings`` are provided
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "الله أكبر، الحمد لله رب العالمين"
+        >>> contain_strings(text, "الله")
+        True
     """
 
     if not strings:
