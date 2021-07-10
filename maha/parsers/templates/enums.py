@@ -2,6 +2,8 @@ from enum import Enum, auto
 
 
 class DimensionType(Enum):
+    CONSTANT = auto()
+    PATTERN = auto()
     AMOUNT_OF_MONEY = auto()
     DISTANCE = auto()
     DURATION = auto()
