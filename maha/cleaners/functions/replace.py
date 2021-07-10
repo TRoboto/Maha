@@ -6,7 +6,7 @@ __all__ = [
     "replace_except",
     "replace_pairs",
     "replace_pattern",
-    "convert_arabic_numbers_to_english",
+    "arabic_numbers_to_english",
     "connect_single_letter_word",
 ]
 
@@ -107,13 +107,13 @@ def arabic_numbers_to_english(text: str):
     .. code-block:: pycon
 
         >>> text = "٣"
-        >>> convert_arabic_numbers_to_english(text)
+        >>> arabic_numbers_to_english(text)
         '3'
 
     .. code-block:: pycon
 
         >>> text = "١٠"
-        >>> convert_arabic_numbers_to_english(text)
+        >>> arabic_numbers_to_english(text)
         '10'
     """
     return replace_pairs(text, ARABIC_NUMBERS, ENGLISH_NUMBERS)
