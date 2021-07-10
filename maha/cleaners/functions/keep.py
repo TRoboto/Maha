@@ -164,6 +164,15 @@ def keep_arabic_letters(text: str) -> str:
     -------
     str
         Text contains Arabic letters only.
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = " 1 يا أحلى mathematicians في العالم"
+        >>> keep_arabic_letters(text)
+        'يا أحلى في العالم'
     """
     return keep_strings(text, ARABIC_LETTERS)
 
@@ -180,6 +189,15 @@ def keep_arabic_characters(text: str) -> str:
     -------
     str
         Text contains the common Arabic characters only.
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "أَلمَانِيَا (بالألمانية: Deutschland) رسمِيّاً جُمهُورِيَّة أَلمَانِيَا الاِتِّحَاديَّة"
+        >>> keep_arabic_characters(text)
+        'أَلمَانِيَا بالألمانية رسمِيّاً جُمهُورِيَّة أَلمَانِيَا الاِتِّحَاديَّة'
     """
     return keep_strings(text, ARABIC)
 
@@ -197,6 +215,15 @@ def keep_arabic_with_english_numbers(text: str) -> str:
     -------
     str
         Text contains the common Arabic characters and English numbers only.
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "تتكون من 16 ولاية تُغطي مساحة 357,021 كيلومتر Deutschland"
+        >>> keep_arabic_with_english_numbers(text)
+        'تتكون من 16 ولاية تُغطي مساحة 357 021 كيلومتر'
     """
     return keep_strings(text, ARABIC + ENGLISH_NUMBERS)
 
@@ -214,6 +241,15 @@ def keep_arabic_letters_with_harakat(text: str) -> str:
     -------
     str
         Text contains Arabic letters with harakat only.
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "إنّ في التّركِ قوة…"
+        >>> keep_arabic_letters_with_harakat(text)
+        'إنّ في التّركِ قوة'
     """
     return keep_strings(text, ARABIC_LETTERS + HARAKAT)
 
@@ -252,6 +288,15 @@ def keep_strings(
     ------
     ValueError
         If no ``strings`` are provided
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "لا حول ولا قوة إلا بالله"
+        >>> keep_strings(text, "الله")
+        'الله'
     """
 
     if not strings:
