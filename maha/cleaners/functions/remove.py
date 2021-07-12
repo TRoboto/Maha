@@ -18,6 +18,7 @@ __all__ = [
     "remove_links",
     "remove_mentions",
     "reduce_repeated_substring",
+    "remove_arabic_letters_dots",
 ]
 
 from typing import List, Union
@@ -50,10 +51,11 @@ from maha.constants import (
     PUNCTUATIONS,
     SPACE,
     TATWEEL,
+    ARABIC_Dotless_Dictionary,
 )
 from maha.utils import check_positive_integer
 
-from .replace import replace, replace_pattern
+from .replace import replace, replace_pairs, replace_pattern
 
 
 def remove(
@@ -717,3 +719,21 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     check_positive_integer(max_spaces, "max_spaces")
 
     return replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
+
+
+def remove_arabic_letters_dots(text: str) -> str:
+
+    output = []
+    for index, char in enumerate(text):
+        if char in ARABIC_Dotless_Dictionary:
+            if (index + 1) < (len(text)):
+                if char == "\u0646" and text[index + 1] in ARABIC_LETTERS:
+                    output.append("\u066E")
+                else:
+                    output.append(ARABIC_Dotless_Dictionary[char])
+            else:
+                output.append(ARABIC_Dotless_Dictionary[char])
+        else:
+            output.append(char)
+
+    return "".join(output)
