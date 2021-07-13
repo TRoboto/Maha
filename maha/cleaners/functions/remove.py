@@ -23,6 +23,7 @@ __all__ = [
 
 from typing import List, Union
 
+import maha.cleaners.functions as functions
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -54,10 +55,6 @@ from maha.constants import (
     ARABIC_Dotless_Dictionary,
 )
 from maha.utils import check_positive_integer
-
-from .replace import replace, replace_pairs, replace_pattern
-
-# from .keep import keep_arabic_letters
 
 
 def remove(
@@ -308,7 +305,7 @@ def reduce_repeated_substring(
         raise ValueError("`reduce_to` cannot be greater than `min_repeated`")
 
     pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
-    return replace_pattern(text, pattern, r"\1" * reduce_to)
+    return functions.replace_pattern(text, pattern, r"\1" * reduce_to)
 
 
 def remove_hash_keep_tag(text: str):
@@ -618,7 +615,7 @@ def remove_patterns(
     if isinstance(patterns, list):
         patterns = "|".join(patterns)
 
-    output_text = replace_pattern(text, patterns, EMPTY)
+    output_text = functions.replace_pattern(text, patterns, EMPTY)
 
     if remove_spaces:
         output_text = remove_extra_spaces(output_text)
@@ -679,10 +676,10 @@ def remove_strings(
         strings = [strings]
 
     if use_space:
-        output_text = replace(text, strings, SPACE)
+        output_text = functions.replace(text, strings, SPACE)
         output_text = remove_extra_spaces(output_text)
     else:
-        output_text = replace(text, strings, EMPTY)
+        output_text = functions.replace(text, strings, EMPTY)
 
     return output_text.strip()
 

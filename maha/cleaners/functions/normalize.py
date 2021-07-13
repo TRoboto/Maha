@@ -6,6 +6,7 @@ Special functions that convert similar characters into one common character
 __all__ = ["normalize", "normalize_lam_alef", "normalize_small_alef"]
 
 
+import maha.cleaners.functions as functions
 from maha.constants import (
     ALEF,
     ALEF_MADDA_ABOVE,
@@ -27,8 +28,6 @@ from maha.constants import (
     YEH,
     YEH_VARIATIONS,
 )
-
-from .replace import replace, replace_pairs, replace_pattern
 
 
 def normalize(
@@ -112,19 +111,21 @@ def normalize(
 
     output = text
     if lam_alef or (all and lam_alef is not False) or (all and lam_alef is not False):
-        output = replace(output, LAM_ALEF_VARIATIONS, LAM + ALEF)
+        output = functions.replace(output, LAM_ALEF_VARIATIONS, LAM + ALEF)
     if alef or (all and alef is not False):
-        output = replace(output, ALEF_VARIATIONS, ALEF)
+        output = functions.replace(output, ALEF_VARIATIONS, ALEF)
     if waw or (all and waw is not False):
-        output = replace(output, WAW_VARIATIONS, WAW)
+        output = functions.replace(output, WAW_VARIATIONS, WAW)
     if yeh or (all and yeh is not False):
-        output = replace(output, YEH_VARIATIONS, YEH)
+        output = functions.replace(output, YEH_VARIATIONS, YEH)
     if teh_marbuta or (all and teh_marbuta is not False):
-        output = replace(output, TEH_MARBUTA, HEH)
+        output = functions.replace(output, TEH_MARBUTA, HEH)
     if ligatures or (all and ligatures is not False):
-        output = replace_pairs(output, ARABIC_LIGATURES, ARABIC_LIGATURES_NORMALIZED)
+        output = functions.replace_pairs(
+            output, ARABIC_LIGATURES, ARABIC_LIGATURES_NORMALIZED
+        )
     if spaces or (all and spaces is not False):
-        output = replace_pattern(output, PATTERN_SPACES, SPACE)
+        output = functions.replace_pattern(output, PATTERN_SPACES, SPACE)
 
     return output
 
@@ -161,11 +162,11 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
         'الان يا أصحابي'
     """
     if keep_hamza:
-        output = replace_pairs(
+        output = functions.replace_pairs(
             text, LAM_ALEF_VARIATIONS, LAM_ALEF_VARIATIONS_NORMALIZED
         )
     else:
-        output = replace(text, LAM_ALEF_VARIATIONS, LAM + ALEF)
+        output = functions.replace(text, LAM_ALEF_VARIATIONS, LAM + ALEF)
 
     return output
 
@@ -191,16 +192,26 @@ def normalize_small_alef(
     -------
     str
         Normalized text
+
+    Example
+    -------
+    .. code-block:: pycon
+
+        >>> text = "وَٱلصَّٰٓفَّٰتِ صَفّٗا"
+        >>> normalize_small_alef(text)
+        'وَٱلصَّآفَّاتِ صَفّٗا'
     """
     output = text
     if keep_madda:
-        output = replace_pairs(
+        output = functions.replace_pairs(
             text, [ALEF_SUPERSCRIPT + MADDAH_ABOVE], [ALEF_MADDA_ABOVE]
         )
     if not normalize_end:
-        output = replace_pattern(output, r"{}(?!\s|$)".format(ALEF_SUPERSCRIPT), ALEF)
+        output = functions.replace_pattern(
+            output, r"{}(?!\s|$)".format(ALEF_SUPERSCRIPT), ALEF
+        )
     else:
-        output = replace(output, ALEF_SUPERSCRIPT, ALEF)
+        output = functions.replace(output, ALEF_SUPERSCRIPT, ALEF)
 
     return output
 

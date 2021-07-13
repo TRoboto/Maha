@@ -21,7 +21,8 @@ from maha.cleaners.functions import (
     replace_pairs,
     replace_pattern,
 )
-from maha.utils import ObjectGet
+
+from .utils import ObjectGet
 
 
 class BaseProcessor(ABC):

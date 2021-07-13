@@ -1,8 +1,8 @@
 import pytest
 
 from maha.cleaners.functions import (
+    arabic_numbers_to_english,
     connect_single_letter_word,
-    convert_arabic_numbers_to_english,
     replace,
     replace_except,
     replace_pairs,
@@ -77,10 +77,8 @@ def test_replace_pairs_raises_valueerror():
         replace_pairs("142", ["A", "B"], ["C"])
 
 
-def test_convert_arabic_numbers_to_english():
-    processedtext = convert_arabic_numbers_to_english(
-        "".join(ARABIC_NUMBERS) + " simple"
-    )
+def test_arabic_numbers_to_english():
+    processedtext = arabic_numbers_to_english("".join(ARABIC_NUMBERS) + " simple")
     assert processedtext == "".join(ENGLISH_NUMBERS) + " simple"
 
 
