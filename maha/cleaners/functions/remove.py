@@ -18,7 +18,7 @@ __all__ = [
     "remove_links",
     "remove_mentions",
     "reduce_repeated_substring",
-    "remove_arabic_letters_dots",
+    "remove_arabic_letter_dots",
 ]
 
 from typing import List, Union
@@ -720,7 +720,7 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     return functions.replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
 
 
-def remove_arabic_letters_dots(text: str) -> str:
+def remove_arabic_letter_dots(text: str) -> str:
     """remove the dots from ``ARABIC_LETTERS`` in the given ``text``
 
     Args:
