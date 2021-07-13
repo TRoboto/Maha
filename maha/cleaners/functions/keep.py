@@ -13,6 +13,7 @@ __all__ = [
 
 from typing import List, Union
 
+import maha.cleaners.functions as functions
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -32,9 +33,6 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
-
-from .remove import remove_extra_spaces
-from .replace import replace, replace_except
 
 
 def keep(
@@ -314,11 +312,11 @@ def keep_strings(
         output_text = text
         # replace harakat with empty character
         if not_included_harakat:
-            output_text = replace(text, not_included_harakat, EMPTY)
+            output_text = functions.replace(text, not_included_harakat, EMPTY)
 
-        output_text = replace_except(output_text, strings, SPACE)
-        output_text = remove_extra_spaces(output_text)
+        output_text = functions.replace_except(output_text, strings, SPACE)
+        output_text = functions.remove_extra_spaces(output_text)
     else:
-        output_text = replace_except(text, strings, EMPTY)
+        output_text = functions.replace_except(text, strings, EMPTY)
 
     return output_text.strip()
