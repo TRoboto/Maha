@@ -729,20 +729,15 @@ def remove_arabic_letters_dots(text: str) -> str:
     Returns:
         str: Text with dotless Arabic letters
 
-    Examples
-    --------
+    Example
+    -------
 
     .. code-block:: pycon
 
         >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
         >>> remove_arabic_letters_dots(text)
-        'وكان صديقنا العزيز محمد من أفضل الأشخاص الذين قابلتهم'
+        'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'
 
-    .. code-block:: pycon
-
-        >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
-        >>> remove_arabic_letters_dots(text)
-        'وكان صديقنا العزيز محمد من أفضل الأشخاص الذين قابلتهم'
     """
 
     text_after = functions.keep_strings(text, ARABIC_LETTERS)
