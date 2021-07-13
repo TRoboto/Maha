@@ -57,6 +57,8 @@ from maha.utils import check_positive_integer
 
 from .replace import replace, replace_pairs, replace_pattern
 
+# from .keep import keep_arabic_letters
+
 
 def remove(
     text: str,
@@ -722,6 +724,23 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
 
 def remove_arabic_letters_dots(text: str) -> str:
+    """remove the dots from Arabic letters in the given ``text``
+
+    Args:
+        text (str): Text to be processed
+
+    Returns:
+        str:  Text with dotless Arabic letters
+
+    Examples
+    --------
+
+    .. code-block:: pycon
+
+        >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
+        >>> remove_arabic_letters_dots(text)
+        'وكان صديقنا العزيز محمد من أفضل الأشخاص الذين قابلتهم'
+    """
 
     output = []
     for index, char in enumerate(text):
