@@ -717,17 +717,17 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
     check_positive_integer(max_spaces, "max_spaces")
 
-    return replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
+    return functions.replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
 
 
 def remove_arabic_letters_dots(text: str) -> str:
-    """remove the dots from Arabic letters in the given ``text``
+    """remove the dots from ``ARABIC_LETTERS`` in the given ``text``
 
     Args:
         text (str): Text to be processed
 
     Returns:
-        str:  Text with dotless Arabic letters
+        str: Text with dotless Arabic letters
 
     Examples
     --------
@@ -737,19 +737,43 @@ def remove_arabic_letters_dots(text: str) -> str:
         >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
         >>> remove_arabic_letters_dots(text)
         'وكان صديقنا العزيز محمد من أفضل الأشخاص الذين قابلتهم'
+
+    .. code-block:: pycon
+
+        >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
+        >>> remove_arabic_letters_dots(text)
+        'وكان صديقنا العزيز محمد من أفضل الأشخاص الذين قابلتهم'
     """
 
+    text_after = functions.keep_strings(text, ARABIC_LETTERS)
+
     output = []
-    for index, char in enumerate(text):
+
+    for index, char in enumerate(text_after):
+
         if char in ARABIC_Dotless_Dictionary:
-            if (index + 1) < (len(text)):
-                if char == "\u0646" and text[index + 1] in ARABIC_LETTERS:
+            if (index + 1) < (len(text_after)):
+                if char == "\u0646" and text_after[index + 1] in ARABIC_LETTERS:
                     output.append("\u066E")
                 else:
                     output.append(ARABIC_Dotless_Dictionary[char])
             else:
                 output.append(ARABIC_Dotless_Dictionary[char])
         else:
-            output.append(char)
+            if char in ARABIC_LETTERS:
+                output.append(char)
 
-    return "".join(output)
+    indx = 0
+    Edited_text = ""
+
+    for char in text:
+
+        if char in ARABIC_LETTERS:
+            # if char in ARABIC_LETTERS:
+            Edited_text += output[indx]
+            indx += 1
+
+        else:
+            Edited_text += char
+
+    return Edited_text
