@@ -1,8 +1,3 @@
-from dataclasses import dataclass
-from functools import wraps
-from typing import Any, Callable
-
-
 def get_unicode(text: str) -> bytes:
     """Returns the unicode for input text
 
@@ -39,18 +34,3 @@ def check_positive_integer(value: float, var_name: str):
 
     if value != int(value):
         raise ValueError(f"Cannot assign a float value to '{var_name}'")
-
-
-@dataclass
-class ObjectGet:
-    """Used with get function in :class:`BaseProcessor`"""
-
-    # function to use
-    func: Callable
-    # initial value
-    prev: Any
-    # name of the operation (argument name)
-    name: str
-    # Function to apply at end
-    # Defaults for post_fn, return the input
-    post_fn: Callable = lambda input: input
