@@ -1,6 +1,6 @@
 """Functions that extracts values from text"""
 
-__all__ = ["parse"]
+__all__ = ["parse", "parse_dimension_pattern", "parse_strings", "parse_patterns"]
 
 from typing import Dict, List, Union
 
@@ -36,6 +36,7 @@ from maha.constants import (
     TATWEEL,
 )
 from maha.parsers.templates import Dimension, DimensionType
+from maha.parsers.templates.dimensions import DimensionPattern
 
 
 def parse(
@@ -229,7 +230,7 @@ def parse_patterns(text: str, patterns: Union[List[str], str]) -> List[Dimension
     Returns
     -------
     List[Dimension]
-        True if the pattern is found in the given text, False otherwise.
+        List of extracted dimensions
 
     Raises
     ------
@@ -243,7 +244,7 @@ def parse_patterns(text: str, patterns: Union[List[str], str]) -> List[Dimension
     # convert list to str
     if isinstance(patterns, list):
         patterns = "|".join(patterns)
-    print(patterns)
+
     output = []
     for m in re.finditer(patterns, text):
         start = m.start(0)
@@ -305,5 +306,59 @@ def parse_strings(text: str, strings: Union[List[str], str]) -> List[Dimension]:
             dimension=DimensionType.GENERAL,
         )
         output.append(dim)
+
+    return output
+
+
+def parse_dimension_pattern(
+    text: str, dimension_pattern: DimensionPattern
+) -> List[Dimension]:
+    """
+    Extract matched strings in the given ``text`` using the input ``dimension_pattern``
+
+    .. note::
+        Use lookahead/lookbehind when substrings should not be captured or removed.
+
+    Parameters
+    ----------
+    text : str
+        Text to check
+    dimension_pattern : :class:`DimensionPattern`
+        Pattern to use
+
+    Returns
+    -------
+    List[:class:`DimensionPattern`]
+        List of extracted dimensions
+
+    Raises
+    ------
+    ValueError
+        If no ``dimension_pattern`` are provided
+    """
+    if not dimension_pattern:
+        raise ValueError("'dimension_pattern' cannot be empty.")
+
+    # convert list to str
+    patterns = dimension_pattern.expression
+    if isinstance(patterns, list):
+        patterns = "|".join(dimension_pattern.expression)
+
+    output = []
+    for m in re.finditer(patterns, text):
+        start = m.start(0)
+        end = m.end(0)
+        value = dimension_pattern.output
+        if value:
+            for i, val in enumerate(m.groups(), 1):
+                value = value.replace(f"\\{i}", val)
+            value = eval(value)
+        else:
+            value = "".join(m.groups())
+
+        dimension_pattern.start = start
+        dimension_pattern.end = end
+        dimension_pattern.value = value
+        output.append(dimension_pattern)
 
     return output

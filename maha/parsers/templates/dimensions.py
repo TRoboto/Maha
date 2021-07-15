@@ -1,7 +1,7 @@
-__all__ = ["Dimension", "UnitDimension"]
+__all__ = ["Dimension", "UnitDimension", "DimensionPattern", "UnitDimensionPattern"]
 
 from dataclasses import dataclass
-from typing import List, Union
+from typing import List, NamedTuple, Union
 
 from .types import DimensionType, Unit
 
@@ -10,10 +10,19 @@ from .types import DimensionType, Unit
 class Dimension:
     """Template for the parsed item"""
 
+    __slots__ = [
+        "expression",
+        "value",
+        "start",
+        "end",
+        "is_confident",
+        "dimension",
+    ]
+
     expression: Union[List[str], str]
     """Regular expersion(s) to match"""
     value: str
-    r"""Extracted value, whether a simple exp or captured groups (\1\2...)"""
+    """Extracted value"""
     start: int
     """Start index of the value in the text"""
     end: int
@@ -29,5 +38,32 @@ class Dimension:
 class UnitDimension(Dimension):
     """Dimension with unit"""
 
+    __slots__ = ["unit"]
+    unit: Unit
+    """Unit of the dimension"""
+
+
+@dataclass(init=False)
+class DimensionPattern(Dimension):
+    """Dimension with pattern"""
+
+    __slots__ = ["output"]
+
+    output: str
+    """
+    Whether a simple exp or captured groups (\1\2...). Expressions with captured groups
+    are also supported. For instance, the following pattern: ``\1 + \2`` will sum up
+    the values of the captured groups.
+    """
+
+    def __init__(self):
+        pass
+
+
+@dataclass(init=False)
+class UnitDimensionPattern(DimensionPattern):
+    """Dimension with unit"""
+
+    __slots__ = ["unit"]
     unit: Unit
     """Unit of the dimension"""

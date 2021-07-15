@@ -1,14 +1,14 @@
 from dataclasses import dataclass
 
-from maha.parsers.templates import DimensionType, MoneyUnit, UnitDimension
+from maha.parsers.templates import DimensionType, MoneyUnit, UnitDimensionPattern
 
 
-@dataclass
-class MoneyDimension(UnitDimension):
+@dataclass(init=False)
+class MoneyDimension(UnitDimensionPattern):
     unit: MoneyUnit
-    dimension_type: DimensionType = DimensionType.AMOUNT_OF_MONEY
+    dimension: DimensionType = DimensionType.AMOUNT_OF_MONEY
     is_confident = True
-    value = r"\1"
+    output = None
 
 
 class PoundDimension(MoneyDimension):
