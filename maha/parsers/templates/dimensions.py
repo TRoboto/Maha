@@ -1,27 +1,33 @@
-from dataclasses import dataclass
+__all__ = ["Dimension", "UnitDimension"]
 
-from .enums import DimensionType, Unit
+from dataclasses import dataclass
+from typing import List, Union
+
+from .types import DimensionType, Unit
 
 
 @dataclass
 class Dimension:
-    """Template for any parsed item"""
+    """Template for the parsed item"""
 
+    expression: Union[List[str], str]
+    """Regular expersion(s) to match"""
+    value: str
+    r"""Extracted value, whether a simple exp or captured groups (\1\2...)"""
     start: int
     """Start index of the value in the text"""
     end: int
     """End index of the value in the text"""
-    value: str
-    """Extracted value"""
-    dimension: DimensionType = DimensionType.GENERAL
-    """Dimension type."""
-    is_confident: bool = False
+    is_confident: bool
     """Whether the extracted value 100% belongs to the selected dimension. Some patterns
     may match for values that normally belong to the dimension but not always."""
+    dimension: DimensionType
+    """Dimension type."""
 
 
 @dataclass
-class UnitDimension:
+class UnitDimension(Dimension):
     """Dimension with unit"""
 
     unit: Unit
+    """Unit of the dimension"""

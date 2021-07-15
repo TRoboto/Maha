@@ -35,8 +35,7 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
-from maha.parsers.templates.dimensions import Dimension
-from maha.parsers.templates.enums import DimensionType
+from maha.parsers.templates import Dimension, DimensionType
 
 
 def parse(
@@ -250,7 +249,14 @@ def parse_patterns(text: str, patterns: Union[List[str], str]) -> List[Dimension
         start = m.start(0)
         end = m.end(0)
         value = text[start:end]
-        dim = Dimension(start=start, end=end, value=value)
+        dim = Dimension(
+            expression=patterns,
+            start=start,
+            end=end,
+            value=value,
+            is_confident=False,
+            dimension=DimensionType.GENERAL,
+        )
         output.append(dim)
 
     return output
@@ -291,10 +297,12 @@ def parse_strings(text: str, strings: Union[List[str], str]) -> List[Dimension]:
         end = m.end(0)
         value = text[start:end]
         dim = Dimension(
+            expression=strings,
             start=start,
             end=end,
             value=value,
             is_confident=True,
+            dimension=DimensionType.GENERAL,
         )
         output.append(dim)
 
