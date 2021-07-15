@@ -311,44 +311,41 @@ def parse_strings(text: str, strings: Union[List[str], str]) -> List[Dimension]:
 
 
 def parse_dimension_pattern(
-    text: str, dimension_pattern: DimensionPattern
+    text: str, dim_pattern: DimensionPattern
 ) -> List[Dimension]:
     """
-    Extract matched strings in the given ``text`` using the input ``dimension_pattern``
-
-    .. note::
-        Use lookahead/lookbehind when substrings should not be captured or removed.
+    Extract matched strings in the given ``text`` using the input ``dim_pattern``
 
     Parameters
     ----------
     text : str
         Text to check
-    dimension_pattern : :class:`DimensionPattern`
+    dim_pattern : :class:`DimensionPattern`
         Pattern to use
 
     Returns
     -------
-    List[:class:`DimensionPattern`]
-        List of extracted dimensions
+    List[subclass of :class:`DimensionPattern`]
+        List of extracted dimensions, same type as ``dim_pattern``
 
     Raises
     ------
     ValueError
-        If no ``dimension_pattern`` are provided
+        If dimension_pattern is not provided
     """
-    if not dimension_pattern:
+    if not dim_pattern:
         raise ValueError("'dimension_pattern' cannot be empty.")
 
     # convert list to str
-    patterns = dimension_pattern.expression
+    patterns = dim_pattern.expression
     if isinstance(patterns, list):
-        patterns = "|".join(dimension_pattern.expression)
+        patterns = "|".join(dim_pattern.expression)
 
     output = []
     for m in re.finditer(patterns, text):
         start = m.start(0)
         end = m.end(0)
-        value = dimension_pattern.output
+        value = dim_pattern.output
         if value:
             for i, val in enumerate(m.groups(), 1):
                 value = value.replace(f"\\{i}", val)
@@ -356,9 +353,9 @@ def parse_dimension_pattern(
         else:
             value = "".join(m.groups())
 
-        dimension_pattern.start = start
-        dimension_pattern.end = end
-        dimension_pattern.value = value
-        output.append(dimension_pattern)
+        dim_pattern.start = start
+        dim_pattern.end = end
+        dim_pattern.value = value
+        output.append(dim_pattern)
 
     return output
