@@ -44,6 +44,7 @@ class Unit:
 class MoneyUnit(Enum):
     EURO = auto()
     DOLLAR = auto()
+    POUND = auto()
 
 
 class DistanceUnit(Enum):
