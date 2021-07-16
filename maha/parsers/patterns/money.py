@@ -14,5 +14,5 @@ class MoneyDimension(UnitDimensionPattern):
 class PoundDimension(MoneyDimension):
     """Pound dimension"""
 
-    expression = r"£([0-9]+)"
+    expression = ["£([0-9]+)", r"([0-9]+)\s*با?وند\b"]
     unit = MoneyUnit.POUND

@@ -59,6 +59,10 @@ class DimensionPattern(Dimension):
     def __init__(self):
         pass
 
+    @classmethod
+    def copy(cls):
+        return cls()
+
 
 @dataclass(init=False)
 class UnitDimensionPattern(DimensionPattern):

@@ -336,26 +336,29 @@ def parse_dimension_pattern(
     if not dim_pattern:
         raise ValueError("'dimension_pattern' cannot be empty.")
 
-    # convert list to str
+    # convert str to list
     patterns = dim_pattern.expression
-    if isinstance(patterns, list):
-        patterns = "|".join(dim_pattern.expression)
+    if isinstance(patterns, str):
+        patterns = list(dim_pattern.expression)
 
     output = []
-    for m in re.finditer(patterns, text):
-        start = m.start(0)
-        end = m.end(0)
-        value = dim_pattern.output
-        if value:
-            for i, val in enumerate(m.groups(), 1):
-                value = value.replace(f"\\{i}", val)
-            value = eval(value)
-        else:
-            value = "".join(m.groups())
+    for pattern in patterns:
+        for m in re.finditer(pattern, text):
+            new_dim = dim_pattern.copy()
+            start = m.start(0)
+            end = m.end(0)
+            value = new_dim.output
+            if value:
+                for i, val in enumerate(m.groups(), 1):
+                    value = value.replace(f"\\{i}", val)
+                value = eval(value)
+            else:
+                value = "".join(m.groups())
 
-        dim_pattern.start = start
-        dim_pattern.end = end
-        dim_pattern.value = value
-        output.append(dim_pattern)
+            new_dim.expression = pattern
+            new_dim.start = start
+            new_dim.end = end
+            new_dim.value = value
+            output.append(new_dim)
 
     return output
