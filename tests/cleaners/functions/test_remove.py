@@ -4,6 +4,7 @@ from maha.cleaners.functions import (
     reduce_repeated_substring,
     remove,
     remove_all_harakat,
+    remove_arabic_letter_dots,
     remove_emails,
     remove_english,
     remove_extra_spaces,
@@ -611,3 +612,46 @@ def test_remove_extra_spaces_raise_valueerror():
 
     with pytest.raises(ValueError):
         remove_extra_spaces("", 0)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        (
+            " المتسلسلات و طرق إيجاد قواعدها أو حدودها والجمع summation و كيفية حله.",
+            " المٮسلسلاٮ و طرٯ إىحاد ٯواعدها أو حدودها والحمع summation و كىڡىه حله.",
+        ),
+        (
+            "تؤثر وسائل التواصل الاجتماعي في وظائف الدماغ المختلفة لاحتوائها على العديد من المنبهات التي تثيرُ ردودَ فعلٍ مختلفة عند الإنسان.",
+            "ٮؤٮر وسائل الٮواصل الاحٮماعى ڡى وطائڡ الدماع المحٮلڡه لاحٮوائها على العدىد مں المٮٮهاٮ الٮى ٮٮىرُ ردودَ ڡعلٍ محٮلڡه عٮد الإٮساں.",
+        ),
+        (
+            ". وين بنقدم الامتحان؟ وكيف بدي اعرف المواعيد؟ IELTS ",
+            ". وىں ٮٮٯدم الامٮحاں؟ وكىڡ ٮدى اعرڡ المواعىد؟ IELTS ",
+        ),
+        (
+            "Climate change in Jordan has serious impacts on the water resources in Jordan.",
+            "Climate change in Jordan has serious impacts on the water resources in Jordan.",
+        ),
+        (
+            "‏احذروا الدنيا فإنها تغُرُّ وتضُرُّ وتمُرُّ.",
+            "‏احدروا الدٮىا ڡإٮها ٮعُرُّ وٮصُرُّ وٮمُرُّ.",
+        ),
+        (
+            """وَاِستَبقِ    وِدَّكَ لِلصَديقِ وَلا تَكُن
+قَتَباً يَعَضُّ بِغارِبٍ مِلحاحا""",
+            """وَاِسٮَٮٯِ    وِدَّكَ لِلصَدىٯِ وَلا ٮَكُں
+ٯَٮَٮاً ىَعَصُّ ٮِعارِٮٍ مِلحاحا""",
+        ),
+        (
+            "الطّاٯه المٮحدده هى الطّاٯه المُسٮَمّده مں الموارد الطٮىعىه الٮى لا ٮٮڡد وٮٮحدد ٮاسٮمرار مٮل الرىاح والمىاه والسمس",
+            "الطّاٯه المٮحدده هى الطّاٯه المُسٮَمّده مں الموارد الطٮىعىه الٮى لا ٮٮڡد وٮٮحدد ٮاسٮمرار مٮل الرىاح والمىاه والسمس",
+        ),
+        (
+            "ويمكنك متابعتي على الإيميل الشخصي user@gmail.com #المتميز",
+            "وىمكٮك مٮاٮعٮى على الإىمىل السحصى user@gmail.com #المٮمىر",
+        ),
+    ],
+)
+def test_remove_arabic_letter_dots(input: str, expected: str):
+    assert remove_arabic_letter_dots(input) == expected
