@@ -230,23 +230,23 @@ ALL_HARAKAT = HARAKAT + SMALL_HARAKAT + OTHER_HARAKAT
 ARABIC: List[str] = ARABIC_LETTERS + ALL_HARAKAT + ARABIC_NUMBERS + ARABIC_PUNCTUATIONS
 """ Common Arabic characters """
 
-ARABIC_Dotless_Dictionary: Dict[str, str] = {
-    BEH: BEH_dotless,
-    TEH: TEH_dotless,
-    THEH: THEH_dotless,
-    JEEM: JEEM_dotless,
-    KHAH: KHAH_dotless,
-    THAL: THAL_dotless,
-    ZAIN: ZAIN_dotless,
-    SHEEN: SHEEN_dotless,
-    DAD: DAD_dotless,
-    ZAH: ZAH_dotless,
-    GHAIN: GHAIN_dotless,
-    FEH: FEH_dotless,
-    QAF: QAF_dotless,
-    NOON: NOON_dotless,
-    YEH: YEH_dotless,
-    TEH_MARBUTA: TEH_MARBUTA_dotless,
+ARABIC_DOTLESS_MAP: Dict[str, str] = {
+    BEH: DOTLESS_BEH,
+    TEH: DOTLESS_TEH,
+    THEH: DOTLESS_THEH,
+    JEEM: DOTLESS_JEEM,
+    KHAH: DOTLESS_KHAH,
+    THAL: DOTLESS_THAL,
+    ZAIN: DOTLESS_ZAIN,
+    SHEEN: DOTLESS_SHEEN,
+    DAD: DOTLESS_DAD,
+    ZAH: DOTLESS_ZAH,
+    GHAIN: DOTLESS_GHAIN,
+    FEH: DOTLESS_FEH,
+    QAF: DOTLESS_QAF,
+    NOON: DOTLESS_NOON,
+    YEH: DOTLESS_YEH,
+    TEH_MARBUTA: DOTLESS_TEH_MARBUTA,
 }
 
-""" List of Arabic dotless letters """
+""" Mapping between Arabic dotted and dotless letters """

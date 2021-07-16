@@ -27,10 +27,12 @@ import maha.cleaners.functions as functions
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
+    ARABIC_DOTLESS_MAP,
     ARABIC_LETTERS,
     ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
+    DOTLESS_BEH,
     EMPTY,
     ENGLISH,
     ENGLISH_CAPITAL_LETTERS,
@@ -39,6 +41,7 @@ from maha.constants import (
     ENGLISH_PUNCTUATIONS,
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
+    NOON,
     NUMBERS,
     PATTERN_ARABIC_HASHTAGS,
     PATTERN_ARABIC_MENTIONS,
@@ -52,7 +55,6 @@ from maha.constants import (
     PUNCTUATIONS,
     SPACE,
     TATWEEL,
-    ARABIC_Dotless_Dictionary,
 )
 from maha.utils import check_positive_integer
 
@@ -721,7 +723,7 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
 
 def remove_arabic_letter_dots(text: str) -> str:
-    """remove the dots from ``ARABIC_LETTERS`` in the given ``text``
+    """remove the dots from ``ARABIC_LETTERS`` in the given ``text`` by mapping between Arabic dot letters with Arabic dotless letters using ``ARABIC_DOTLESS_MAP``
 
     Args:
         text (str): Text to be processed
@@ -735,7 +737,7 @@ def remove_arabic_letter_dots(text: str) -> str:
     .. code-block:: pycon
 
         >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
-        >>> remove_arabic_letters_dots(text)
+        >>> remove_arabic_letter_dots(text)
         'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'
 
     """
@@ -746,14 +748,14 @@ def remove_arabic_letter_dots(text: str) -> str:
 
     for index, char in enumerate(text_after):
 
-        if char in ARABIC_Dotless_Dictionary:
+        if char in ARABIC_DOTLESS_MAP:
             if (index + 1) < (len(text_after)):
-                if char == "\u0646" and text_after[index + 1] in ARABIC_LETTERS:
-                    output.append("\u066E")
+                if char == NOON and text_after[index + 1] in ARABIC_LETTERS:
+                    output.append(DOTLESS_BEH)
                 else:
-                    output.append(ARABIC_Dotless_Dictionary[char])
+                    output.append(ARABIC_DOTLESS_MAP[char])
             else:
-                output.append(ARABIC_Dotless_Dictionary[char])
+                output.append(ARABIC_DOTLESS_MAP[char])
         else:
             if char in ARABIC_LETTERS:
                 output.append(char)

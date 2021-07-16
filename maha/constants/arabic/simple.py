@@ -297,35 +297,35 @@ HIGH_STOP_FILLED: str = "\u06EC"
 """ Arabic Rounded High Stop With Filled Centre """
 
 # Arabic dotless letters
-BEH_dotless: str = "\u066E"
+DOTLESS_BEH: str = "\u066E"
 """ Arabic Letter dotless Beh """
-TEH_dotless: str = "\u066E"
+DOTLESS_TEH: str = "\u066E"
 """ Arabic Letter dotless Teh """
-THEH_dotless: str = "\u066E"
+DOTLESS_THEH: str = "\u066E"
 """ Arabic Letter dotless Theh """
-JEEM_dotless: str = "\u062D"
+DOTLESS_JEEM: str = HAH
 """ Arabic Letter dotless Jeem """
-KHAH_dotless: str = "\u062D"
+DOTLESS_KHAH: str = HAH
 """ Arabic Letter dotless Khah """
-THAL_dotless: str = "\u062F"
+DOTLESS_THAL: str = DAL
 """ Arabic Letter dotless Thal """
-ZAIN_dotless: str = "\u0631"
+DOTLESS_ZAIN: str = REH
 """ Arabic Letter dotless Zain """
-SHEEN_dotless: str = "\u0633"
+DOTLESS_SHEEN: str = SEEN
 """ Arabic Letter dotless Sheen """
-DAD_dotless: str = "\u0635"
+DOTLESS_DAD: str = SAD
 """ Arabic Letter dotless Dad """
-ZAH_dotless: str = "\u0637"
+DOTLESS_ZAH: str = TAH
 """ Arabic Letter dotless Zah """
-GHAIN_dotless: str = "\u0639"
+DOTLESS_GHAIN: str = AIN
 """ Arabic Letter dotless Ghain """
-FEH_dotless: str = "\u06A1"
+DOTLESS_FEH: str = "\u06A1"
 """ Arabic Letter dotless Feh """
-QAF_dotless: str = "\u066F"
+DOTLESS_QAF: str = "\u066F"
 """ Arabic Letter dotless Qaf """
-NOON_dotless: str = "\u06BA"
+DOTLESS_NOON: str = "\u06BA"
 """ Arabic Letter dotless Noon """
-YEH_dotless: str = "\u0649"
+DOTLESS_YEH: str = ALEF_MAKSURA
 """ Arabic Letter dotless Yeh """
-TEH_MARBUTA_dotless: str = "\u0647"
+DOTLESS_TEH_MARBUTA: str = HEH
 """ Arabic Letter dotless TEH_MARBUTA """
