@@ -170,14 +170,14 @@ def parse(
     for arg, value in current_arguments.items():
         const = constants.get(arg.upper())
         if const and value is True:
-            expression = Expression(f"[{''.join(const)}]+", True)
+            expression = Expression(f"[{''.join(const)}]+", is_confident=True)
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
             continue
         # check for pattern
         pattern = constants.get("PATTERN_" + arg.upper())
         if pattern and value is True:
-            expression = Expression(pattern, True)
+            expression = Expression(pattern, is_confident=True)
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
 
@@ -191,6 +191,21 @@ def parse(
         output = list(output.values())[0]
 
     return output
+
+
+def parse_dimension(
+    text: str,
+    amount_of_money: bool = None,
+    duration: bool = None,
+    distance: bool = None,
+    numeral: bool = None,
+    ordinal: bool = None,
+    quantity: bool = None,
+    temperature: bool = None,
+    time: bool = None,
+    volume: bool = None,
+):
+    pass
 
 
 def parse_expression(
@@ -225,7 +240,7 @@ def parse_expression(
     if not expressions:
         raise ValueError("'expressions' cannot be empty.")
 
-    # convert str to list
+    # convert to list
     if not isinstance(expressions, list):
         expressions = [expressions]
 
@@ -235,10 +250,9 @@ def parse_expression(
             start = m.start(0)
             end = m.end(0)
             value = text[start:end]
-            if expression.output:
-                for i, val in enumerate(m.groups(), 1):
-                    value = value.replace(f"\\{i}", val)
-                value = eval(value)
+            captured_groups = m.groups()
+            if captured_groups:
+                value = expression.output(*captured_groups)
 
             output.append(Dimension(expression, value, start, end, dimension_type))
 
