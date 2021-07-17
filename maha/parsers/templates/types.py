@@ -35,23 +35,23 @@ class DimensionType(Enum):
     EMOJIS = auto()
 
 
-class Unit:
+class Unit(Enum):
     """Base class for all units"""
 
     pass
 
 
-class MoneyUnit(Enum):
+class MoneyUnit(Unit):
     EURO = auto()
     DOLLAR = auto()
     POUND = auto()
 
 
-class DistanceUnit(Enum):
+class DistanceUnit(Unit):
     METER = auto()
     MILE = auto()
 
 
-class DurationUnit(Enum):
+class DurationUnit(Unit):
     SECONDS = auto()
     MINUTES = auto()
