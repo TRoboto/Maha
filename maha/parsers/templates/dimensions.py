@@ -35,7 +35,9 @@ class Expression:
         self.is_confident = is_confident
         self.unit = unit
         if output is None:
-            self.output = lambda *args: "".join(args)
+            self.output = lambda *args: "".join(args) if len(args) > 1 else args[0]
+        else:
+            self.output = output
 
     def __repr__(self):
         out = f"Expression(pattern={self.pattern}, is_confident={self.is_confident})"
