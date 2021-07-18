@@ -93,8 +93,7 @@ class Dimension:
 
     def __repr__(self):
         out = (
-            f"Dimension(matched_expression={self.matched_expression}, "
-            f"value={self.value}, unit={self.unit}, start={self.start}, "
+            f"Dimension(value={self.value}, unit={self.unit}, start={self.start}, "
             f"end={self.end}, dimension_type={self.dimension_type}"
         )
         return out
