@@ -60,6 +60,8 @@ PATTERN_EMAILS: str = r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)"
 """ Pattern that matches emails """
 
 # Adopted from https://gist.github.com/slowkow/7a7f61f495e3dbb7e3d767f97bd7304b
+# TODO: Validate that all of these are valid emojis
+# TODO: Remove Arabic Ligatures from the list
 PATTERN_EMOJIS: str = (
     "["
     "\U0001F600-\U0001F64F"  # emoticons
