@@ -12,7 +12,7 @@ class Dimension:
     """Template for the parsed item"""
 
     __slots__ = [
-        "matched_expression",
+        "expression",
         "value",
         "start",
         "end",
@@ -20,8 +20,8 @@ class Dimension:
         "unit",
     ]
 
-    matched_expression: Expression
-    """Expression(s) to match"""
+    expression: Expression
+    """The expression that was used to find the value"""
     value: str
     """Extracted value"""
     unit: Optional[Unit]
@@ -35,18 +35,18 @@ class Dimension:
 
     def __init__(
         self,
-        matched_expression: Expression,
+        expression: Expression,
         value: str,
         start: int,
         end: int,
         dimension_type: DimensionType,
     ):
-        self.matched_expression = matched_expression
+        self.expression = expression
         self.value = value
         self.start = start
         self.end = end
         self.dimension_type = dimension_type
-        self.unit = self.matched_expression.unit
+        self.unit = self.expression.unit
 
     def __repr__(self):
         out = (
