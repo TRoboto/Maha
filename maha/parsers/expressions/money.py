@@ -2,14 +2,10 @@
 Expressions to extract amount of money.
 """
 
-from ..templates import Expression, MoneyUnit
+from ..templates import Expression, ExpressionGroup, MoneyUnit
+from .helper import NUMBER_EXPRESSION, get_number_followed_by_string
 
-_NUMBER_EXPRESSION = "([0-9]+)"
-
-EXPRESSION_AMOUNT_OF_MONEY_POUND = [
-    e.format(_NUMBER_EXPRESSION).set_unit(MoneyUnit.POUND)
-    for e in [
-        Expression("£{}", is_confident=True),
-        Expression(r"{}\s*باوند\b"),
-    ]
-]
+EXPRESSION_AMOUNT_OF_MONEY_POUND = ExpressionGroup(
+    Expression(f"£{NUMBER_EXPRESSION}", is_confident=True),
+    Expression(get_number_followed_by_string("باوند")),
+).set_unit(MoneyUnit.POUND)
