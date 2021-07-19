@@ -1,7 +1,7 @@
 __all__ = ["Expression", "ExpressionGroup", "ExpressionResult"]
 
 from dataclasses import dataclass
-from typing import Callable, Iterable, Optional
+from typing import Callable, Iterable, List, Optional, Union
 
 import regex as re
 
@@ -17,7 +17,7 @@ class Expression:
     is_confident: bool
     """Whether the extracted value 100% belongs to the selected dimension. Some patterns
     may match for values that normally belong to the dimension but not always."""
-    output: Callable[..., str]
+    output: Optional[Callable[..., str]]
     """
     A function to operate on the extracted value.
 
@@ -36,10 +36,7 @@ class Expression:
         self.pattern = pattern
         self.is_confident = is_confident
         self.unit = unit
-        if output is None:
-            self.output = lambda *args: "".join(args) if len(args) > 1 else args[0]
-        else:
-            self.output = output
+        self.output = output
 
     def format(self, format_spec: str):
         self.pattern = self.pattern.format(format_spec)
@@ -65,10 +62,14 @@ class Expression:
         """
         for m in re.finditer(self.pattern, text):
             start, end = m.span()
-            value = text[start:end]
             captured_groups = m.groups()
             if captured_groups:
-                value = self.output(*captured_groups)
+                value = captured_groups
+            else:
+                value = text[start:end]
+
+            if self.output is not None:
+                value = self.output(value)
             yield ExpressionResult(start, end, value, self)
 
     def __repr__(self):
@@ -114,24 +115,33 @@ class ExpressionGroup:
 
     def __init__(
         self,
-        *expressions: Expression,
+        *expressions: Union[Expression, "ExpressionGroup"],
         confident_first: bool = False,
         smart: bool = False,
     ):
 
         self.confident_first = confident_first
-
+        self.expressions = self.merge_expressions(expressions)
         if confident_first:
             self.expressions = sorted(
-                expressions,
+                self.expressions,
                 key=lambda expression: expression.is_confident,
                 reverse=True,
             )
-        else:
-            self.expressions = expressions
 
         self._parsed_ranges = set()
         self.smart = smart
+
+    def merge_expressions(
+        self, expressions: Iterable[Union[Expression, "ExpressionGroup"]]
+    ) -> List[Expression]:
+        result = []
+        for expression in expressions:
+            if isinstance(expression, ExpressionGroup):
+                result.extend(expression.expressions)
+            else:
+                result.append(expression)
+        return result
 
     def format(self, format_spec: str):
         for expression in self.expressions:
@@ -194,3 +204,6 @@ class ExpressionGroup:
                 return True
 
         return False
+
+    def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
+        return ExpressionGroup(*self.expressions, *other.expressions)
