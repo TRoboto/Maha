@@ -11,8 +11,7 @@ from maha.constants import (
     KASRA,
 )
 from maha.parsers.functions import parse
-from maha.parsers.templates import Dimension, DimensionType
-from maha.parsers.templates.dimensions import Expression
+from maha.parsers.templates import Dimension, DimensionType, Expression, ExpressionGroup
 from tests.utils import is_false, is_true, list_only_in_string
 
 
@@ -35,14 +34,12 @@ def test_parse_with_return_type(simple_text_input):
 def test_parse_correct_return_values(simple_text_input):
     result = parse(simple_text_input, arabic=True)
     assert isinstance(result, list)
-    assert list_only_in_string(
-        list("[]+") + ARABIC, result[0].matched_expression.pattern
-    )
+    assert list_only_in_string(list("[]+") + ARABIC, result[0].expression.pattern)
     assert len(result) == 3
     assert result[1].start == 19
     assert result[1].end == 31
     assert result[2].dimension_type == DimensionType.ARABIC
-    assert is_true(result[2].matched_expression.is_confident)
+    assert is_true(result[2].expression.is_confident)
 
 
 def test_parse_with_one_argument(simple_text_input):
@@ -201,15 +198,16 @@ def test_parse_with_custom_expressions(multiple_tweets):
     assert len(result) == 1
     assert isinstance(result, list)
     assert result[0].value == ARABIC_ONE
-    assert is_false(result[0].matched_expression.is_confident)
-    assert result[0].matched_expression.pattern == exp
+    assert is_false(result[0].expression.is_confident)
+    assert result[0].expression.pattern == exp
 
 
-def test_parse_with_mutiple_custom_expressions(multiple_tweets):
+def test_parse_with_mutiple_expressions(multiple_tweets):
     exp1 = r"الساع[ةه] ([{}]+)".format("".join(ARABIC_NUMBERS))
     exp2 = r"(\d+) days"
     result = parse(
-        multiple_tweets, custom_expressions=[Expression(exp1), Expression(exp2)]
+        multiple_tweets,
+        custom_expressions=ExpressionGroup(Expression(exp1), Expression(exp2)),
     )
     assert len(result) == 2
     assert isinstance(result, list)
