@@ -1,3 +1,3 @@
 from .dimensions import *
-from .expressions import Expression
+from .expressions import *
 from .types import *
