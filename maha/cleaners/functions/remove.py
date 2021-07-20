@@ -723,13 +723,17 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
 
 def remove_arabic_letter_dots(text: str) -> str:
-    """remove the dots from ``ARABIC_LETTERS`` in the given ``text`` by mapping between Arabic dot letters with Arabic dotless letters using ``ARABIC_DOTLESS_MAP``
+    """Remove dots from :data:~.ARABIC_LETTERS in the given ``text`` by mapping between :data:~.ARABIC_DOTLESS_MAP
 
-    Args:
-        text (str): Text to be processed
+    Parameters
+    ----------
+    text : str
+        Text to be processed
 
-    Returns:
-        str: Text with dotless Arabic letters
+    Returns
+    -------
+    str
+        Text with dotless Arabic letters
 
     Example
     -------
@@ -739,9 +743,7 @@ def remove_arabic_letter_dots(text: str) -> str:
         >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
         >>> remove_arabic_letter_dots(text)
         'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'
-
     """
-
     text_after = functions.keep_strings(text, ARABIC_LETTERS)
 
     output = []
