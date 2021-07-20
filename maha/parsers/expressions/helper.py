@@ -8,6 +8,8 @@ DECIMAL_EXPRESSION: str = "([{0}].[{0}]+)".format(
     "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
 )
 SPACE_EXPRESSION: str = r"\s+"
+SPACE_OR_NONE_EXPRESSION: str = r"\s*"
+WAW_SEPARATOR = SPACE_EXPRESSION + "و" + SPACE_OR_NONE_EXPRESSION
 
 
 def get_number_followed_by_string(expression: str) -> str:
@@ -30,6 +32,13 @@ def get_words_separated_by_space(*words: str):
     Returns a regex that matches words separated by spaces.
     """
     return get_word(SPACE_EXPRESSION.join(words))
+
+
+def get_words_separated_by_waw(*words: str):
+    """
+    Returns a regex that matches words separated by waw.
+    """
+    return get_word(WAW_SEPARATOR.join(words))
 
 
 def get_word(word: str) -> str:
