@@ -212,4 +212,9 @@ class ExpressionGroup:
         return False
 
     def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
-        return ExpressionGroup(*self.expressions, *other.expressions)
+        return ExpressionGroup(
+            *self.expressions,
+            *other.expressions,
+            confident_first=self.confident_first,
+            smart=self.smart,
+        )
