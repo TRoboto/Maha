@@ -159,6 +159,13 @@ class ExpressionGroup:
             expression.set_unit(unit)
         return self
 
+    def get_unit(self) -> Unit:
+        """
+        Get the unit of the group.
+        """
+        assert self[0].unit is not None
+        return self[0].unit
+
     def __repr__(self):
         out = f"ExpressionGroup({self.expressions})"
         return out
