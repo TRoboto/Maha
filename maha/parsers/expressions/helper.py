@@ -18,6 +18,13 @@ def get_decimal_followed_by_string(expression: str) -> str:
     return get_words_separated_by_space(DECIMAL_EXPRESSION, expression)
 
 
+def get_non_capturing_group(*words: str):
+    """
+    Returns a non capturing groups of words without word boundaries.
+    """
+    return "(?:{})".format("|".join(words))
+
+
 def get_words_separated_by_space(*words: str):
     """
     Returns a regex that matches words separated by spaces.
