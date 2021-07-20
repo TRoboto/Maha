@@ -18,6 +18,7 @@ __all__ = [
     "remove_links",
     "remove_mentions",
     "reduce_repeated_substring",
+    "remove_arabic_letter_dots",
 ]
 
 from typing import List, Union
@@ -26,10 +27,12 @@ import maha.cleaners.functions as functions
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
+    ARABIC_DOTLESS_MAP,
     ARABIC_LETTERS,
     ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
+    DOTLESS_BEH,
     EMPTY,
     ENGLISH,
     ENGLISH_CAPITAL_LETTERS,
@@ -38,6 +41,7 @@ from maha.constants import (
     ENGLISH_PUNCTUATIONS,
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
+    NOON,
     NUMBERS,
     PATTERN_ARABIC_HASHTAGS,
     PATTERN_ARABIC_MENTIONS,
@@ -716,3 +720,59 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     check_positive_integer(max_spaces, "max_spaces")
 
     return functions.replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
+
+
+def remove_arabic_letter_dots(text: str) -> str:
+    """Remove dots from :data:~.ARABIC_LETTERS in the given ``text`` by mapping between :data:~.ARABIC_DOTLESS_MAP
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text with dotless Arabic letters
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
+        >>> remove_arabic_letter_dots(text)
+        'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'
+    """
+    text_after = functions.keep_strings(text, ARABIC_LETTERS)
+
+    output = []
+
+    for index, char in enumerate(text_after):
+
+        if char in ARABIC_DOTLESS_MAP:
+            if (index + 1) < (len(text_after)):
+                if char == NOON and text_after[index + 1] in ARABIC_LETTERS:
+                    output.append(DOTLESS_BEH)
+                else:
+                    output.append(ARABIC_DOTLESS_MAP[char])
+            else:
+                output.append(ARABIC_DOTLESS_MAP[char])
+        else:
+            if char in ARABIC_LETTERS:
+                output.append(char)
+
+    indx = 0
+    Edited_text = ""
+
+    for char in text:
+
+        if char in ARABIC_LETTERS:
+            # if char in ARABIC_LETTERS:
+            Edited_text += output[indx]
+            indx += 1
+
+        else:
+            Edited_text += char
+
+    return Edited_text
