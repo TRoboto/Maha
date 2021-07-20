@@ -359,7 +359,7 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     .. code-block:: pycon
 
         >>> text = "علم الهندسة (Engineering)"
-        >>> contains_patterns(text, "\([A-Za-z]+\)")
+        >>> contains_patterns(text, r"\([A-Za-z]+\)")
         True
     """
 
