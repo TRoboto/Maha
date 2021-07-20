@@ -1,7 +1,8 @@
 __all__ = ["Expression", "ExpressionGroup", "ExpressionResult"]
 
 from dataclasses import dataclass
-from typing import Callable, Iterable, List, Optional, Union
+from types import FunctionType
+from typing import Any, Callable, Iterable, List, Optional, Union
 
 import regex as re
 
@@ -17,7 +18,7 @@ class Expression:
     is_confident: bool
     """Whether the extracted value 100% belongs to the selected dimension. Some patterns
     may match for values that normally belong to the dimension but not always."""
-    output: Optional[Callable[..., str]]
+    output: Optional[Callable[..., Any]]
     """
     A function to operate on the extracted value.
 
@@ -30,13 +31,16 @@ class Expression:
         self,
         pattern: str,
         is_confident: bool = False,
-        output: Callable[..., str] = None,
+        output: Optional[Union[Callable[..., Union[str, float]], float, str]] = None,
         unit: Optional[Unit] = None,
     ):
         self.pattern = pattern
         self.is_confident = is_confident
         self.unit = unit
-        self.output = output
+        if not isinstance(output, FunctionType):
+            self.output = lambda x: output
+        else:
+            self.output = output
 
     def format(self, format_spec: str):
         self.pattern = self.pattern.format(format_spec)
