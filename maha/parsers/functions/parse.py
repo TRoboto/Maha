@@ -1,6 +1,6 @@
 """Functions that extracts values from text"""
 
-__all__ = ["parse"]
+__all__ = ["parse", "parse_expression"]
 
 from typing import Dict, List, Union
 
@@ -35,8 +35,7 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
-from maha.parsers.templates.dimensions import Dimension
-from maha.parsers.templates.enums import DimensionType
+from maha.parsers.templates import Dimension, DimensionType, Expression
 
 
 def parse(
@@ -66,8 +65,7 @@ def parse(
     links: bool = False,
     mentions: bool = False,
     emojis: bool = False,
-    custom_strings: Union[List[str], str] = None,
-    custom_patterns: Union[List[str], str] = None,
+    custom_expressions: Union[List[Expression], Expression] = None,
 ) -> Union[List[Dimension], Dict[str, List[Dimension]]]:
 
     """Extracts certain characters/patterns from the given text.
@@ -138,10 +136,8 @@ def parse(
     emojis : bool, optional
         Extract emojis using the pattern :data:`~.PATTERN_EMOJIS`,
         by default False
-    custom_strings : Union[List[str], str], optional
-        Include any other string(s), by default None
-    custom_patterns , optional
-        Include any other regular expression patterns, by default None
+    custom_expressions : Union[List[:class:`~.Expression`], :class:`~.Expression`],
+        optional. Include any other string(s), by default None
 
     Returns
     -------
@@ -160,18 +156,9 @@ def parse(
     if not text:
         return []
 
-    custom_strings = custom_strings or []
-    custom_patterns = custom_patterns or []
-
     # current function arguments
     current_arguments = locals()
     constants = globals()
-
-    if isinstance(custom_strings, str):
-        custom_strings = [custom_strings]
-
-    if isinstance(custom_patterns, str):
-        custom_patterns = [custom_patterns]
 
     output = {}
 
@@ -183,27 +170,19 @@ def parse(
     for arg, value in current_arguments.items():
         const = constants.get(arg.upper())
         if const and value is True:
-            parsed = parse_patterns(text, f"[{''.join(const)}]+")
-            # change dimension
-            for dim in parsed:
-                dim.dimension = DimensionType[arg.upper()]
-                dim.is_confident = True
+            expression = Expression(f"[{''.join(const)}]+", is_confident=True)
+            parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
             continue
         # check for pattern
         pattern = constants.get("PATTERN_" + arg.upper())
         if pattern and value is True:
-            parsed = parse_patterns(text, pattern)
-            # change dimension
-            for dim in parsed:
-                dim.dimension = DimensionType[arg.upper()]
-                dim.is_confident = True
+            expression = Expression(pattern, is_confident=True)
+            parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
 
-    if custom_strings:
-        output["custom_strings"] = parse_strings(text, custom_strings)
-    if custom_patterns:
-        output["custom_patterns"] = parse_patterns(text, custom_patterns)
+    if custom_expressions:
+        output["custom_expressions"] = parse_expression(text, custom_expressions)
 
     if not output:
         raise ValueError("At least one argument should be True")
@@ -214,57 +193,38 @@ def parse(
     return output
 
 
-def parse_patterns(text: str, patterns: Union[List[str], str]) -> List[Dimension]:
-    """Extract matched strings in the given ``text`` using the input ``patterns``
+def parse_dimension(
+    text: str,
+    amount_of_money: bool = None,
+    duration: bool = None,
+    distance: bool = None,
+    numeral: bool = None,
+    ordinal: bool = None,
+    quantity: bool = None,
+    temperature: bool = None,
+    time: bool = None,
+    volume: bool = None,
+):
+    pass
 
-    .. note::
-        Use lookahead/lookbehind when substrings should not be captured or removed.
 
-    Parameters
-    ----------
-    text : str
-        Text to check
-    patterns : Union[List[str], str]
-        Pattern(s) to use
-
-    Returns
-    -------
-    List[Dimension]
-        True if the pattern is found in the given text, False otherwise.
-
-    Raises
-    ------
-    ValueError
-        If no ``patterns`` are provided
+def parse_expression(
+    text: str,
+    expressions: Union[List[Expression], Expression],
+    dimension_type: DimensionType = DimensionType.GENERAL,
+) -> List[Dimension]:
     """
-
-    if not patterns:
-        raise ValueError("'chars' cannot be empty.")
-
-    # convert list to str
-    if isinstance(patterns, list):
-        patterns = "|".join(patterns)
-    print(patterns)
-    output = []
-    for m in re.finditer(patterns, text):
-        start = m.start(0)
-        end = m.end(0)
-        value = text[start:end]
-        dim = Dimension(start=start, end=end, value=value)
-        output.append(dim)
-
-    return output
-
-
-def parse_strings(text: str, strings: Union[List[str], str]) -> List[Dimension]:
-    """Extract the input ``strings`` in the given ``text``
+    Extract matched strings in the given ``text`` using the input ``patterns``
 
     Parameters
     ----------
     text : str
         Text to check
-    strings : Union[List[str], str]
-        String or list of strings to extract
+    expressions : Union[List[Expression], Expression]
+        Expression(s) to use
+    dimension_type : DimensionType
+        Dimension type of the input ``expressions``,
+        by default :attribute:`~.DimensionType.GENERAL`
 
     Returns
     -------
@@ -274,28 +234,26 @@ def parse_strings(text: str, strings: Union[List[str], str]) -> List[Dimension]:
     Raises
     ------
     ValueError
-        If no ``strings`` are provided
+        If no ``expressions`` are provided
     """
 
-    if not strings:
-        raise ValueError("'strings cannot be empty.")
+    if not expressions:
+        raise ValueError("'expressions' cannot be empty.")
 
-    # convert list to str
-    if isinstance(strings, list):
-        strings = "|".join(str(re.escape(c)) for c in strings) + "+"
-    else:
-        strings = str(re.escape(strings))
+    # convert to list
+    if not isinstance(expressions, list):
+        expressions = [expressions]
+
     output = []
-    for m in re.finditer(strings, text):
-        start = m.start(0)
-        end = m.end(0)
-        value = text[start:end]
-        dim = Dimension(
-            start=start,
-            end=end,
-            value=value,
-            is_confident=True,
-        )
-        output.append(dim)
+    for expression in expressions:
+        for m in re.finditer(expression.pattern, text):
+            start = m.start(0)
+            end = m.end(0)
+            value = text[start:end]
+            captured_groups = m.groups()
+            if captured_groups:
+                value = expression.output(*captured_groups)
+
+            output.append(Dimension(expression, value, start, end, dimension_type))
 
     return output
