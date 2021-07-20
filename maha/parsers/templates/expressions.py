@@ -37,7 +37,7 @@ class Expression:
         self.pattern = pattern
         self.is_confident = is_confident
         self.unit = unit
-        if not isinstance(output, FunctionType):
+        if output is not None and not isinstance(output, FunctionType):
             self.output = lambda x: output
         else:
             self.output = output
@@ -68,7 +68,9 @@ class Expression:
             start, end = m.span()
             captured_groups = m.groups()
             if captured_groups:
-                value = captured_groups
+                value = (
+                    captured_groups[0] if len(captured_groups) == 1 else captured_groups
+                )
             else:
                 value = text[start:end]
 
