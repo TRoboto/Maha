@@ -113,7 +113,7 @@ class Expression:
             if callable(self.output):
                 value = self.output(value)
 
-            yield ExpressionResult(start, end, value, self)
+            yield ExpressionResult(start, end, value, self)  # type: ignore
 
     def convert_to_number_if_possible(
         self, values: List[str]
