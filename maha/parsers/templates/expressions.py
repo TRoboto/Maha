@@ -101,6 +101,7 @@ class Expression:
             if self.output and not callable(self.output):
                 value = self.output
                 yield ExpressionResult(start, end, value, self)
+                continue
 
             captured_groups = m.groups()
             if captured_groups:
