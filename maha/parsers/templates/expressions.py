@@ -1,11 +1,12 @@
 __all__ = ["Expression", "ExpressionGroup", "ExpressionResult"]
 
+import inspect
 from dataclasses import dataclass
-from types import FunctionType
-from typing import Any, Callable, Iterable, List, Optional, Union
+from typing import Callable, Iterable, List, Optional, Union
 
 import regex as re
 
+from ..expressions.helper import convert_to_number_if_possible
 from .types import Unit
 
 
@@ -18,7 +19,7 @@ class Expression:
     is_confident: bool
     """Whether the extracted value 100% belongs to the selected dimension. Some patterns
     may match for values that normally belong to the dimension but not always."""
-    output: Optional[Callable[..., Any]]
+    output: Optional[Union[Callable[..., Union[str, float]], float, str]]
     """
     A function to operate on the extracted value.
 
@@ -37,10 +38,35 @@ class Expression:
         self.pattern = pattern
         self.is_confident = is_confident
         self.unit = unit
-        if output is not None and not isinstance(output, FunctionType):
-            self.output = lambda x: output
-        else:
-            self.output = output
+        self.output = output
+
+        self.sanity_check()
+
+    def sanity_check(self):
+        num_groups = self._get_number_of_groups()
+        if self.output is None and num_groups == 0:
+            raise ValueError(
+                "The pattern must contain at least one group or "
+                "the output must be specified"
+            )
+        if callable(self.output):
+            output_sig = inspect.signature(self.output)
+            if len(output_sig.parameters) != num_groups:
+                raise ValueError(
+                    "The output function must have {} parameters, not {}".format(
+                        num_groups, len(output_sig.parameters)
+                    )
+                )
+            elif output_sig.return_annotation != Union[float, str]:
+                raise ValueError(
+                    "The output function must return a float or a string, not {}".format(
+                        output_sig.return_annotation
+                    )
+                )
+        if not callable(self.output) and num_groups > 1:
+            raise ValueError(
+                "The pattern must contain only one group if the output is not a function"
+            )
 
     def format(self, format_spec: str):
         self.pattern = self.pattern.format(format_spec)
@@ -49,6 +75,9 @@ class Expression:
     def set_unit(self, unit: Unit):
         self.unit = unit
         return self
+
+    def _get_number_of_groups(self) -> int:
+        return re.compile(self.pattern).groups
 
     def __call__(self, text: str) -> Iterable["ExpressionResult"]:
         """
@@ -63,19 +92,33 @@ class Expression:
         -------
         :class:`~ExpressionResult`
             Extracted value.
+
+        Raises
+        ------
+        ValueError
+            If the output value is not a float or a string.
         """
+
         for m in re.finditer(self.pattern, text):
             start, end = m.span()
+
+            # if the output is not a function, return the value directly
+            if self.output and not callable(self.output):
+                value = self.output
+                yield ExpressionResult(start, end, value, self)
+
             captured_groups = m.groups()
             if captured_groups:
-                value = (
-                    captured_groups[0] if len(captured_groups) == 1 else captured_groups
-                )
+                captured_groups = convert_to_number_if_possible(captured_groups)
+                if len(captured_groups) == 1:
+                    captured_groups = captured_groups[0]
+                value = captured_groups
             else:
                 value = text[start:end]
 
-            if self.output is not None:
+            if callable(self.output):
                 value = self.output(value)
+
             yield ExpressionResult(start, end, value, self)
 
     def __repr__(self):
@@ -95,7 +138,7 @@ class ExpressionResult:
     """Start index of the matched text"""
     end: int
     """End index of the matched text"""
-    value: str
+    value: Union[str, float]
     """Extracted value"""
     expression: Expression
     """The expression that was used to find the value"""
