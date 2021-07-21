@@ -247,6 +247,9 @@ def parse_expression(
         start = result.start
         end = result.end
         value = result.value
-        output.append(Dimension(result.expression, value, start, end, dimension_type))
+        body = text[start:end]
+        output.append(
+            Dimension(result.expression, body, value, start, end, dimension_type)
+        )
 
     return output

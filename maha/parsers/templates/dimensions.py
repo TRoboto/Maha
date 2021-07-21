@@ -1,7 +1,7 @@
 __all__ = ["Dimension"]
 
 from dataclasses import dataclass
-from typing import Optional
+from typing import Optional, Union
 
 from .expressions import Expression
 from .types import DimensionType, Unit
@@ -13,6 +13,7 @@ class Dimension:
 
     __slots__ = [
         "expression",
+        "body",
         "value",
         "start",
         "end",
@@ -22,7 +23,9 @@ class Dimension:
 
     expression: Expression
     """The expression that was used to find the value"""
-    value: str
+    body: str
+    """Text from the input that was matched by the expression."""
+    value: Union[float, str]
     """Extracted value"""
     unit: Optional[Unit]
     """Unit of the dimension"""
@@ -36,12 +39,14 @@ class Dimension:
     def __init__(
         self,
         expression: Expression,
-        value: str,
+        body: str,
+        value: Union[float, str],
         start: int,
         end: int,
         dimension_type: DimensionType,
     ):
         self.expression = expression
+        self.body = body
         self.value = value
         self.start = start
         self.end = end
@@ -50,7 +55,7 @@ class Dimension:
 
     def __repr__(self):
         out = (
-            f"Dimension(value={self.value}, unit={self.unit}, start={self.start}, "
+            f"Dimension(body={self.body}, value={self.value}, unit={self.unit}, start={self.start}, "
             f"end={self.end}, dimension_type={self.dimension_type}"
         )
         return out
