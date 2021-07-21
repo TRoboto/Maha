@@ -258,7 +258,7 @@ def reduce_repeated_substring(
     text: str, min_repeated: int = 3, reduce_to: int = 2
 ) -> str:
     """Reduces consecutive substrings that are repeated at least ``min_repeated`` times
-    to `reduce_to`` times. For example with the default arguments, 'hhhhhh' is
+    to ``reduce_to`` times. For example with the default arguments, 'hhhhhh' is
     reduced to 'hh'
 
     TODO: Maybe change the implemention for 50x speed
@@ -723,7 +723,8 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
 
 def remove_arabic_letter_dots(text: str) -> str:
-    """Remove dots from :data:~.ARABIC_LETTERS in the given ``text`` by mapping between :data:~.ARABIC_DOTLESS_MAP
+    """Remove dots from :data:`~.ARABIC_LETTERS` in the given ``text`` using the
+    :data:`~.ARABIC_DOTLESS_MAP`
 
     Parameters
     ----------
