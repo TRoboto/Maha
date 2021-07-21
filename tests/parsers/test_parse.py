@@ -197,7 +197,7 @@ def test_parse_with_custom_expressions(multiple_tweets):
     result = parse(multiple_tweets, custom_expressions=Expression(exp))
     assert len(result) == 1
     assert isinstance(result, list)
-    assert result[0].value == ARABIC_ONE
+    assert result[0].value == 1
     assert is_false(result[0].expression.is_confident)
     assert result[0].expression.pattern == exp
 
@@ -211,5 +211,5 @@ def test_parse_with_mutiple_expressions(multiple_tweets):
     )
     assert len(result) == 2
     assert isinstance(result, list)
-    assert result[0].value == ARABIC_ONE
-    assert result[1].value == "10"
+    assert result[0].value == 1
+    assert result[1].value == 10

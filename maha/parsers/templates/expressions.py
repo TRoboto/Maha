@@ -6,7 +6,6 @@ from typing import Callable, Iterable, List, Optional, Union
 
 import regex as re
 
-from ..expressions.helper import convert_to_number_if_possible
 from .types import Unit
 
 
@@ -44,11 +43,6 @@ class Expression:
 
     def sanity_check(self):
         num_groups = self._get_number_of_groups()
-        if self.output is None and num_groups == 0:
-            raise ValueError(
-                "The pattern must contain at least one group or "
-                "the output must be specified"
-            )
         if callable(self.output):
             output_sig = inspect.signature(self.output)
             if len(output_sig.parameters) != num_groups:
@@ -109,7 +103,7 @@ class Expression:
 
             captured_groups = m.groups()
             if captured_groups:
-                captured_groups = convert_to_number_if_possible(captured_groups)
+                captured_groups = self.convert_to_number_if_possible(captured_groups)
                 if len(captured_groups) == 1:
                     captured_groups = captured_groups[0]
                 value = captured_groups
@@ -120,6 +114,23 @@ class Expression:
                 value = self.output(value)
 
             yield ExpressionResult(start, end, value, self)
+
+    def convert_to_number_if_possible(
+        self, values: List[str]
+    ) -> List[Union[str, int, float]]:
+        """
+        Converts the given values to numbers if possible.
+        """
+        output = []
+        for value in values:
+            try:
+                output.append(int(value))
+            except ValueError:
+                try:
+                    output.append(float(value))
+                except ValueError:
+                    output.append(value)
+        return output
 
     def __repr__(self):
         out = f"Expression(pattern={self.pattern}, is_confident={self.is_confident})"
