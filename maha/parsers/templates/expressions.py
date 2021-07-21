@@ -33,13 +33,14 @@ class Expression:
         is_confident: bool = False,
         output: Optional[Union[Callable[..., Union[str, float]], float, str]] = None,
         unit: Optional[Unit] = None,
+        disable_sanity_check: bool = False,
     ):
         self.pattern = pattern
         self.is_confident = is_confident
         self.unit = unit
         self.output = output
-
-        self.sanity_check()
+        if not disable_sanity_check:
+            self.sanity_check()
 
     def sanity_check(self):
         num_groups = self._get_number_of_groups()
