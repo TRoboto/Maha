@@ -34,6 +34,13 @@ def get_words_separated_by_space(*words: str):
     return get_word(SPACE_EXPRESSION.join(words))
 
 
+def get_words_separated_by_space_and_optional_waw_prefix(*words: str):
+    """
+    Returns a regex that matches words separated by spaces and optional waw prefix.
+    """
+    return get_words_separated_by_space("و?" + words[0], *words[1:])
+
+
 def get_words_separated_by_waw(*words: str):
     """
     Returns a regex that matches words separated by waw.
@@ -46,3 +53,10 @@ def get_word(word: str) -> str:
     Returns a regex that matches a complete word.
     """
     return r"\b{}\b".format(word)
+
+
+def get_word_with_optional_waw_prefix(word: str):
+    """
+    Returns a regex that matches a complete word with optional waw prefix.
+    """
+    return get_word("و?" + word)

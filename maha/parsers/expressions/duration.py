@@ -9,8 +9,8 @@ from ..utils.general import (
     get_decimal_followed_by_string,
     get_non_capturing_group,
     get_number_followed_by_string,
-    get_word,
-    get_words_separated_by_space,
+    get_word_with_optional_waw_prefix,
+    get_words_separated_by_space_and_optional_waw_prefix,
 )
 
 TWO_SUFFIX = get_non_capturing_group("ين", "ان")
@@ -61,7 +61,7 @@ def get_decimal_followed_by_duration(text: str):
 
 def get_quarter_duration(text: str, output: float = 15):
     return Expression(
-        get_words_separated_by_space(QUARTER, text),
+        get_words_separated_by_space_and_optional_waw_prefix(QUARTER, text),
         is_confident=True,
         output=output,
     )
@@ -69,7 +69,7 @@ def get_quarter_duration(text: str, output: float = 15):
 
 def get_third_duration(text: str, output: float = 20):
     return Expression(
-        get_words_separated_by_space(THIRD, text),
+        get_words_separated_by_space_and_optional_waw_prefix(THIRD, text),
         is_confident=True,
         output=output,
     )
@@ -77,7 +77,7 @@ def get_third_duration(text: str, output: float = 20):
 
 def get_half_duration(text: str, output: float = 30):
     return Expression(
-        get_words_separated_by_space(HALF, text),
+        get_words_separated_by_space_and_optional_waw_prefix(HALF, text),
         is_confident=True,
         output=output,
     )
@@ -86,12 +86,16 @@ def get_half_duration(text: str, output: float = 30):
 def get_three_quarters_duration(text: str, output: float = 45):
     return ExpressionGroup(
         Expression(
-            get_words_separated_by_space(text, f"[إا]لا {QUARTER}"),
+            get_words_separated_by_space_and_optional_waw_prefix(
+                text, f"[إا]لا {QUARTER}"
+            ),
             is_confident=True,
             output=output,
         ),
         Expression(
-            get_words_separated_by_space("[ثت]لا؟[ثت][ةه]؟", "[أا]رباع", "ال" + text),
+            get_words_separated_by_space_and_optional_waw_prefix(
+                "[ثت]لا؟[ثت][ةه]؟", "[أا]رباع", "ال" + text
+            ),
             is_confident=True,
             output=output,
         ),
@@ -152,8 +156,12 @@ EXPRESSION_DURATION_SECONDS = ExpressionGroup(
     get_third_duration(NAME_OF_SECONDS, 0.33),
     get_half_duration(NAME_OF_SECONDS, 0.5),
     get_three_quarters_duration(NAME_OF_SECONDS, 0.75),
-    Expression(get_word(NAME_OF_TWO_SECONDS), is_confident=True, output=2),
-    Expression(get_word(NAME_OF_SECONDS), output=1),
+    Expression(
+        get_word_with_optional_waw_prefix(NAME_OF_TWO_SECONDS),
+        is_confident=True,
+        output=2,
+    ),
+    Expression(get_word_with_optional_waw_prefix(NAME_OF_SECONDS), output=1),
     smart=True,
 ).set_unit(DurationUnit.SECONDS)
 
@@ -178,8 +186,12 @@ EXPRESSION_DURATION_MINUTES = ExpressionGroup(
     get_half_duration(NAME_OF_HOUR, 30),
     get_three_quarters_duration(NAME_OF_HOUR, 45),
     # MINUTES
-    Expression(get_word(NAME_OF_TWO_MINUTES), is_confident=True, output=2),
-    Expression(get_word(NAME_OF_MINUTES), output=1),
+    Expression(
+        get_word_with_optional_waw_prefix(NAME_OF_TWO_MINUTES),
+        is_confident=True,
+        output=2,
+    ),
+    Expression(get_word_with_optional_waw_prefix(NAME_OF_MINUTES), output=1),
     smart=True,
 ).set_unit(DurationUnit.MINUTES)
 
@@ -203,8 +215,12 @@ EXPRESSION_DURATION_HOURS = ExpressionGroup(
     get_half_duration(NAME_OF_DAY, 12),  # 24 / 2
     get_three_quarters_duration(NAME_OF_DAY, 18),  # 24 * 3 / 4
     # HOURS
-    Expression(get_word(NAME_OF_TWO_HOURS), is_confident=True, output=2),
-    Expression(get_word(NAME_OF_HOUR), output=1),
+    Expression(
+        get_word_with_optional_waw_prefix(NAME_OF_TWO_HOURS),
+        is_confident=True,
+        output=2,
+    ),
+    Expression(get_word_with_optional_waw_prefix(NAME_OF_HOUR), output=1),
     smart=True,
 ).set_unit(DurationUnit.HOURS)
 
@@ -240,8 +256,10 @@ EXPRESSION_DURATION_DAYS = ExpressionGroup(
     get_third_duration(NAME_OF_WEEK, 2.33),  # 7 / 3
     get_half_duration(NAME_OF_WEEK, 3.5),  # 7 / 2
     # DAYS
-    Expression(get_word(NAME_OF_TWO_DAYS), is_confident=True, output=2),
-    Expression(get_word(NAME_OF_DAY), output=1),
+    Expression(
+        get_word_with_optional_waw_prefix(NAME_OF_TWO_DAYS), is_confident=True, output=2
+    ),
+    Expression(get_word_with_optional_waw_prefix(NAME_OF_DAY), output=1),
     smart=True,
 ).set_unit(DurationUnit.DAYS)
 
@@ -254,8 +272,12 @@ EXPRESSION_DURATION_WEEKS = ExpressionGroup(
         get_non_capturing_group(NAME_OF_MULTI_WEEKS, NAME_OF_WEEK)
     ),
     # WEEKS
-    Expression(get_word(NAME_OF_TWO_WEEKS), is_confident=True, output=2),
-    Expression(get_word(NAME_OF_WEEK), output=1),
+    Expression(
+        get_word_with_optional_waw_prefix(NAME_OF_TWO_WEEKS),
+        is_confident=True,
+        output=2,
+    ),
+    Expression(get_word_with_optional_waw_prefix(NAME_OF_WEEK), output=1),
     smart=True,
 ).set_unit(DurationUnit.WEEKS)
 
@@ -280,8 +302,12 @@ EXPRESSION_DURATION_MONTHS = ExpressionGroup(
     get_half_duration(NAME_OF_YEAR, 6),  # 12 / 2
     get_three_quarters_duration(NAME_OF_YEAR, 9),  # 12 * 3 / 4
     # MONTHS
-    Expression(get_word(NAME_OF_TWO_MONTHS), is_confident=True, output=2),
-    Expression(get_word(NAME_OF_MONTH), output=1),
+    Expression(
+        get_word_with_optional_waw_prefix(NAME_OF_TWO_MONTHS),
+        is_confident=True,
+        output=2,
+    ),
+    Expression(get_word_with_optional_waw_prefix(NAME_OF_MONTH), output=1),
     smart=True,
 ).set_unit(DurationUnit.MONTHS)
 
@@ -295,8 +321,12 @@ EXPRESSION_DURATION_YEARS = ExpressionGroup(
         get_non_capturing_group(NAME_OF_MULTI_YEARS, NAME_OF_YEAR)
     ),
     # YEARS
-    Expression(get_word(NAME_OF_TWO_YEARS), is_confident=True, output=2),
-    Expression(get_word(NAME_OF_YEAR), output=1),
+    Expression(
+        get_word_with_optional_waw_prefix(NAME_OF_TWO_YEARS),
+        is_confident=True,
+        output=2,
+    ),
+    Expression(get_word_with_optional_waw_prefix(NAME_OF_YEAR), output=1),
     smart=True,
 ).set_unit(DurationUnit.YEARS)
 
