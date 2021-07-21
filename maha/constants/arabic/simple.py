@@ -299,9 +299,9 @@ HIGH_STOP_FILLED: str = "\u06EC"
 # Arabic dotless letters
 DOTLESS_BEH: str = "\u066E"
 """ Arabic Letter dotless Beh """
-DOTLESS_TEH: str = "\u066E"
+DOTLESS_TEH: str = DOTLESS_BEH
 """ Arabic Letter dotless Teh """
-DOTLESS_THEH: str = "\u066E"
+DOTLESS_THEH: str = DOTLESS_BEH
 """ Arabic Letter dotless Theh """
 DOTLESS_JEEM: str = HAH
 """ Arabic Letter dotless Jeem """
