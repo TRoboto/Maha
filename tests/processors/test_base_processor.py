@@ -16,7 +16,7 @@ from tests.utils import list_not_in_string, list_only_in_string
 
 def test_base_processor_initialization():
     with pytest.raises(TypeError):
-        BaseProcessor()
+        BaseProcessor()  # type: ignore
 
 
 class TestBaseProcessor:
@@ -170,7 +170,7 @@ class TestBaseProcessor:
 
     def test_drop_lines_contain_raises_valueerror(self, processor: BaseProcessor):
         with pytest.raises(ValueError):
-            processor.drop_lines_contain(arabic_ligatures=True, operator=None)
+            processor.drop_lines_contain(arabic_ligatures=True, operator=None)  # type: ignore
 
     def test_drop_empty_lines_no_empty(self, processor: BaseProcessor):
         assert processor.drop_empty_lines() is processor
@@ -229,4 +229,4 @@ class TestBaseProcessor:
 
     def test_filter_lines_contain_raises_value_error(self, processor: BaseProcessor):
         with pytest.raises(ValueError):
-            processor.filter_lines_contain(arabic_ligatures=True, operator=None)
+            processor.filter_lines_contain(arabic_ligatures=True, operator=None)  # type: ignore

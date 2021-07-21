@@ -266,10 +266,10 @@ def test_reduce_repeated_substring_raises_valueerror():
         reduce_repeated_substring("heeeeey", min_repeated=3, reduce_to=10)
 
     with pytest.raises(ValueError):
-        reduce_repeated_substring("heeeeey", min_repeated=3.5)
+        reduce_repeated_substring("heeeeey", min_repeated=3.5)  # type: ignore
 
     with pytest.raises(ValueError):
-        reduce_repeated_substring("heeeeey", reduce_to=3.5)
+        reduce_repeated_substring("heeeeey", reduce_to=3.5)  # type: ignore
 
     with pytest.raises(ValueError):
         reduce_repeated_substring("heeeeey", min_repeated=-1)
@@ -607,7 +607,7 @@ def test_remove_extra_spaces_raise_valueerror():
         remove_extra_spaces("", -5)
 
     with pytest.raises(ValueError):
-        remove_extra_spaces("", 4.5)
+        remove_extra_spaces("", 4.5)  # type: ignore
 
     with pytest.raises(ValueError):
         remove_extra_spaces("", 0)
