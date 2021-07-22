@@ -88,14 +88,7 @@ def convert_between_durations(
     -------
     float
         The converted value.
-
-    Raises
-    ------
-    ValueError
-        If less than two durations are provided.
     """
-    if len(durations) < 2:
-        raise ValueError("Expected at least 2 units to convert between.")
 
     table = DURATION_CONVERSION_MAP[to_unit]
     output_value = 0
