@@ -54,6 +54,13 @@ def get_words_separated_by_waw(*words: str):
     return get_word(WAW_SEPARATOR.join(words))
 
 
+def get_words_separated_by_waw_and_optional_waw_prefix(*words: str):
+    """
+    Returns a regex that matches words separated by waw and optional waw prefix.
+    """
+    return get_words_separated_by_waw("و?" + words[0], *words[1:])
+
+
 def get_word(word: str) -> str:
     """
     Returns a regex that matches a complete word.

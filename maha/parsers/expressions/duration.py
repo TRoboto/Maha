@@ -4,11 +4,7 @@ Expressions to extract duration.
 from maha.constants import ALEF_VARIATIONS
 
 from ..templates import DurationUnit, Expression, ExpressionGroup
-from ..utils.duration import (
-    convert_between_durations,
-    get_words_separated_by_waw,
-    merge_two_durations,
-)
+from ..utils.duration_utils import convert_between_durations, merge_two_durations
 from ..utils.general import (
     get_decimal_followed_by_string,
     get_integer_followed_by_string,
@@ -16,6 +12,7 @@ from ..utils.general import (
     get_word,
     get_word_with_optional_waw_prefix,
     get_words_separated_by_space_and_optional_waw_prefix,
+    get_words_separated_by_waw_and_optional_waw_prefix,
 )
 
 TWO_SUFFIX = get_non_capturing_group("ين", "ان")
@@ -109,7 +106,7 @@ def get_three_quarters_duration(text: str, output: float = 45):
 
 def get_duration_and_quarter(text: str, output: float):
     return Expression(
-        get_words_separated_by_waw(text, QUARTER),
+        get_words_separated_by_waw_and_optional_waw_prefix(text, QUARTER),
         is_confident=True,
         output=output,
     )
@@ -117,7 +114,7 @@ def get_duration_and_quarter(text: str, output: float):
 
 def get_duration_and_third(text: str, output: float):
     return Expression(
-        get_words_separated_by_waw(text, THIRD),
+        get_words_separated_by_waw_and_optional_waw_prefix(text, THIRD),
         is_confident=True,
         output=output,
     )
@@ -125,7 +122,7 @@ def get_duration_and_third(text: str, output: float):
 
 def get_duration_and_half(text: str, output: float):
     return Expression(
-        get_words_separated_by_waw(text, HALF),
+        get_words_separated_by_waw_and_optional_waw_prefix(text, HALF),
         is_confident=True,
         output=output,
     )
