@@ -7,8 +7,8 @@ from ..templates import DurationUnit, Expression, ExpressionGroup
 from ..utils.duration import get_words_separated_by_waw, merge_two_durations
 from ..utils.general import (
     get_decimal_followed_by_string,
+    get_integer_followed_by_string,
     get_non_capturing_group,
-    get_number_followed_by_string,
     get_word_with_optional_waw_prefix,
     get_words_separated_by_space_and_optional_waw_prefix,
 )
@@ -47,7 +47,7 @@ HALF = "نصف?"
 
 def get_number_followed_by_duration(text: str):
     return Expression(
-        get_number_followed_by_string(text),
+        get_integer_followed_by_string(text),
         is_confident=True,
     )
 

@@ -12,7 +12,7 @@ SPACE_OR_NONE_EXPRESSION: str = r"\s*"
 WAW_SEPARATOR = SPACE_EXPRESSION + "و" + SPACE_OR_NONE_EXPRESSION
 
 
-def get_number_followed_by_string(expression: str) -> str:
+def get_integer_followed_by_string(expression: str) -> str:
     return get_words_separated_by_space_and_optional_waw_prefix(
         INTEGER_EXPRESSION, expression
     )
