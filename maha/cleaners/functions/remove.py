@@ -747,8 +747,10 @@ def remove_arabic_letter_dots(text: str) -> str:
     """
     output = functions.replace_pattern(
         text,
-        r"{}([{}])?\b".format(NOON, "".join(ALL_HARAKAT + PUNCTUATIONS)),
-        DOTLESS_NOON_GHUNNA + r"\1",
+        r"{}(?=[^{}]|[{}]\b|$)".format(
+            NOON, "".join(ARABIC_LETTERS + ALL_HARAKAT), "".join(ALL_HARAKAT)
+        ),
+        DOTLESS_NOON_GHUNNA,
     )
     output = functions.replace_pairs(
         output, list(ARABIC_DOTLESS_MAP.keys()), list(ARABIC_DOTLESS_MAP.values())
