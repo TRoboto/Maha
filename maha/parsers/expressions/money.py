@@ -3,9 +3,9 @@ Expressions to extract amount of money.
 """
 
 from ..templates import Expression, ExpressionGroup, MoneyUnit
-from .helper import NUMBER_EXPRESSION, get_number_followed_by_string
+from ..utils.general import INTEGER_EXPRESSION, get_integer_followed_by_string
 
 EXPRESSION_AMOUNT_OF_MONEY_POUND = ExpressionGroup(
-    Expression(f"£{NUMBER_EXPRESSION}", is_confident=True),
-    Expression(get_number_followed_by_string("باوند")),
+    Expression(f"£{INTEGER_EXPRESSION}", is_confident=True),
+    Expression(get_integer_followed_by_string("باوند")),
 ).set_unit(MoneyUnit.POUND)
