@@ -13,6 +13,7 @@ from ..utils.general import (
     get_decimal_followed_by_string,
     get_integer_followed_by_string,
     get_non_capturing_group,
+    get_word,
     get_word_with_optional_waw_prefix,
     get_words_separated_by_space_and_optional_waw_prefix,
 )
@@ -49,7 +50,7 @@ QUARTER = "ربع"
 HALF = "نصف?"
 
 
-def get_number_followed_by_duration(text: str):
+def get_integer_followed_by_duration(text: str):
     return Expression(
         get_integer_followed_by_string(text),
         is_confident=True,
@@ -130,45 +131,63 @@ def get_duration_and_half(text: str, output: float):
     )
 
 
-def get_shared_expression(unit: DurationUnit):
-    single = globals()[f"NAME_OF_{unit.name[:-1]}"]
-    two = globals()[f"NAME_OF_TWO_{unit.name}"]
-    plural = globals()[f"NAME_OF_{unit.name}"]
+def get_numeric_expressions(unit: DurationUnit) -> ExpressionGroup:
+    """Returns the following expressions:
+    - <decimal> unit <quarter|third|half>
+    - <integer> unit <quarter|third|half>
+    - <decimal> unit
+    - <integer> unit
 
+    Parameters
+    ----------
+    unit : DurationUnit
+        The duration unit to get the expression of.
+
+    Returns
+    -------
+    ExpressionGroup
+        The expressions.
+    """
+    single = globals()[f"NAME_OF_{unit.name[:-1]}"]
+    plural = globals()[f"NAME_OF_{unit.name}"]
+    single_plural = get_non_capturing_group(plural, single)
+    decimal_exp = get_decimal_followed_by_duration(single_plural).set_unit(unit)
+    integer_exp = get_integer_followed_by_duration(single_plural).set_unit(unit)
+    parts = ExpressionGroup(
+        Expression(get_word(THIRD), is_confident=True, output=1 / 3),
+        Expression(get_word(QUARTER), is_confident=True, output=1 / 4),
+        Expression(get_word(HALF), is_confident=True, output=1 / 2),
+    ).set_unit(unit)
     exps = ExpressionGroup(
-        get_decimal_followed_by_duration(get_non_capturing_group(plural, single)),
-        get_number_followed_by_duration(get_non_capturing_group(plural, single)),
+        merge_two_durations(decimal_exp, parts),
+        merge_two_durations(integer_exp, parts),
+        decimal_exp,
+        integer_exp,
         smart=True,
     ).set_unit(unit)
-    if unit == DurationUnit.SECONDS:
-        exps += ExpressionGroup(
-            get_duration_and_quarter(two, 2.25),
-            get_duration_and_third(two, 2.33),
-            get_duration_and_half(two, 2.5),
-            get_duration_and_quarter(single, 1.25),
-            get_duration_and_third(single, 1.33),
-            get_duration_and_half(single, 1.5),
-            get_quarter_duration(single, 0.25),
-            get_third_duration(single, 0.33),
-            get_half_duration(single, 0.5),
-            get_three_quarters_duration(single, 0.75),
-        ).set_unit(unit)
-    else:
-        # This is for better readability
-        newunit = DurationUnit(unit.value - 1)
-        to_newunit = lambda v: convert_between_durations((v, unit), to_unit=newunit)
-        exps += ExpressionGroup(
-            get_duration_and_quarter(two, to_newunit(2.25)),
-            get_duration_and_third(two, to_newunit(2 + 1 / 3)),
-            get_duration_and_half(two, to_newunit(2.5)),
-            get_duration_and_quarter(single, to_newunit(1.25)),
-            get_duration_and_third(single, to_newunit(1 + 1 / 3)),
-            get_duration_and_half(single, to_newunit(1.5)),
-            get_quarter_duration(single, to_newunit(0.25)),
-            get_third_duration(single, to_newunit(1 / 3)),
-            get_half_duration(single, to_newunit(0.5)),
-            get_three_quarters_duration(single, to_newunit(0.75)),
-        ).set_unit(newunit)
+    return exps
+
+
+def get_text_expressions(unit: DurationUnit):
+    single = globals()[f"NAME_OF_{unit.name[:-1]}"]
+    two = globals()[f"NAME_OF_TWO_{unit.name}"]
+
+    # This conversion is for better readability.
+    newunit = DurationUnit(max(unit.value - 1, 1))
+    to_newunit = lambda v: convert_between_durations((v, unit), to_unit=newunit)
+    exps = ExpressionGroup(
+        get_duration_and_quarter(two, to_newunit(2.25)),
+        get_duration_and_third(two, to_newunit(2 + 1 / 3)),
+        get_duration_and_half(two, to_newunit(2.5)),
+        get_duration_and_quarter(single, to_newunit(1.25)),
+        get_duration_and_third(single, to_newunit(1 + 1 / 3)),
+        get_duration_and_half(single, to_newunit(1.5)),
+        get_quarter_duration(single, to_newunit(0.25)),
+        get_third_duration(single, to_newunit(1 / 3)),
+        get_half_duration(single, to_newunit(0.5)),
+        get_three_quarters_duration(single, to_newunit(0.75)),
+        smart=True,
+    ).set_unit(newunit)
 
     exps += ExpressionGroup(
         Expression(
@@ -179,6 +198,10 @@ def get_shared_expression(unit: DurationUnit):
         Expression(get_word_with_optional_waw_prefix(single), output=1),
     ).set_unit(unit)
     return exps
+
+
+def get_shared_expression(unit: DurationUnit):
+    return get_numeric_expressions(unit) + get_text_expressions(unit)
 
 
 EXPRESSION_DURATION_SECONDS = get_shared_expression(DurationUnit.SECONDS)
