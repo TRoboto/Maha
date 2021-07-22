@@ -1,6 +1,8 @@
 """
 Functions that return shared expressions.
 """
+from typing import List, Union
+
 from maha.constants import ARABIC_NUMBERS, ENGLISH_NUMBERS
 
 INTEGER_EXPRESSION: str = "([{}]+)".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
@@ -64,3 +66,29 @@ def get_word_with_optional_waw_prefix(word: str):
     Returns a regex that matches a complete word with optional waw prefix.
     """
     return get_word("و?" + word)
+
+
+def convert_to_number_if_possible(values: List[str]) -> List[Union[str, int, float]]:
+    """
+    Converts the given values to numbers if possible.
+
+    Parameters
+    ----------
+    values: List[str]
+        The values to convert.
+
+    Returns
+    -------W
+    List[Union[str, int, float]]
+        The converted values.
+    """
+    output = []
+    for value in values:
+        try:
+            output.append(int(value))
+        except ValueError:
+            try:
+                output.append(float(value))
+            except ValueError:
+                output.append(value)
+    return output

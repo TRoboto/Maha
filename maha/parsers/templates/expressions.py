@@ -6,6 +6,7 @@ from typing import Callable, Iterable, List, Optional, Union
 
 import regex as re
 
+from ..utils.general import convert_to_number_if_possible
 from .types import Unit
 
 
@@ -105,7 +106,7 @@ class Expression:
 
             captured_groups = m.groups()
             if captured_groups:
-                captured_groups = self.convert_to_number_if_possible(captured_groups)
+                captured_groups = convert_to_number_if_possible(captured_groups)
                 if len(captured_groups) == 1:
                     captured_groups = captured_groups[0]
                 value = captured_groups
@@ -116,23 +117,6 @@ class Expression:
                 value = self.output(value)
 
             yield ExpressionResult(start, end, value, self)  # type: ignore
-
-    def convert_to_number_if_possible(
-        self, values: List[str]
-    ) -> List[Union[str, int, float]]:
-        """
-        Converts the given values to numbers if possible.
-        """
-        output = []
-        for value in values:
-            try:
-                output.append(int(value))
-            except ValueError:
-                try:
-                    output.append(float(value))
-                except ValueError:
-                    output.append(value)
-        return output
 
     def __repr__(self):
         out = f"Expression(pattern={self.pattern}, is_confident={self.is_confident})"
@@ -265,6 +249,8 @@ class ExpressionGroup:
         expression parses the value, no value is matched more than once. This means
         high-priority expressions should be passed first.
         """
+        # TODO: Maybe provide a way to merge parsed values when they follow each other?
+        # (e.g. يوم و20 ساعة و30 دقيقة وثانيتين)
         for result in self.normal_parse(text):
             if self._is_parsed(result):
                 continue
@@ -282,9 +268,5 @@ class ExpressionGroup:
         self._parsed_ranges = set()
 
     def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
-        return ExpressionGroup(
-            *self.expressions,
-            *other.expressions,
-            confident_first=self.confident_first,
-            smart=self.smart,
-        )
+        self.expressions.extend(other.expressions)
+        return self
