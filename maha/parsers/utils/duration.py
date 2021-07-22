@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Tuple, Union
 
 from ..templates import DurationUnit, Expression, ExpressionGroup
 from .general import get_words_separated_by_waw
@@ -98,8 +98,8 @@ def convert_between_durations(
 
 
 def merge_two_durations(
-    group1: ExpressionGroup,
-    group2: ExpressionGroup,
+    group1: Union[Expression, ExpressionGroup],
+    group2: Union[Expression, ExpressionGroup],
 ) -> ExpressionGroup:
     """
     Merge expressions from ``group1`` and ``group2``. The output pattern is constructed
@@ -111,10 +111,14 @@ def merge_two_durations(
     def get_output(*values: Tuple[float, DurationUnit], to_unit: DurationUnit):
         return convert_between_durations(*values, to_unit=to_unit)
 
-    # Take the smaller unit.
-    unit = DurationUnit(min(group1.get_unit().value, group2.get_unit().value))
+    if isinstance(group1, Expression):
+        group1 = ExpressionGroup(group1)
+    if isinstance(group2, Expression):
+        group2 = ExpressionGroup(group2)
     for exp in group1.expressions:
         for exp2 in group2.expressions:
+            # Take the smaller unit.
+            unit = DurationUnit(min(exp.unit.value, exp2.unit.value))  # type: ignore
             new_exp = Expression(
                 get_words_separated_by_waw(
                     exp.pattern.strip(r"\b"), exp2.pattern.strip(r"\b")
