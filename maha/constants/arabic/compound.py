@@ -244,9 +244,8 @@ ARABIC_DOTLESS_MAP: Dict[str, str] = {
     GHAIN: DOTLESS_GHAIN,
     FEH: DOTLESS_FEH,
     QAF: DOTLESS_QAF,
-    NOON: DOTLESS_NOON,
+    NOON: DOTLESS_TEH,
     YEH: DOTLESS_YEH,
     TEH_MARBUTA: DOTLESS_TEH_MARBUTA,
 }
-
 """ Mapping between Arabic dotted and dotless letters """

@@ -323,8 +323,8 @@ DOTLESS_FEH: str = "\u06A1"
 """ Arabic Letter Dotless Feh """
 DOTLESS_QAF: str = "\u066F"
 """ Arabic Letter Dotless Qaf """
-DOTLESS_NOON: str = "\u06BA"
-""" Arabic Letter Dotless Noon """
+DOTLESS_NOON_GHUNNA: str = "\u06BA"
+""" Arabic Letter Dotless Noon Ghunna """
 DOTLESS_YEH: str = ALEF_MAKSURA
 """ Arabic Letter Dotless Yeh """
 DOTLESS_TEH_MARBUTA: str = HEH
