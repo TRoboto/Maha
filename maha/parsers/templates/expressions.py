@@ -85,7 +85,7 @@ class Expression:
 
         Yields
         -------
-        :class:`~ExpressionResult`
+        :class:`ExpressionResult`
             Extracted value.
 
         Raises
@@ -240,13 +240,17 @@ class ExpressionGroup:
 
         Yields
         -------
-        :class:`~ExpressionResult`
+        :class:`ExpressionResult`
             Extracted value.
         """
+        # TODO: Maybe provide a way to clean the text before parsing?
+        # (e.g. remove harakat)
         if self.smart:
             yield from self.smart_parse(text)
         else:
             yield from self.normal_parse(text)
+
+        self.clear_parsed()
 
     def normal_parse(self, text: str) -> Iterable[ExpressionResult]:
         """
@@ -273,6 +277,9 @@ class ExpressionGroup:
                 return True
 
         return False
+
+    def clear_parsed(self):
+        self._parsed_ranges = set()
 
     def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
         return ExpressionGroup(
