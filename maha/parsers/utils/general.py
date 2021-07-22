@@ -13,11 +13,15 @@ WAW_SEPARATOR = SPACE_EXPRESSION + "و" + SPACE_OR_NONE_EXPRESSION
 
 
 def get_number_followed_by_string(expression: str) -> str:
-    return get_words_separated_by_space(INTEGER_EXPRESSION, expression)
+    return get_words_separated_by_space_and_optional_waw_prefix(
+        INTEGER_EXPRESSION, expression
+    )
 
 
 def get_decimal_followed_by_string(expression: str) -> str:
-    return get_words_separated_by_space(DECIMAL_EXPRESSION, expression)
+    return get_words_separated_by_space_and_optional_waw_prefix(
+        DECIMAL_EXPRESSION, expression
+    )
 
 
 def get_non_capturing_group(*words: str):
