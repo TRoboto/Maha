@@ -4,7 +4,11 @@ Expressions to extract duration.
 from maha.constants import ALEF_VARIATIONS
 
 from ..templates import DurationUnit, Expression, ExpressionGroup
-from ..utils.duration import get_words_separated_by_waw, merge_two_durations
+from ..utils.duration import (
+    convert_between_durations,
+    get_words_separated_by_waw,
+    merge_two_durations,
+)
 from ..utils.general import (
     get_decimal_followed_by_string,
     get_integer_followed_by_string,
@@ -130,28 +134,51 @@ def get_shared_expression(unit: DurationUnit):
     single = globals()[f"NAME_OF_{unit.name[:-1]}"]
     two = globals()[f"NAME_OF_TWO_{unit.name}"]
     plural = globals()[f"NAME_OF_{unit.name}"]
-    return ExpressionGroup(
-        # Number followed by unit
+
+    exps = ExpressionGroup(
         get_decimal_followed_by_duration(get_non_capturing_group(plural, single)),
         get_number_followed_by_duration(get_non_capturing_group(plural, single)),
-        get_duration_and_quarter(two, 2.25),
-        get_duration_and_third(two, 2.33),
-        get_duration_and_half(two, 2.5),
-        get_duration_and_quarter(single, 1.25),
-        get_duration_and_third(single, 1.33),
-        get_duration_and_half(single, 1.5),
-        get_quarter_duration(single, 0.25),
-        get_third_duration(single, 0.33),
-        get_half_duration(single, 0.5),
-        get_three_quarters_duration(single, 0.75),
+        smart=True,
+    ).set_unit(unit)
+    if unit == DurationUnit.SECONDS:
+        exps += ExpressionGroup(
+            get_duration_and_quarter(two, 2.25),
+            get_duration_and_third(two, 2.33),
+            get_duration_and_half(two, 2.5),
+            get_duration_and_quarter(single, 1.25),
+            get_duration_and_third(single, 1.33),
+            get_duration_and_half(single, 1.5),
+            get_quarter_duration(single, 0.25),
+            get_third_duration(single, 0.33),
+            get_half_duration(single, 0.5),
+            get_three_quarters_duration(single, 0.75),
+        ).set_unit(unit)
+    else:
+        # This is for better readability
+        newunit = DurationUnit(unit.value - 1)
+        to_newunit = lambda v: convert_between_durations((v, unit), to_unit=newunit)
+        exps += ExpressionGroup(
+            get_duration_and_quarter(two, to_newunit(2.25)),
+            get_duration_and_third(two, to_newunit(2 + 1 / 3)),
+            get_duration_and_half(two, to_newunit(2.5)),
+            get_duration_and_quarter(single, to_newunit(1.25)),
+            get_duration_and_third(single, to_newunit(1 + 1 / 3)),
+            get_duration_and_half(single, to_newunit(1.5)),
+            get_quarter_duration(single, to_newunit(0.25)),
+            get_third_duration(single, to_newunit(1 / 3)),
+            get_half_duration(single, to_newunit(0.5)),
+            get_three_quarters_duration(single, to_newunit(0.75)),
+        ).set_unit(newunit)
+
+    exps += ExpressionGroup(
         Expression(
             get_word_with_optional_waw_prefix(two),
             is_confident=True,
             output=2,
         ),
         Expression(get_word_with_optional_waw_prefix(single), output=1),
-        smart=True,
     ).set_unit(unit)
+    return exps
 
 
 EXPRESSION_DURATION_SECONDS = get_shared_expression(DurationUnit.SECONDS)
