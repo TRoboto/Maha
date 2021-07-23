@@ -4,6 +4,7 @@ from maha.cleaners.functions import (
     reduce_repeated_substring,
     remove,
     remove_all_harakat,
+    remove_arabic_letter_dots,
     remove_emails,
     remove_english,
     remove_extra_spaces,
@@ -24,6 +25,24 @@ from maha.constants import (
     ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
+    BEH,
+    DAD,
+    DOTLESS_BEH,
+    DOTLESS_DAD,
+    DOTLESS_FEH,
+    DOTLESS_GHAIN,
+    DOTLESS_JEEM,
+    DOTLESS_KHAH,
+    DOTLESS_NOON_GHUNNA,
+    DOTLESS_QAF,
+    DOTLESS_SHEEN,
+    DOTLESS_TEH,
+    DOTLESS_TEH_MARBUTA,
+    DOTLESS_THAL,
+    DOTLESS_THEH,
+    DOTLESS_YEH,
+    DOTLESS_ZAH,
+    DOTLESS_ZAIN,
     EMPTY,
     ENGLISH,
     ENGLISH_CAPITAL_LETTERS,
@@ -31,10 +50,24 @@ from maha.constants import (
     ENGLISH_NUMBERS,
     ENGLISH_PUNCTUATIONS,
     ENGLISH_SMALL_LETTERS,
+    FEH,
+    GHAIN,
     HARAKAT,
+    JEEM,
+    KHAH,
+    NOON,
     NUMBERS,
     PUNCTUATIONS,
+    QAF,
+    SHEEN,
     TATWEEL,
+    TEH,
+    TEH_MARBUTA,
+    THAL,
+    THEH,
+    YEH,
+    ZAH,
+    ZAIN,
 )
 from tests.utils import list_not_in_string
 
@@ -611,3 +644,141 @@ def test_remove_extra_spaces_raise_valueerror():
 
     with pytest.raises(ValueError):
         remove_extra_spaces("", 0)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        (BEH, DOTLESS_BEH),
+        (TEH, DOTLESS_TEH),
+        (THEH, DOTLESS_THEH),
+        (JEEM, DOTLESS_JEEM),
+        (KHAH, DOTLESS_KHAH),
+        (THAL, DOTLESS_THAL),
+        (ZAIN, DOTLESS_ZAIN),
+        (SHEEN, DOTLESS_SHEEN),
+        (DAD, DOTLESS_DAD),
+        (ZAH, DOTLESS_ZAH),
+        (GHAIN, DOTLESS_GHAIN),
+        (FEH, DOTLESS_FEH),
+        (QAF, DOTLESS_QAF),
+        (NOON, DOTLESS_NOON_GHUNNA),
+        (YEH, DOTLESS_YEH),
+        (TEH_MARBUTA, DOTLESS_TEH_MARBUTA),
+    ],
+)
+def test_remove_arabic_letter_dots_with_individual_letters(input: str, expected: str):
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("باب", "ٮاٮ"),
+        ("تل", "ٮل"),
+        ("ثروة", "ٮروه"),
+        ("جمل", "حمل"),
+        ("خو", "حو"),
+        ("ذوق", "دوٯ"),
+        ("زيادة", "رىاده"),
+        ("شمس", "سمس"),
+        ("ضوء", "صوء"),
+        ("ظلام", "طلام"),
+        ("غيم", "عىم"),
+        ("فوق", "ڡوٯ"),
+        ("قلب", "ٯلٮ"),
+        ("نور", "ٮور"),
+        ("يوم", "ىوم"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_dots_begin(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("ربو", "رٮو"),
+        ("وتر", "وٮر"),
+        ("وثب", "وٮٮ"),
+        ("وجل", "وحل"),
+        ("مخدر", "محدر"),
+        ("حذر", "حدر"),
+        ("وزر", "ورر"),
+        ("حشد", "حسد"),
+        ("وضوء", "وصوء"),
+        ("حظر", "حطر"),
+        ("صغى", "صعى"),
+        ("افلام", "اڡلام"),
+        ("وقى", "وٯى"),
+        ("سنة", "سٮه"),
+        ("سليم", "سلىم"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_dots_mid(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("صب", "صٮ"),
+        ("ست", "سٮ"),
+        ("حث", "حٮ"),
+        ("حرج", "حرح"),
+        ("مخ", "مح"),
+        ("عوذ", "عود"),
+        ("وز", "ور"),
+        ("رش", "رس"),
+        ("وضوء", "وصوء"),
+        ("وعظ", "وعط"),
+        ("صمغ", "صمع"),
+        ("وفى", "وڡى"),
+        ("حق", "حٯ"),
+        ("سن", "سں"),
+        ("مي", "مى"),
+        ("صلاة", "صلاه"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_dots_end(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("البنيان", "الٮٮىاں"),
+        ("البنيانُ قوي", "الٮٮىاںُ ٯوى"),
+        ("البنيان قوي", "الٮٮىاں ٯوى"),
+        ("البنيان\nقوي", "الٮٮىاں\nٯوى"),
+        ("البنيان.", "الٮٮىاں."),
+        ("البنيان.", "الٮٮىاں."),
+        ("البنيان؟", "الٮٮىاں؟"),
+        ("البنْيان😊", "الٮٮْىاں😊"),
+        ("البنْيانُ،", "الٮٮْىاںُ،"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_edge_case(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        (
+            "‏احذروا الدنيا فإنها تغُرُّ وتضُرُّ وتمُرُّ.",
+            "‏احدروا الدٮىا ڡإٮها ٮعُرُّ وٮصُرُّ وٮمُرُّ.",
+        ),
+        (
+            "المتسلسلات و طرق إيجاد قواعدها أو حدودها والجمع",
+            "المٮسلسلاٮ و طرٯ إىحاد ٯواعدها أو حدودها والحمع",
+        ),
+    ],
+)
+def test_remove_arabic_letter_dots_general(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected

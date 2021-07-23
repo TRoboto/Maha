@@ -18,6 +18,7 @@ __all__ = [
     "remove_links",
     "remove_mentions",
     "reduce_repeated_substring",
+    "remove_arabic_letter_dots",
 ]
 
 from typing import List, Union
@@ -26,10 +27,12 @@ import maha.cleaners.functions as functions
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
+    ARABIC_DOTLESS_MAP,
     ARABIC_LETTERS,
     ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
+    DOTLESS_NOON_GHUNNA,
     EMPTY,
     ENGLISH,
     ENGLISH_CAPITAL_LETTERS,
@@ -38,6 +41,7 @@ from maha.constants import (
     ENGLISH_PUNCTUATIONS,
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
+    NOON,
     NUMBERS,
     PATTERN_ARABIC_HASHTAGS,
     PATTERN_ARABIC_MENTIONS,
@@ -254,7 +258,7 @@ def reduce_repeated_substring(
     text: str, min_repeated: int = 3, reduce_to: int = 2
 ) -> str:
     """Reduces consecutive substrings that are repeated at least ``min_repeated`` times
-    to `reduce_to`` times. For example with the default arguments, 'hhhhhh' is
+    to ``reduce_to`` times. For example with the default arguments, 'hhhhhh' is
     reduced to 'hh'
 
     TODO: Maybe change the implemention for 50x speed
@@ -716,3 +720,41 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
     check_positive_integer(max_spaces, "max_spaces")
 
     return functions.replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
+
+
+def remove_arabic_letter_dots(text: str) -> str:
+    """Remove dots from :data:`~.ARABIC_LETTERS` in the given ``text`` using the
+    :data:`~.ARABIC_DOTLESS_MAP`
+
+    Parameters
+    ----------
+    text : str
+        Text to be processed
+
+    Returns
+    -------
+    str
+        Text with dotless Arabic letters
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
+        >>> remove_arabic_letter_dots(text)
+        'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'
+    """
+    output = functions.replace_pattern(
+        text,
+        r"{}(?=[^{}]|[{}]\b|$)".format(
+            NOON,
+            "".join(ARABIC_LETTERS + ALL_HARAKAT),
+            "".join(ALL_HARAKAT),
+        ),
+        DOTLESS_NOON_GHUNNA,
+    )
+    output = functions.replace_pairs(
+        output, list(ARABIC_DOTLESS_MAP.keys()), list(ARABIC_DOTLESS_MAP.values())
+    )
+    return output
