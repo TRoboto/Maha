@@ -494,4 +494,84 @@ def test_parse_combined_expressions_with_weeks_and_hours(input: str, expected: f
     assert output.expression.unit == DurationUnit.HOURS
 
 
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (60, "10 اشهر و20 اسبوع"),
+        (9, "وشهرين واسبوع"),
+        (10, "شهرين ونص"),
+        (10, "شهران واسبوعان"),
+        (81, "20 شهرا واسبوعا"),
+        (24, "شهر و20 أسبوع"),
+    ],
+)
+def test_parse_combined_expressions_with_months_and_weeks(input: str, expected: float):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert len(output) == 1
+    output = output[0]
+
+    assert output.value == expected
+    assert output.expression.unit == DurationUnit.WEEKS
+
+
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (33.5, "شهر ونص اسبوع"),
+        (61.75, "شهران وربع أسبوع"),
+        (320, "10 اشهر و20 يوم"),
+        (61, "وشهرين ويوم"),
+        (62, "شهرين ويومان"),
+        (601, "20 شهر ويوما"),
+        (50, "شهر و20 يوم"),
+    ],
+)
+def test_parse_combined_expressions_with_months_and_days(input: str, expected: float):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert len(output) == 1
+    output = output[0]
+
+    assert output.value == expected
+    assert output.expression.unit == DurationUnit.DAYS
+
+
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (140, "10 سنين و20 شهر"),
+        (13, "عام وشهر"),
+        (25, "وسنتين وشهر"),
+        (30, "عامان ونصف"),
+        (26, "سنتان وشهرين"),
+        (37, "3 أعوام وشهر"),
+        (242, "20 عام وشهران"),
+        (32, "سنه و20 شهر"),
+    ],
+)
+def test_parse_combined_expressions_with_years_and_months(input: str, expected: float):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert len(output) == 1
+    output = output[0]
+
+    assert output.value == expected
+    assert output.expression.unit == DurationUnit.MONTHS
+
+
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (50, "سنة ونص شهر"),
+        (97, "سنتين وربع شهر"),
+        (146, "3 سنين ونصف شهر"),
+    ],
+)
+def test_parse_combined_expressions_with_years_and_weeks(input: str, expected: float):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert len(output) == 1
+    output = output[0]
+
+    assert output.value == expected
+    assert output.expression.unit == DurationUnit.WEEKS
+
+
 # Add tests for options (e.g. smart)
