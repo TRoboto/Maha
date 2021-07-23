@@ -754,6 +754,7 @@ def test_remove_arabic_letter_dots_with_dots_end(input: str, expected: str):
         ("البنيانُ قوي", "الٮٮىاںُ ٯوى"),
         ("البنيان قوي", "الٮٮىاں ٯوى"),
         ("البنيان\nقوي", "الٮٮىاں\nٯوى"),
+        (".البنيان", ".الٮٮىاں"),
     ],
 )
 def test_remove_arabic_letter_dots_with_edge_case(input: str, expected: str):
