@@ -9,15 +9,8 @@ from maha.parsers.expressions.duration import (
     EXPRESSION_DURATION_SECONDS,
     EXPRESSION_DURATION_WEEKS,
     EXPRESSION_DURATION_YEARS,
-    NAME_OF_DAY,
-    NAME_OF_HOUR,
-    NAME_OF_MINUTE,
-    NAME_OF_MONTH,
-    NAME_OF_SECOND,
-    NAME_OF_WEEK,
-    NAME_OF_YEAR,
 )
-from maha.parsers.templates.types import DurationUnit
+from maha.parsers.templates import DurationUnit
 
 
 @pytest.mark.parametrize(
