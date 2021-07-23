@@ -2,6 +2,8 @@ from pathlib import Path
 
 import pytest
 
+from maha.parsers.expressions import EXPRESSION_DURATION
+
 
 @pytest.fixture()
 def simple_text_input():
@@ -31,3 +33,8 @@ def surah_al_ala_processed_file():
 @pytest.fixture()
 def empty_file():
     return "sample_data/empty_file.txt"
+
+
+@pytest.fixture(scope="session", autouse=True)
+def compile_parse_expressions():
+    EXPRESSION_DURATION.compile_expressions()
