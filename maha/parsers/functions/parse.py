@@ -151,6 +151,9 @@ def parse(
     ValueError
         If no argument is set to True
     """
+
+    # TODO: Maybe add `include_space` option to allow including spaces in the expressions
+    # TODO: Maybe add `merge` option to allow merging of the expressions
     if not text:
         return []
 
