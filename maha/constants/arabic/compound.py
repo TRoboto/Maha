@@ -1,6 +1,6 @@
 """List of Arabic constant definitions."""
 
-from typing import List
+from typing import Dict, List
 
 from .simple import *
 
@@ -229,3 +229,23 @@ ALL_HARAKAT = HARAKAT + SMALL_HARAKAT + OTHER_HARAKAT
 
 ARABIC: List[str] = ARABIC_LETTERS + ALL_HARAKAT + ARABIC_NUMBERS + ARABIC_PUNCTUATIONS
 """ Common Arabic characters """
+
+ARABIC_DOTLESS_MAP: Dict[str, str] = {
+    BEH: DOTLESS_BEH,
+    TEH: DOTLESS_TEH,
+    THEH: DOTLESS_THEH,
+    JEEM: DOTLESS_JEEM,
+    KHAH: DOTLESS_KHAH,
+    THAL: DOTLESS_THAL,
+    ZAIN: DOTLESS_ZAIN,
+    SHEEN: DOTLESS_SHEEN,
+    DAD: DOTLESS_DAD,
+    ZAH: DOTLESS_ZAH,
+    GHAIN: DOTLESS_GHAIN,
+    FEH: DOTLESS_FEH,
+    QAF: DOTLESS_QAF,
+    NOON: DOTLESS_TEH,
+    YEH: DOTLESS_YEH,
+    TEH_MARBUTA: DOTLESS_TEH_MARBUTA,
+}
+""" Mapping between Arabic dotted and dotless letters """
