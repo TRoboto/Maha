@@ -1,5 +1,4 @@
 __all__ = ["Expression", "ExpressionGroup", "ExpressionResult"]
-
 import inspect
 from dataclasses import dataclass
 from typing import Callable, Iterable, List, Optional, Union
@@ -12,7 +11,7 @@ from .types import Unit
 
 @dataclass
 class Expression:
-    __slots__ = ["pattern", "is_confident", "output", "unit"]
+    __slots__ = ["pattern", "is_confident", "output", "unit", "_compiled_pattern"]
 
     pattern: str
     """Regular expersion(s) to match"""
@@ -42,6 +41,7 @@ class Expression:
         self.output = output
         if not disable_sanity_check:
             self.sanity_check()
+        self._compiled_pattern = None
 
     def sanity_check(self):
         num_groups = self._get_number_of_groups()
@@ -63,6 +63,10 @@ class Expression:
             raise ValueError(
                 "The pattern must contain only one group if the output is not a function"
             )
+
+    def compile(self):
+        if self._compiled_pattern is None:
+            self._compiled_pattern = re.compile(self.pattern)
 
     def format(self, format_spec: str):
         self.pattern = self.pattern.format(format_spec)
@@ -94,8 +98,9 @@ class Expression:
         ValueError
             If the output value is not a float or a string.
         """
+        self.compile()
 
-        for m in re.finditer(self.pattern, text):
+        for m in re.finditer(self._compiled_pattern, text):
             start, end = m.span()
 
             # if the output is not a function, return the value directly
@@ -177,6 +182,10 @@ class ExpressionGroup:
 
         self._parsed_ranges = set()
         self.smart = smart
+
+    def compile_expressions(self):
+        for expression in self.expressions:
+            expression.compile()
 
     def merge_expressions(
         self, expressions: Iterable[Union[Expression, "ExpressionGroup"]]
