@@ -29,16 +29,16 @@ NAME_OF_MINUTES = "دقا[يئ]ق"
 NAME_OF_HOUR = "ساع[ةه]"
 NAME_OF_TWO_HOURS = "ساعت" + TWO_SUFFIX
 NAME_OF_HOURS = "ساعات"
-NAME_OF_DAY = "يوم"
+NAME_OF_DAY = "يوما?"
 NAME_OF_TWO_DAYS = NAME_OF_DAY + TWO_SUFFIX
-NAME_OF_DAYS = get_non_capturing_group("[اأ]يام", NAME_OF_DAY + "ا?")
-NAME_OF_WEEK = "[اأ]سبوع"
+NAME_OF_DAYS = "[اأ]يام"
+NAME_OF_WEEK = "[اأ]سبوعا?"
 NAME_OF_TWO_WEEKS = NAME_OF_WEEK + TWO_SUFFIX
-NAME_OF_WEEKS = "[{}]سابيع".format("".join(ALEF_VARIATIONS))
-NAME_OF_MONTH = "شهر"
+NAME_OF_WEEKS = "[{}]سابيعا?".format("".join(ALEF_VARIATIONS))
+NAME_OF_MONTH = "شهرا?"
 NAME_OF_TWO_MONTHS = NAME_OF_MONTH + TWO_SUFFIX
 NAME_OF_MONTHS = get_non_capturing_group("شهور", "[أا]شهر")
-NAME_OF_YEAR = get_non_capturing_group("سن[ةه]", "عام")
+NAME_OF_YEAR = get_non_capturing_group("سن[ةه]", "عاما?")
 NAME_OF_TWO_YEARS = get_non_capturing_group("سنت" + TWO_SUFFIX, "عام" + TWO_SUFFIX)
 NAME_OF_YEARS = get_non_capturing_group("سنوات", "سنين", "[أا]عوام")
 
@@ -96,7 +96,7 @@ def get_three_quarters_duration(text: str, output: float = 45):
         ),
         Expression(
             get_words_separated_by_space_and_optional_waw_prefix(
-                "[ثت]لا؟[ثت][ةه]؟", "[أا]رباع", "ال" + text
+                "[ثت]لا?[ثت][ةه]?", "[أا]رباع", "ال" + text
             ),
             is_confident=True,
             output=output,
