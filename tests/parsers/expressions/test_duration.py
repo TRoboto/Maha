@@ -11,6 +11,7 @@ from maha.parsers.expressions.duration import (
     EXPRESSION_DURATION_YEARS,
 )
 from maha.parsers.templates import DurationUnit
+from maha.parsers.templates.expressions import ExpressionGroup
 
 
 @pytest.mark.parametrize(
@@ -574,4 +575,35 @@ def test_parse_combined_expressions_with_years_and_weeks(input: str, expected: f
     assert output.expression.unit == DurationUnit.WEEKS
 
 
-# Add tests for options (e.g. smart)
+def test_parse_with_confident_first():
+    NEW_EXPRESSIONS = ExpressionGroup(
+        *EXPRESSION_DURATION_YEARS.expressions[::-1], confident_first=True, smart=True
+    )
+    output = list(NEW_EXPRESSIONS.parse("20 سنة"))
+    assert len(output) == 1
+    output = output[0]
+
+    assert output.value == 20
+    assert output.expression.unit == DurationUnit.YEARS
+
+
+def test_parse_with_confident_not_first():
+    NEW_EXPRESSIONS = ExpressionGroup(
+        *EXPRESSION_DURATION_YEARS.expressions[::-1], smart=True
+    )
+    output = list(NEW_EXPRESSIONS.parse("20 سنة"))
+    assert len(output) == 2
+
+    assert output[0].value == 1
+    assert output[1].value == 20
+
+
+def test_parse_with_smart_off():
+    NEW_EXPRESSIONS = ExpressionGroup(
+        *EXPRESSION_DURATION.expressions, confident_first=True
+    )
+    output = list(NEW_EXPRESSIONS.parse("10 سنين و20 شهر"))
+    assert len(output) == 4
+
+    for i, val in enumerate([140, 10, 20, 1]):
+        assert output[i].value == val
