@@ -6,7 +6,7 @@ from typing import List, Union
 from maha.constants import ARABIC_NUMBERS, ENGLISH_NUMBERS
 
 INTEGER_EXPRESSION: str = "([{}]+)".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
-DECIMAL_EXPRESSION: str = "([{0}].[{0}]+)".format(
+DECIMAL_EXPRESSION: str = r"([{0}]\.[{0}]+)".format(
     "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
 )
 SPACE_EXPRESSION: str = r"\s+"
