@@ -55,3 +55,8 @@ class DistanceUnit(Unit):
 class DurationUnit(Unit):
     SECONDS = auto()
     MINUTES = auto()
+    HOURS = auto()
+    DAYS = auto()
+    WEEKS = auto()
+    MONTHS = auto()
+    YEARS = auto()

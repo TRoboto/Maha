@@ -32,7 +32,7 @@ from maha.constants import (
     ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
-    DOTLESS_BEH,
+    DOTLESS_NOON_GHUNNA,
     EMPTY,
     ENGLISH,
     ENGLISH_CAPITAL_LETTERS,
@@ -258,7 +258,7 @@ def reduce_repeated_substring(
     text: str, min_repeated: int = 3, reduce_to: int = 2
 ) -> str:
     """Reduces consecutive substrings that are repeated at least ``min_repeated`` times
-    to `reduce_to`` times. For example with the default arguments, 'hhhhhh' is
+    to ``reduce_to`` times. For example with the default arguments, 'hhhhhh' is
     reduced to 'hh'
 
     TODO: Maybe change the implemention for 50x speed
@@ -723,7 +723,8 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
 
 def remove_arabic_letter_dots(text: str) -> str:
-    """Remove dots from :data:~.ARABIC_LETTERS in the given ``text`` by mapping between :data:~.ARABIC_DOTLESS_MAP
+    """Remove dots from :data:`~.ARABIC_LETTERS` in the given ``text`` using the
+    :data:`~.ARABIC_DOTLESS_MAP`
 
     Parameters
     ----------
@@ -744,35 +745,16 @@ def remove_arabic_letter_dots(text: str) -> str:
         >>> remove_arabic_letter_dots(text)
         'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'
     """
-    text_after = functions.keep_strings(text, ARABIC_LETTERS)
-
-    output = []
-
-    for index, char in enumerate(text_after):
-
-        if char in ARABIC_DOTLESS_MAP:
-            if (index + 1) < (len(text_after)):
-                if char == NOON and text_after[index + 1] in ARABIC_LETTERS:
-                    output.append(DOTLESS_BEH)
-                else:
-                    output.append(ARABIC_DOTLESS_MAP[char])
-            else:
-                output.append(ARABIC_DOTLESS_MAP[char])
-        else:
-            if char in ARABIC_LETTERS:
-                output.append(char)
-
-    indx = 0
-    Edited_text = ""
-
-    for char in text:
-
-        if char in ARABIC_LETTERS:
-            # if char in ARABIC_LETTERS:
-            Edited_text += output[indx]
-            indx += 1
-
-        else:
-            Edited_text += char
-
-    return Edited_text
+    output = functions.replace_pattern(
+        text,
+        r"{}(?=[^{}]|[{}]\b|$)".format(
+            NOON,
+            "".join(ARABIC_LETTERS + ALL_HARAKAT),
+            "".join(ALL_HARAKAT),
+        ),
+        DOTLESS_NOON_GHUNNA,
+    )
+    output = functions.replace_pairs(
+        output, list(ARABIC_DOTLESS_MAP.keys()), list(ARABIC_DOTLESS_MAP.values())
+    )
+    return output

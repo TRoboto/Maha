@@ -4,8 +4,6 @@ __all__ = ["parse", "parse_expression"]
 
 from typing import Dict, List, Union
 
-import regex as re
-
 from maha.constants import (
     ALL_HARAKAT,
     ARABIC,
@@ -35,7 +33,7 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
-from maha.parsers.templates import Dimension, DimensionType, Expression
+from maha.parsers.templates import Dimension, DimensionType, Expression, ExpressionGroup
 
 
 def parse(
@@ -65,7 +63,7 @@ def parse(
     links: bool = False,
     mentions: bool = False,
     emojis: bool = False,
-    custom_expressions: Union[List[Expression], Expression] = None,
+    custom_expressions: Union[ExpressionGroup, Expression] = None,
 ) -> Union[List[Dimension], Dict[str, List[Dimension]]]:
 
     """Extracts certain characters/patterns from the given text.
@@ -136,7 +134,7 @@ def parse(
     emojis : bool, optional
         Extract emojis using the pattern :data:`~.PATTERN_EMOJIS`,
         by default False
-    custom_expressions : Union[List[:class:`~.Expression`], :class:`~.Expression`],
+    custom_expressions : Union[:class:`~.ExpressionGroup`, :class:`~.Expression`],
         optional. Include any other string(s), by default None
 
     Returns
@@ -153,6 +151,9 @@ def parse(
     ValueError
         If no argument is set to True
     """
+
+    # TODO: Maybe add `include_space` option to allow including spaces in the expressions
+    # TODO: Maybe add `merge` option to allow merging of the expressions
     if not text:
         return []
 
@@ -210,7 +211,7 @@ def parse_dimension(
 
 def parse_expression(
     text: str,
-    expressions: Union[List[Expression], Expression],
+    expressions: Union[ExpressionGroup, Expression],
     dimension_type: DimensionType = DimensionType.GENERAL,
 ) -> List[Dimension]:
     """
@@ -220,7 +221,7 @@ def parse_expression(
     ----------
     text : str
         Text to check
-    expressions : Union[List[Expression], Expression]
+    expressions : Union[:class:`~ExpressionGroup`, :class:`~Expression`]
         Expression(s) to use
     dimension_type : DimensionType
         Dimension type of the input ``expressions``,
@@ -240,20 +241,18 @@ def parse_expression(
     if not expressions:
         raise ValueError("'expressions' cannot be empty.")
 
-    # convert to list
-    if not isinstance(expressions, list):
-        expressions = [expressions]
+    # convert to ExpressionGroup
+    if isinstance(expressions, Expression):
+        expressions = ExpressionGroup(expressions)
 
     output = []
-    for expression in expressions:
-        for m in re.finditer(expression.pattern, text):
-            start = m.start(0)
-            end = m.end(0)
-            value = text[start:end]
-            captured_groups = m.groups()
-            if captured_groups:
-                value = expression.output(*captured_groups)
-
-            output.append(Dimension(expression, value, start, end, dimension_type))
+    for result in expressions.parse(text):
+        start = result.start
+        end = result.end
+        value = result.value
+        body = text[start:end]
+        output.append(
+            Dimension(result.expression, body, value, start, end, dimension_type)
+        )
 
     return output

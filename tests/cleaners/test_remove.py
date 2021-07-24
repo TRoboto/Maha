@@ -25,6 +25,24 @@ from maha.constants import (
     ARABIC_LIGATURES,
     ARABIC_NUMBERS,
     ARABIC_PUNCTUATIONS,
+    BEH,
+    DAD,
+    DOTLESS_BEH,
+    DOTLESS_DAD,
+    DOTLESS_FEH,
+    DOTLESS_GHAIN,
+    DOTLESS_JEEM,
+    DOTLESS_KHAH,
+    DOTLESS_NOON_GHUNNA,
+    DOTLESS_QAF,
+    DOTLESS_SHEEN,
+    DOTLESS_TEH,
+    DOTLESS_TEH_MARBUTA,
+    DOTLESS_THAL,
+    DOTLESS_THEH,
+    DOTLESS_YEH,
+    DOTLESS_ZAH,
+    DOTLESS_ZAIN,
     EMPTY,
     ENGLISH,
     ENGLISH_CAPITAL_LETTERS,
@@ -32,10 +50,24 @@ from maha.constants import (
     ENGLISH_NUMBERS,
     ENGLISH_PUNCTUATIONS,
     ENGLISH_SMALL_LETTERS,
+    FEH,
+    GHAIN,
     HARAKAT,
+    JEEM,
+    KHAH,
+    NOON,
     NUMBERS,
     PUNCTUATIONS,
+    QAF,
+    SHEEN,
     TATWEEL,
+    TEH,
+    TEH_MARBUTA,
+    THAL,
+    THEH,
+    YEH,
+    ZAH,
+    ZAIN,
 )
 from tests.utils import list_not_in_string
 
@@ -267,10 +299,10 @@ def test_reduce_repeated_substring_raises_valueerror():
         reduce_repeated_substring("heeeeey", min_repeated=3, reduce_to=10)
 
     with pytest.raises(ValueError):
-        reduce_repeated_substring("heeeeey", min_repeated=3.5)
+        reduce_repeated_substring("heeeeey", min_repeated=3.5)  # type: ignore
 
     with pytest.raises(ValueError):
-        reduce_repeated_substring("heeeeey", reduce_to=3.5)
+        reduce_repeated_substring("heeeeey", reduce_to=3.5)  # type: ignore
 
     with pytest.raises(ValueError):
         reduce_repeated_substring("heeeeey", min_repeated=-1)
@@ -608,7 +640,7 @@ def test_remove_extra_spaces_raise_valueerror():
         remove_extra_spaces("", -5)
 
     with pytest.raises(ValueError):
-        remove_extra_spaces("", 4.5)
+        remove_extra_spaces("", 4.5)  # type: ignore
 
     with pytest.raises(ValueError):
         remove_extra_spaces("", 0)
@@ -617,53 +649,136 @@ def test_remove_extra_spaces_raise_valueerror():
 @pytest.mark.parametrize(
     "input, expected",
     [
-        (
-            " المتسلسلات و طرق إيجاد قواعدها أو حدودها والجمع summation و كيفية حله.",  # ******
-            " المٮسلسلاٮ و طرٯ إىحاد ٯواعدها أو حدودها والحمع summation و كىڡىه حله.",
-        ),
-        (
-            "تؤثر وسائل التواصل الاجتماعي في وظائف الدماغ المختلفة لاحتوائها على العديد من المنبهات التي تثيرُ ردودَ فعلٍ مختلفة عند الإنسان.",
-            "ٮؤٮر وسائل الٮواصل الاحٮماعى ڡى وطائڡ الدماع المحٮلڡه لاحٮوائها على العدىد مں المٮٮهاٮ الٮى ٮٮىرُ ردودَ ڡعلٍ محٮلڡه عٮد الإٮساں.",
-        ),
-        (
-            ". وين بنقدم الامتحان؟ وكيف بدي اعرف المواعيد؟ IELTS ",  # ****
-            ". وىں ٮٮٯدم الامٮحاں؟ وكىڡ ٮدى اعرڡ المواعىد؟ IELTS ",
-        ),
-        (
-            "Climate change in Jordan has serious impacts on the water resources in Jordan.",
-            "Climate change in Jordan has serious impacts on the water resources in Jordan.",
-        ),
+        (BEH, DOTLESS_BEH),
+        (TEH, DOTLESS_TEH),
+        (THEH, DOTLESS_THEH),
+        (JEEM, DOTLESS_JEEM),
+        (KHAH, DOTLESS_KHAH),
+        (THAL, DOTLESS_THAL),
+        (ZAIN, DOTLESS_ZAIN),
+        (SHEEN, DOTLESS_SHEEN),
+        (DAD, DOTLESS_DAD),
+        (ZAH, DOTLESS_ZAH),
+        (GHAIN, DOTLESS_GHAIN),
+        (FEH, DOTLESS_FEH),
+        (QAF, DOTLESS_QAF),
+        (NOON, DOTLESS_NOON_GHUNNA),
+        (YEH, DOTLESS_YEH),
+        (TEH_MARBUTA, DOTLESS_TEH_MARBUTA),
+    ],
+)
+def test_remove_arabic_letter_dots_with_individual_letters(input: str, expected: str):
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("باب", "ٮاٮ"),
+        ("تل", "ٮل"),
+        ("ثروة", "ٮروه"),
+        ("جمل", "حمل"),
+        ("خو", "حو"),
+        ("ذوق", "دوٯ"),
+        ("زيادة", "رىاده"),
+        ("شمس", "سمس"),
+        ("ضوء", "صوء"),
+        ("ظلام", "طلام"),
+        ("غيم", "عىم"),
+        ("فوق", "ڡوٯ"),
+        ("قلب", "ٯلٮ"),
+        ("نور", "ٮور"),
+        ("يوم", "ىوم"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_dots_begin(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("ربو", "رٮو"),
+        ("وتر", "وٮر"),
+        ("وثب", "وٮٮ"),
+        ("وجل", "وحل"),
+        ("مخدر", "محدر"),
+        ("حذر", "حدر"),
+        ("وزر", "ورر"),
+        ("حشد", "حسد"),
+        ("وضوء", "وصوء"),
+        ("حظر", "حطر"),
+        ("صغى", "صعى"),
+        ("افلام", "اڡلام"),
+        ("وقى", "وٯى"),
+        ("سنة", "سٮه"),
+        ("سليم", "سلىم"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_dots_mid(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("صب", "صٮ"),
+        ("ست", "سٮ"),
+        ("حث", "حٮ"),
+        ("حرج", "حرح"),
+        ("مخ", "مح"),
+        ("عوذ", "عود"),
+        ("وز", "ور"),
+        ("رش", "رس"),
+        ("وضوء", "وصوء"),
+        ("وعظ", "وعط"),
+        ("صمغ", "صمع"),
+        ("وفى", "وڡى"),
+        ("حق", "حٯ"),
+        ("سن", "سں"),
+        ("مي", "مى"),
+        ("صلاة", "صلاه"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_dots_end(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("البنيان", "الٮٮىاں"),
+        ("البنيانُ قوي", "الٮٮىاںُ ٯوى"),
+        ("البنيان قوي", "الٮٮىاں ٯوى"),
+        ("البنيان\nقوي", "الٮٮىاں\nٯوى"),
+        ("البنيان.", "الٮٮىاں."),
+        ("البنيان.", "الٮٮىاں."),
+        ("البنيان؟", "الٮٮىاں؟"),
+        ("البنْيان😊", "الٮٮْىاں😊"),
+        ("البنْيانُ،", "الٮٮْىاںُ،"),
+    ],
+)
+def test_remove_arabic_letter_dots_with_edge_case(input: str, expected: str):
+
+    assert remove_arabic_letter_dots(input) == expected
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
         (
             "‏احذروا الدنيا فإنها تغُرُّ وتضُرُّ وتمُرُّ.",
             "‏احدروا الدٮىا ڡإٮها ٮعُرُّ وٮصُرُّ وٮمُرُّ.",
         ),
         (
-            """وَاِستَبقِ    وِدَّكَ لِلصَديقِ وَلا تَكُن
-قَتَباً يَعَضُّ بِغارِبٍ مِلحاحا""",
-            """وَاِسٮَٮٯِ    وِدَّكَ لِلصَدىٯِ وَلا ٮَكُں
-ٯَٮَٮاً ىَعَصُّ ٮِعارِٮٍ مِلحاحا""",
-        ),
-        (
-            "الطّاٯه المٮحدده هى الطّاٯه المُسٮَمّده مں الموارد الطٮىعىه الٮى لا ٮٮڡد وٮٮحدد ٮاسٮمرار مٮل الرىاح والمىاه والسمس",  # *******
-            "الطّاٯه المٮحدده هى الطّاٯه المُسٮَمّده مں الموارد الطٮىعىه الٮى لا ٮٮڡد وٮٮحدد ٮاسٮمرار مٮل الرىاح والمىاه والسمس",
-        ),
-        (
-            "ويمكنك متابعتي على الإيميل الشخصي user@gmail.com #المتميز",
-            "وىمكٮك مٮاٮعٮى على الإىمىل السحصى user@gmail.com #المٮمىر",
-        ),
-        (
-            "عيد الأضحى هو أحد العيدين عند المسلمين (والعيد الآخر هو عيد الفطر)، يوافق يوم 10 ذو الحجة بعد انتهاء وقفة يوم عرفة، الموقف الذي يقف فيه الحجاج المسلمون لتأدية أهم مناسك الحج، وينتهي يوم 13 ذو الحجة. ",
-            "عىد الأصحى هو أحد العىدىں عٮد المسلمىں (والعىد الآحر هو عىد الڡطر)، ىواڡٯ ىوم 10 دو الححه ٮعد اٮٮهاء وٯڡه ىوم عرڡه، الموٯڡ الدى ىٯڡ ڡىه الححاح المسلموں لٮأدىه أهم مٮاسك الحح، وىٮٮهى ىوم 13 دو الححه. ",
-        ),
-        (
-            "مدته شرعاً أربعة أيام",
-            "مدٮه سرعاً أرٮعه أىام",
-        ),
-        (
-            "زيادة، رزق، نوم، غيم، ظل، توت، ثروة، ورث، يخلد، خوخ، ذوق، رذاذ، تشويش، ضوضاء، رياض، يظلم، يغيب، محافظ، يغوص، صباغ، جمل",
-            "رىاده، ررٯ، ٮوم، عىم، طل، ٮوٮ، ٮروه، ورٮ، ىحلد، حوح، دوٯ، رداد، ٮسوىس، صوصاء، رىاص، ىطلم، ىعىٮ، محاڡط، ىعوص، صٮاع، حمل",
+            "المتسلسلات و طرق إيجاد قواعدها أو حدودها والجمع",
+            "المٮسلسلاٮ و طرٯ إىحاد ٯواعدها أو حدودها والحمع",
         ),
     ],
 )
-def test_remove_arabic_letter_dots(input: str, expected: str):
+def test_remove_arabic_letter_dots_general(input: str, expected: str):
+
     assert remove_arabic_letter_dots(input) == expected

@@ -169,7 +169,8 @@ class StreamFileProcessor(StreamTextProcessor):
                 file.write("\n")
 
     def __del__(self):
-        self.openfile.close()
+        if hasattr(self, "openfile"):
+            self.openfile.close()
 
 
 class FolderProcessor:
