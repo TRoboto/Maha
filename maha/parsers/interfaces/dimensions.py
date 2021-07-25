@@ -1,10 +1,10 @@
 __all__ = ["Dimension"]
 
 from dataclasses import dataclass
-from typing import Optional, Union
+from typing import Any, Optional, Union
 
+from .enums import DimensionType, Unit
 from .expressions import Expression
-from .types import DimensionType, Unit
 
 
 @dataclass
@@ -25,7 +25,7 @@ class Dimension:
     """The expression that was used to find the value"""
     body: str
     """Text from the input that was matched by the expression."""
-    value: Union[float, str]
+    value: Any
     """Extracted value"""
     unit: Optional[Unit]
     """Unit of the dimension"""
@@ -40,7 +40,7 @@ class Dimension:
         self,
         expression: Expression,
         body: str,
-        value: Union[float, str],
+        value: Any,
         start: int,
         end: int,
         dimension_type: DimensionType,

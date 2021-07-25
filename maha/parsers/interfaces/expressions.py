@@ -4,9 +4,10 @@ from dataclasses import dataclass
 from typing import Callable, Iterable, List, Optional, Union
 
 import regex as re
+from regex.regex import Match
 
 from ..utils.general import convert_to_number_if_possible
-from .types import Unit
+from .enums import Unit
 
 
 @dataclass
@@ -59,18 +60,14 @@ class Expression:
                         output_sig.return_annotation
                     )
                 )
-        if not callable(self.output) and num_groups > 1:
-            raise ValueError(
-                "The pattern must contain only one group if the output is not a function"
-            )
+        # if not callable(self.output) and num_groups > 1:
+        #     raise ValueError(
+        #         "The pattern must contain only one group if the output is not a function"
+        #     )
 
     def compile(self):
         if self._compiled_pattern is None:
             self._compiled_pattern = re.compile(self.pattern)
-
-    def format(self, format_spec: str):
-        self.pattern = self.pattern.format(format_spec)
-        return self
 
     def set_unit(self, unit: Unit):
         self.unit = unit
@@ -101,14 +98,16 @@ class Expression:
         self.compile()
 
         for m in re.finditer(self._compiled_pattern, text):
+            yield self.parse(m)
+            continue
             start, end = m.span()
-
+            g = m.capturesdict()
             # if the output is not a function, return the value directly
             if self.output and not callable(self.output):
                 value = self.output
                 yield ExpressionResult(start, end, value, self)
                 continue
-
+            continue
             captured_groups = m.groups()
             if captured_groups:
                 captured_groups = convert_to_number_if_possible(captured_groups)
@@ -122,6 +121,9 @@ class Expression:
                 value = self.output(value)
 
             yield ExpressionResult(start, end, value, self)  # type: ignore
+
+    def parse(self, match: Match) -> "ExpressionResult":
+        raise NotImplementedError()
 
     def __repr__(self):
         out = f"Expression(pattern={self.pattern}, is_confident={self.is_confident})"
@@ -197,11 +199,6 @@ class ExpressionGroup:
             else:
                 result.append(expression)
         return result
-
-    def format(self, format_spec: str):
-        for expression in self.expressions:
-            expression.format(format_spec)
-        return self
 
     def set_unit(self, unit: Unit):
         for expression in self.expressions:

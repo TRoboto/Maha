@@ -3,15 +3,19 @@ Functions that return shared expressions.
 """
 from typing import List, Union
 
-from maha.constants import ARABIC_NUMBERS, ENGLISH_NUMBERS
+from maha.constants import ARABIC_NUMBERS, ENGLISH_NUMBERS, WAW
 
-INTEGER_EXPRESSION: str = "([{}]+)".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
-DECIMAL_EXPRESSION: str = r"([{0}]\.[{0}]+)".format(
+INTEGER_EXPRESSION: str = "[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
+DECIMAL_EXPRESSION: str = r"[{0}]+\.[{0}]+".format(
     "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
 )
 SPACE_EXPRESSION: str = r"\s+"
 SPACE_OR_NONE_EXPRESSION: str = r"\s*"
-WAW_SEPARATOR = SPACE_EXPRESSION + "و" + SPACE_OR_NONE_EXPRESSION
+WAW_SEPARATOR = SPACE_EXPRESSION + WAW + SPACE_OR_NONE_EXPRESSION
+THIRD = "[ثت]ل[ثت]"
+QUARTER = "ربع"
+HALF = "نصف?"
+THREE_QUARTERS = f"[إا]لا {QUARTER}"
 
 
 def get_integer_followed_by_string(expression: str) -> str:
@@ -75,27 +79,24 @@ def get_word_with_optional_waw_prefix(word: str):
     return get_word("و?" + word)
 
 
-def convert_to_number_if_possible(values: List[str]) -> List[Union[str, int, float]]:
+def convert_to_number_if_possible(value: str) -> Union[str, int, float]:
     """
-    Converts the given values to numbers if possible.
+    Converts the given value to numbers if possible.
 
     Parameters
     ----------
-    values: List[str]
-        The values to convert.
+    values: str
+        The value to convert.
 
     Returns
-    -------W
-    List[Union[str, int, float]]
-        The converted values.
+    -------
+    Union[str, int, float]
+        The converted value.
     """
-    output = []
-    for value in values:
+    try:
+        return int(value)
+    except ValueError:
         try:
-            output.append(int(value))
+            return float(value)
         except ValueError:
-            try:
-                output.append(float(value))
-            except ValueError:
-                output.append(value)
-    return output
+            return value

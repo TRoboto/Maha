@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from maha.parsers.expressions import EXPRESSION_DURATION
+from maha.parsers.duration.rule import EXPRESSION_DURATION
 
 
 @pytest.fixture()

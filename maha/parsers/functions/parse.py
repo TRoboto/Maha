@@ -33,7 +33,12 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
-from maha.parsers.templates import Dimension, DimensionType, Expression, ExpressionGroup
+from maha.parsers.interfaces import (
+    Dimension,
+    DimensionType,
+    Expression,
+    ExpressionGroup,
+)
 
 
 def parse(
