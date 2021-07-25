@@ -1,80 +1,31 @@
 __all__ = ["Expression", "ExpressionGroup", "ExpressionResult"]
 import inspect
 from dataclasses import dataclass
-from typing import Callable, Iterable, List, Optional, Union
+from typing import Any, Iterable, List, Optional, Union
 
 import regex as re
 from regex.regex import Match
 
 from ..utils.general import convert_to_number_if_possible
-from .enums import Unit
 
 
 @dataclass
 class Expression:
-    __slots__ = ["pattern", "is_confident", "output", "unit", "_compiled_pattern"]
+    __slots__ = ["pattern", "_compiled_pattern"]
 
     pattern: str
     """Regular expersion(s) to match"""
-    is_confident: bool
-    """Whether the extracted value 100% belongs to the selected dimension. Some patterns
-    may match for values that normally belong to the dimension but not always."""
-    output: Optional[Union[Callable[..., Union[str, float]], float, str]]
-    """
-    A function to operate on the extracted value.
-
-    When ``output`` is set to ``None``, the extracted value is returned as-is.
-    """
-    unit: Optional[Unit]
-    """Unit of the dimension"""
 
     def __init__(
         self,
         pattern: str,
-        is_confident: bool = False,
-        output: Optional[Union[Callable[..., Union[str, float]], float, str]] = None,
-        unit: Optional[Unit] = None,
-        disable_sanity_check: bool = False,
     ):
         self.pattern = pattern
-        self.is_confident = is_confident
-        self.unit = unit
-        self.output = output
-        if not disable_sanity_check:
-            self.sanity_check()
         self._compiled_pattern = None
-
-    def sanity_check(self):
-        num_groups = self._get_number_of_groups()
-        if callable(self.output):
-            output_sig = inspect.signature(self.output)
-            if len(output_sig.parameters) != num_groups:
-                raise ValueError(
-                    "The output function must have {} parameters, not {}".format(
-                        num_groups, len(output_sig.parameters)
-                    )
-                )
-            elif output_sig.return_annotation != Union[float, str]:
-                raise ValueError(
-                    "The output function must return a float or a string, not {}".format(
-                        output_sig.return_annotation
-                    )
-                )
-        # if not callable(self.output) and num_groups > 1:
-        #     raise ValueError(
-        #         "The pattern must contain only one group if the output is not a function"
-        #     )
 
     def compile(self):
         if self._compiled_pattern is None:
             self._compiled_pattern = re.compile(self.pattern)
-
-    def set_unit(self, unit: Unit):
-        self.unit = unit
-        return self
-
-    def _get_number_of_groups(self) -> int:
-        return re.compile(self.pattern).groups
 
     def __call__(self, text: str) -> Iterable["ExpressionResult"]:
         """
@@ -98,36 +49,50 @@ class Expression:
         self.compile()
 
         for m in re.finditer(self._compiled_pattern, text):
-            yield self.parse(m)
-            continue
-            start, end = m.span()
-            g = m.capturesdict()
-            # if the output is not a function, return the value directly
-            if self.output and not callable(self.output):
-                value = self.output
-                yield ExpressionResult(start, end, value, self)
-                continue
-            continue
-            captured_groups = m.groups()
-            if captured_groups:
-                captured_groups = convert_to_number_if_possible(captured_groups)
-                if len(captured_groups) == 1:
-                    captured_groups = captured_groups[0]
-                value = captured_groups
-            else:
-                value = text[start:end]
+            yield self.parse(m, text)
 
-            if callable(self.output):
-                value = self.output(value)
+    def parse(self, match: Match, text: Optional[str]) -> "ExpressionResult":
+        """Extract the value from the input ``text`` and return it.
 
-            yield ExpressionResult(start, end, value, self)  # type: ignore
+        .. note::
+            This is a simple implementation that needs a group to be found.
 
-    def parse(self, match: Match) -> "ExpressionResult":
-        raise NotImplementedError()
+        .. warning::
+            This method is called by :meth:`__call__` to extract the value from
+            the input ``text``. You should not call this method directly.
 
-    def __repr__(self):
-        out = f"Expression(pattern={self.pattern}, is_confident={self.is_confident})"
-        return out
+
+        Parameters
+        ----------
+        match : :class:`regex.Match`
+            Matched object.
+        text : str
+            Text in which the match was found.
+
+        Yields
+        -------
+        :class:`ExpressionResult`
+            Extracted value.
+
+        Raises
+        ------
+        ValueError
+            If no capture group was found.
+
+        """
+        start, end = match.span()
+
+        captured_groups = match.groups()
+
+        if captured_groups is None:
+            raise ValueError("No captured groups")
+
+        captured_groups = list(map(convert_to_number_if_possible, captured_groups))
+        if len(captured_groups) == 1:
+            captured_groups = captured_groups[0]
+        value = captured_groups
+
+        return ExpressionResult(start, end, value, self)
 
 
 @dataclass
@@ -142,7 +107,7 @@ class ExpressionResult:
     """Start index of the matched text"""
     end: int
     """End index of the matched text"""
-    value: Union[str, float]
+    value: Any
     """Extracted value"""
     expression: Expression
     """The expression that was used to find the value"""
@@ -169,19 +134,10 @@ class ExpressionGroup:
     def __init__(
         self,
         *expressions: Union[Expression, "ExpressionGroup"],
-        confident_first: bool = False,
         smart: bool = False,
     ):
 
-        self.confident_first = confident_first
         self.expressions = self.merge_expressions(expressions)
-        if confident_first:
-            self.expressions = sorted(
-                self.expressions,
-                key=lambda expression: expression.is_confident,
-                reverse=True,
-            )
-
         self._parsed_ranges = set()
         self.smart = smart
 
@@ -199,15 +155,6 @@ class ExpressionGroup:
             else:
                 result.append(expression)
         return result
-
-    def set_unit(self, unit: Unit):
-        for expression in self.expressions:
-            expression.set_unit(unit)
-        return self
-
-    def __repr__(self):
-        out = f"ExpressionGroup({self.expressions})"
-        return out
 
     def __getitem__(self, index: int) -> Expression:
         return self.expressions[index]
@@ -248,8 +195,7 @@ class ExpressionGroup:
         expression parses the value, no value is matched more than once. This means
         high-priority expressions should be passed first.
         """
-        # TODO: Maybe provide a way to merge parsed values when they follow each other?
-        # (e.g. يوم و20 ساعة و30 دقيقة وثانيتين)
+
         for result in self.normal_parse(text):
             if self._is_parsed(result):
                 continue

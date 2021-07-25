@@ -18,7 +18,6 @@ class Dimension:
         "start",
         "end",
         "dimension_type",
-        "unit",
     ]
 
     expression: Expression
@@ -27,8 +26,6 @@ class Dimension:
     """Text from the input that was matched by the expression."""
     value: Any
     """Extracted value"""
-    unit: Optional[Unit]
-    """Unit of the dimension"""
     start: int
     """Start index of the value in the text"""
     end: int
@@ -51,11 +48,10 @@ class Dimension:
         self.start = start
         self.end = end
         self.dimension_type = dimension_type
-        self.unit = self.expression.unit
 
     def __repr__(self):
         out = (
-            f"Dimension(body={self.body}, value={self.value}, unit={self.unit}, start={self.start}, "
+            f"Dimension(body={self.body}, value={self.value}, start={self.start}, "
             f"end={self.end}, dimension_type={self.dimension_type}"
         )
         return out
