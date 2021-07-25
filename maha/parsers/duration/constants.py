@@ -1,4 +1,4 @@
-from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA
+from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, WAW
 
 from ..utils.general import (
     SPACE_EXPRESSION,
@@ -62,19 +62,7 @@ DUAL_DURATIONS = get_non_capturing_group(
 )
 
 WORD_SEPARATOR = (
-    "(?:"
-    + "|".join(
-        [
-            r"\b",
-            WAW_SEPARATOR,
-            SPACE_EXPRESSION,
-            (
-                SPACE_OR_NONE_EXPRESSION
-                + "[{}]".format("".join([ARABIC_COMMA, COMMA]))
-                + SPACE_OR_NONE_EXPRESSION
-            ),
-            r"\b",
-        ]
-    )
-    + ")"
+    f"(?:{SPACE_EXPRESSION}|\\b)"
+    f"(?:{COMMA}|{ARABIC_COMMA})?{SPACE_OR_NONE_EXPRESSION}{WAW}?"
+    f"(?:{SPACE_OR_NONE_EXPRESSION}|\\b)"
 )
