@@ -3,12 +3,7 @@ from typing import List
 
 import pytest
 
-from maha.parsers.duration.interface import (
-    DurationExpression,
-    DurationUnit,
-    DurationValue,
-    ValueUnit,
-)
+from maha.parsers.duration.interface import DurationUnit, DurationValue, ValueUnit
 from maha.parsers.duration.rule import *
 from maha.parsers.interfaces.expressions import ExpressionGroup, ExpressionResult
 
@@ -445,35 +440,12 @@ def test_parse_with_combined_years(
     assert_combined_expression_one_output(output, expected, units)
 
 
-# def test_parse_with_confident_first():
-#     NEW_EXPRESSIONS = ExpressionGroup(
-#         *EXPRESSION_DURATION_YEARS.expressions[::-1], confident_first=True, smart=True
-#     )
-#     output = list(NEW_EXPRESSIONS("20 سنة"))
-#     assert len(output) == 1
-#     output = output[0]
+def test_parse_with_smart_off():
+    NEW_EXPRESSIONS = ExpressionGroup(*EXPRESSION_DURATION.expressions)
+    output = list(NEW_EXPRESSIONS.parse("10 سنين 20 شهر 14 يوم ، 13 ساعة وثلث دقيقة"))
+    assert len(output) == 5
 
-#     assert output.value == 20
-#     assert output.expression.unit == DurationUnit.YEARS
-
-
-# def test_parse_with_confident_not_first():
-#     NEW_EXPRESSIONS = ExpressionGroup(
-#         *EXPRESSION_DURATION_YEARS.expressions[::-1], smart=True
-#     )
-#     output = list(NEW_EXPRESSIONS("20 سنة"))
-#     assert len(output) == 2
-
-#     assert output[0].value == 1
-#     assert output[1].value == 20
-
-
-# def test_parse_with_smart_off():
-#     NEW_EXPRESSIONS = ExpressionGroup(
-#         *EXPRESSION_DURATION.expressions, confident_first=True
-#     )
-#     output = list(NEW_EXPRESSIONS("10 سنين و20 شهر"))
-#     assert len(output) == 4
-
-#     for i, val in enumerate([140, 10, 20, 1]):
-#         assert output[i].value == val
+    for i in range(5):
+        values = output[i].value
+        assert isinstance(values, DurationValue)
+        assert len(values) == 5 - i
