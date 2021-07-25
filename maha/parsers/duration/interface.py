@@ -56,7 +56,7 @@ class DurationResult(ExpressionResult):
 
 
 class DurationExpression(Expression):
-    def parse(self, match: Match):
+    def parse(self, match: Match, text: str) -> DurationResult:
         start, end = match.span()
         groups = match.capturesdict()
 
