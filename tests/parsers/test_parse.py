@@ -11,8 +11,13 @@ from maha.constants import (
     KASRA,
 )
 from maha.parsers.functions import parse
-from maha.parsers.templates import Dimension, DimensionType, Expression, ExpressionGroup
-from tests.utils import is_false, is_true, list_only_in_string
+from maha.parsers.interfaces import (
+    Dimension,
+    DimensionType,
+    Expression,
+    ExpressionGroup,
+)
+from tests.utils import list_only_in_string
 
 
 def test_parse_with_no_arguments(simple_text_input):
@@ -39,7 +44,6 @@ def test_parse_correct_return_values(simple_text_input):
     assert result[1].start == 19
     assert result[1].end == 31
     assert result[2].dimension_type == DimensionType.ARABIC
-    assert is_true(result[2].expression.is_confident)
 
 
 def test_parse_with_one_argument(simple_text_input):
@@ -197,7 +201,6 @@ def test_parse_with_custom_expressions(multiple_tweets):
     assert len(result) == 1
     assert isinstance(result, list)
     assert result[0].value == 1
-    assert is_false(result[0].expression.is_confident)
     assert result[0].expression.pattern == exp
 
 

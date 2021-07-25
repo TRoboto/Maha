@@ -38,6 +38,7 @@ from maha.parsers.interfaces import (
     DimensionType,
     Expression,
     ExpressionGroup,
+    TextExpression,
 )
 
 
@@ -176,14 +177,14 @@ def parse(
     for arg, value in current_arguments.items():
         const = constants.get(arg.upper())
         if const and value is True:
-            expression = Expression(f"[{''.join(const)}]+", is_confident=True)
+            expression = TextExpression(f"[{''.join(const)}]+")
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
             continue
         # check for pattern
         pattern = constants.get("PATTERN_" + arg.upper())
         if pattern and value is True:
-            expression = Expression(pattern, is_confident=True)
+            expression = TextExpression(pattern)
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
 
