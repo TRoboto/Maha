@@ -1,345 +1,217 @@
+from itertools import chain
+from typing import List
+
 import pytest
 
-from maha.parsers.expressions.duration import (
-    EXPRESSION_DURATION,
-    EXPRESSION_DURATION_DAYS,
-    EXPRESSION_DURATION_HOURS,
-    EXPRESSION_DURATION_MINUTES,
-    EXPRESSION_DURATION_MONTHS,
-    EXPRESSION_DURATION_SECONDS,
-    EXPRESSION_DURATION_WEEKS,
-    EXPRESSION_DURATION_YEARS,
+from maha.parsers.duration.interface import (
+    DurationExpression,
+    DurationUnit,
+    DurationValue,
+    ValueUnit,
 )
-from maha.parsers.templates import DurationUnit
-from maha.parsers.templates.expressions import ExpressionGroup
+from maha.parsers.duration.rule import *
+from maha.parsers.interfaces.expressions import ExpressionGroup, ExpressionResult
+
+S = DurationUnit.SECONDS
+MIN = DurationUnit.MINUTES
+H = DurationUnit.HOURS
+D = DurationUnit.DAYS
+W = DurationUnit.WEEKS
+MON = DurationUnit.MONTHS
+Y = DurationUnit.YEARS
 
 
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1, "ثانية"),
-        (1, "ثانيه"),
-        (2, "ثانيتين"),
-        (2, "وثانيتان"),
-        (4, "٤ ثواني"),
-        (30, "30 ثانية"),
-        (4.5, "٤ ثواني ونص"),
-        (3.25, "3 ثانيه و ربع"),
-        (4.5, "4.5 ثانية"),
-        (13.33, "13 ثانيه وثلث"),
-        (2.25, "ثانيتين وربع"),
-        (2.33, "ثانيتان و ثلث"),
-        (2.5, "وثانيتان ونصف"),
-        (2.5, "ثانيتين ونص"),
-        (1.5, "ثانيه ونصف"),
-        (1.25, "ثانيه وربع"),
-        (1.33, "ثانية وثلث"),
-        (0.75, "ثانية الا ربع"),
-        (0.25, "ربع ثانيه"),
-        (0.5, "نص ثانيه"),
-        (0.33, "ثلث ثانيه"),
-    ],
-)
-def test_parse_seconds_with_simple_values(input: str, expected: float):
-    output = list(EXPRESSION_DURATION_SECONDS.parse(input))
+def get_singular_values(text: str):
+    yield from [
+        (1, f"{text}."),
+        (1, f"{text}"),
+        (1, f" {text} "),
+        (1, f" {text}"),
+        (1, f",{text}"),
+        (1, f",{text},"),
+        (1, f"{text},"),
+        (1, f"{text}"),
+    ]
+
+
+def get_dual_values(text: str):
+    yield from [
+        (2, f"{text}"),
+        (2, f"{text}."),
+        (2, f" {text} "),
+        (2, f" {text}"),
+        (2, f",{text}"),
+        (2, f",{text},"),
+        (2, f"{text},"),
+    ]
+
+
+def get_numeric_values(text: str):
+    yield from [
+        (1, f"1 {text}"),
+        (1, f"1.0 {text}"),
+        (1, f"1.0 {text}"),
+        (1.1, f"1.1 {text}"),
+        (1.1, f"1.١ {text}"),
+        (101.12, f"101.١2 {text}"),
+        (1564.00, f"1564.00 {text}"),
+        (1.1, f"01.1 {text}"),
+        (1.1, f"١.١ {text}"),
+        (1, f"١.٠ {text}"),
+    ]
+
+
+def get_other_values(text: str):
+    yield from [
+        (0.75, f"{text} الا ربع"),
+        (0.75, f"{text} إلا ربع"),
+        (0.25, f"ربع {text}"),
+        (0.5, f"نص {text}"),
+        (0.3333, f"ثلث {text}"),
+    ]
+
+
+def assert_expression_output(output, expected, unit):
     assert len(output) == 1
     output = output[0]
 
-    assert pytest.approx(output.value, 0.1) == expected
-    assert output.expression.unit == DurationUnit.SECONDS
+    assert isinstance(output.value, DurationValue)
+    assert len(output.value) == 1
+    assert isinstance(output.value[0], ValueUnit)
+    assert pytest.approx(output.value[0].value, 0.0001) == expected
+    assert output.value[0].unit == unit
 
 
 @pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1, "دقيقة"),
-        (1, "دقيقة واعود"),
-        (1, "دقيقه"),
-        (2, "دقيقتين"),
-        (2, "ودقيقتان"),
-        (4, "٤ دقايق"),
-        (30, "30 دقيقة"),
-        (3, "3 دقائق"),
-        (4.5, "٤ دقائق ونص"),
-        (3.25, "3 دقيقه و ربع"),
-        (4.5, "4.5 دقيقة"),
-        (13 + 1 / 3, "13 دقيقه وثلث"),
-    ],
+    "expected,input",
+    chain(
+        get_singular_values("ثانيه"),
+        get_singular_values("ثانية"),
+        get_dual_values("ثانيتان"),
+        get_dual_values("ثانيتين"),
+        get_numeric_values("ثانية"),
+        get_numeric_values("ثانيه"),
+        get_numeric_values("ثواني"),
+    ),
 )
-def test_parse_minutes_with_simple_values(input: str, expected: float):
-    output = list(EXPRESSION_DURATION_MINUTES.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.MINUTES
+def test_seconds_expression(expected, input):
+    output = list(EXPRESSION_DURATION_SECONDS(input))
+    assert_expression_output(output, expected, DurationUnit.SECONDS)
 
 
 @pytest.mark.parametrize(
-    "expected, input",
-    [
-        (135, "دقيقتين وربع"),
-        (140, "دقيقتان و ثلث"),
-        (150, "ودقيقتين ونصف"),
-        (150, "دقيقتين ونص"),
-        (90, "دقيقه ونصف"),
-        (75, "دقيقه وربع"),
-        (80, "دقيقة وثلث"),
-        (45, "دقيقة الا ربع"),
-        (15, "ربع دقيقه"),
-        (30, "نص دقيقه"),
-        (20, "ثلث دقيقه"),
-    ],
+    "expected,input",
+    chain(
+        get_singular_values("دقيقة"),
+        get_singular_values("دقيقه"),
+        get_dual_values("دقيقتين"),
+        get_dual_values("دقيقتان"),
+        get_numeric_values("دقايق"),
+        get_numeric_values("دقائق"),
+        get_numeric_values("دقيقه"),
+        get_numeric_values("دقيقة"),
+    ),
 )
-def test_parse_minutes_with_more_simple_values(expected: float, input: str):
-    output = list(EXPRESSION_DURATION_MINUTES.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.SECONDS
+def test_minutes_expression(expected, input):
+    output = list(EXPRESSION_DURATION_MINUTES(input))
+    assert_expression_output(output, expected, DurationUnit.MINUTES)
 
 
 @pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1, "ساعة"),
-        (1, "ساعه"),
-        (2, "ساعتين"),
-        (2, "وساعتان"),
-        (4, "٤ ساعات"),
-        (30, "30 ساعة"),
-        (30, "30 ساعه"),
-        (3, "3 ساعات"),
-        (4.5, "٤ ساعات ونص"),
-        (3.25, "3 ساعات وربع"),
-        (4.5, "4.5 ساعة"),
-        (13 + 1 / 3, "13 ساعة وثلث"),
-    ],
+    "expected,input",
+    chain(
+        get_singular_values("ساعه"),
+        get_singular_values("ساعة"),
+        get_dual_values("ساعتين"),
+        get_dual_values("ساعتان"),
+        get_numeric_values("ساعات"),
+        get_numeric_values("ساعة"),
+        get_numeric_values("ساعه"),
+    ),
 )
-def test_parse_hours_with_simple_values(input: str, expected: float):
-    output = list(EXPRESSION_DURATION_HOURS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.HOURS
+def test_hours_expression(expected, input):
+    output = list(EXPRESSION_DURATION_HOURS(input))
+    assert_expression_output(output, expected, DurationUnit.HOURS)
 
 
 @pytest.mark.parametrize(
-    "expected, input",
-    [
-        (135, "ساعتين وربع"),
-        (140, "ساعتان و ثلث"),
-        (150, "ساعتين ونص"),
-        (150, "وساعتان ونصف"),
-        (90, "ساعة ونص"),
-        (75, "ساعة وربع"),
-        (80, "ساعة وثلث"),
-        (45, "وساعة الا ربع"),
-        (15, "ربع ساعه"),
-        (30, "نص ساعه"),
-        (20, "ثلث ساعه"),
-    ],
+    "expected,input",
+    chain(
+        get_singular_values("يوم"),
+        get_dual_values("يومين"),
+        get_dual_values("يومان"),
+        get_numeric_values("يوم"),
+        get_numeric_values("يوما"),
+        get_numeric_values("أيام"),
+        get_numeric_values("ايام"),
+        get_numeric_values("إيام"),
+    ),
 )
-def test_parse_hours_with_more_simple_values(expected: float, input: str):
-    output = list(EXPRESSION_DURATION_HOURS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.MINUTES
+def test_days_expression(expected, input):
+    output = list(EXPRESSION_DURATION_DAYS(input))
+    assert_expression_output(output, expected, DurationUnit.DAYS)
 
 
 @pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1, "يوم"),
-        (2, "يومين"),
-        (2, "ويومين"),
-        (2, "يومان اثنان"),
-        (4, "٤ ايام"),
-        (30, "30 يوم"),
-        (3, "3 أيام"),
-        (20, "و20 يوما"),
-    ],
+    "expected,input",
+    chain(
+        get_singular_values("أسبوع"),
+        get_singular_values("اسبوع"),
+        get_singular_values("إسبوع"),
+        get_dual_values("اسبوعان"),
+        get_dual_values("أسبوعين"),
+        get_numeric_values("اسبوع"),
+        get_numeric_values("أسبوع"),
+        get_numeric_values("إسبوعا"),
+        get_numeric_values("اسابيع"),
+        get_numeric_values("أسابيع"),
+    ),
 )
-def test_parse_days_with_simple_values(input: str, expected: float):
-    output = list(EXPRESSION_DURATION_DAYS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.DAYS
+def test_weeks_expression(expected, input):
+    output = list(EXPRESSION_DURATION_WEEKS(input))
+    assert_expression_output(output, expected, DurationUnit.WEEKS)
 
 
 @pytest.mark.parametrize(
-    "expected, input",
-    [
-        (54, "يومين وربع"),
-        (56, "يومين و ثلث"),
-        (60, "يومين ونص"),
-        (36, "يوم ونص"),
-        (30, "يوم وربع"),
-        (32, "يوم وثلث"),
-        (18, "يوم الا ربع"),
-        (6, "ربع يوم"),
-        (12, "نص يوم"),
-        (8, "ثلث يوم"),
-    ],
+    "expected,input",
+    chain(
+        get_singular_values("شهر"),
+        get_dual_values("شهران"),
+        get_dual_values("شهرين"),
+        get_numeric_values("اشهر"),
+        get_numeric_values("أشهر"),
+        get_numeric_values("شهور"),
+        get_numeric_values("شهرا"),
+        get_numeric_values("شهر"),
+    ),
 )
-def test_parse_days_with_more_simple_values(expected: float, input: str):
-    output = list(EXPRESSION_DURATION_DAYS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.HOURS
+def test_months_expression(expected, input):
+    output = list(EXPRESSION_DURATION_MONTHS(input))
+    assert_expression_output(output, expected, DurationUnit.MONTHS)
 
 
 @pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1, "أسبوع"),
-        (1, "اسبوع"),
-        (2, "اسبوعين"),
-        (2, "وأسبوعان"),
-        (4, "٤ اسابيع"),
-        (30, "30 أسبوع"),
-        (3, "3 أسابيع"),
-        (20, "و20 اسبوعا"),
-    ],
+    "expected,input",
+    chain(
+        get_singular_values("سنة"),
+        get_singular_values("عام"),
+        get_singular_values("سنه"),
+        get_dual_values("عامين"),
+        get_dual_values("عامان"),
+        get_dual_values("سنتان"),
+        get_dual_values("سنتين"),
+        get_numeric_values("أعوام"),
+        get_numeric_values("اعوام"),
+        get_numeric_values("سنين"),
+        get_numeric_values("سنوات"),
+        get_numeric_values("سنة"),
+        get_numeric_values("عام"),
+        get_numeric_values("سنه"),
+    ),
 )
-def test_parse_weeks_with_simple_values(input: str, expected: float):
-    output = list(EXPRESSION_DURATION_WEEKS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.WEEKS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (15.75, "أسبوعين وربع"),
-        (16.33, "اسبوعين و ثلث"),
-        (17.5, "اسبوعان ونص"),
-        (10.5, "أسبوع ونص"),
-        (8.75, "اسبوع وربع"),
-        (9.33, "اسبوع وثلث"),
-        (5.25, "اسبوع الا ربع"),
-        (1.75, "ربع اسبوع"),
-        (3.5, "نص اسبوع"),
-        (2.33, "ثلث أسبوع"),
-    ],
-)
-def test_parse_weeks_with_more_simple_values(expected: float, input: str):
-    output = list(EXPRESSION_DURATION_WEEKS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert pytest.approx(output.value, 0.1) == expected
-    assert output.expression.unit == DurationUnit.DAYS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1, "شهر"),
-        (1, "1 شهر"),
-        (2, "شهرين"),
-        (2, "وشهران"),
-        (4, "٤ أشهر"),
-        (30, "30 شهر"),
-        (3, "3 اشهر"),
-        (20, "و20 شهرا"),
-    ],
-)
-def test_parse_months_with_simple_values(input: str, expected: float):
-    output = list(EXPRESSION_DURATION_MONTHS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.MONTHS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (9, "شهرين وربع"),
-        (9.33, "شهرين و ثلث"),
-        (10, "شهران ونص"),
-        (6, "شهر ونص"),
-        (5, "وشهر وربع"),
-        (5.33, "شهر وثلث"),
-        (3, "شهر الا ربع"),
-        (1, "ربع شهر"),
-        (2, "نص شهر"),
-        (1.33, "ثلث شهر"),
-    ],
-)
-def test_parse_months_with_more_simple_values(expected: float, input: str):
-    output = list(EXPRESSION_DURATION_MONTHS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert pytest.approx(output.value, 0.1) == expected
-    assert output.expression.unit == DurationUnit.WEEKS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1, "سنة"),
-        (1, "سنه"),
-        (1, "عام"),
-        (1, "1 عام"),
-        (2, "عامين"),
-        (2, "وعامان"),
-        (2, "سنتان"),
-        (2, "وسنتين"),
-        (4, "٤ سنوات"),
-        (30, "30 عام"),
-        (30, "30 عاما"),
-        (3, "3 أعوام"),
-        (3, "3 اعوام"),
-        (4, "٤ سنين"),
-        (20, "و20 عام"),
-    ],
-)
-def test_parse_years_with_simple_values(input: str, expected: float):
-    output = list(EXPRESSION_DURATION_YEARS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.YEARS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (27, "عامين وربع"),
-        (28, "عامان و ثلث"),
-        (30, "سنتين ونص"),
-        (18, "سنة ونص"),
-        (15, "وعام وربع"),
-        (16, "سنه وثلث"),
-        (9, "سنة الا ربع"),
-        (3, "ربع عام"),
-        (6, "نص سنة"),
-        (4, "ثلث سنه"),
-    ],
-)
-def test_parse_years_with_more_simple_values(expected: float, input: str):
-    output = list(EXPRESSION_DURATION_YEARS.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.MONTHS
+def test_years_expression(expected, input):
+    output = list(EXPRESSION_DURATION_YEARS(input))
+    assert_expression_output(output, expected, DurationUnit.YEARS)
 
 
 @pytest.mark.parametrize(
@@ -361,249 +233,247 @@ def test_negative_simple_values(input: str):
     assert output == []
 
 
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (620, "10 دقائق و20 ثانية"),
-        (121, "دقيقتين وثانية"),
-        (122, "دقيقتان وثانيتان"),
-        (1201, "20 دقيقه وثانيه"),
-        (80, "دقيقة و20 ثانية"),
-        (60.5, "دقيقة ونصف ثانية"),
-        (120.25, "دقيقتان وربع ثانية"),
-    ],
-)
-def test_parse_combined_expressions_with_seconds(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
+to_sec = {
+    DurationUnit.SECONDS: 1,
+    DurationUnit.MINUTES: 60,
+    DurationUnit.HOURS: 60 * 60,
+    DurationUnit.DAYS: 60 * 60 * 24,
+    DurationUnit.WEEKS: 60 * 60 * 24 * 7,
+    DurationUnit.MONTHS: 60 * 60 * 24 * 30,
+    DurationUnit.YEARS: 60 * 60 * 24 * 365,
+}
+
+
+def assert_combined_expression_one_output(
+    output: List[ExpressionResult], expected: List[float], unit: List[DurationUnit]
+):
+    """
+    Asserts that the output of a combined expression is the same as the expected one.
+    Only one output is expected.
+
+    Parameters
+    ----------
+    output: List[:class:`ExpressionResult`]
+        The output of the combined expression.
+    expected: List[float]
+        The expected value of each :class:`ValueUnit`.
+    unit: List[DurationUnit]
+        The unit of each :class:`ValueUnit`.
+    """
     assert len(output) == 1
-    output = output[0]
+    result = output[0]
 
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.SECONDS
+    assert isinstance(result.value, DurationValue)
+    assert len(result.value) == len(unit)
 
+    normalized = 0
+    for i, item in enumerate(result.value.values):
+        assert isinstance(item.unit, DurationUnit)
+        assert item.unit == unit[i]
+        assert pytest.approx(item.value, 0.001) == expected[i]
+        normalized += item.value * to_sec[item.unit]
 
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (190, "3 ساعات و10 دقايق"),
-        (121, "ساعتين ودقيقة"),
-        (122, "وساعتان ودقيقتان"),
-        (80, "ساعة و20 دقيقة"),
-    ],
-)
-def test_parse_combined_expressions_with_hours_and_minutes(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.MINUTES
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (10810, "3 ساعات و10 ثواني"),
-        (7201, "ساعتين و ثانيه"),
-        (7202, "وساعتان و ثانيتين"),
-        (3620, "ساعة و20 ثانية"),
-        (7200.25, "ساعتان وربع ثانية"),
-        (72001, "20 ساعه وثانيه"),
-        (3630, "ساعة ونصف دقيقة"),
-    ],
-)
-def test_parse_combined_expressions_with_hours_and_seconds(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.SECONDS
+    assert result.value.normalized_value.value == normalized
 
 
 @pytest.mark.parametrize(
     "expected, input",
     [
-        (260, "10 يوم و20 ساعات"),
-        (49, "يومين وساعة"),
-        (56, "يومين وثلث"),
-        (50, "يومان وساعتان"),
-        (481, "20 يوما وساعة"),
-        (44, "يوم و20 ساعة"),
+        ([10, 20], "10 دقائق و20 ثانية"),
+        ([2, 1], "دقيقتين وثانية"),
+        ([2, 2], "دقيقتان وثانيتان"),
+        ([20, 1], "20 دقيقه وثانيه"),
+        ([1, 20], "دقيقة و20 ثانية"),
+        ([1, 0.5], "دقيقة ونصف ثانية"),
+        ([2, 0.25], "دقيقتان وربع ثانية"),
     ],
 )
-def test_parse_combined_expressions_with_days_and_hours(input: str, expected: float):
+def test_parse_with_combined_minutes(input: str, expected: List[float]):
     output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.HOURS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (1470, "يوم ونصف ساعة"),
-        (2895, "يومين وربع ساعة"),
-        (2900, "يومان و ثلث ساعة"),
-    ],
-)
-def test_parse_combined_expressions_with_days_and_minutes(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.MINUTES
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (90, "10 اسابيع و20 يوم"),
-        (15, "وأسبوعين ويوم"),
-        (17.5, "اسبوعين ونص"),
-        (16, "أسبوعان ويومان"),
-        (141, "20 اسبوع ويوما"),
-        (27, "اسبوع و20 يوم"),
-    ],
-)
-def test_parse_combined_expressions_with_weeks_and_days(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.DAYS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (180, "اسبوع ونص يوم"),
-        (342, "اسبوعان وربع يوم"),
-        (344, "أسبوعين و ثلث يوم"),
-    ],
-)
-def test_parse_combined_expressions_with_weeks_and_hours(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.HOURS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (60, "10 اشهر و20 اسبوع"),
-        (9, "وشهرين واسبوع"),
-        (10, "شهرين ونص"),
-        (10, "شهران واسبوعان"),
-        (81, "20 شهرا واسبوعا"),
-        (24, "شهر و20 أسبوع"),
-    ],
-)
-def test_parse_combined_expressions_with_months_and_weeks(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.WEEKS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (33.5, "شهر ونص اسبوع"),
-        (61.75, "شهران وربع أسبوع"),
-        (320, "10 اشهر و20 يوم"),
-        (61, "وشهرين ويوم"),
-        (62, "شهرين ويومان"),
-        (601, "20 شهر ويوما"),
-        (50, "شهر و20 يوم"),
-    ],
-)
-def test_parse_combined_expressions_with_months_and_days(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.DAYS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (140, "10 سنين و20 شهر"),
-        (13, "عام وشهر"),
-        (25, "وسنتين وشهر"),
-        (30, "عامان ونصف"),
-        (26, "سنتان وشهرين"),
-        (37, "3 أعوام وشهر"),
-        (242, "20 عام وشهران"),
-        (32, "سنه و20 شهر"),
-    ],
-)
-def test_parse_combined_expressions_with_years_and_months(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.MONTHS
-
-
-@pytest.mark.parametrize(
-    "expected, input",
-    [
-        (50, "سنة ونص شهر"),
-        (97, "سنتين وربع شهر"),
-        (146, "3 سنين ونصف شهر"),
-    ],
-)
-def test_parse_combined_expressions_with_years_and_weeks(input: str, expected: float):
-    output = list(EXPRESSION_DURATION.parse(input))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == expected
-    assert output.expression.unit == DurationUnit.WEEKS
-
-
-def test_parse_with_confident_first():
-    NEW_EXPRESSIONS = ExpressionGroup(
-        *EXPRESSION_DURATION_YEARS.expressions[::-1], confident_first=True, smart=True
+    assert_combined_expression_one_output(
+        output, expected, [DurationUnit.MINUTES, DurationUnit.SECONDS]
     )
-    output = list(NEW_EXPRESSIONS.parse("20 سنة"))
-    assert len(output) == 1
-    output = output[0]
-
-    assert output.value == 20
-    assert output.expression.unit == DurationUnit.YEARS
 
 
-def test_parse_with_confident_not_first():
-    NEW_EXPRESSIONS = ExpressionGroup(
-        *EXPRESSION_DURATION_YEARS.expressions[::-1], smart=True
-    )
-    output = list(NEW_EXPRESSIONS.parse("20 سنة"))
-    assert len(output) == 2
+@pytest.mark.parametrize(
+    "expected,units,input,",
+    [
+        ([3, 10], [H, MIN], "3 ساعات و10 دقايق"),
+        ([2, 1], [H, MIN], "ساعتين ودقيقة"),
+        ([2, 2], [H, MIN], "ساعتان ودقيقتان"),
+        ([1, 0.5], [H, MIN], "ساعة ونصف دقيقة"),
+        ([1, 20], [H, MIN], "ساعة و20 دقيقة"),
+        ([3, 10], [H, S], "3 ساعات و10 ثواني"),
+        ([2, 1], [H, S], "ساعتين و ثانيه"),
+        ([2, 2], [H, S], "ساعتان و ثانيتين"),
+        ([1, 20], [H, S], "ساعة و20 ثانية"),
+        ([2, 0.25], [H, S], "ساعتان وربع ثانية"),
+        ([20, 1], [H, S], "20 ساعه وثانيه"),
+        ([3, 30, 10], [H, MIN, S], "3 ساعات 30 دقيقة و10 ثواني"),
+        ([2, 10, 1], [H, MIN, S], "ساعتين و10 دقايق  و ثانيه"),
+    ],
+)
+def test_parse_with_combined_hours(
+    input: str, expected: List[float], units: List[DurationUnit]
+):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert_combined_expression_one_output(output, expected, units)
 
-    assert output[0].value == 1
-    assert output[1].value == 20
+
+@pytest.mark.parametrize(
+    "expected, units, input",
+    [
+        ([10, 20], [D, H], "10 يوم و20 ساعات"),
+        ([2, 1], [D, H], "يومين وساعة"),
+        ([2, 2], [D, H], "يومان وساعتان"),
+        ([20, 1], [D, H], "20 يوما وساعة"),
+        ([1, 20, 1], [D, H, S], "يوم و20 ساعة وثانية"),
+        ([1, 0.5, 30, 2], [D, H, MIN, S], "يوم ونصف ساعة و 30 دقيقة وثانيتين"),
+        ([2, 0.25, 30], [D, H, MIN], "يومين، ربع ساعة و 30 دقيقه"),
+        ([3, 30, 30], [D, H, S], "3 أيام و 30 ساعة و 30 ثانية"),
+        ([2, 20], [D, MIN], "يومان و 20 دقيقة"),
+        ([2, 1, 40], [D, MIN, S], "يومان دقيقة و40 ثانية"),
+        ([1, 1], [D, S], "يوم وثانية"),
+    ],
+)
+def test_parse_with_combined_days(
+    input: str, expected: List[float], units: List[DurationUnit]
+):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert_combined_expression_one_output(output, expected, units)
 
 
-def test_parse_with_smart_off():
-    NEW_EXPRESSIONS = ExpressionGroup(
-        *EXPRESSION_DURATION.expressions, confident_first=True
-    )
-    output = list(NEW_EXPRESSIONS.parse("10 سنين و20 شهر"))
-    assert len(output) == 4
+@pytest.mark.parametrize(
+    "expected, units, input",
+    [
+        ([10, 20], [W, D], "10 اسابيع و20 يوم"),
+        ([2, 1], [W, D], "أسبوعين ويوم"),
+        ([2, 2], [W, D], "أسبوعان ويومان"),
+        ([20, 2, 3, 40], [W, D, H, MIN], "20 اسبوع ويومين و3 ساعات و40 دقيقة"),
+        (
+            [20, 2, 3, 40, 1],
+            [W, D, H, MIN, S],
+            "20 اسبوع ويومين و3 ساعات و40 دقيقة وثانية",
+        ),
+        ([1, 20], [W, H], "اسبوع و20 ساعة"),
+        ([1, 0.5, 30, 50], [W, D, MIN, S], " اسبوع ونص يوم 30 دقيقة و50 ثانية"),
+        ([1, 2, 50], [W, MIN, S], " اسبوع و دقيقتين و50 ثانية"),
+        ([1, 2, 50], [W, H, S], " اسبوع و ساعتين و50 ثانية"),
+        ([1, 2, 50], [W, D, MIN], " اسبوع و يومين و50 دقيقة"),
+        ([2, 0.25], [W, H], "اسبوعان وربع ساعة"),
+        ([2, 3, 0.333], [W, D, H], "أسبوعين و 3 ايام وثلث ساعة"),
+    ],
+)
+def test_parse_with_combined_weeks(
+    input: str, expected: List[float], units: List[DurationUnit]
+):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert_combined_expression_one_output(output, expected, units)
 
-    for i, val in enumerate([140, 10, 20, 1]):
-        assert output[i].value == val
+
+@pytest.mark.parametrize(
+    "expected, units, input",
+    [
+        ([10, 20], [MON, W], "10 اشهر و20 اسبوع"),
+        ([2, 1], [MON, W], "شهرين واسبوع"),
+        ([2, 2], [MON, W], "شهران واسبوعان"),
+        ([20, 1], [MON, W], "20 شهرا واسبوعا"),
+        ([1, 20], [MON, W], "شهر و20 أسبوع"),
+        ([1, 0.5], [MON, W], "شهر ونص اسبوع"),
+        ([2, 0.25], [MON, W], "شهران وربع أسبوع"),
+        ([10, 20], [MON, D], "10 اشهر و20 يوم"),
+        ([2, 1], [MON, D], "شهرين ويوم"),
+        ([2, 2], [MON, D], "شهرين ويومان"),
+        ([20, 1], [MON, D], "20 شهر ويوما"),
+        ([1, 20], [MON, D], "شهر و20 يوم"),
+        ([3, 10, 20], [MON, W, D], "3 اشهر 10 اسابيع و20 يوم"),
+        ([3, 2, 1], [MON, W, D], " 3 اشهر وأسبوعين ويوم"),
+        ([11, 2, 2], [MON, W, D], "١١ شهر أسبوعان ويومان"),
+        ([1.1, 2, 2], [MON, W, D], "١.١ شهر أسبوعان ويومان"),
+        (
+            [300, 20, 2, 3, 40],
+            [MON, W, D, H, MIN],
+            "300 شهر 20 اسبوع ويومين و3 ساعات و40 دقيقة",
+        ),
+        (
+            [1, 20, 2, 3, 40, 1],
+            [MON, W, D, H, MIN, S],
+            "شهر و20 اسبوع ويومين و3 ساعات و40 دقيقة وثانية",
+        ),
+        ([3, 1, 20], [MON, W, H], "3 شهور واسبوع و20 ساعة"),
+        (
+            [100.564, 1, 0.5, 30, 50],
+            [MON, W, D, MIN, S],
+            "100.564 شهور واسبوع ونص يوم 30 دقيقة و50 ثانية",
+        ),
+        ([1, 2, 50], [MON, MIN, S], " شهر و دقيقتين و50 ثانية"),
+        ([1, 2, 50], [MON, H, S], " شهر و ساعتين و50 ثانية"),
+        ([1, 2, 50], [MON, D, MIN], " شهر و يومين و50 دقيقة"),
+        ([2, 0.25], [MON, H], "شهرين وربع ساعة"),
+        ([2, 3, 0.333], [MON, D, H], "شهران و 3 ايام وثلث ساعة"),
+    ],
+)
+def test_parse_with_combined_months(
+    input: str, expected: List[float], units: List[DurationUnit]
+):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert_combined_expression_one_output(output, expected, units)
+
+
+@pytest.mark.parametrize(
+    "expected, units, input",
+    [
+        ([10, 20], [Y, MON], "10 سنين و20 شهر"),
+        ([1, 1], [Y, MON], "عام وشهر"),
+        ([2, 1], [Y, MON], "سنتين وشهر"),
+        ([2, 2], [Y, MON], "سنتان وشهرين"),
+        ([3, 1], [Y, MON], "3 أعوام وشهر"),
+        ([20, 2], [Y, MON], "20 عام وشهران"),
+        ([1, 20], [Y, D], "سنه و20 يوم"),
+        ([1, 0.5], [Y, S], "سنة ونص ثانية"),
+        ([2, 0.25], [Y, MON], "سنتين وربع شهر"),
+        ([3, 0.5], [Y, MIN], "3 سنين ونصف دقيقة"),
+        ([3, 3, 4, 2], [Y, MON, D, H], "3 سنين ، 3 شهور ،4 أيام وساعتين"),
+        ([3, 3, 4, 2], [Y, W, D, H], "3 سنين ، 3 اسابيع ، 4 ايام ، وساعتين"),
+        ([3, 3, 4], [Y, W, D], "3 سنين ، 3 اسابيع ، 4 ايام "),
+    ],
+)
+def test_parse_with_combined_years(
+    input: str, expected: List[float], units: List[DurationUnit]
+):
+    output = list(EXPRESSION_DURATION.parse(input))
+    assert_combined_expression_one_output(output, expected, units)
+
+
+# def test_parse_with_confident_first():
+#     NEW_EXPRESSIONS = ExpressionGroup(
+#         *EXPRESSION_DURATION_YEARS.expressions[::-1], confident_first=True, smart=True
+#     )
+#     output = list(NEW_EXPRESSIONS("20 سنة"))
+#     assert len(output) == 1
+#     output = output[0]
+
+#     assert output.value == 20
+#     assert output.expression.unit == DurationUnit.YEARS
+
+
+# def test_parse_with_confident_not_first():
+#     NEW_EXPRESSIONS = ExpressionGroup(
+#         *EXPRESSION_DURATION_YEARS.expressions[::-1], smart=True
+#     )
+#     output = list(NEW_EXPRESSIONS("20 سنة"))
+#     assert len(output) == 2
+
+#     assert output[0].value == 1
+#     assert output[1].value == 20
+
+
+# def test_parse_with_smart_off():
+#     NEW_EXPRESSIONS = ExpressionGroup(
+#         *EXPRESSION_DURATION.expressions, confident_first=True
+#     )
+#     output = list(NEW_EXPRESSIONS("10 سنين و20 شهر"))
+#     assert len(output) == 4
+
+#     for i, val in enumerate([140, 10, 20, 1]):
+#         assert output[i].value == val
