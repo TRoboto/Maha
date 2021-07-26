@@ -1,5 +1,8 @@
 """ Regular expersion patterns """
 
+from .arabic import ARABIC_NUMBERS
+from .english import ENGLISH_NUMBERS
+
 PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n)(#[\wأ-ي-]+)"
 """ Pattern that matches Arabic and English hashtags """
 
@@ -91,3 +94,17 @@ PATTERN_SPACES: str = r"[\u00A0\u1680\u2000-\u200B\u202F\u205F\u3000\uFEFF]"
 Pattern that matches space variations. Normal space is not included.
 Taken from: https://jkorpela.fi/chars/spaces.html
 """
+
+INTEGER_EXPRESSION: str = "[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
+""" Pattern that matches Arabic and English integers """
+
+DECIMAL_EXPRESSION: str = r"[{0}]+\.[{0}]+".format(
+    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
+)
+""" Pattern that matches Arabic and English decimals """
+
+SPACE_EXPRESSION: str = r"\s+"
+""" Pattern that matches at least one whitespace """
+
+SPACE_OR_NONE_EXPRESSION: str = r"\s*"
+""" Pattern that matches zero or more whitespaces """

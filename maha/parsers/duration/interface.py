@@ -9,8 +9,8 @@ from regex.regex import Match
 import maha.parsers.duration.utils as utils
 from maha.constants import EMPTY
 
+from ..helper import convert_to_number_if_possible
 from ..interfaces import DurationUnit, Expression, ExpressionResult, Unit
-from ..utils.general import convert_to_number_if_possible
 
 
 @dataclass

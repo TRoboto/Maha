@@ -13,19 +13,12 @@ __all__ = [
     "EXPRESSION_DURATION",
 ]
 
-from ..interfaces import ExpressionGroup
-from ..utils.general import (
-    DECIMAL_EXPRESSION,
-    HALF,
-    INTEGER_EXPRESSION,
-    QUARTER,
-    SPACE_EXPRESSION,
-    THIRD,
-    THREE_QUARTERS,
-)
+from maha.constants import DECIMAL_EXPRESSION, INTEGER_EXPRESSION, SPACE_EXPRESSION
+
+from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WORD_SEPARATOR
+from ..interfaces import DurationUnit, ExpressionGroup
 from .constants import *
 from .interface import DurationExpression
-from .utils import DurationUnit
 
 
 def _get_pattern(unit: DurationUnit):

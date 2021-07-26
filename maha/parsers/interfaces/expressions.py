@@ -6,7 +6,7 @@ from typing import Any, Iterable, List, Optional, Union
 import regex as re
 from regex.regex import Match
 
-from ..utils.general import convert_to_number_if_possible
+from ..helper import convert_to_number_if_possible
 
 
 @dataclass

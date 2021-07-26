@@ -1,11 +1,12 @@
-from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, WAW
+from maha.constants import ALEF_VARIATIONS
 
-from ..utils.general import (
-    SPACE_EXPRESSION,
-    SPACE_OR_NONE_EXPRESSION,
-    WAW_SEPARATOR,
-    get_non_capturing_group,
-)
+
+def get_non_capturing_group(*words: str):
+    """
+    Returns a non capturing groups of words without word boundaries.
+    """
+    return "(?:{})".format("|".join(words))
+
 
 TWO_SUFFIX = get_non_capturing_group("ين", "ان")
 SUM_SUFFIX = get_non_capturing_group("ين", "ون")
@@ -59,10 +60,4 @@ DUAL_DURATIONS = get_non_capturing_group(
     NAME_OF_TWO_WEEKS,
     NAME_OF_TWO_MONTHS,
     NAME_OF_TWO_YEARS,
-)
-
-WORD_SEPARATOR = (
-    f"(?:{SPACE_EXPRESSION}|\\b)"
-    f"(?:{COMMA}|{ARABIC_COMMA})?{SPACE_OR_NONE_EXPRESSION}{WAW}?"
-    f"(?:{SPACE_OR_NONE_EXPRESSION}|\\b)"
 )

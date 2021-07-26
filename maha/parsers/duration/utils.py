@@ -9,8 +9,8 @@ import re
 
 import maha.parsers.duration.interface as interface
 
+from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS
 from ..interfaces import DurationUnit
-from ..utils.general import HALF, QUARTER, THIRD, THREE_QUARTERS
 from .constants import (
     DAYS,
     DUAL_DURATIONS,
