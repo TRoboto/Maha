@@ -220,3 +220,11 @@ def test_parse_with_mutiple_expressions(multiple_tweets):
 def test_parse_raises_value_error_with_invalid_expression():
     with pytest.raises(ValueError):
         parse("test", custom_expressions=Expression(""))
+
+
+def test_dimesion_output():
+    d = Dimension(Expression(" test "), "test", 1, 10, 17, DimensionType.GENERAL)
+    assert str(d) == (
+        "Dimension(body=test, value=1, start=10, end=17, "
+        "dimension_type=DimensionType.GENERAL)"
+    )

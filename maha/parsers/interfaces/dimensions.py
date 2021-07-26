@@ -52,6 +52,6 @@ class Dimension:
     def __repr__(self):
         out = (
             f"Dimension(body={self.body}, value={self.value}, start={self.start}, "
-            f"end={self.end}, dimension_type={self.dimension_type}"
+            f"end={self.end}, dimension_type={self.dimension_type})"
         )
         return out
