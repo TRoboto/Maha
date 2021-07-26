@@ -129,7 +129,7 @@ class ExpressionGroup:
         Whether to parse the text in a smart way. See :meth:`~.smart_parse`.
     """
 
-    __slots__ = ["expressions", "confident_first", "smart", "_parsed_ranges"]
+    __slots__ = ["expressions", "smart", "_parsed_ranges"]
 
     def __init__(
         self,
