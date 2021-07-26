@@ -241,10 +241,14 @@ def parse_expression(
     Raises
     ------
     ValueError
-        If no ``expressions`` are provided
+        If ``expressions`` are invalid
     """
 
-    if not expressions:
+    if (
+        not expressions
+        or (isinstance(expressions, Expression) and not expressions.pattern)
+        or (isinstance(expressions, ExpressionGroup) and not expressions.expressions)
+    ):
         raise ValueError("'expressions' cannot be empty.")
 
     # convert to ExpressionGroup

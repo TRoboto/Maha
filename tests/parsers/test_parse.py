@@ -215,3 +215,8 @@ def test_parse_with_mutiple_expressions(multiple_tweets):
     assert isinstance(result, list)
     assert result[0].value == 1
     assert result[1].value == 10
+
+
+def test_parse_raises_value_error_with_invalid_expression():
+    with pytest.raises(ValueError):
+        parse("test", custom_expressions=Expression(""))
