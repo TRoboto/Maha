@@ -6,11 +6,11 @@ from typing import Union
 
 def convert_to_number_if_possible(value: str) -> Union[str, int, float]:
     """
-    Converts the given value to numbers if possible.
+    Converts the given value to number if possible.
 
     Parameters
     ----------
-    values: str
+    value: str
         The value to convert.
 
     Returns
