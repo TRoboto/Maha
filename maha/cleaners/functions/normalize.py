@@ -20,7 +20,7 @@ from maha.constants import (
     LAM_ALEF_VARIATIONS,
     LAM_ALEF_VARIATIONS_NORMALIZED,
     MADDAH_ABOVE,
-    PATTERN_SPACES,
+    PATTERN_ALL_SPACES,
     SPACE,
     TEH_MARBUTA,
     WAW,
@@ -65,7 +65,7 @@ def normalize(
         Normalize :data:`~.ARABIC_LIGATURES` characters to the corresponding indices
         in :data:`~.ARABIC_LIGATURES_NORMALIZED`, by default None
     spaces : bool, optional
-        Normalize space variations using the pattern :data:`~.PATTERN_SPACES`,
+        Normalize space variations using the pattern :data:`~.PATTERN_ALL_SPACES`,
         by default None
     all : bool, optional
         Do all normalization except the ones that are set to False, by default False
@@ -125,7 +125,7 @@ def normalize(
             output, ARABIC_LIGATURES, ARABIC_LIGATURES_NORMALIZED
         )
     if spaces or (all and spaces is not False):
-        output = functions.replace_pattern(output, PATTERN_SPACES, SPACE)
+        output = functions.replace_pattern(output, PATTERN_ALL_SPACES, SPACE)
 
     return output
 

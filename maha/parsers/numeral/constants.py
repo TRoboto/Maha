@@ -1,9 +1,9 @@
-from maha.constants import ALEF_VARIATIONS, SPACE_OR_NONE_EXPRESSION
+from maha.constants import ALEF_VARIATIONS, PATTERN_SPACE_OR_NONE
 
 from ..helper import get_non_capturing_group
 
 ALL_ALEF = "".join(ALEF_VARIATIONS)
-TENS_SUFFIX = f"{SPACE_OR_NONE_EXPRESSION}ع?شر?[ةه]?"
+TENS_SUFFIX = f"{PATTERN_SPACE_OR_NONE}ع?شر?[ةه]?"
 NAME_OF_ZEROS = "صفر"
 NAME_OF_ONE = "وا?حد[ةه]"
 NAME_OF_TWO = "[إا][ثت]نت?[اي]ن"

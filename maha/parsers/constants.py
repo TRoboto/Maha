@@ -2,8 +2,8 @@ from maha.constants import (
     ALEF_VARIATIONS,
     ARABIC_COMMA,
     COMMA,
-    SPACE_EXPRESSION,
-    SPACE_OR_NONE_EXPRESSION,
+    PATTERN_SPACE,
+    PATTERN_SPACE_OR_NONE,
     WAW,
 )
 
@@ -15,12 +15,12 @@ HALF = "نصف?"
 """ Pattern that matches the pronunciation of half in Arabic """
 THREE_QUARTERS = f"[إا]لا {QUARTER}"
 """ Pattern that matches the pronunciation of three quarters in Arabic """
-WAW_CONNECTOR = SPACE_EXPRESSION + WAW + SPACE_OR_NONE_EXPRESSION
+WAW_CONNECTOR = PATTERN_SPACE + WAW + PATTERN_SPACE_OR_NONE
 """ Pattern that matches WAW as a connector between two words """
 WORD_SEPARATOR = (
-    f"(?:{SPACE_EXPRESSION}|\\b)"
-    f"(?:{COMMA}|{ARABIC_COMMA})?{SPACE_OR_NONE_EXPRESSION}{WAW}?"
-    f"(?:{SPACE_OR_NONE_EXPRESSION}|\\b)"
+    f"(?:{PATTERN_SPACE}|\\b)"
+    f"(?:{COMMA}|{ARABIC_COMMA})?{PATTERN_SPACE_OR_NONE}{WAW}?"
+    f"(?:{PATTERN_SPACE_OR_NONE}|\\b)"
 )
 """ Pattern that matches the word separator in Arabic """
 

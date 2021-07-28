@@ -13,7 +13,7 @@ __all__ = [
     "EXPRESSION_DURATION",
 ]
 
-from maha.constants import DECIMAL_EXPRESSION, INTEGER_EXPRESSION, SPACE_EXPRESSION
+from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
 
 from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WORD_SEPARATOR
 from ..interfaces import DurationUnit, ExpressionGroup
@@ -47,9 +47,9 @@ def _get_pattern(unit: DurationUnit):
                 "{val}{unit_single}",
             ]
         ).format(
-            decimal=_get_value_group(DECIMAL_EXPRESSION),
-            integer=_get_value_group(INTEGER_EXPRESSION),
-            space=SPACE_EXPRESSION,
+            decimal=_get_value_group(PATTERN_DECIMAL),
+            integer=_get_value_group(PATTERN_INTEGER),
+            space=PATTERN_SPACE,
             half=_get_value_group(HALF),
             third=_get_value_group(THIRD),
             quarter=_get_value_group(QUARTER),

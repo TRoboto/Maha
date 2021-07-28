@@ -89,22 +89,22 @@ PATTERN_EMOJIS: str = (
 )
 """ Pattern that matches emojis """
 
-PATTERN_SPACES: str = r"[\u00A0\u1680\u2000-\u200B\u202F\u205F\u3000\uFEFF]"
+PATTERN_ALL_SPACES: str = r"[\u00A0\u1680\u2000-\u200B\u202F\u205F\u3000\uFEFF]"
 """
 Pattern that matches space variations. Normal space is not included.
 Taken from: https://jkorpela.fi/chars/spaces.html
 """
 
-INTEGER_EXPRESSION: str = "[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
+PATTERN_INTEGER: str = "[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
 """ Pattern that matches Arabic and English integers """
 
-DECIMAL_EXPRESSION: str = r"[{0}]*\.[{0}]+".format(
+PATTERN_DECIMAL: str = r"[{0}]*\.[{0}]+".format(
     "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
 )
 """ Pattern that matches Arabic and English decimals """
 
-SPACE_EXPRESSION: str = r"\s+"
+PATTERN_SPACE: str = r"\s+"
 """ Pattern that matches at least one whitespace """
 
-SPACE_OR_NONE_EXPRESSION: str = r"\s*"
+PATTERN_SPACE_OR_NONE: str = r"\s*"
 """ Pattern that matches zero or more whitespaces """
