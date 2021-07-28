@@ -4,6 +4,13 @@ Helper functions.
 from typing import Union
 
 
+def get_non_capturing_group(*words: str):
+    """
+    Returns a non capturing groups of words without word boundaries.
+    """
+    return "(?:{})".format("|".join(words))
+
+
 def convert_to_number_if_possible(value: str) -> Union[str, int, float]:
     """
     Converts the given value to number if possible.

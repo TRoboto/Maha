@@ -1,12 +1,7 @@
 from maha.constants import ALEF_VARIATIONS
 
-
-def get_non_capturing_group(*words: str):
-    """
-    Returns a non capturing groups of words without word boundaries.
-    """
-    return "(?:{})".format("|".join(words))
-
+from ..constants import ALL_ALEF
+from ..helper import get_non_capturing_group
 
 TWO_SUFFIX = get_non_capturing_group("ين", "ان")
 SUM_SUFFIX = get_non_capturing_group("ين", "ون")
@@ -24,10 +19,10 @@ NAME_OF_TWO_HOURS = "ساعت" + TWO_SUFFIX
 NAME_OF_HOURS = "ساعات"
 NAME_OF_DAY = "يوما?"
 NAME_OF_TWO_DAYS = NAME_OF_DAY + TWO_SUFFIX
-NAME_OF_DAYS = "[{}]يام".format("".join(ALEF_VARIATIONS))
-NAME_OF_WEEK = "[{}]سبوعا?".format("".join(ALEF_VARIATIONS))
+NAME_OF_DAYS = "[{}]يام".format(ALL_ALEF)
+NAME_OF_WEEK = "[{}]سبوعا?".format(ALL_ALEF)
 NAME_OF_TWO_WEEKS = NAME_OF_WEEK + TWO_SUFFIX
-NAME_OF_WEEKS = "[{}]سابيعا?".format("".join(ALEF_VARIATIONS))
+NAME_OF_WEEKS = "[{}]سابيعا?".format(ALL_ALEF)
 NAME_OF_MONTH = "شهرا?"
 NAME_OF_TWO_MONTHS = NAME_OF_MONTH + TWO_SUFFIX
 NAME_OF_MONTHS = get_non_capturing_group("شهور", "[أا]شهر")

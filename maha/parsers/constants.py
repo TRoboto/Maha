@@ -1,4 +1,5 @@
 from maha.constants import (
+    ALEF_VARIATIONS,
     ARABIC_COMMA,
     COMMA,
     SPACE_EXPRESSION,
@@ -22,3 +23,6 @@ WORD_SEPARATOR = (
     f"(?:{SPACE_OR_NONE_EXPRESSION}|\\b)"
 )
 """ Pattern that matches the word separator in Arabic """
+
+ALL_ALEF = "".join(ALEF_VARIATIONS)
+""" Pattern that matches all possible forms of the ALEF in Arabic """
