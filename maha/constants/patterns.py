@@ -98,7 +98,7 @@ Taken from: https://jkorpela.fi/chars/spaces.html
 INTEGER_EXPRESSION: str = "[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
 """ Pattern that matches Arabic and English integers """
 
-DECIMAL_EXPRESSION: str = r"[{0}]+\.[{0}]+".format(
+DECIMAL_EXPRESSION: str = r"[{0}]*\.[{0}]+".format(
     "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
 )
 """ Pattern that matches Arabic and English decimals """
