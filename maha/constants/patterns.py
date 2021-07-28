@@ -1,7 +1,13 @@
 """ Regular expersion patterns """
 
-from .arabic import ARABIC_NUMBERS
-from .english import ENGLISH_NUMBERS
+from .arabic import (
+    ARABIC_COMMA,
+    ARABIC_DECIMAL_SEPARATOR,
+    ARABIC_NUMBERS,
+    ARABIC_THOUSANDS_SEPARATOR,
+)
+from .english import COMMA, ENGLISH_NUMBERS
+from .general import SPACE
 
 PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n)(#[\wأ-ي-]+)"
 """ Pattern that matches Arabic and English hashtags """
@@ -95,11 +101,22 @@ Pattern that matches space variations. Normal space is not included.
 Taken from: https://jkorpela.fi/chars/spaces.html
 """
 
-PATTERN_INTEGER: str = "[+-]?[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
+PATTERN_INTEGER: str = "[+-]?[{}]+".format(
+    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
+    + ARABIC_THOUSANDS_SEPARATOR
+    + ARABIC_COMMA
+    + COMMA
+    + SPACE,
+)
 """ Pattern that matches Arabic and English integers """
 
-PATTERN_DECIMAL: str = r"[+-]?[{0}]*\.[{0}]+".format(
+PATTERN_DECIMAL: str = r"[+-]?[{0}]*[.{1}][{0}]+".format(
     "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
+    + ARABIC_THOUSANDS_SEPARATOR
+    + ARABIC_COMMA
+    + COMMA
+    + SPACE,
+    ARABIC_DECIMAL_SEPARATOR,
 )
 """ Pattern that matches Arabic and English decimals """
 
