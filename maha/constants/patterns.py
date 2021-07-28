@@ -95,10 +95,10 @@ Pattern that matches space variations. Normal space is not included.
 Taken from: https://jkorpela.fi/chars/spaces.html
 """
 
-PATTERN_INTEGER: str = "[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
+PATTERN_INTEGER: str = "[+-]?[{}]+".format("".join(ARABIC_NUMBERS + ENGLISH_NUMBERS))
 """ Pattern that matches Arabic and English integers """
 
-PATTERN_DECIMAL: str = r"[{0}]*\.[{0}]+".format(
+PATTERN_DECIMAL: str = r"[+-]?[{0}]*\.[{0}]+".format(
     "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
 )
 """ Pattern that matches Arabic and English decimals """
