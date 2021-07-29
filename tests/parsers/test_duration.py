@@ -45,6 +45,8 @@ def get_dual_values(text: str):
 def get_numeric_values(text: str):
     yield from [
         (1, f"1 {text}"),
+        (1, f"+1 {text}"),
+        (-1, f"-1 {text}"),
         (1, f"1.0 {text}"),
         (1, f"1.0 {text}"),
         (1.1, f"1.1 {text}"),

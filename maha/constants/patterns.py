@@ -101,21 +101,15 @@ Pattern that matches space variations. Normal space is not included.
 Taken from: https://jkorpela.fi/chars/spaces.html
 """
 
-PATTERN_INTEGER: str = "[+-]?[{}]+".format(
-    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
-    + ARABIC_THOUSANDS_SEPARATOR
-    + ARABIC_COMMA
-    + COMMA
-    + SPACE,
+PATTERN_INTEGER: str = "[+-]?(?:[{0}](?:{1})?)+".format(
+    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
+    "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
 )
 """ Pattern that matches Arabic and English integers """
 
-PATTERN_DECIMAL: str = r"[+-]?[{0}]*[.{1}][{0}]+".format(
-    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS)
-    + ARABIC_THOUSANDS_SEPARATOR
-    + ARABIC_COMMA
-    + COMMA
-    + SPACE,
+PATTERN_DECIMAL: str = r"[+-]?(?:[{0}](?:{1})?)*[.{2}](?:[{0}](?:{1})?)+".format(
+    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
+    "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
     ARABIC_DECIMAL_SEPARATOR,
 )
 """ Pattern that matches Arabic and English decimals """

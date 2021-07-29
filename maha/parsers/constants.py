@@ -18,7 +18,7 @@ THREE_QUARTERS = f"[إا]لا {QUARTER}"
 WAW_CONNECTOR = PATTERN_SPACE + WAW + PATTERN_SPACE_OR_NONE
 """ Pattern that matches WAW as a connector between two words """
 WORD_SEPARATOR = (
-    f"(?:{PATTERN_SPACE}|\\b)"
+    f"(?:^|\\W)"
     f"(?:{COMMA}|{ARABIC_COMMA})?{PATTERN_SPACE_OR_NONE}{WAW}?"
     f"(?:{PATTERN_SPACE_OR_NONE}|\\b)"
 )
