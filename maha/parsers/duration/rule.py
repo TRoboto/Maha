@@ -57,7 +57,6 @@ def _get_pattern(unit: DurationUnit):
             unit_single_plural=_get_unit_group("|".join([single, plural])),
             unit_single=_get_unit_group(single),
             unit_dual=_get_unit_group(dual),
-            unit=unit.name,
             val=_get_value_group(""),
         )
         + ")"
