@@ -9,6 +9,7 @@ from maha.cleaners.functions import (
     remove_english,
     remove_extra_spaces,
     remove_harakat,
+    remove_hash_keep_tag,
     remove_hashtags,
     remove_links,
     remove_mentions,
@@ -331,23 +332,26 @@ def test_reduce_repeated_substring(
 
 
 @pytest.mark.parametrize(
-    "input_text, expected",
+    "input, expected",
     [
-        ("ولقد حقق الأردن أول ميدالية ذهبية", "ولقد حقق #الأردن أول ميدالية ذهبية"),
+        ("ولقد حقق #الأردن أول ميدالية ذهبية", "ولقد حقق الأردن أول ميدالية ذهبية"),
         ("#الورد هو أجمل شئ في الحياة", "الورد هو أجمل شئ في الحياة"),
         ("يا جماعة بدنا #طبيب_doctor", "يا جماعة بدنا طبيب_doctor"),
         ("أكثر من #50 دورة من Google", "أكثر من 50 دورة من Google"),
         ("يجب علينا إدارة # الوقت بشكل جيد", "يجب علينا إدارة # الوقت بشكل جيد"),
-        (".#كرة_القدم ", "#كرة_القدم "),
-        ("@#برمجة", "#برمجة"),
+        (".#كرة القدم", ".كرة القدم"),
+        ("@#برمجة", "@#برمجة"),
         ("_#جمعة_مباركة", "_#جمعة_مباركة"),
         ("&#مسابقة_القرآن_الكريم", "&#مسابقة_القرآن_الكريم"),
         ("11111#رسول_الله", "11111#رسول_الله"),
         ("#مسألة_رقم_1111", "مسألة_رقم_1111"),
+        ("#Hello", "Hello"),
+        ("#مرحبا", "مرحبا"),
+        ("#لُقِّب", "لُقِّب"),
     ],
 )
-def remove_hash_keep_tag(input: str, expected: str):
-    assert input == expected
+def test_remove_hash_keep_tag(input: str, expected: str):
+    assert remove_hash_keep_tag(input) == expected
 
 
 def test_remove_with_ligtures():
@@ -390,8 +394,9 @@ def test_remove_with_hashtags_with_arabic(simple_text_input: str):
         # Edge cases
         ("_#جمعة_مباركة", "_#جمعة_مباركة"),
         ("&#مسابقة_القرآن_الكريم", "&#مسابقة_القرآن_الكريم"),
-        (".#كرة_القدم", ".#كرة_القدم"),
         ("11111#رسول_الله", "11111#رسول_الله"),
+        (".#Good", "."),
+        ("#لُقِّب", ""),
     ],
 )
 def test_remove_with_hashtag(input_text: str, expected: str):
