@@ -387,6 +387,11 @@ def test_remove_with_hashtags_with_arabic(simple_text_input: str):
         ("test at end #34hashtag-end123", "test at end"),
         ("test at endline #hashtag\ntest", "test at endline \ntest"),
         ("#123", ""),
+        # Edge cases
+        ("_#جمعة_مباركة", "_#جمعة_مباركة"),
+        ("&#مسابقة_القرآن_الكريم", "&#مسابقة_القرآن_الكريم"),
+        (".#كرة_القدم", ".#كرة_القدم"),
+        ("11111#رسول_الله", "11111#رسول_الله"),
     ],
 )
 def test_remove_with_hashtag(input_text: str, expected: str):
