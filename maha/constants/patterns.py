@@ -9,7 +9,7 @@ from .arabic import (
 from .english import COMMA, ENGLISH_NUMBERS
 from .general import SPACE
 
-PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n)(#[\wأ-ي-]+)"
+PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n|\.)(#[\wأ-ي-]+)"
 """ Pattern that matches Arabic and English hashtags """
 
 PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n)(@[\wأ-ي-]+)"
