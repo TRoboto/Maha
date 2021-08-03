@@ -33,7 +33,13 @@ from maha.constants import (
     SPACE,
     TATWEEL,
 )
-from maha.parsers.templates import Dimension, DimensionType, Expression, ExpressionGroup
+from maha.parsers.interfaces import (
+    Dimension,
+    DimensionType,
+    Expression,
+    ExpressionGroup,
+    TextExpression,
+)
 
 
 def parse(
@@ -171,14 +177,14 @@ def parse(
     for arg, value in current_arguments.items():
         const = constants.get(arg.upper())
         if const and value is True:
-            expression = Expression(f"[{''.join(const)}]+", is_confident=True)
+            expression = TextExpression(f"[{''.join(const)}]+")
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
             continue
         # check for pattern
         pattern = constants.get("PATTERN_" + arg.upper())
         if pattern and value is True:
-            expression = Expression(pattern, is_confident=True)
+            expression = TextExpression(pattern)
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
 
@@ -235,10 +241,14 @@ def parse_expression(
     Raises
     ------
     ValueError
-        If no ``expressions`` are provided
+        If ``expressions`` are invalid
     """
 
-    if not expressions:
+    if (
+        not expressions
+        or (isinstance(expressions, Expression) and not expressions.pattern)
+        or (isinstance(expressions, ExpressionGroup) and not expressions.expressions)
+    ):
         raise ValueError("'expressions' cannot be empty.")
 
     # convert to ExpressionGroup
