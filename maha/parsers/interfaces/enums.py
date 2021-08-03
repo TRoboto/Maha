@@ -35,6 +35,16 @@ class DimensionType(Enum):
     EMOJIS = auto()
 
 
+class NumeralType(Enum):
+    ONES = auto()
+    TENS = auto()
+    HUNDREDS = auto()
+    THOUSANDS = auto()
+    MILLIONS = auto()
+    BILLIONS = auto()
+    TRILLIONS = auto()
+
+
 class Unit(Enum):
     """Base class for all units"""
 
