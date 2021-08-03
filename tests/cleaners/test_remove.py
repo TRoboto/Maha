@@ -330,6 +330,26 @@ def test_reduce_repeated_substring(
     assert processed_text == expected
 
 
+@pytest.mark.parametrize(
+    "input_text, expected",
+    [
+        ("ولقد حقق الأردن أول ميدالية ذهبية", "ولقد حقق #الأردن أول ميدالية ذهبية"),
+        ("#الورد هو أجمل شئ في الحياة", "الورد هو أجمل شئ في الحياة"),
+        ("يا جماعة بدنا #طبيب_doctor", "يا جماعة بدنا طبيب_doctor"),
+        ("أكثر من #50 دورة من Google", "أكثر من 50 دورة من Google"),
+        ("يجب علينا إدارة # الوقت بشكل جيد", "يجب علينا إدارة # الوقت بشكل جيد"),
+        (".#كرة_القدم ", "#كرة_القدم "),
+        ("@#برمجة", "#برمجة"),
+        ("_#جمعة_مباركة", "_#جمعة_مباركة"),
+        ("&#مسابقة_القرآن_الكريم", "&#مسابقة_القرآن_الكريم"),
+        ("11111#رسول_الله", "11111#رسول_الله"),
+        ("#مسألة_رقم_1111", "مسألة_رقم_1111"),
+    ],
+)
+def remove_hash_keep_tag(input: str, expected: str):
+    assert input == expected
+
+
 def test_remove_with_ligtures():
     text = "ﷲ اكبر"
     processed_text = remove(text=text, arabic_ligatures=True)
