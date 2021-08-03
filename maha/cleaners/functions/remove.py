@@ -18,6 +18,7 @@ __all__ = [
     "remove_links",
     "remove_mentions",
     "reduce_repeated_substring",
+    "remove_hash_keep_tag",
     "remove_arabic_letter_dots",
 ]
 
@@ -311,15 +312,17 @@ def reduce_repeated_substring(
 
 
 def remove_hash_keep_tag(text: str):
-    """Removes hash symbole :data:`~.HASHTAG` and keep tag from the given text
+    """Removes the hash symbol :data:`~.HASHTAG` from all hashtags in the given text.
+
     Parameters
     ----------
     text : str
         Text to process
+
     Returns
     -------
     str
-        Text with hash symbol from hashtag is removed.
+        Text without hashtags.
     """
 
     return functions.replace_pattern(
