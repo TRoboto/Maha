@@ -4,7 +4,7 @@ from ..constants import TWO_SUFFIX
 from ..helper import get_non_capturing_group
 
 ALL_ALEF = "".join(ALEF_VARIATIONS)
-TEN_SUFFIX = f"{PATTERN_SPACE_OR_NONE}ع?شر?[ةه]?"
+TEN_SUFFIX = f"{PATTERN_SPACE_OR_NONE}[تط]?ع?شر?[ةه]?"
 TEH_OPTIONAL_SUFFIX = "[ةه]?"
 
 PREFIX_OF_THREE = "[ثت]لا[ثت]"
@@ -48,6 +48,6 @@ NAME_OF_THOUSANDS = get_non_capturing_group(f"{ALL_ALEF}ل[او]ف", f"{ALL_ALEF
 NAME_OF_MILLION = "مليون"
 NAME_OF_TWO_MILLION = NAME_OF_MILLION + TWO_SUFFIX
 NAME_OF_MILLIONS = "ملايين"
-NAME_OF_TRILLION = "تري؟ليون"
+NAME_OF_TRILLION = "تري?ليون"
 NAME_OF_TWO_TRILLION = NAME_OF_TRILLION + TEN_SUFFIX
 NAME_OF_TRILLIONS = NAME_OF_TRILLION + "ات"
