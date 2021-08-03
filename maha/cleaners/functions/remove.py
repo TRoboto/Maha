@@ -311,8 +311,22 @@ def reduce_repeated_substring(
 
 
 def remove_hash_keep_tag(text: str):
-    # TODO: Add function that removes only the hash sign from the hashtag
-    pass
+    """Removes hash symbole :data:`~.HASHTAG` and keep tag from the given text
+    Parameters
+    ----------
+    text : str
+        Text to process
+    Returns
+    -------
+    str
+        Text with hash symbol from hashtag is removed.
+    """
+
+    return functions.replace_pattern(
+        text,
+        PATTERN_HASHTAGS,
+        lambda match: match.string[match.start() + 1 : match.end()],
+    )
 
 
 def remove_hashtags_at_end(text: str):
