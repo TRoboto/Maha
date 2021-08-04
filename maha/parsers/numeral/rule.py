@@ -1,5 +1,4 @@
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
-from maha.parsers.interfaces.enums import NumeralType
 
 from ..constants import (
     HALF,
@@ -10,9 +9,11 @@ from ..constants import (
     WAW_CONNECTOR,
     WORD_SEPARATOR,
 )
+from ..interfaces import ExpressionGroup, NumeralType
 from .constants import *
 from .interface import NumeralExpression
 
+_get_unit_group = lambda v: f"(?P<unit>{v})"
 _get_value_group = lambda v: f"(?P<value>{v})"
 
 
@@ -20,8 +21,6 @@ def _get_pattern(numeral: NumeralType):
     single = globals()[f"NAME_OF_{numeral.name[:-1]}"]
     dual = globals()[f"NAME_OF_TWO_{numeral.name}"]
     plural = globals()[f"NAME_OF_{numeral.name}"]
-
-    _get_unit_group = lambda v: f"(?P<unit>{v})"
 
     pattern = (
         "(?:"
@@ -65,7 +64,17 @@ def _get_pattern(numeral: NumeralType):
 def _get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
     patterns = []
     for i, u in enumerate(numerals):
-        pattern = f"(?:{WORD_SEPARATOR}{_get_pattern(u)})"
+        pattern = f"(?:{WORD_SEPARATOR}{{}})"
+        if u == NumeralType.TENS:
+            pattern = pattern.format(
+                EXPRESSION_NUMERAL_TENS.pattern.strip(r"\b") + _get_unit_group("")
+            )
+        elif u == NumeralType.ONES:
+            pattern = pattern.format(
+                EXPRESSION_NUMERAL_ONES.pattern.strip(r"\b") + _get_unit_group("")
+            )
+        else:
+            pattern = pattern.format(_get_pattern(u))
         if i == 0:
             patterns.append(pattern + "\\b")
         else:
@@ -74,10 +83,7 @@ def _get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
 
 
 def get_simple_expression(*words: str):
-    return (
-        f"(?:{WORD_SEPARATOR}{_get_value_group(get_non_capturing_group(*words))})"
-        + r"\b"
-    )
+    return r"\b" + _get_value_group("|".join(words)) + r"\b"
 
 
 EXPRESSION_NUMERAL_ONES = NumeralExpression(
@@ -150,3 +156,49 @@ EXPRESSION_NUMERAL_THOUSANDS = _get_combined_expression(NumeralType.THOUSANDS)
 EXPRESSION_NUMERAL_MILLIONS = _get_combined_expression(NumeralType.MILLIONS)
 EXPRESSION_NUMERAL_BILLIONS = _get_combined_expression(NumeralType.BILLIONS)
 EXPRESSION_NUMERAL_TRILLIONS = _get_combined_expression(NumeralType.TRILLIONS)
+
+EXPRESSION_NUMERAL = ExpressionGroup(
+    _get_combined_expression(
+        NumeralType.TRILLIONS,
+        NumeralType.BILLIONS,
+        NumeralType.MILLIONS,
+        NumeralType.THOUSANDS,
+        NumeralType.HUNDREDS,
+        NumeralType.TENS,
+        NumeralType.ONES,
+    ),
+    _get_combined_expression(
+        NumeralType.BILLIONS,
+        NumeralType.MILLIONS,
+        NumeralType.THOUSANDS,
+        NumeralType.HUNDREDS,
+        NumeralType.TENS,
+        NumeralType.ONES,
+    ),
+    _get_combined_expression(
+        NumeralType.MILLIONS,
+        NumeralType.THOUSANDS,
+        NumeralType.HUNDREDS,
+        NumeralType.TENS,
+        NumeralType.ONES,
+    ),
+    _get_combined_expression(
+        NumeralType.THOUSANDS,
+        NumeralType.HUNDREDS,
+        NumeralType.TENS,
+        NumeralType.ONES,
+    ),
+    _get_combined_expression(
+        NumeralType.HUNDREDS,
+        NumeralType.TENS,
+        NumeralType.ONES,
+    ),
+    _get_combined_expression(
+        NumeralType.TENS,
+        NumeralType.ONES,
+    ),
+    _get_combined_expression(
+        NumeralType.ONES,
+    ),
+    smart=True,
+)

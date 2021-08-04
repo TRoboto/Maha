@@ -32,6 +32,9 @@ NUMBER_MAP = {
     NAME_OF_NINETEEN: 19,
     NAME_OF_ONE: 1,
     NAME_OF_TWO: 2,
+    # This is a special case of the pattern twenty.
+    # TODO: Improve this.
+    NAME_OF_TWENTY: 2,
     NAME_OF_THREE: 3,
     NAME_OF_FOUR: 4,
     NAME_OF_FIVE: 5,
