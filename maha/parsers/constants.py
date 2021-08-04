@@ -7,6 +7,8 @@ from maha.constants import (
     WAW,
 )
 
+from .helper import get_non_capturing_group
+
 THIRD = "[ثت]ل[ثت]"
 """ Pattern that matches the pronunciation of third in Arabic """
 QUARTER = "ربع"
@@ -26,3 +28,7 @@ WORD_SEPARATOR = (
 
 ALL_ALEF = "".join(ALEF_VARIATIONS)
 """ Pattern that matches all possible forms of the ALEF in Arabic """
+
+
+TWO_SUFFIX = get_non_capturing_group("ين", "ان")
+SUM_SUFFIX = get_non_capturing_group("ين", "ون")

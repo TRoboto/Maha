@@ -25,7 +25,7 @@ class Expression:
 
     def compile(self):
         if self._compiled_pattern is None:
-            self._compiled_pattern = re.compile(self.pattern)
+            self._compiled_pattern = re.compile(self.pattern, re.MULTILINE)
 
     def __call__(self, text: str) -> Iterable["ExpressionResult"]:
         """

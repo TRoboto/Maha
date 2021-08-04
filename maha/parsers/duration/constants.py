@@ -1,10 +1,5 @@
-from maha.constants import ALEF_VARIATIONS
-
-from ..constants import ALL_ALEF
+from ..constants import ALL_ALEF, TWO_SUFFIX
 from ..helper import get_non_capturing_group
-
-TWO_SUFFIX = get_non_capturing_group("ين", "ان")
-SUM_SUFFIX = get_non_capturing_group("ين", "ون")
 
 NAME_OF_SECOND = get_non_capturing_group("ثاني[ةه]", "لح[زضظ]")
 NAME_OF_TWO_SECONDS = get_non_capturing_group(
