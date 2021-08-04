@@ -36,6 +36,8 @@ class DimensionType(Enum):
 
 
 class NumeralType(Enum):
+    DECIMALS = auto()
+    INTEGERS = auto()
     ONES = auto()
     TENS = auto()
     HUNDREDS = auto()

@@ -72,25 +72,39 @@ def _get_pattern(numeral: NumeralType):
     return pattern
 
 
+def get_pattern(numeral: NumeralType):
+    pattern = f"(?:{WORD_SEPARATOR}{{}})"
+    if numeral == NumeralType.TENS:
+        pattern = pattern.format(
+            EXPRESSION_NUMERAL_TENS.pattern.strip(r"\b") + _get_unit_group("")
+        )
+    elif numeral == NumeralType.ONES:
+        pattern = pattern.format(
+            EXPRESSION_NUMERAL_ONES.pattern.strip(r"\b") + _get_unit_group("")
+        )
+    elif numeral == NumeralType.DECIMALS:
+        pattern = pattern.format(
+            _get_value_group(PATTERN_DECIMAL) + _get_unit_group("")
+        )
+    elif numeral == NumeralType.INTEGERS:
+        pattern = pattern.format(
+            _get_value_group(PATTERN_INTEGER) + _get_unit_group("")
+        )
+    else:
+        pattern = pattern.format(_get_pattern(numeral))
+    return pattern
+
+
 def _get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
     patterns = []
     for i, u in enumerate(numerals):
-        pattern = f"(?:{WORD_SEPARATOR}{{}})"
-        if u == NumeralType.TENS:
-            pattern = pattern.format(
-                EXPRESSION_NUMERAL_TENS.pattern.strip(r"\b") + _get_unit_group("")
-            )
-        elif u == NumeralType.ONES:
-            pattern = pattern.format(
-                EXPRESSION_NUMERAL_ONES.pattern.strip(r"\b") + _get_unit_group("")
-            )
-        else:
-            pattern = pattern.format(_get_pattern(u))
-        if i == 0:
-            patterns.append(pattern + "\\b")
-        else:
-            patterns.append(f"{pattern}?\\b")
-    return NumeralExpression(f"".join(patterns))
+        pattern = get_pattern(u)
+        if i > 0:
+            pattern += "?"
+        if u not in [NumeralType.DECIMALS, NumeralType.INTEGERS]:
+            pattern += r"\b"
+        patterns.append(pattern)
+    return NumeralExpression("".join(patterns))
 
 
 def get_simple_expression(*words: str):
@@ -162,6 +176,8 @@ EXPRESSION_NUMERAL_TENS = NumeralExpression(
     )
 )
 
+EXPRESSION_NUMERAL_DECIMALS = _get_combined_expression(NumeralType.DECIMALS)
+EXPRESSION_NUMERAL_INTEGERS = _get_combined_expression(NumeralType.INTEGERS)
 EXPRESSION_NUMERAL_HUNDREDS = _get_combined_expression(NumeralType.HUNDREDS)
 EXPRESSION_NUMERAL_THOUSANDS = _get_combined_expression(NumeralType.THOUSANDS)
 EXPRESSION_NUMERAL_MILLIONS = _get_combined_expression(NumeralType.MILLIONS)
@@ -177,6 +193,8 @@ EXPRESSION_NUMERAL = ExpressionGroup(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.BILLIONS,
@@ -185,6 +203,8 @@ EXPRESSION_NUMERAL = ExpressionGroup(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.MILLIONS,
@@ -192,24 +212,41 @@ EXPRESSION_NUMERAL = ExpressionGroup(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.THOUSANDS,
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.TENS,
         NumeralType.ONES,
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.ONES,
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
+    ),
+    _get_combined_expression(
+        NumeralType.DECIMALS,
+        NumeralType.INTEGERS,
+    ),
+    _get_combined_expression(
+        NumeralType.INTEGERS,
     ),
     smart=True,
 )
