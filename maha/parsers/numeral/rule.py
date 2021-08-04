@@ -29,7 +29,8 @@ def _get_pattern(numeral: NumeralType):
             [
                 "{decimal}{space}{unit_single_plural}",
                 "{integer}{space}{unit_single_plural}",
-                "{integer_text}{space}{unit_single_plural}",
+                "{tens}{space}{unit_single_plural}",
+                "{ones}{space}{unit_single_plural}",
                 "{unit_dual}{space}{three_quarter}",
                 "{half}{space}{unit_dual}",
                 "{third}{space}{unit_dual}",
@@ -53,6 +54,8 @@ def _get_pattern(numeral: NumeralType):
             unit_single=_get_unit_group(single),
             unit_dual=_get_unit_group(dual),
             val=_get_value_group(""),
+            tens=EXPRESSION_NUMERAL_TENS.pattern,
+            ones=EXPRESSION_NUMERAL_ONES.pattern,
         )
         + ")"
     )
@@ -141,3 +144,5 @@ EXPRESSION_NUMERAL_TENS = NumeralExpression(
         _PATTERN_NUMERAL_COMBINED_TENS,
     )
 )
+
+EXPRESSION_NUMERAL_HUNDREDS = _get_combined_expression(NumeralType.HUNDREDS)

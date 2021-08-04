@@ -2,8 +2,9 @@ from typing import Optional
 
 from regex.regex import Match
 
+from ..helper import convert_to_number_if_possible
 from ..interfaces import Expression, ExpressionResult
-from .utils import get_value
+from .utils import get_matched_numeral, get_value
 
 
 class NumeralExpression(Expression):
@@ -19,5 +20,16 @@ class NumeralExpression(Expression):
         if not units:
             return ExpressionResult(start, end, get_value(values[0]), self)
 
+        output = 0
         for value, unit in zip(values, units):
-            pass
+            if not value:
+                output += get_matched_numeral(unit)
+                continue
+            # if value is number, then assign it to the value
+            number = convert_to_number_if_possible(value)
+            if not isinstance(number, str):
+                value = number
+            else:
+                value = get_value(value)
+            output += value * get_matched_numeral(unit)
+        return ExpressionResult(start, end, output, self)
