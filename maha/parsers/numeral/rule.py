@@ -146,3 +146,7 @@ EXPRESSION_NUMERAL_TENS = NumeralExpression(
 )
 
 EXPRESSION_NUMERAL_HUNDREDS = _get_combined_expression(NumeralType.HUNDREDS)
+EXPRESSION_NUMERAL_THOUSANDS = _get_combined_expression(NumeralType.THOUSANDS)
+EXPRESSION_NUMERAL_MILLIONS = _get_combined_expression(NumeralType.MILLIONS)
+EXPRESSION_NUMERAL_BILLIONS = _get_combined_expression(NumeralType.BILLIONS)
+EXPRESSION_NUMERAL_TRILLIONS = _get_combined_expression(NumeralType.TRILLIONS)
