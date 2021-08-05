@@ -52,7 +52,7 @@ NUMBER_MAP = {
 }
 
 
-def get_matched_numeral(numeral):
+def get_matched_numeral(numeral) -> int:
     for key, value in NUMBER_MAP.items():
         if re.match(key, numeral):
             return value
@@ -64,6 +64,13 @@ def get_value(text: str) -> float:
         ones, tens = text.split(waw.group(0))
         output = get_matched_numeral(ones) + 10 * get_matched_numeral(tens)
         return output
+
+    fasila = re.search(rule.FASILA, text)
+    if fasila:
+        before, after = text.split(fasila.group(0))
+        output = float(f"{get_matched_numeral(before)}.{get_matched_numeral(after)}")
+        return output
+
     if re.match(rule._PATTERN_NUMERAL_PERFECT_TENS, text):
         return 10 * get_matched_numeral(text)
 

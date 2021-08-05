@@ -26,6 +26,7 @@ from .interface import NumeralExpression
 
 _get_unit_group = lambda v: f"(?P<unit>{v})"
 _get_value_group = lambda v: f"(?P<value>{v})"
+FASILA = PATTERN_SPACE + NAME_OF_FASILA + PATTERN_SPACE
 
 
 def _get_pattern(numeral: NumeralType):
@@ -53,7 +54,7 @@ def _get_pattern(numeral: NumeralType):
                 "{val}{unit_single}",
             ]
         ).format(
-            decimal=_get_value_group(PATTERN_DECIMAL),
+            decimal=_get_value_group(_PATTERN_NUMERAL_DECIMAL),
             integer=_get_value_group(PATTERN_INTEGER),
             space=PATTERN_SPACE,
             half=_get_value_group(HALF),
@@ -64,8 +65,8 @@ def _get_pattern(numeral: NumeralType):
             unit_single=_get_unit_group(single),
             unit_dual=_get_unit_group(dual),
             val=_get_value_group(""),
-            tens=EXPRESSION_NUMERAL_TENS.pattern,
-            ones=EXPRESSION_NUMERAL_ONES.pattern,
+            tens=_get_value_group(_PATTERN_NUMERAL_TENS),
+            ones=_get_value_group(_PATTERN_NUMERAL_ONES),
         )
         + ")"
     )
@@ -76,15 +77,15 @@ def get_pattern(numeral: NumeralType):
     pattern = f"(?:{WORD_SEPARATOR}{{}})"
     if numeral == NumeralType.TENS:
         pattern = pattern.format(
-            EXPRESSION_NUMERAL_TENS.pattern.strip(r"\b") + _get_unit_group("")
+            _get_value_group(_PATTERN_NUMERAL_TENS) + _get_unit_group("")
         )
     elif numeral == NumeralType.ONES:
         pattern = pattern.format(
-            EXPRESSION_NUMERAL_ONES.pattern.strip(r"\b") + _get_unit_group("")
+            _get_value_group(_PATTERN_NUMERAL_ONES) + _get_unit_group("")
         )
     elif numeral == NumeralType.DECIMALS:
         pattern = pattern.format(
-            _get_value_group(PATTERN_DECIMAL) + _get_unit_group("")
+            _get_value_group(_PATTERN_NUMERAL_DECIMAL) + _get_unit_group("")
         )
     elif numeral == NumeralType.INTEGERS:
         pattern = pattern.format(
@@ -111,19 +112,17 @@ def get_simple_expression(*words: str):
     return r"\b" + _get_value_group("|".join(words)) + r"\b"
 
 
-EXPRESSION_NUMERAL_ONES = NumeralExpression(
-    get_simple_expression(
-        NAME_OF_ZERO,
-        NAME_OF_ONE,
-        NAME_OF_TWO,
-        NAME_OF_THREE,
-        NAME_OF_FOUR,
-        NAME_OF_FIVE,
-        NAME_OF_SIX,
-        NAME_OF_SEVEN,
-        NAME_OF_EIGHT,
-        NAME_OF_NINE,
-    )
+_PATTERN_NUMERAL_ONES = get_non_capturing_group(
+    NAME_OF_ZERO,
+    NAME_OF_ONE,
+    NAME_OF_TWO,
+    NAME_OF_THREE,
+    NAME_OF_FOUR,
+    NAME_OF_FIVE,
+    NAME_OF_SIX,
+    NAME_OF_SEVEN,
+    NAME_OF_EIGHT,
+    NAME_OF_NINE,
 )
 
 # 20 30 40 50 60 70 80 90
@@ -158,26 +157,34 @@ _PATTERN_NUMERAL_COMBINED_TENS = (
     + WAW_CONNECTOR
     + _PATTERN_NUMERAL_PERFECT_TENS
 )
+_PATTERN_NUMERAL_TENS = get_non_capturing_group(
+    NAME_OF_TEN,
+    NAME_OF_ELEVEN,
+    NAME_OF_TWELVE,
+    NAME_OF_THIRTEEN,
+    NAME_OF_FOURTEEN,
+    NAME_OF_FIFTEEN,
+    NAME_OF_SIXTEEN,
+    NAME_OF_SEVENTEEN,
+    NAME_OF_EIGHTEEN,
+    NAME_OF_NINETEEN,
+    _PATTERN_NUMERAL_PERFECT_TENS,
+    _PATTERN_NUMERAL_COMBINED_TENS,
+)
 
-EXPRESSION_NUMERAL_TENS = NumeralExpression(
-    get_simple_expression(
-        NAME_OF_TEN,
-        NAME_OF_ELEVEN,
-        NAME_OF_TWELVE,
-        NAME_OF_THIRTEEN,
-        NAME_OF_FOURTEEN,
-        NAME_OF_FIFTEEN,
-        NAME_OF_SIXTEEN,
-        NAME_OF_SEVENTEEN,
-        NAME_OF_EIGHTEEN,
-        NAME_OF_NINETEEN,
-        _PATTERN_NUMERAL_PERFECT_TENS,
-        _PATTERN_NUMERAL_COMBINED_TENS,
-    )
+_PATTERN_NUMERAL_DECIMAL = get_non_capturing_group(
+    (PATTERN_DECIMAL),
+    (PATTERN_INTEGER + FASILA + PATTERN_INTEGER),
+    (_PATTERN_NUMERAL_TENS + FASILA + _PATTERN_NUMERAL_TENS),
+    (_PATTERN_NUMERAL_TENS + FASILA + _PATTERN_NUMERAL_ONES),
+    (_PATTERN_NUMERAL_ONES + FASILA + _PATTERN_NUMERAL_TENS),
+    (_PATTERN_NUMERAL_ONES + FASILA + _PATTERN_NUMERAL_ONES),
 )
 
 EXPRESSION_NUMERAL_DECIMALS = _get_combined_expression(NumeralType.DECIMALS)
 EXPRESSION_NUMERAL_INTEGERS = _get_combined_expression(NumeralType.INTEGERS)
+EXPRESSION_NUMERAL_ONES = _get_combined_expression(NumeralType.ONES)
+EXPRESSION_NUMERAL_TENS = _get_combined_expression(NumeralType.TENS)
 EXPRESSION_NUMERAL_HUNDREDS = _get_combined_expression(NumeralType.HUNDREDS)
 EXPRESSION_NUMERAL_THOUSANDS = _get_combined_expression(NumeralType.THOUSANDS)
 EXPRESSION_NUMERAL_MILLIONS = _get_combined_expression(NumeralType.MILLIONS)
