@@ -179,3 +179,44 @@ def test_tens(input, expected):
 )
 def test_perfect_tens(input, expected):
     assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value_with_integer(
+            "٢١", "21", 21, ["واحد وعشرين", "واحد وعشرون", "واحدة وعشرون"]
+        ),
+        get_value_with_integer(
+            "٣٢", "32", 32, ["اثنين وثلاثين", "اتنين وتلاتين", "إثنان وثلاثون"]
+        ),
+        get_value_with_integer(
+            "٤٣", "43", 43, ["ثلاثة وأربعين", "ثلاث وأربعون", "تلاته واربعون"]
+        ),
+        get_value_with_integer(
+            "٤٤", "44", 44, ["أربعة واربعون", "اربع واربعون", "اربعة وأربعين"]
+        ),
+        get_value_with_integer(
+            "٥٤", "54", 54, ["أربعة وخمسين", "اربع وخمسون", "اربعة وخمسون"]
+        ),
+        get_value_with_integer(
+            "٦٥", "65", 65, ["خمسة وستين", "خمس وستون", "خمسه وستين"]
+        ),
+        get_value_with_integer(
+            "٧٦", "76", 76, ["ستة وسبعين", "ست وسبعون", "سته وسبعين"]
+        ),
+        get_value_with_integer(
+            "٨٧", "87", 87, ["سبعة وتمانين", "سبع وتمانون", "سبعه وثمانين"]
+        ),
+        get_value_with_integer(
+            "٩٨", "98", 98, ["ثمانية وتسعين", "ثماني وتسعون", "تمنية وتسعين"]
+        ),
+        get_value_with_integer("٩٩", "99", 99, ["تسعة وتسعين"]),
+        get_value_with_integer("٩١", "91", 91, ["واحد وتسعين"]),
+        get_value_with_integer("٦٦", "66", 66, ["ستة وستين"]),
+        get_value_with_integer("٢٦", "26", 26, ["ستة وعشرين"]),
+        get_value_with_integer("٢٢", "22", 22, ["إثنتين و عشرون"]),
+    ),
+)
+def test_combines_tens(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
