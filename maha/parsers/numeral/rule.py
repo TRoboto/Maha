@@ -126,18 +126,18 @@ _PATTERN_NUMERAL_ONES = get_non_capturing_group(
 )
 
 # 20 30 40 50 60 70 80 90
-_PATTERN_NUMERAL_PERFECT_TENS = (
+_PATTERN_NUMERAL_PERFECT_TENS = get_non_capturing_group(
     get_non_capturing_group(
-        PREFIX_OF_TEN,
         PREFIX_OF_THREE,
         PREFIX_OF_FOUR,
         PREFIX_OF_FIVE,
         PREFIX_OF_SIX,
         PREFIX_OF_SEVEN,
-        PREFIX_OF_EIGHT,
         PREFIX_OF_NINE,
     )
-    + SUM_SUFFIX
+    + SUM_SUFFIX,
+    NAME_OF_TWENTY,
+    NAME_OF_EIGHTY,
 )
 
 # 21 22 23 24 ... 96 97 98 99
