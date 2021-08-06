@@ -9,7 +9,7 @@ from maha.parsers.interfaces.expressions import ExpressionGroup, ExpressionResul
 from maha.parsers.numeral.rule import *
 from maha.parsers.numeral.utils import get_value
 
-# random.seed(0)
+random.seed(0)
 
 
 def assert_expression_output(output, expected):
@@ -75,4 +75,107 @@ def get_value_with_integer(int1: str, int2: str, expected: float, values: List[s
     ),
 )
 def test_ones(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value_with_integer("١٠", "10", 10, ["عشرة", "عشره", "عشر"]),
+        get_value_with_integer(
+            "١١",
+            "11",
+            11,
+            ["احدعشر", "احدعش", "أحد عشرة", "احد عشر", "حدعشر", "حداشر", "إحدى عشر"],
+        ),
+        get_value_with_integer(
+            "١٢",
+            "12",
+            12,
+            ["اطنعش", "اثني عشر", "إثنتي عشر", "إتناشر", "اطناعشر", "إثنى عشرة"],
+        ),
+        get_value_with_integer(
+            "١٣",
+            "13",
+            13,
+            ["ثلتعش", "ثلاثة عشر", "ثلاثه عشر", "تلتعشر", "ثلثطعشر", "ثلاثة عشرة"],
+        ),
+        get_value_with_integer(
+            "١٤",
+            "14",
+            14,
+            [
+                "اربعتاشر",
+                "اربعة عشر",
+                "اربع عشر",
+                "اربعه عشره",
+                "أربعطعش",
+                "أربعة عشرة",
+            ],
+        ),
+        get_value_with_integer(
+            "١٥",
+            "15",
+            15,
+            ["خمسطعش", "خمسة عشر", "خمسه عشر", "خمستاشر", "خمس عشر", "خمسة عشرة"],
+        ),
+        get_value_with_integer(
+            "١٦",
+            "16",
+            16,
+            ["ستاشر", "ستة عشر", "سته عشر", "ستطعش", "ست عشر", "ستة عشرة"],
+        ),
+        get_value_with_integer(
+            "١٧",
+            "17",
+            17,
+            ["سبعتاشر", "سبعة عشر", "سبعه عشر", "سبعطعش", "سبع عشر", "سبعة عشرة"],
+        ),
+        get_value_with_integer(
+            "١٨",
+            "18",
+            18,
+            [
+                "تمنتاشر",
+                "ثمانية عشر",
+                "تمنية عشر",
+                "ثمنطعش",
+                "ثماني عشر",
+                "تمانية عشرة",
+            ],
+        ),
+        get_value_with_integer(
+            "١٩",
+            "19",
+            19,
+            [
+                "تسعتاشر",
+                "تسعة عشر",
+                "تسعه عشر",
+                "تسعطعشر",
+                "تسع عشر",
+                "تسعة عشرة",
+            ],
+        ),
+    ),
+)
+def test_tens(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value_with_integer("١٠", "10", 10, ["عشر", "عشرة", "عشره"]),
+        get_value_with_integer("٢٠", "20", 20, ["عشرون", "عشرين"]),
+        get_value_with_integer("٣٠", "30", 30, ["ثلاثين", "ثلاثون", "تلاتين"]),
+        get_value_with_integer("٤٠", "40", 40, ["أربعين", "أربعون", "اربعين"]),
+        get_value_with_integer("٥٠", "50", 50, ["خمسين", "خمسون"]),
+        get_value_with_integer("٦٠", "60", 60, ["ستين", "ستون"]),
+        get_value_with_integer("٧٠", "70", 70, ["سبعين", "سبعون"]),
+        get_value_with_integer("٨٠", "80", 80, ["ثمانين", "ثمانون", "تمنين", "تمانون"]),
+        get_value_with_integer("٩٠", "90", 90, ["تسعين", "تسعون"]),
+    ),
+)
+def test_perfect_tens(input, expected):
     assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
