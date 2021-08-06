@@ -38,7 +38,6 @@ NUMBER_MAP = {
     # This is a special case of the pattern twenty and eighty.
     # TODO: Improve this.
     NAME_OF_TWENTY: 2,
-    NAME_OF_EIGHTY: 8,
     NAME_OF_THREE: 3,
     NAME_OF_FOUR: 4,
     NAME_OF_FIVE: 5,
@@ -75,6 +74,9 @@ def get_value(text: str) -> float:
 
     if re.match(rule._PATTERN_NUMERAL_PERFECT_TENS, text):
         return 10 * get_matched_numeral(text)
+
+    if re.match(rule._PATTERN_NUMERAL_PERFECT_HUNDREDS, text):
+        return 100 * get_matched_numeral(text)
 
     output = get_matched_numeral(text)
     return output

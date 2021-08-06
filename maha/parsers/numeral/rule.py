@@ -34,26 +34,32 @@ def _get_pattern(numeral: NumeralType):
     dual = globals()[f"NAME_OF_TWO_{numeral.name}"]
     plural = globals()[f"NAME_OF_{numeral.name}"]
 
+    _pattern = [
+        "{decimal}{space}{unit_single_plural}",
+        "{integer}{space}{unit_single_plural}",
+        "{tens}{space}{unit_single_plural}",
+        "{ones}{space}{unit_single_plural}",
+        "{unit_dual}{space}{three_quarter}",
+        "{half}{space}{unit_dual}",
+        "{third}{space}{unit_dual}",
+        "{quarter}{space}{unit_dual}",
+        "{unit_single}{space}{three_quarter}",
+        "{half}{space}{unit_single}",
+        "{third}{space}{unit_single}",
+        "{quarter}{space}{unit_single}",
+        "{val}{unit_dual}",
+        "{val}{unit_single}",
+    ]
+
+    # Account for no spaces in the hundreds pattern (ثلاثمائة)
+    if numeral == NumeralType.HUNDREDS:
+        _pattern.insert(
+            2, _get_value_group(_PATTERN_NUMERAL_PERFECT_HUNDREDS) + _get_unit_group("")
+        )
+
     pattern = (
         "(?:"
-        + "|".join(
-            [
-                "{decimal}{space}{unit_single_plural}",
-                "{integer}{space}{unit_single_plural}",
-                "{tens}{space}{unit_single_plural}",
-                "{ones}{space}{unit_single_plural}",
-                "{unit_dual}{space}{three_quarter}",
-                "{half}{space}{unit_dual}",
-                "{third}{space}{unit_dual}",
-                "{quarter}{space}{unit_dual}",
-                "{unit_single}{space}{three_quarter}",
-                "{half}{space}{unit_single}",
-                "{third}{space}{unit_single}",
-                "{quarter}{space}{unit_single}",
-                "{val}{unit_dual}",
-                "{val}{unit_single}",
-            ]
-        ).format(
+        + "|".join(_pattern).format(
             decimal=_get_value_group(_PATTERN_NUMERAL_DECIMAL),
             integer=_get_value_group(PATTERN_INTEGER),
             space=PATTERN_SPACE,
@@ -133,11 +139,11 @@ _PATTERN_NUMERAL_PERFECT_TENS = get_non_capturing_group(
         PREFIX_OF_FIVE,
         PREFIX_OF_SIX,
         PREFIX_OF_SEVEN,
+        PREFIX_OF_EIGHT,
         PREFIX_OF_NINE,
     )
     + SUM_SUFFIX,
     NAME_OF_TWENTY,
-    NAME_OF_EIGHTY,
 )
 
 # 21 22 23 24 ... 96 97 98 99
@@ -170,6 +176,21 @@ _PATTERN_NUMERAL_TENS = get_non_capturing_group(
     NAME_OF_NINETEEN,
     _PATTERN_NUMERAL_PERFECT_TENS,
     _PATTERN_NUMERAL_COMBINED_TENS,
+)
+
+# 300 400 500 600 700 800 900
+_PATTERN_NUMERAL_PERFECT_HUNDREDS = (
+    get_non_capturing_group(
+        NAME_OF_THREE,
+        NAME_OF_FOUR,
+        NAME_OF_FIVE,
+        NAME_OF_SIX,
+        NAME_OF_SEVEN,
+        NAME_OF_EIGHT,
+        NAME_OF_NINE,
+    )
+    + PATTERN_SPACE_OR_NONE
+    + NAME_OF_HUNDRED
 )
 
 _PATTERN_NUMERAL_DECIMAL = get_non_capturing_group(
