@@ -32,6 +32,7 @@ NUMBER_MAP = {
     NAME_OF_SEVENTEEN: 17,
     NAME_OF_EIGHTEEN: 18,
     NAME_OF_NINETEEN: 19,
+    NAME_OF_ZERO: 0,
     NAME_OF_ONE: 1,
     NAME_OF_TWO: 2,
     # This is a special case of the pattern twenty.
