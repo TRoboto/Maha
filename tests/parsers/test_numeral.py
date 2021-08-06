@@ -170,7 +170,7 @@ def test_tens(input, expected):
         get_value_with_integer("٢٠", "20", 20, ["عشرون", "عشرين"]),
         get_value_with_integer("٣٠", "30", 30, ["ثلاثين", "ثلاثون", "تلاتين"]),
         get_value_with_integer("٤٠", "40", 40, ["أربعين", "أربعون", "اربعين"]),
-        get_value_with_integer("٥٠", "50", 50, ["خمسين", "خمسون"]),
+        get_value_with_integer("٥٠", "50", 50, ["خمسين", "خمسون", "نص مئة", "نصف مئة"]),
         get_value_with_integer("٦٠", "60", 60, ["ستين", "ستون"]),
         get_value_with_integer("٧٠", "70", 70, ["سبعين", "سبعون"]),
         get_value_with_integer("٨٠", "80", 80, ["ثمانين", "ثمانون", "تمنين", "تمانون"]),
@@ -215,8 +215,84 @@ def test_perfect_tens(input, expected):
         get_value_with_integer("٩١", "91", 91, ["واحد وتسعين"]),
         get_value_with_integer("٦٦", "66", 66, ["ستة وستين"]),
         get_value_with_integer("٢٦", "26", 26, ["ستة وعشرين"]),
+        get_value_with_integer("٢٥", "25", 25, ["خمسة و عشرون", "ربع مية"]),
+        get_value_with_integer("٧٥", "75", 75, ["خمسة وسبعين", "مية الا ربع"]),
         get_value_with_integer("٢٢", "22", 22, ["إثنتين و عشرون"]),
     ),
 )
 def test_combines_tens(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value_with_integer(
+            "١٠٠", "100", 100, ["مية", "ميه", "مائة", "مائه", "مئة", "مئه", "نص ميتين"]
+        ),
+        get_value_with_integer("٢٠٠", "200", 200, ["ميتين", "مئتين", "مئتان"]),
+        get_value_with_integer(
+            "٣٠٠",
+            "300",
+            300,
+            ["ثلاثمية", "ثلاث مئة", "ثلاثة مائة", "تلاتمية", "ثلاثمئه"],
+        ),
+        get_value_with_integer(
+            "٤٠٠",
+            "400",
+            400,
+            ["أربعمية", "أربع مئة", "أربعة مائة", "اربعمية", "اربعمئه"],
+        ),
+        get_value_with_integer(
+            "٥٠٠",
+            "500",
+            500,
+            ["خمسمية", "خمسة مئة", "خمس مائة", "خمسميه", "خمسه مئة"],
+        ),
+        get_value_with_integer(
+            "٦٠٠",
+            "600",
+            600,
+            ["ستمية", "ستة مئة", "ست مائة", "ستميه", "ستمائة"],
+        ),
+        get_value_with_integer(
+            "٧٠٠",
+            "700",
+            700,
+            ["سبعمية", "سبعة مئة", "سبع مائة", "سبعميه", "سبعمائة"],
+        ),
+        get_value_with_integer(
+            "٨٠٠",
+            "800",
+            800,
+            ["ثمنمية", "ثماني مئة", "ثمان مائة", "تمنميه", "ثمانمائة"],
+        ),
+        get_value_with_integer(
+            "٩٠٠",
+            "900",
+            900,
+            ["تسعمية", "تسعة مئة", "تسع مائة", "تسعميه", "تسعمائة"],
+        ),
+    ),
+)
+def test_perfect_hundreds(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value_with_integer("١٩١", "191", 191, ["مية وواحد وتسعين"]),
+        get_value_with_integer("١٢٤", "124", 124, ["مائة واربعة وعشرين"]),
+        get_value_with_integer("٢١٥", "215", 215, ["مئتين وخمسه عشر"]),
+        get_value_with_integer("٣٠٦", "306", 306, ["ثلاثمية وستة"]),
+        get_value_with_integer("٠٤١٠", "0410", 410, ["اربعمية وعشرة"]),
+        get_value_with_integer("٥٢٠", "520", 520, ["خمس مائة وعشرين"]),
+        get_value_with_integer("٦٠٦", "606", 606, ["ستمية وستة"]),
+        get_value_with_integer("٧٨٠", "780", 780, ["سبعة مائة وثمانون"]),
+        get_value_with_integer("٨٧٧", "877", 877, ["ثمنمية وسبعة وسبعين"]),
+        get_value_with_integer("٩٩٩", "999", 999, ["تسع مية وتسعه وتسعين"]),
+    ),
+)
+def test_hundreds(input, expected):
     assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
