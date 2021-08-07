@@ -314,3 +314,39 @@ def test_perfect_thousands(input, expected):
 )
 def test_thousands(input, expected):
     assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("10,000.0", 10000),
+        ("١٠٬٠٠٠٫٠٠٠", 10000),
+        ("10,000", 10000),
+        ("1٬000 000", 1000000),
+        ("1 000 000", 1000000),
+        ("١٬٠٠٠٬٠٠٠", 1000000),
+        ("١ ٠٠٠ ٠٠٠", 1000000),
+        ("١٬٠٠٠٬٠٠٠", 1000000),
+        ("١%", 0.01),
+        ("0.01%", 0.0001),
+        ("20.0%", 0.2),
+        ("200%", 2),
+    ],
+)
+def test_numbers(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (0.1, "صفر فاصلة عشرة"),
+        (0.1, "صفر فاصلة واحد"),
+        (3.4, "ثلاث فاصل اربع"),
+        (10.7, "عشرة فاصلة سبعة"),
+        (10.7, "10 فاصلة سبعة"),
+        (10.5, "10 فاصله 5"),
+    ],
+)
+def test_fasila_numbers(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
