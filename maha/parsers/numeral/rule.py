@@ -26,7 +26,6 @@ from .interface import NumeralExpression
 
 _get_unit_group = lambda v: f"(?P<unit>{v})"
 _get_value_group = lambda v: f"(?P<value>{v})"
-FASILA = PATTERN_SPACE + NAME_OF_FASILA + PATTERN_SPACE
 
 
 def _get_pattern(numeral: NumeralType):
@@ -198,8 +197,13 @@ _PATTERN_NUMERAL_DECIMAL = get_non_capturing_group(
     (PATTERN_INTEGER + FASILA + PATTERN_INTEGER),
     (_PATTERN_NUMERAL_TENS + FASILA + _PATTERN_NUMERAL_TENS),
     (_PATTERN_NUMERAL_TENS + FASILA + _PATTERN_NUMERAL_ONES),
+    (_PATTERN_NUMERAL_TENS + FASILA + PATTERN_INTEGER),
     (_PATTERN_NUMERAL_ONES + FASILA + _PATTERN_NUMERAL_TENS),
     (_PATTERN_NUMERAL_ONES + FASILA + _PATTERN_NUMERAL_ONES),
+    (_PATTERN_NUMERAL_ONES + FASILA + PATTERN_INTEGER),
+    (PATTERN_INTEGER + FASILA + _PATTERN_NUMERAL_TENS),
+    (PATTERN_INTEGER + FASILA + _PATTERN_NUMERAL_ONES),
+    (PATTERN_INTEGER + FASILA + PATTERN_INTEGER),
 )
 
 EXPRESSION_NUMERAL_DECIMALS = _get_combined_expression(NumeralType.DECIMALS)
@@ -213,6 +217,8 @@ EXPRESSION_NUMERAL_BILLIONS = _get_combined_expression(NumeralType.BILLIONS)
 EXPRESSION_NUMERAL_TRILLIONS = _get_combined_expression(NumeralType.TRILLIONS)
 
 EXPRESSION_NUMERAL = ExpressionGroup(
+    EXPRESSION_NUMERAL_DECIMALS,
+    EXPRESSION_NUMERAL_INTEGERS,
     _get_combined_expression(
         NumeralType.TRILLIONS,
         NumeralType.BILLIONS,
@@ -221,8 +227,6 @@ EXPRESSION_NUMERAL = ExpressionGroup(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.BILLIONS,
@@ -231,8 +235,6 @@ EXPRESSION_NUMERAL = ExpressionGroup(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.MILLIONS,
@@ -240,41 +242,24 @@ EXPRESSION_NUMERAL = ExpressionGroup(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.THOUSANDS,
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.HUNDREDS,
         NumeralType.TENS,
         NumeralType.ONES,
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.TENS,
         NumeralType.ONES,
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
     ),
     _get_combined_expression(
         NumeralType.ONES,
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
-    ),
-    _get_combined_expression(
-        NumeralType.DECIMALS,
-        NumeralType.INTEGERS,
-    ),
-    _get_combined_expression(
-        NumeralType.INTEGERS,
     ),
     smart=True,
 )

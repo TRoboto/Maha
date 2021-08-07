@@ -5,6 +5,7 @@ import re
 import maha.parsers.numeral.rule as rule
 
 from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
+from ..helper import convert_to_number_if_possible
 from .constants import *
 
 NUMBER_MAP = {
@@ -60,16 +61,22 @@ def get_matched_numeral(numeral) -> int:
 
 
 def get_value(text: str) -> float:
+    fasila = re.search(rule.FASILA, text)
+    if fasila:
+        before, after = text.split(fasila.group(0))
+        before = convert_to_number_if_possible(before)
+        after = convert_to_number_if_possible(after)
+        if isinstance(before, str):
+            before = get_matched_numeral(before)
+        if isinstance(after, str):
+            after = get_matched_numeral(after)
+        output = float(f"{before}.{after}")
+        return output
+
     waw = re.search(WAW_CONNECTOR, text)
     if waw:
         ones, tens = text.split(waw.group(0))
         output = get_matched_numeral(ones) + 10 * get_matched_numeral(tens)
-        return output
-
-    fasila = re.search(rule.FASILA, text)
-    if fasila:
-        before, after = text.split(fasila.group(0))
-        output = float(f"{get_matched_numeral(before)}.{get_matched_numeral(after)}")
         return output
 
     if re.match(rule._PATTERN_NUMERAL_PERFECT_TENS, text):
