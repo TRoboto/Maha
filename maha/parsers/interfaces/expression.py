@@ -13,6 +13,14 @@ from ..helper import convert_to_number_if_possible
 
 @dataclass
 class Expression:
+    """Regex pattern holder.
+
+    Parameters
+    ----------
+    pattern : str
+        Regular expression pattern.
+    """
+
     __slots__ = ["pattern", "_compiled_pattern"]
 
     pattern: str
@@ -26,8 +34,41 @@ class Expression:
         self._compiled_pattern = None
 
     def compile(self):
+        """Compile the regular expersion."""
         if self._compiled_pattern is None:
             self._compiled_pattern = re.compile(self.pattern, re.MULTILINE)
+
+    def search(self, text: str):
+        """Search for the pattern in the input ``text``.
+
+        Parameters
+        ----------
+        text : str
+            Text to search in.
+
+        Returns
+        -------
+        :class:`regex.Match`
+            Matched object.
+        """
+        self.compile()
+        return self._compiled_pattern.search(text)
+
+    def match(self, text: str) -> Optional[Match]:
+        """Match the pattern in the input ``text``.
+
+        Parameters
+        ----------
+        text : str
+            Text to match in.
+
+        Returns
+        -------
+        :class:`regex.Match`
+            Matched object.
+        """
+        self.compile()
+        return self._compiled_pattern.match(text)
 
     def __call__(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
         """
@@ -95,3 +136,12 @@ class Expression:
         value = captured_groups
 
         return interfaces.ExpressionResult(start, end, value, self)
+
+    def __str__(self) -> str:
+        return self.pattern
+
+    def __add__(self, other: str) -> str:
+        return str(self) + other
+
+    def __radd__(self, other):
+        return other + str(self)

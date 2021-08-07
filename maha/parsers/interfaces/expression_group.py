@@ -1,8 +1,10 @@
 __all__ = ["ExpressionGroup"]
 
-from typing import Iterable, List, Union
+from typing import Any, Iterable, List, Union
 
 import maha.parsers.interfaces as interfaces
+
+from ..helper import get_non_capturing_group
 
 
 class ExpressionGroup:
@@ -48,8 +50,17 @@ class ExpressionGroup:
                 result.append(expression)
         return result
 
-    def __getitem__(self, index: int) -> interfaces.Expression:
-        return self.expressions[index]
+    def add(self, *expression: interfaces.Expression) -> None:
+        """
+        Add an expression to the group.
+        """
+        self.expressions.extend(expression)
+
+    def join(self) -> str:
+        """
+        Returns non capturing group of the expressions.
+        """
+        return get_non_capturing_group(*list(map(str, self.expressions)))
 
     def parse(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
         """
@@ -107,3 +118,9 @@ class ExpressionGroup:
     def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
         self.expressions.extend(other.expressions)
         return self
+
+    def __getitem__(self, index: int) -> interfaces.Expression:
+        return self.expressions[index]
+
+    def __len__(self) -> int:
+        return len(self.expressions)
