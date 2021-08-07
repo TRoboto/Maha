@@ -13,12 +13,12 @@ from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
 
 from ..constants import (
     HALF,
+    NUMERAL_WORD_SEPARATOR,
     QUARTER,
     SUM_SUFFIX,
     THIRD,
     THREE_QUARTERS,
     WAW_CONNECTOR,
-    WORD_SEPARATOR,
 )
 from ..interfaces import ExpressionGroup, NumeralType
 from .constants import *
@@ -79,25 +79,16 @@ def _get_pattern(numeral: NumeralType):
 
 
 def get_pattern(numeral: NumeralType):
-    pattern = f"(?:{WORD_SEPARATOR}{{}})"
     if numeral == NumeralType.TENS:
-        pattern = pattern.format(
-            _get_value_group(_PATTERN_NUMERAL_TENS) + _get_unit_group("")
-        )
+        pattern = _get_value_group(_PATTERN_NUMERAL_TENS) + _get_unit_group("")
     elif numeral == NumeralType.ONES:
-        pattern = pattern.format(
-            _get_value_group(_PATTERN_NUMERAL_ONES) + _get_unit_group("")
-        )
+        pattern = _get_value_group(_PATTERN_NUMERAL_ONES) + _get_unit_group("")
     elif numeral == NumeralType.DECIMALS:
-        pattern = pattern.format(
-            _get_value_group(_PATTERN_NUMERAL_DECIMAL) + _get_unit_group("")
-        )
+        pattern = _get_value_group(_PATTERN_NUMERAL_DECIMAL) + _get_unit_group("")
     elif numeral == NumeralType.INTEGERS:
-        pattern = pattern.format(
-            _get_value_group(PATTERN_INTEGER) + _get_unit_group("")
-        )
+        pattern = _get_value_group(PATTERN_INTEGER) + _get_unit_group("")
     else:
-        pattern = pattern.format(_get_pattern(numeral))
+        pattern = _get_pattern(numeral)
     return pattern
 
 
@@ -105,8 +96,10 @@ def _get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
     patterns = []
     for i, u in enumerate(numerals):
         pattern = get_pattern(u)
+        if i == 0:
+            pattern = f"(?:^|\\W|{PATTERN_SPACE_OR_NONE}|\\b){pattern}"
         if i > 0:
-            pattern += "?"
+            pattern = f"(?:{NUMERAL_WORD_SEPARATOR}{pattern})?"
         if u not in [NumeralType.DECIMALS, NumeralType.INTEGERS]:
             pattern += r"\b"
         patterns.append(pattern)
