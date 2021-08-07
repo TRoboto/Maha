@@ -2,7 +2,8 @@ __all__ = ["TextExpression"]
 
 from regex.regex import Match
 
-from .expressions import Expression, ExpressionResult
+from .expression import Expression
+from .expression_result import ExpressionResult
 
 
 class TextExpression(Expression):

@@ -90,7 +90,7 @@ def _get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
         pattern = get_pattern(u)
         if i == 0:
             pattern = f"(?:^|\\W|{PATTERN_SPACE_OR_NONE}|\\b){pattern}"
-        if i > 0:
+        else:
             pattern = f"(?:{WAW_CONNECTOR}{pattern})?"
         if u not in [NumeralType.DECIMALS, NumeralType.INTEGERS]:
             pattern += r"\b"

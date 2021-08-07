@@ -7,7 +7,7 @@ import pytest
 from maha.parsers.duration.interface import DurationUnit, DurationValue, ValueUnit
 from maha.parsers.duration.rule import *
 from maha.parsers.duration.utils import get_unit, get_value
-from maha.parsers.interfaces.expressions import ExpressionGroup, ExpressionResult
+from maha.parsers.interfaces import ExpressionGroup, ExpressionResult
 
 S = DurationUnit.SECONDS
 MIN = DurationUnit.MINUTES

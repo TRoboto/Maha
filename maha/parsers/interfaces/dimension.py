@@ -1,10 +1,10 @@
 __all__ = ["Dimension"]
 
 from dataclasses import dataclass
-from typing import Any, Optional, Union
+from typing import Any
 
-from .enums import DimensionType, Unit
-from .expressions import Expression
+from .enums import DimensionType
+from .expression import Expression
 
 
 @dataclass
