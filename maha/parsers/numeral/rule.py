@@ -194,57 +194,55 @@ _PATTERN_NUMERAL_DECIMAL = get_non_capturing_group(
 EXPRESSION_NUMERAL_DECIMALS = _get_combined_expression(NumeralType.DECIMALS)
 EXPRESSION_NUMERAL_INTEGERS = _get_combined_expression(NumeralType.INTEGERS)
 EXPRESSION_NUMERAL_ONES = _get_combined_expression(NumeralType.ONES)
-EXPRESSION_NUMERAL_TENS = _get_combined_expression(NumeralType.TENS)
-EXPRESSION_NUMERAL_HUNDREDS = _get_combined_expression(NumeralType.HUNDREDS)
-EXPRESSION_NUMERAL_THOUSANDS = _get_combined_expression(NumeralType.THOUSANDS)
-EXPRESSION_NUMERAL_MILLIONS = _get_combined_expression(NumeralType.MILLIONS)
-EXPRESSION_NUMERAL_BILLIONS = _get_combined_expression(NumeralType.BILLIONS)
-EXPRESSION_NUMERAL_TRILLIONS = _get_combined_expression(NumeralType.TRILLIONS)
+EXPRESSION_NUMERAL_TENS = _get_combined_expression(
+    NumeralType.TENS,
+    NumeralType.ONES,
+)
+EXPRESSION_NUMERAL_HUNDREDS = _get_combined_expression(
+    NumeralType.HUNDREDS,
+    NumeralType.TENS,
+    NumeralType.ONES,
+)
+EXPRESSION_NUMERAL_THOUSANDS = _get_combined_expression(
+    NumeralType.THOUSANDS,
+    NumeralType.HUNDREDS,
+    NumeralType.TENS,
+    NumeralType.ONES,
+)
+EXPRESSION_NUMERAL_MILLIONS = _get_combined_expression(
+    NumeralType.MILLIONS,
+    NumeralType.THOUSANDS,
+    NumeralType.HUNDREDS,
+    NumeralType.TENS,
+    NumeralType.ONES,
+)
+EXPRESSION_NUMERAL_BILLIONS = _get_combined_expression(
+    NumeralType.BILLIONS,
+    NumeralType.MILLIONS,
+    NumeralType.THOUSANDS,
+    NumeralType.HUNDREDS,
+    NumeralType.TENS,
+    NumeralType.ONES,
+)
+EXPRESSION_NUMERAL_TRILLIONS = _get_combined_expression(
+    NumeralType.TRILLIONS,
+    NumeralType.BILLIONS,
+    NumeralType.MILLIONS,
+    NumeralType.THOUSANDS,
+    NumeralType.HUNDREDS,
+    NumeralType.TENS,
+    NumeralType.ONES,
+)
 
 EXPRESSION_NUMERAL = ExpressionGroup(
     EXPRESSION_NUMERAL_DECIMALS,
     EXPRESSION_NUMERAL_INTEGERS,
-    _get_combined_expression(
-        NumeralType.TRILLIONS,
-        NumeralType.BILLIONS,
-        NumeralType.MILLIONS,
-        NumeralType.THOUSANDS,
-        NumeralType.HUNDREDS,
-        NumeralType.TENS,
-        NumeralType.ONES,
-    ),
-    _get_combined_expression(
-        NumeralType.BILLIONS,
-        NumeralType.MILLIONS,
-        NumeralType.THOUSANDS,
-        NumeralType.HUNDREDS,
-        NumeralType.TENS,
-        NumeralType.ONES,
-    ),
-    _get_combined_expression(
-        NumeralType.MILLIONS,
-        NumeralType.THOUSANDS,
-        NumeralType.HUNDREDS,
-        NumeralType.TENS,
-        NumeralType.ONES,
-    ),
-    _get_combined_expression(
-        NumeralType.THOUSANDS,
-        NumeralType.HUNDREDS,
-        NumeralType.TENS,
-        NumeralType.ONES,
-    ),
-    _get_combined_expression(
-        NumeralType.HUNDREDS,
-        NumeralType.TENS,
-        NumeralType.ONES,
-    ),
-    _get_combined_expression(
-        NumeralType.TENS,
-        NumeralType.ONES,
-    ),
-    _get_combined_expression(
-        NumeralType.ONES,
-    ),
+    EXPRESSION_NUMERAL_TRILLIONS,
+    EXPRESSION_NUMERAL_BILLIONS,
+    EXPRESSION_NUMERAL_MILLIONS,
+    EXPRESSION_NUMERAL_THOUSANDS,
+    EXPRESSION_NUMERAL_HUNDREDS,
+    EXPRESSION_NUMERAL_TENS,
+    EXPRESSION_NUMERAL_ONES,
     smart=True,
 )
