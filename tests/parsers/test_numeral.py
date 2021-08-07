@@ -312,5 +312,5 @@ def test_perfect_thousands(input, expected):
         get_value_with_integer("١٧١٠٠", "17100", ["سبعطعشر الف ومية"]),
     ),
 )
-def test_perfect_thousands(input, expected):
+def test_thousands(input, expected):
     assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
