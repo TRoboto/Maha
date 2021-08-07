@@ -297,6 +297,7 @@ def test_perfect_thousands(input, expected):
 @pytest.mark.parametrize(
     "input, expected",
     chain(
+        get_value_with_integer("٢٠٠٠٠", "20000", ["عشرين الف"]),
         get_value_with_integer("١٢٠٠", "1200", ["الف ومئتين"]),
         get_value_with_integer("٣٢٢٠", "3220", ["ثلاثة الاف ومئتان وعشرين"]),
         get_value_with_integer("٤٠٠١٠", "40010", ["أربعين الف وعشرة"]),
@@ -349,4 +350,51 @@ def test_numbers(input, expected):
     ],
 )
 def test_fasila_numbers(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value_with_integer("١٠٠٠٠٠٠", "1000000", ["مليون"]),
+        get_value_with_integer("٢٠٠٠٠٠٠", "2000000", ["مليونين", "مليونان"]),
+        get_value_with_integer("٣٠٠٠٠٠٠", "3000000", ["ثلاث ملايين", "ثلاثة مليون"]),
+        get_value_with_integer("٤٠٠٠٠٠٠", "4000000", ["اربع ملايين", "أربعة مليون"]),
+        get_value_with_integer("٥٠٠٠٠٠٠", "5000000", ["خمس ملايين", "خمسة مليون"]),
+        get_value_with_integer("٦٠٠٠٠٠٠", "6000000", ["ست ملايين", "ستة ملايين"]),
+        get_value_with_integer("٧٠٠٠٠٠٠", "7000000", ["سبع ملايين", "سبعة ملايين"]),
+        get_value_with_integer("٨٠٠٠٠٠٠", "8000000", ["ثماني ملايين", "ثمانية ملايين"]),
+        get_value_with_integer("٩٠٠٠٠٠٠", "9000000", ["تسع ملايين", "تسعة ملايين"]),
+    ),
+)
+def test_perfect_millions(input, expected):
+    assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value_with_integer("٢٠٠٠٠٠٠٠", "20000000", ["عشرين مليون"]),
+        get_value_with_integer("١٠٠١٢٠٠", "1001200", ["مليون والف ومئتين"]),
+        get_value_with_integer("٣٠٢٢٠٠٠", "3022000", ["ثلاثة مليون واثنين وعشرين الف"]),
+        get_value_with_integer("٤٠٠٠٠٠١٠", "40000010", ["أربعين مليون وعشرة"]),
+        get_value_with_integer(
+            "٥٥٠٠٧٣٢٥",
+            "55007325",
+            ["خمسة وخمسين مليون وسبع الاف وثلاثمية وخمسة وعشرين"],
+        ),
+        get_value_with_integer(
+            "٢٠٢٢٢٢٢", "2022222", ["مليونين واثنين وعشرين الف ومئتين واثنين وعشرين"]
+        ),
+        get_value_with_integer(
+            "١٠٠١٠٤٦٥", "10010465", ["عشرة مليون وعشر الاف واربعمئة وخمسة وستين"]
+        ),
+        get_value_with_integer("٣٠٠١٠٣٠", "3001030", ["ثلاث ملايين والف وثلاثين"]),
+        get_value_with_integer(
+            "٩٠٠٩٠٠٠١", "90090001", ["تسعين مليون وتسعين الف وواحد"]
+        ),
+        get_value_with_integer("١٧٠٠٠١٠٠", "17000100", ["سبعطعشر مليون ومية"]),
+    ),
+)
+def test_millions(input, expected):
     assert_expression_output(parse_expression(input, EXPRESSION_NUMERAL), expected)
