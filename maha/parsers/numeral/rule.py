@@ -11,15 +11,7 @@ __all__ = [
 
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
 
-from ..constants import (
-    HALF,
-    NUMERAL_WORD_SEPARATOR,
-    QUARTER,
-    SUM_SUFFIX,
-    THIRD,
-    THREE_QUARTERS,
-    WAW_CONNECTOR,
-)
+from ..constants import HALF, QUARTER, SUM_SUFFIX, THIRD, THREE_QUARTERS, WAW_CONNECTOR
 from ..interfaces import ExpressionGroup, NumeralType
 from .constants import *
 from .interface import NumeralExpression
@@ -99,7 +91,7 @@ def _get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
         if i == 0:
             pattern = f"(?:^|\\W|{PATTERN_SPACE_OR_NONE}|\\b){pattern}"
         if i > 0:
-            pattern = f"(?:{NUMERAL_WORD_SEPARATOR}{pattern})?"
+            pattern = f"(?:{WAW_CONNECTOR}{pattern})?"
         if u not in [NumeralType.DECIMALS, NumeralType.INTEGERS]:
             pattern += r"\b"
         patterns.append(pattern)
