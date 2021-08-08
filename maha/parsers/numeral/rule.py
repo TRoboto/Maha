@@ -1,5 +1,7 @@
 __all__ = [
     "EXPRESSION_NUMERAL",
+    "EXPRESSION_NUMERAL_DECIMALS",
+    "EXPRESSION_NUMERAL_INTEGERS",
     "EXPRESSION_NUMERAL_ONES",
     "EXPRESSION_NUMERAL_TENS",
     "EXPRESSION_NUMERAL_HUNDREDS",
@@ -48,9 +50,7 @@ def _get_pattern(numeral: NumeralType):
     # # Account for no spaces in the hundreds pattern (ثلاثمائة)
     if numeral == NumeralType.HUNDREDS:
         _pattern.insert(
-            2,
-            _get_value_group(EXPRESSION_NUMERAL_PERFECT_HUNDREDS.join())
-            + _get_unit_group(""),
+            2, get_group_value_without_unit(EXPRESSION_NUMERAL_PERFECT_HUNDREDS.join())
         )
 
     pattern = (
@@ -75,19 +75,19 @@ def _get_pattern(numeral: NumeralType):
     return pattern
 
 
+def get_group_value_without_unit(expression: str):
+    return _get_value_group(expression) + _get_unit_group("")
+
+
 def get_pattern(numeral: NumeralType):
     if numeral == NumeralType.TENS:
-        pattern = _get_value_group(
-            EXPRESSION_NUMERAL_TENS_ONLY.join()
-        ) + _get_unit_group("")
+        pattern = get_group_value_without_unit(EXPRESSION_NUMERAL_TENS_ONLY)
     elif numeral == NumeralType.ONES:
-        pattern = _get_value_group(
-            EXPRESSION_NUMERAL_ONES_ONLY.join()
-        ) + _get_unit_group("")
+        pattern = get_group_value_without_unit(EXPRESSION_NUMERAL_ONES_ONLY)
     elif numeral == NumeralType.DECIMALS:
-        pattern = _get_value_group(str(EXPRESSION_DECIMALS)) + _get_unit_group("")
+        pattern = get_group_value_without_unit(str(EXPRESSION_DECIMALS))
     elif numeral == NumeralType.INTEGERS:
-        pattern = _get_value_group(PATTERN_INTEGER) + _get_unit_group("")
+        pattern = get_group_value_without_unit(PATTERN_INTEGER)
     else:
         pattern = _get_pattern(numeral)
     return pattern
