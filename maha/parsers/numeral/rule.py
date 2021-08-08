@@ -9,9 +9,11 @@ __all__ = [
     "EXPRESSION_NUMERAL_TRILLIONS",
 ]
 
+import itertools as it
+
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
 
-from ..constants import HALF, QUARTER, SUM_SUFFIX, THIRD, THREE_QUARTERS, WAW_CONNECTOR
+from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
 from ..interfaces import ExpressionGroup, NumeralType
 from .constants import *
 from .interface import NumeralExpression
@@ -21,10 +23,11 @@ _get_value_group = lambda v: f"(?P<value>{v})"
 
 
 def _get_pattern(numeral: NumeralType):
-    single = globals()[f"NAME_OF_{numeral.name[:-1]}"]
-    dual = globals()[f"NAME_OF_TWO_{numeral.name}"]
-    plural = globals()[f"NAME_OF_{numeral.name}"]
+    single = str(globals()[f"EXPRESSION_OF_{numeral.name[:-1]}"])
+    dual = str(globals()[f"EXPRESSION_OF_TWO_{numeral.name}"])
+    plural = str(globals()[f"EXPRESSION_OF_{numeral.name}"])
 
+    # order matters
     _pattern = [
         "{decimal}{space}{unit_single_plural}",
         "{integer}{space}{unit_single_plural}",
@@ -42,28 +45,30 @@ def _get_pattern(numeral: NumeralType):
         "{val}{unit_single}",
     ]
 
-    # Account for no spaces in the hundreds pattern (ثلاثمائة)
+    # # Account for no spaces in the hundreds pattern (ثلاثمائة)
     if numeral == NumeralType.HUNDREDS:
         _pattern.insert(
-            2, _get_value_group(_PATTERN_NUMERAL_PERFECT_HUNDREDS) + _get_unit_group("")
+            2,
+            _get_value_group(EXPRESSION_NUMERAL_PERFECT_HUNDREDS.join())
+            + _get_unit_group(""),
         )
 
     pattern = (
         "(?:"
         + "|".join(_pattern).format(
-            decimal=_get_value_group(_PATTERN_NUMERAL_DECIMAL),
+            decimal=_get_value_group(str(EXPRESSION_DECIMALS)),
             integer=_get_value_group(PATTERN_INTEGER),
             space=PATTERN_SPACE,
-            half=_get_value_group(HALF),
-            third=_get_value_group(THIRD),
-            quarter=_get_value_group(QUARTER),
-            three_quarter=_get_value_group(THREE_QUARTERS),
+            half=_get_value_group(str(HALF)),
+            third=_get_value_group(str(THIRD)),
+            quarter=_get_value_group(str(QUARTER)),
+            three_quarter=_get_value_group(str(THREE_QUARTERS)),
             unit_single_plural=_get_unit_group("|".join([single, plural])),
             unit_single=_get_unit_group(single),
             unit_dual=_get_unit_group(dual),
             val=_get_value_group(""),
-            tens=_get_value_group(_PATTERN_NUMERAL_TENS),
-            ones=_get_value_group(_PATTERN_NUMERAL_ONES),
+            tens=_get_value_group(EXPRESSION_NUMERAL_TENS_ONLY.join()),
+            ones=_get_value_group(EXPRESSION_NUMERAL_ONES_ONLY.join()),
         )
         + ")"
     )
@@ -72,11 +77,15 @@ def _get_pattern(numeral: NumeralType):
 
 def get_pattern(numeral: NumeralType):
     if numeral == NumeralType.TENS:
-        pattern = _get_value_group(_PATTERN_NUMERAL_TENS) + _get_unit_group("")
+        pattern = _get_value_group(
+            EXPRESSION_NUMERAL_TENS_ONLY.join()
+        ) + _get_unit_group("")
     elif numeral == NumeralType.ONES:
-        pattern = _get_value_group(_PATTERN_NUMERAL_ONES) + _get_unit_group("")
+        pattern = _get_value_group(
+            EXPRESSION_NUMERAL_ONES_ONLY.join()
+        ) + _get_unit_group("")
     elif numeral == NumeralType.DECIMALS:
-        pattern = _get_value_group(_PATTERN_NUMERAL_DECIMAL) + _get_unit_group("")
+        pattern = _get_value_group(str(EXPRESSION_DECIMALS)) + _get_unit_group("")
     elif numeral == NumeralType.INTEGERS:
         pattern = _get_value_group(PATTERN_INTEGER) + _get_unit_group("")
     else:
@@ -84,7 +93,7 @@ def get_pattern(numeral: NumeralType):
     return pattern
 
 
-def _get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
+def get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
     patterns = []
     for i, u in enumerate(numerals):
         pattern = get_pattern(u)
@@ -102,121 +111,110 @@ def get_simple_expression(*words: str):
     return r"\b" + _get_value_group("|".join(words)) + r"\b"
 
 
-_PATTERN_NUMERAL_ONES = get_non_capturing_group(
-    NAME_OF_ZERO,
-    NAME_OF_ONE,
-    NAME_OF_TWO,
-    NAME_OF_THREE,
-    NAME_OF_FOUR,
-    NAME_OF_FIVE,
-    NAME_OF_SIX,
-    NAME_OF_SEVEN,
-    NAME_OF_EIGHT,
-    NAME_OF_NINE,
+def get_combinations(*patterns: str):
+    for (a, b) in it.combinations_with_replacement(patterns, 2):
+        yield a + EXPRESSION_OF_FASILA + b
+        if a != b:
+            yield b + EXPRESSION_OF_FASILA + a
+
+
+# 0 1 2 3 4 5 6 7 8 9
+EXPRESSION_NUMERAL_ONES_ONLY = ExpressionGroup(
+    EXPRESSION_OF_ZERO,
+    EXPRESSION_OF_ONE,
+    EXPRESSION_OF_TWO,
+    EXPRESSION_OF_THREE,
+    EXPRESSION_OF_FOUR,
+    EXPRESSION_OF_FIVE,
+    EXPRESSION_OF_SIX,
+    EXPRESSION_OF_SEVEN,
+    EXPRESSION_OF_EIGHT,
+    EXPRESSION_OF_NINE,
 )
 
 # 20 30 40 50 60 70 80 90
-_PATTERN_NUMERAL_PERFECT_TENS = get_non_capturing_group(
-    get_non_capturing_group(
-        PREFIX_OF_THREE,
-        PREFIX_OF_FOUR,
-        PREFIX_OF_FIVE,
-        PREFIX_OF_SIX,
-        PREFIX_OF_SEVEN,
-        PREFIX_OF_EIGHT,
-        PREFIX_OF_NINE,
-    )
-    + SUM_SUFFIX,
-    NAME_OF_TWENTY,
+EXPRESSION_NUMERAL_PERFECT_TENS = ExpressionGroup(
+    EXPRESSION_OF_TWENTY,
+    EXPRESSION_OF_THIRTY,
+    EXPRESSION_OF_FORTY,
+    EXPRESSION_OF_FIFTY,
+    EXPRESSION_OF_SIXTY,
+    EXPRESSION_OF_SEVENTY,
+    EXPRESSION_OF_EIGHTY,
+    EXPRESSION_OF_NINETY,
 )
-
 # 21 22 23 24 ... 96 97 98 99
-_PATTERN_NUMERAL_COMBINED_TENS = (
-    get_non_capturing_group(
-        NAME_OF_ZERO,
-        NAME_OF_ONE,
-        NAME_OF_TWO,
-        NAME_OF_THREE,
-        NAME_OF_FOUR,
-        NAME_OF_FIVE,
-        NAME_OF_SIX,
-        NAME_OF_SEVEN,
-        NAME_OF_EIGHT,
-        NAME_OF_NINE,
-    )
+EXPRESSION_NUMERAL_COMBINED_TENS = Expression(
+    EXPRESSION_NUMERAL_ONES_ONLY.join()
     + WAW_CONNECTOR
-    + _PATTERN_NUMERAL_PERFECT_TENS
+    + EXPRESSION_NUMERAL_PERFECT_TENS.join()
 )
-_PATTERN_NUMERAL_TENS = get_non_capturing_group(
-    NAME_OF_TEN,
-    NAME_OF_ELEVEN,
-    NAME_OF_TWELVE,
-    NAME_OF_THIRTEEN,
-    NAME_OF_FOURTEEN,
-    NAME_OF_FIFTEEN,
-    NAME_OF_SIXTEEN,
-    NAME_OF_SEVENTEEN,
-    NAME_OF_EIGHTEEN,
-    NAME_OF_NINETEEN,
-    _PATTERN_NUMERAL_PERFECT_TENS,
-    _PATTERN_NUMERAL_COMBINED_TENS,
+# 10 11 12 13 14 ... 95 96 97 98 99
+EXPRESSION_NUMERAL_TENS_ONLY = ExpressionGroup(
+    EXPRESSION_NUMERAL_PERFECT_TENS,
+    EXPRESSION_NUMERAL_COMBINED_TENS,
+    EXPRESSION_OF_ELEVEN,
+    EXPRESSION_OF_TWELVE,
+    EXPRESSION_OF_THIRTEEN,
+    EXPRESSION_OF_FOURTEEN,
+    EXPRESSION_OF_FIFTEEN,
+    EXPRESSION_OF_SIXTEEN,
+    EXPRESSION_OF_SEVENTEEN,
+    EXPRESSION_OF_EIGHTEEN,
+    EXPRESSION_OF_NINETEEN,
+    EXPRESSION_OF_TEN,
 )
 
 # 300 400 500 600 700 800 900
-_PATTERN_NUMERAL_PERFECT_HUNDREDS = (
+EXPRESSION_NUMERAL_PERFECT_HUNDREDS = ExpressionGroup(
+    EXPRESSION_OF_THREE_HUNDREDS,
+    EXPRESSION_OF_FOUR_HUNDREDS,
+    EXPRESSION_OF_FIVE_HUNDREDS,
+    EXPRESSION_OF_SIX_HUNDREDS,
+    EXPRESSION_OF_SEVEN_HUNDREDS,
+    EXPRESSION_OF_EIGHT_HUNDREDS,
+    EXPRESSION_OF_NINE_HUNDREDS,
+)
+
+EXPRESSION_DECIMALS = Expression(
     get_non_capturing_group(
-        NAME_OF_THREE,
-        NAME_OF_FOUR,
-        NAME_OF_FIVE,
-        NAME_OF_SIX,
-        NAME_OF_SEVEN,
-        NAME_OF_EIGHT,
-        NAME_OF_NINE,
+        (PATTERN_DECIMAL),
+        *list(
+            get_combinations(
+                PATTERN_INTEGER,
+                EXPRESSION_NUMERAL_TENS_ONLY.join(),
+                EXPRESSION_NUMERAL_ONES_ONLY.join(),
+            )
+        ),
     )
-    + PATTERN_SPACE_OR_NONE
-    + NAME_OF_HUNDRED
 )
 
-_PATTERN_NUMERAL_DECIMAL = get_non_capturing_group(
-    (PATTERN_DECIMAL),
-    (PATTERN_INTEGER + FASILA + PATTERN_INTEGER),
-    (_PATTERN_NUMERAL_TENS + FASILA + _PATTERN_NUMERAL_TENS),
-    (_PATTERN_NUMERAL_TENS + FASILA + _PATTERN_NUMERAL_ONES),
-    (_PATTERN_NUMERAL_TENS + FASILA + PATTERN_INTEGER),
-    (_PATTERN_NUMERAL_ONES + FASILA + _PATTERN_NUMERAL_TENS),
-    (_PATTERN_NUMERAL_ONES + FASILA + _PATTERN_NUMERAL_ONES),
-    (_PATTERN_NUMERAL_ONES + FASILA + PATTERN_INTEGER),
-    (PATTERN_INTEGER + FASILA + _PATTERN_NUMERAL_TENS),
-    (PATTERN_INTEGER + FASILA + _PATTERN_NUMERAL_ONES),
-    (PATTERN_INTEGER + FASILA + PATTERN_INTEGER),
-)
-
-EXPRESSION_NUMERAL_DECIMALS = _get_combined_expression(NumeralType.DECIMALS)
-EXPRESSION_NUMERAL_INTEGERS = _get_combined_expression(NumeralType.INTEGERS)
-EXPRESSION_NUMERAL_ONES = _get_combined_expression(NumeralType.ONES)
-EXPRESSION_NUMERAL_TENS = _get_combined_expression(
+EXPRESSION_NUMERAL_DECIMALS = get_combined_expression(NumeralType.DECIMALS)
+EXPRESSION_NUMERAL_INTEGERS = get_combined_expression(NumeralType.INTEGERS)
+EXPRESSION_NUMERAL_ONES = get_combined_expression(NumeralType.ONES)
+EXPRESSION_NUMERAL_TENS = get_combined_expression(
     NumeralType.TENS,
     NumeralType.ONES,
 )
-EXPRESSION_NUMERAL_HUNDREDS = _get_combined_expression(
+EXPRESSION_NUMERAL_HUNDREDS = get_combined_expression(
     NumeralType.HUNDREDS,
     NumeralType.TENS,
     NumeralType.ONES,
 )
-EXPRESSION_NUMERAL_THOUSANDS = _get_combined_expression(
+EXPRESSION_NUMERAL_THOUSANDS = get_combined_expression(
     NumeralType.THOUSANDS,
     NumeralType.HUNDREDS,
     NumeralType.TENS,
     NumeralType.ONES,
 )
-EXPRESSION_NUMERAL_MILLIONS = _get_combined_expression(
+EXPRESSION_NUMERAL_MILLIONS = get_combined_expression(
     NumeralType.MILLIONS,
     NumeralType.THOUSANDS,
     NumeralType.HUNDREDS,
     NumeralType.TENS,
     NumeralType.ONES,
 )
-EXPRESSION_NUMERAL_BILLIONS = _get_combined_expression(
+EXPRESSION_NUMERAL_BILLIONS = get_combined_expression(
     NumeralType.BILLIONS,
     NumeralType.MILLIONS,
     NumeralType.THOUSANDS,
@@ -224,7 +222,7 @@ EXPRESSION_NUMERAL_BILLIONS = _get_combined_expression(
     NumeralType.TENS,
     NumeralType.ONES,
 )
-EXPRESSION_NUMERAL_TRILLIONS = _get_combined_expression(
+EXPRESSION_NUMERAL_TRILLIONS = get_combined_expression(
     NumeralType.TRILLIONS,
     NumeralType.BILLIONS,
     NumeralType.MILLIONS,
@@ -246,3 +244,30 @@ EXPRESSION_NUMERAL = ExpressionGroup(
     EXPRESSION_NUMERAL_ONES,
     smart=True,
 )
+
+
+ORDERED_NUMERALS = ExpressionGroup(
+    EXPRESSION_OF_TWO_HUNDREDS,
+    EXPRESSION_OF_TWO_THOUSANDS,
+    EXPRESSION_OF_TWO_MILLIONS,
+    EXPRESSION_OF_TWO_BILLIONS,
+    EXPRESSION_OF_TWO_TRILLIONS,
+    EXPRESSION_OF_HUNDRED,
+    EXPRESSION_OF_HUNDREDS,
+    EXPRESSION_OF_THOUSANDS,
+    EXPRESSION_OF_THOUSAND,
+    EXPRESSION_OF_MILLIONS,
+    EXPRESSION_OF_MILLION,
+    EXPRESSION_OF_BILLIONS,
+    EXPRESSION_OF_BILLION,
+    EXPRESSION_OF_TRILLIONS,
+    EXPRESSION_OF_TRILLION,
+    EXPRESSION_NUMERAL_PERFECT_HUNDREDS,
+    EXPRESSION_NUMERAL_TENS_ONLY,
+    EXPRESSION_NUMERAL_ONES_ONLY,
+    THREE_QUARTERS,
+    HALF,
+    QUARTER,
+    THIRD,
+)
+""" The order of which the expressions are evaluated. """
