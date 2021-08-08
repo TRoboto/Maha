@@ -81,9 +81,9 @@ def get_group_value_without_unit(expression: str):
 
 def get_pattern(numeral: NumeralType):
     if numeral == NumeralType.TENS:
-        pattern = get_group_value_without_unit(EXPRESSION_NUMERAL_TENS_ONLY)
+        pattern = get_group_value_without_unit(EXPRESSION_NUMERAL_TENS_ONLY.join())
     elif numeral == NumeralType.ONES:
-        pattern = get_group_value_without_unit(EXPRESSION_NUMERAL_ONES_ONLY)
+        pattern = get_group_value_without_unit(EXPRESSION_NUMERAL_ONES_ONLY.join())
     elif numeral == NumeralType.DECIMALS:
         pattern = get_group_value_without_unit(str(EXPRESSION_DECIMALS))
     elif numeral == NumeralType.INTEGERS:
