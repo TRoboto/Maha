@@ -201,6 +201,7 @@ def test_perfect_tens(input, expected):
         get_value_with_integer("٢٥", "25", ["خمسة و عشرون", "ربع مية"]),
         get_value_with_integer("٧٥", "75", ["خمسة وسبعين", "مية الا ربع"]),
         get_value_with_integer("٢٢", "22", ["إثنتين و عشرون"]),
+        get_value_with_integer("٢٢", "22", ["إثنتين و عشرون"]),
     ),
 )
 def test_combines_tens(input, expected):
@@ -348,6 +349,8 @@ def test_numbers(input, expected):
         (10.7, "عشرة فاصلة سبعة"),
         (10.7, "10 فاصلة سبعة"),
         (10.5, "10 فاصله 5"),
+        (33.3, "ثلاثة وثلاثين فاصلة ثلاثة"),
+        (100 / 3, "ثلث مية"),
     ],
 )
 def test_fasila_numbers(input, expected):
