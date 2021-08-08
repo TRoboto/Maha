@@ -17,7 +17,7 @@ from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
 
 from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
 from ..interfaces import ExpressionGroup, NumeralType
-from .constants import *
+from .expressions import *
 from .interface import NumeralExpression
 
 _get_unit_group = lambda v: f"(?P<unit>{v})"
