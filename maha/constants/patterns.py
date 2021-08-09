@@ -1,5 +1,29 @@
 """ Regular expersion patterns """
 
+from maha.constants.english.compound import ENGLISH_PUNCTUATIONS
+from maha.constants.english.simple import (
+    AND_SIGN,
+    ASTERISK,
+    AT_SIGN,
+    BACKSLASH,
+    DOLLAR_SIGN,
+    DOT,
+    EXPONENT_SIGN,
+    LEFT_BRACKET,
+    LEFT_PARENTHESIS,
+    LEFTCURLY_BRACKET,
+    MINUS_SIGN,
+    PLUS_SIGN,
+    QUESTION_MARK,
+    QUOTATION_MARK,
+    RIGHT_BRACKET,
+    RIGHT_PARENTHESIS,
+    RIGHTCURLY_BRACKET,
+    SLASH,
+    UNDERSCORE,
+    VERTICAL_BAR,
+)
+
 from .arabic import (
     ARABIC_COMMA,
     ARABIC_DECIMAL_SEPARATOR,
@@ -7,10 +31,31 @@ from .arabic import (
     ARABIC_THOUSANDS_SEPARATOR,
 )
 from .english import COMMA, ENGLISH_NUMBERS
-from .general import SPACE
+from .general import PUNCTUATIONS, SPACE
 
-PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n|\.)(#[\wأ-ي-]+)"
+PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|[{0}{1}])(#[\wأ-ي-]+)".format(
+    "".join(
+        [
+            pun
+            for pun in ENGLISH_PUNCTUATIONS
+            if pun
+            not in [
+                AT_SIGN,
+                AND_SIGN,
+                UNDERSCORE,
+                QUOTATION_MARK,
+                BACKSLASH,
+                LEFT_BRACKET,
+                RIGHT_BRACKET,
+                MINUS_SIGN,
+            ]
+        ]
+    ),
+    "\\".join(["", LEFT_BRACKET, RIGHT_BRACKET, QUOTATION_MARK, MINUS_SIGN]),
+)
+
 """ Pattern that matches Arabic and English hashtags """
+
 
 PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n)(@[\wأ-ي-]+)"
 """ Pattern that matches Arabic and English mentions """
