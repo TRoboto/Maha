@@ -1,5 +1,7 @@
 """ Regular expersion patterns """
 
+import re
+
 from maha.constants.english.compound import ENGLISH_PUNCTUATIONS
 from maha.constants.english.simple import (
     AND_SIGN,
@@ -33,11 +35,16 @@ from .arabic import (
 from .english import COMMA, ENGLISH_NUMBERS
 from .general import PUNCTUATIONS, SPACE
 
-PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|[{0}{1}])(#[\wأ-ي-]+)".format(
+PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|[{0}])(#[\wأ-ي-]+)".format(
     "".join(
         [
             pun
-            for pun in ENGLISH_PUNCTUATIONS
+            for pun in PUNCTUATIONS
+            + [
+                re.escape(
+                    str([LEFT_BRACKET, RIGHT_BRACKET, QUOTATION_MARK, MINUS_SIGN])
+                )
+            ]
             if pun
             not in [
                 AT_SIGN,
@@ -51,7 +58,6 @@ PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|[{0}{1}])(#[\wأ-ي-]+)".format(
             ]
         ]
     ),
-    "\\".join(["", LEFT_BRACKET, RIGHT_BRACKET, QUOTATION_MARK, MINUS_SIGN]),
 )
 
 """ Pattern that matches Arabic and English hashtags """
