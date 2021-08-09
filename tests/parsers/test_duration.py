@@ -1,3 +1,4 @@
+import random
 from itertools import chain
 from typing import List
 
@@ -17,59 +18,72 @@ MON = DurationUnit.MONTHS
 Y = DurationUnit.YEARS
 
 
-def get_singular_values(text: str):
-    yield from [
-        (1, f"{text}."),
-        (1, f"{text}"),
-        (1, f" {text} "),
-        (1, f" {text}"),
-        (1, f",{text}"),
-        (1, f",{text},"),
-        (1, f"{text},"),
-        (1, f"{text}"),
+def get_singular_values(*text: str):
+    positions = [
+        (1, "{}."),
+        (1, "{}"),
+        (1, " {} "),
+        (1, " {}"),
+        (1, ",{}"),
+        (1, ",{},"),
+        (1, "{},"),
+        (1, "{}"),
+    ]
+    for t in text:
+        out = random.choice(positions)
+        yield (out[0], out[1].format(t))
+
+
+def get_dual_values(*text: str):
+    positions = [
+        (2, "{}"),
+        (2, "{}."),
+        (2, " {} "),
+        (2, " {}"),
+        (2, ",{}"),
+        (2, ",{},"),
+        (2, "{},"),
     ]
 
+    for t in text:
+        out = random.choice(positions)
+        yield (out[0], out[1].format(t))
 
-def get_dual_values(text: str):
-    yield from [
-        (2, f"{text}"),
-        (2, f"{text}."),
-        (2, f" {text} "),
-        (2, f" {text}"),
-        (2, f",{text}"),
-        (2, f",{text},"),
-        (2, f"{text},"),
+
+def get_numeric_values(*text: str):
+    positions = [
+        (1, "1 {}"),
+        (1, "+1 {}"),
+        (-1, "-1 {}"),
+        (1, "1.0 {}"),
+        (1, "1.0 {}"),
+        (1.1, "1.1 {}"),
+        (100000, "100 000 {}"),
+        (24, "٢٤٫٠ {}"),
+        (100000, "١٠٠٬٠٠٠٫٠ {}"),
+        (1.1, "1.١ {}"),
+        (101.12, "101.١2 {}"),
+        (1564.00, "1564.00 {}"),
+        (1.1, "01.1 {}"),
+        (1.1, "١.١ {}"),
+        (1, "١.٠ {}"),
     ]
+    for t in text:
+        out = random.choice(positions)
+        yield (out[0], out[1].format(t))
 
 
-def get_numeric_values(text: str):
-    yield from [
-        (1, f"1 {text}"),
-        (1, f"+1 {text}"),
-        (-1, f"-1 {text}"),
-        (1, f"1.0 {text}"),
-        (1, f"1.0 {text}"),
-        (1.1, f"1.1 {text}"),
-        (100000, f"100 000 {text}"),
-        (24, f"٢٤٫٠ {text}"),
-        (100000, f"١٠٠٬٠٠٠٫٠ {text}"),
-        (1.1, f"1.١ {text}"),
-        (101.12, f"101.١2 {text}"),
-        (1564.00, f"1564.00 {text}"),
-        (1.1, f"01.1 {text}"),
-        (1.1, f"١.١ {text}"),
-        (1, f"١.٠ {text}"),
+def get_other_values(*text: str):
+    positions = [
+        (0.75, "{} الا ربع"),
+        (0.75, "{} إلا ربع"),
+        (0.25, "ربع {}"),
+        (0.5, "نص {}"),
+        (0.3333, "ثلث {}"),
     ]
-
-
-def get_other_values(text: str):
-    yield from [
-        (0.75, f"{text} الا ربع"),
-        (0.75, f"{text} إلا ربع"),
-        (0.25, f"ربع {text}"),
-        (0.5, f"نص {text}"),
-        (0.3333, f"ثلث {text}"),
-    ]
+    for t in text:
+        out = random.choice(positions)
+        yield (out[0], out[1].format(t))
 
 
 def assert_expression_output(output, expected, unit):
@@ -86,13 +100,9 @@ def assert_expression_output(output, expected, unit):
 @pytest.mark.parametrize(
     "expected,input",
     chain(
-        get_singular_values("ثانيه"),
-        get_singular_values("ثانية"),
-        get_dual_values("ثانيتان"),
-        get_dual_values("ثانيتين"),
-        get_numeric_values("ثانية"),
-        get_numeric_values("ثانيه"),
-        get_numeric_values("ثواني"),
+        get_singular_values("ثانيه", "ثانية"),
+        get_dual_values("ثانيتان", "ثانيتين"),
+        get_numeric_values("ثانية", "ثانيه", "ثواني"),
     ),
 )
 def test_seconds_expression(expected, input):
@@ -103,14 +113,9 @@ def test_seconds_expression(expected, input):
 @pytest.mark.parametrize(
     "expected,input",
     chain(
-        get_singular_values("دقيقة"),
-        get_singular_values("دقيقه"),
-        get_dual_values("دقيقتين"),
-        get_dual_values("دقيقتان"),
-        get_numeric_values("دقايق"),
-        get_numeric_values("دقائق"),
-        get_numeric_values("دقيقه"),
-        get_numeric_values("دقيقة"),
+        get_singular_values("دقيقة", "دقيقه"),
+        get_dual_values("دقيقتين", "دقيقتان"),
+        get_numeric_values("دقايق", "دقائق", "دقيقه", "دقيقة"),
     ),
 )
 def test_minutes_expression(expected, input):
@@ -121,13 +126,9 @@ def test_minutes_expression(expected, input):
 @pytest.mark.parametrize(
     "expected,input",
     chain(
-        get_singular_values("ساعه"),
-        get_singular_values("ساعة"),
-        get_dual_values("ساعتين"),
-        get_dual_values("ساعتان"),
-        get_numeric_values("ساعات"),
-        get_numeric_values("ساعة"),
-        get_numeric_values("ساعه"),
+        get_singular_values("ساعه", "ساعة"),
+        get_dual_values("ساعتين", "ساعتان"),
+        get_numeric_values("ساعات", "ساعه", "ساعة"),
     ),
 )
 def test_hours_expression(expected, input):
@@ -139,13 +140,8 @@ def test_hours_expression(expected, input):
     "expected,input",
     chain(
         get_singular_values("يوم"),
-        get_dual_values("يومين"),
-        get_dual_values("يومان"),
-        get_numeric_values("يوم"),
-        get_numeric_values("يوما"),
-        get_numeric_values("أيام"),
-        get_numeric_values("ايام"),
-        get_numeric_values("إيام"),
+        get_dual_values("يومين", "يومان"),
+        get_numeric_values("يوم", "يوما", "أيام", "ايام", "إيام"),
     ),
 )
 def test_days_expression(expected, input):
@@ -156,16 +152,9 @@ def test_days_expression(expected, input):
 @pytest.mark.parametrize(
     "expected,input",
     chain(
-        get_singular_values("أسبوع"),
-        get_singular_values("اسبوع"),
-        get_singular_values("إسبوع"),
-        get_dual_values("اسبوعان"),
-        get_dual_values("أسبوعين"),
-        get_numeric_values("اسبوع"),
-        get_numeric_values("أسبوع"),
-        get_numeric_values("إسبوعا"),
-        get_numeric_values("اسابيع"),
-        get_numeric_values("أسابيع"),
+        get_singular_values("أسبوع", "اسبوع", "إسبوع"),
+        get_dual_values("اسبوعان", "أسبوعين"),
+        get_numeric_values("اسبوع", "أسبوع,", "إسبوعا", "اسابيع", "أسابيع"),
     ),
 )
 def test_weeks_expression(expected, input):
@@ -177,13 +166,8 @@ def test_weeks_expression(expected, input):
     "expected,input",
     chain(
         get_singular_values("شهر"),
-        get_dual_values("شهران"),
-        get_dual_values("شهرين"),
-        get_numeric_values("اشهر"),
-        get_numeric_values("أشهر"),
-        get_numeric_values("شهور"),
-        get_numeric_values("شهرا"),
-        get_numeric_values("شهر"),
+        get_dual_values("شهران", "شهرين"),
+        get_numeric_values("اشهر", "أشهر", "شهور", "شهرا", "شهر"),
     ),
 )
 def test_months_expression(expected, input):
@@ -194,20 +178,9 @@ def test_months_expression(expected, input):
 @pytest.mark.parametrize(
     "expected,input",
     chain(
-        get_singular_values("سنة"),
-        get_singular_values("عام"),
-        get_singular_values("سنه"),
-        get_dual_values("عامين"),
-        get_dual_values("عامان"),
-        get_dual_values("سنتان"),
-        get_dual_values("سنتين"),
-        get_numeric_values("أعوام"),
-        get_numeric_values("اعوام"),
-        get_numeric_values("سنين"),
-        get_numeric_values("سنوات"),
-        get_numeric_values("سنة"),
-        get_numeric_values("عام"),
-        get_numeric_values("سنه"),
+        get_singular_values("سنة", "عام", "سنه"),
+        get_dual_values("عامين", "عامان", "سنتان", "سنتين"),
+        get_numeric_values("أعوام", "اعوام", "سنين", "سنوات", "سنة", "عام", "سنه"),
     ),
 )
 def test_years_expression(expected, input):

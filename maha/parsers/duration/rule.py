@@ -15,7 +15,7 @@ __all__ = [
 
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
 
-from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WORD_SEPARATOR
+from ..constants import HALF, NUMERAL_WORD_SEPARATOR, QUARTER, THIRD, THREE_QUARTERS
 from ..interfaces import DurationUnit, ExpressionGroup
 from .constants import *
 from .interface import DurationExpression
@@ -67,11 +67,12 @@ def _get_pattern(unit: DurationUnit):
 def _get_combined_expression(*unit: DurationUnit) -> DurationExpression:
     patterns = []
     for i, u in enumerate(unit):
-        pattern = f"(?:{WORD_SEPARATOR}{_get_pattern(u)})"
+        pattern = _get_pattern(u)
         if i == 0:
-            patterns.append(pattern + "\\b")
+            pattern = f"(?:^|\\W|\\b){pattern}"
         else:
-            patterns.append(f"{pattern}?\\b")
+            pattern = f"(?:{NUMERAL_WORD_SEPARATOR}{pattern})?"
+        patterns.append(pattern + r"\b")
     return DurationExpression(f"".join(patterns))
 
 

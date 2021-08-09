@@ -28,15 +28,16 @@ class NumeralExpression(Expression):
                 output += get_matched_numeral(unit)
                 continue
 
-            if not unit:
-                output += get_value(value)
-                continue
-
             # if value is number, then assign it to the value
             number = convert_to_number_if_possible(value)
             if not isinstance(number, str):
                 value = number
             else:
                 value = get_value(value)
-            output += value * get_matched_numeral(unit)
+
+            if not unit:
+                output += value
+            else:
+                output += value * get_matched_numeral(unit)
+
         return ExpressionResult(start, end, output, self)

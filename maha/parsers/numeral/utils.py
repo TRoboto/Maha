@@ -5,6 +5,7 @@ import re
 import maha.parsers.numeral.rule as rule
 
 from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
+from ..helper import convert_to_number_if_possible
 from .constants import *
 
 NUMBER_MAP = {
@@ -32,9 +33,10 @@ NUMBER_MAP = {
     NAME_OF_SEVENTEEN: 17,
     NAME_OF_EIGHTEEN: 18,
     NAME_OF_NINETEEN: 19,
+    NAME_OF_ZERO: 0,
     NAME_OF_ONE: 1,
     NAME_OF_TWO: 2,
-    # This is a special case of the pattern twenty.
+    # This is a special case of the pattern twenty and eighty.
     # TODO: Improve this.
     NAME_OF_TWENTY: 2,
     NAME_OF_THREE: 3,
@@ -52,20 +54,36 @@ NUMBER_MAP = {
 }
 
 
-def get_matched_numeral(numeral):
+def get_matched_numeral(numeral) -> int:
     for key, value in NUMBER_MAP.items():
         if re.match(key, numeral):
             return value
 
 
 def get_value(text: str) -> float:
+    fasila = re.search(rule.FASILA, text)
+    if fasila:
+        before, after = text.split(fasila.group(0))
+        before = convert_to_number_if_possible(before)
+        after = convert_to_number_if_possible(after)
+        if isinstance(before, str):
+            before = get_matched_numeral(before)
+        if isinstance(after, str):
+            after = get_matched_numeral(after)
+        output = float(f"{before}.{after}")
+        return output
+
     waw = re.search(WAW_CONNECTOR, text)
     if waw:
         ones, tens = text.split(waw.group(0))
         output = get_matched_numeral(ones) + 10 * get_matched_numeral(tens)
         return output
+
     if re.match(rule._PATTERN_NUMERAL_PERFECT_TENS, text):
         return 10 * get_matched_numeral(text)
+
+    if re.match(rule._PATTERN_NUMERAL_PERFECT_HUNDREDS, text):
+        return 100 * get_matched_numeral(text)
 
     output = get_matched_numeral(text)
     return output

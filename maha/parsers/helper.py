@@ -1,6 +1,9 @@
 """
 Helper functions.
 """
+
+__all__ = ["get_non_capturing_group", "convert_to_number_if_possible"]
+
 from typing import Union
 
 from maha.constants import (
@@ -10,6 +13,7 @@ from maha.constants import (
     COMMA,
     DOT,
     EMPTY,
+    PERCENT_SIGN,
     SPACE,
 )
 
@@ -40,10 +44,15 @@ def convert_to_number_if_possible(value: str) -> Union[str, int, float]:
     # Remove arabic thousands separator and commas if any.
     for separator in (ARABIC_THOUSANDS_SEPARATOR, COMMA, ARABIC_COMMA, SPACE):
         modified_value = modified_value.replace(separator, EMPTY)
+
+    multiplier = 1
+    if PERCENT_SIGN in modified_value:
+        modified_value = modified_value.replace(PERCENT_SIGN, EMPTY)
+        multiplier = 0.01
     try:
-        return int(modified_value)
+        return int(modified_value) * multiplier
     except ValueError:
         try:
-            return float(modified_value)
+            return round(float(modified_value) * multiplier, 10)
         except ValueError:
             return value
