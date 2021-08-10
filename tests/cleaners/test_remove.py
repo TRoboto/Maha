@@ -462,6 +462,7 @@ def test_remove_with_english_hashtag(input_text: str, expected: str):
         ("test at end #34hashtag-end123", "test at end #34hashtag-end123"),
         ("test at endline #hashtag\ntest", "test at endline #hashtag\ntest"),
         ("#123", "#123"),
+        ("#لُقِّب", ""),
     ],
 )
 def test_remove_with_arabic_hashtag(input_text: str, expected: str):
@@ -555,6 +556,7 @@ def test_remove_with_english_mentions(input_text: str, expected: str):
         ("test at endline @mention\ntest", "test at endline @mention\ntest"),
         ("@123", "@123"),
         ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+        ("@لُقِّب", ""),
     ],
 )
 def test_remove_with_arabic_mentions(input_text: str, expected: str):
