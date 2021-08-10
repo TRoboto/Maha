@@ -11,7 +11,7 @@ from .arabic import (
 from .english import AND_SIGN, AT_SIGN, COMMA, ENGLISH_NUMBERS, HASHTAG, UNDERSCORE
 from .general import PUNCTUATIONS, SPACE
 
-PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|{})(#[\wأ-ي-]+)".format(
+PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|{})(#[\w-]+)\b".format(
     "|".join(
         [
             re.escape(pun)
@@ -20,19 +20,13 @@ PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|{})(#[\wأ-ي-]+)".format(
         ]
     ),
 )
-""" Pattern that matches Arabic and English hashtags """
+""" Pattern that matches hashtags """
 
 
-PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n|{})(@[\wأ-ي-]+)".format(
-    "|".join(
-        [
-            re.escape(pun)
-            for pun in PUNCTUATIONS
-            if pun not in [HASHTAG, AND_SIGN, UNDERSCORE]
-        ]
-    )
+PATTERN_MENTIONS: str = PATTERN_HASHTAGS.replace(AT_SIGN, HASHTAG).replace(
+    HASHTAG, AT_SIGN
 )
-""" Pattern that matches Arabic and English mentions """
+""" Pattern that matches mentions """
 
 # Adopted from https://gist.github.com/gruber/8891611
 PATTERN_LINKS: str = r"""
