@@ -400,12 +400,12 @@ def test_remove_with_hashtags_with_arabic(simple_text_input: str):
         ("&#مسابقة_القرآن_الكريم", "&#مسابقة_القرآن_الكريم"),
         ("11111#رسول_الله", "11111#رسول_الله"),
         (".#Good", "."),
+        ("@#test", "@#test"),
         ("#لُقِّب", ""),
         ("AB#CD", "AB#CD"),
-        ("\\#fffff", "\\#fffff"),
     ],
 )
-def test_remove_with_hashtag(input_text: str, expected: str):
+def test_remove_with_hashtags(input_text: str, expected: str):
     processed_text = remove(text=input_text, hashtags=True)
     assert processed_text == expected
 
@@ -490,6 +490,14 @@ def test_remove_with_arabic_hashtag(input_text: str, expected: str):
         ("@123", ""),
         ("@mention @mention more than @mention one @mention", "more than one"),
         ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+        # Edge cases
+        ("_@جمعة_مباركة", "_@جمعة_مباركة"),
+        ("&@مسابقة_القرآن_الكريم", "&@مسابقة_القرآن_الكريم"),
+        ("11111@رسول_الله", "11111@رسول_الله"),
+        (".@Good", "."),
+        ("@لُقِّب", ""),
+        ("AB@CD", "AB@CD"),
+        ("#@test", "#@test"),
     ],
 )
 def test_remove_with_mentions(input_text: str, expected: str):

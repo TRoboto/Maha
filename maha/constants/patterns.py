@@ -2,70 +2,37 @@
 
 import re
 
-from maha.constants.english.compound import ENGLISH_PUNCTUATIONS
-from maha.constants.english.simple import (
-    AND_SIGN,
-    ASTERISK,
-    AT_SIGN,
-    BACKSLASH,
-    DOLLAR_SIGN,
-    DOT,
-    EXPONENT_SIGN,
-    LEFT_BRACKET,
-    LEFT_PARENTHESIS,
-    LEFTCURLY_BRACKET,
-    MINUS_SIGN,
-    PLUS_SIGN,
-    QUESTION_MARK,
-    QUOTATION_MARK,
-    RIGHT_BRACKET,
-    RIGHT_PARENTHESIS,
-    RIGHTCURLY_BRACKET,
-    SLASH,
-    UNDERSCORE,
-    VERTICAL_BAR,
-)
-
 from .arabic import (
     ARABIC_COMMA,
     ARABIC_DECIMAL_SEPARATOR,
     ARABIC_NUMBERS,
     ARABIC_THOUSANDS_SEPARATOR,
 )
-from .english import COMMA, ENGLISH_NUMBERS
+from .english import AND_SIGN, AT_SIGN, COMMA, ENGLISH_NUMBERS, HASHTAG, UNDERSCORE
 from .general import PUNCTUATIONS, SPACE
 
-PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|[{0}])(#[\wأ-ي-]+)".format(
-    "".join(
+PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|{})(#[\wأ-ي-]+)".format(
+    "|".join(
         [
-            pun
+            re.escape(pun)
             for pun in PUNCTUATIONS
-            + [
-                re.escape(
-                    str([LEFT_BRACKET, RIGHT_BRACKET, QUOTATION_MARK, MINUS_SIGN])
-                )
-            ]
-            if pun
-            not in [
-                AT_SIGN,
-                AND_SIGN,
-                UNDERSCORE,
-                QUOTATION_MARK,
-                BACKSLASH,
-                LEFT_BRACKET,
-                RIGHT_BRACKET,
-                MINUS_SIGN,
-            ]
+            if pun not in [AT_SIGN, AND_SIGN, UNDERSCORE]
         ]
     ),
 )
-
 """ Pattern that matches Arabic and English hashtags """
 
 
-PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n)(@[\wأ-ي-]+)"
+PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n|{})(@[\wأ-ي-]+)".format(
+    "|".join(
+        [
+            re.escape(pun)
+            for pun in PUNCTUATIONS
+            if pun not in [HASHTAG, AND_SIGN, UNDERSCORE]
+        ]
+    )
+)
 """ Pattern that matches Arabic and English mentions """
-# Old: (?:\s|^|\*|\n)(@[\wأ-ي][-أ-يa-zA-Z0-9_][-\wأ-ي_]*)
 
 # Adopted from https://gist.github.com/gruber/8891611
 PATTERN_LINKS: str = r"""
