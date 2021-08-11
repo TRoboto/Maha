@@ -1,11 +1,11 @@
 """ Module contains functions that help organize common regex patterns """
 
 
-def non_capturing_group(*words: str):
+def non_capturing_group(*patterns: str):
     """
-    Returns a non capturing groups of words without word boundaries.
+    Returns a non capturing groups of patterns.
     """
-    return "(?:{})".format("|".join(words))
+    return "(?:{})".format("|".join(str(p) for p in patterns))
 
 
 def named_group(name: str, pattern: str):
