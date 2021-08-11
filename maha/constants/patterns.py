@@ -23,9 +23,7 @@ PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|{})(#[\w-]+)\b".format(
 """ Pattern that matches hashtags """
 
 
-PATTERN_MENTIONS: str = PATTERN_HASHTAGS.replace(AT_SIGN, HASHTAG).replace(
-    HASHTAG, AT_SIGN
-)
+PATTERN_MENTIONS: str = PATTERN_HASHTAGS.replace(HASHTAG, AT_SIGN)
 """ Pattern that matches mentions """
 
 # Adopted from https://gist.github.com/gruber/8891611

@@ -17,7 +17,5 @@ PATTERN_ENGLISH_HASHTAGS: str = r"(?<=\s|^|\n|{})(#(?:[{}_]-?)+)\b".format(
     "".join(ENGLISH_LETTERS + ENGLISH_NUMBERS),
 )
 """ Pattern that matches English hashtags """
-PATTERN_ENGLISH_MENTIONS: str = PATTERN_ENGLISH_HASHTAGS.replace(
-    AT_SIGN, HASHTAG
-).replace(HASHTAG, AT_SIGN)
+PATTERN_ENGLISH_MENTIONS: str = PATTERN_ENGLISH_HASHTAGS.replace(HASHTAG, AT_SIGN)
 """ Pattern that matches English mentions """

@@ -20,7 +20,5 @@ PATTERN_ARABIC_HASHTAGS: str = r"(?<=\s|^|\n|{})(#(?:[{}_][-{}]?)+)\b".format(
 )
 """ Pattern that matches Arabic hashtags """
 
-PATTERN_ARABIC_MENTIONS = PATTERN_ARABIC_HASHTAGS.replace(AT_SIGN, HASHTAG).replace(
-    HASHTAG, AT_SIGN
-)
+PATTERN_ARABIC_MENTIONS = PATTERN_ARABIC_HASHTAGS.replace(HASHTAG, AT_SIGN)
 """ Pattern that matches Arabic mentions """
