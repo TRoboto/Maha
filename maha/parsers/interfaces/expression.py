@@ -7,8 +7,7 @@ import regex as re
 from regex.regex import Match
 
 import maha.parsers.interfaces as interfaces
-
-from ..helper import convert_to_number_if_possible
+from maha.parsers.utils import convert_to_number_if_possible
 
 
 @dataclass

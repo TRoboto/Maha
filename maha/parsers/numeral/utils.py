@@ -5,7 +5,7 @@ import maha.parsers.numeral.rule as rule
 from maha.parsers.interfaces.expression_group import ExpressionGroup
 
 from ..constants import WAW_CONNECTOR
-from ..helper import convert_to_number_if_possible
+from ..utils import convert_to_number_if_possible
 from .expressions import *
 
 

@@ -2,57 +2,56 @@
 Helper functions.
 """
 
-__all__ = ["get_non_capturing_group", "convert_to_number_if_possible"]
-
-from typing import Union
-
-from maha.constants import (
-    ARABIC_COMMA,
-    ARABIC_DECIMAL_SEPARATOR,
-    ARABIC_THOUSANDS_SEPARATOR,
-    COMMA,
-    DOT,
-    EMPTY,
-    PERCENT_SIGN,
-    SPACE,
-)
+__all__ = [
+    "get_fractions_of_unit_pattern",
+    "get_value_group",
+    "get_unit_group",
+]
 
 
-def get_non_capturing_group(*words: str):
+import maha.rexy as rx
+from maha.constants import PATTERN_SPACE
+
+from .constants import HALF, QUARTER, THIRD, THREE_QUARTERS
+
+
+def get_value_group(pattern: str):
+    """Returns a group named "value" of the input ``pattern``"""
+    return rx.get_named_group("value", pattern)
+
+
+def get_unit_group(pattern: str):
+    """Returns a group named "unit" of the input ``pattern``"""
+    return rx.get_named_group("unit", pattern)
+
+
+def get_fractions_of_unit_pattern(unit: str) -> str:
     """
-    Returns a non capturing groups of words without word boundaries.
-    """
-    return "(?:{})".format("|".join(words))
-
-
-def convert_to_number_if_possible(value: str) -> Union[str, int, float]:
-    """
-    Converts the given value to number if possible.
+    Returns the fractions of a unit pattern.
 
     Parameters
     ----------
-    value: str
-        The value to convert.
+    unit: str
+        The unit pattern.
 
     Returns
     -------
-    Union[str, int, float]
-        The converted value.
+    str
+        Pattern for the fractions of the unit.
     """
-    # Replace arabic decimals with dot.
-    modified_value = value.replace(ARABIC_DECIMAL_SEPARATOR, DOT)
-    # Remove arabic thousands separator and commas if any.
-    for separator in (ARABIC_THOUSANDS_SEPARATOR, COMMA, ARABIC_COMMA, SPACE):
-        modified_value = modified_value.replace(separator, EMPTY)
 
-    multiplier = 1
-    if PERCENT_SIGN in modified_value:
-        modified_value = modified_value.replace(PERCENT_SIGN, EMPTY)
-        multiplier = 0.01
-    try:
-        return int(modified_value) * multiplier
-    except ValueError:
-        try:
-            return round(float(modified_value) * multiplier, 10)
-        except ValueError:
-            return value
+    return "|".join(
+        [
+            "{unit}{space}{three_quarter}",
+            "{half}{space}{unit}",
+            "{third}{space}{unit}",
+            "{quarter}{space}{unit}",
+        ]
+    ).format(
+        half=get_value_group(str(HALF)),
+        third=get_value_group(str(THIRD)),
+        quarter=get_value_group(str(QUARTER)),
+        three_quarter=get_value_group(str(THREE_QUARTERS)),
+        space=PATTERN_SPACE,
+        unit=get_unit_group(unit),
+    )

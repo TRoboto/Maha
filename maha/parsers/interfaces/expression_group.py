@@ -1,10 +1,9 @@
 __all__ = ["ExpressionGroup"]
 
-from typing import Any, Iterable, List, Union
+from typing import Iterable, List, Union
 
 import maha.parsers.interfaces as interfaces
-
-from ..helper import get_non_capturing_group
+from maha.rexy import get_non_capturing_group
 
 
 class ExpressionGroup:

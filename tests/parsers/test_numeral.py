@@ -4,8 +4,8 @@ from typing import List
 
 import pytest
 
-from maha.parsers.functions.parse import parse_expression
-from maha.parsers.numeral.rule import *
+from maha.parsers.functions import parse_expression
+from maha.parsers.numeral import *
 
 random.seed(0)
 

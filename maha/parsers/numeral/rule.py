@@ -14,14 +14,13 @@ __all__ = [
 import itertools as it
 
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
+from maha.rexy import get_non_capturing_group
 
 from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
+from ..helper import *
 from ..interfaces import ExpressionGroup, NumeralType
 from .expressions import *
 from .interface import NumeralExpression
-
-_get_unit_group = lambda v: f"(?P<unit>{v})"
-_get_value_group = lambda v: f"(?P<value>{v})"
 
 
 def _get_pattern(numeral: NumeralType):
@@ -35,18 +34,11 @@ def _get_pattern(numeral: NumeralType):
         "{integer}{space}{unit_single_plural}",
         "{tens}{space}{unit_single_plural}",
         "{ones}{space}{unit_single_plural}",
-        "{unit_dual}{space}{three_quarter}",
-        "{half}{space}{unit_dual}",
-        "{third}{space}{unit_dual}",
-        "{quarter}{space}{unit_dual}",
-        "{unit_single}{space}{three_quarter}",
-        "{half}{space}{unit_single}",
-        "{third}{space}{unit_single}",
-        "{quarter}{space}{unit_single}",
+        get_fractions_of_unit_pattern(single),
+        get_fractions_of_unit_pattern(dual),
         "{val}{unit_dual}",
         "{val}{unit_single}",
     ]
-
     # # Account for no spaces in the hundreds pattern (ثلاثمائة)
     if numeral == NumeralType.HUNDREDS:
         _pattern.insert(
@@ -56,19 +48,15 @@ def _get_pattern(numeral: NumeralType):
     pattern = (
         "(?:"
         + "|".join(_pattern).format(
-            decimal=_get_value_group(str(EXPRESSION_DECIMALS)),
-            integer=_get_value_group(PATTERN_INTEGER),
+            decimal=get_value_group(str(EXPRESSION_DECIMALS)),
+            integer=get_value_group(PATTERN_INTEGER),
             space=PATTERN_SPACE,
-            half=_get_value_group(str(HALF)),
-            third=_get_value_group(str(THIRD)),
-            quarter=_get_value_group(str(QUARTER)),
-            three_quarter=_get_value_group(str(THREE_QUARTERS)),
-            unit_single_plural=_get_unit_group("|".join([single, plural])),
-            unit_single=_get_unit_group(single),
-            unit_dual=_get_unit_group(dual),
-            val=_get_value_group(""),
-            tens=_get_value_group(EXPRESSION_NUMERAL_TENS_ONLY.join()),
-            ones=_get_value_group(EXPRESSION_NUMERAL_ONES_ONLY.join()),
+            unit_single_plural=get_unit_group("|".join([single, plural])),
+            unit_single=get_unit_group(single),
+            unit_dual=get_unit_group(dual),
+            val=get_value_group(""),
+            tens=get_value_group(EXPRESSION_NUMERAL_TENS_ONLY.join()),
+            ones=get_value_group(EXPRESSION_NUMERAL_ONES_ONLY.join()),
         )
         + ")"
     )
@@ -76,7 +64,7 @@ def _get_pattern(numeral: NumeralType):
 
 
 def get_group_value_without_unit(expression: str):
-    return _get_value_group(expression) + _get_unit_group("")
+    return get_value_group(expression) + get_unit_group("")
 
 
 def get_pattern(numeral: NumeralType):
@@ -108,7 +96,7 @@ def get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
 
 
 def get_simple_expression(*words: str):
-    return r"\b" + _get_value_group("|".join(words)) + r"\b"
+    return r"\b" + get_value_group("|".join(words)) + r"\b"
 
 
 def get_combinations(*patterns: str):
