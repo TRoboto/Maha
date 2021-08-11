@@ -1,20 +1,30 @@
 """ Regular expersion patterns """
 
+import re
+
 from .arabic import (
     ARABIC_COMMA,
     ARABIC_DECIMAL_SEPARATOR,
     ARABIC_NUMBERS,
     ARABIC_THOUSANDS_SEPARATOR,
 )
-from .english import COMMA, ENGLISH_NUMBERS
-from .general import SPACE
+from .english import AND_SIGN, AT_SIGN, COMMA, ENGLISH_NUMBERS, HASHTAG, UNDERSCORE
+from .general import PUNCTUATIONS, SPACE
 
-PATTERN_HASHTAGS: str = r"(?<=\s|^|\*|\n)(#[\wأ-ي-]+)"
-""" Pattern that matches Arabic and English hashtags """
+PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|{})(#[\w-]+)\b".format(
+    "|".join(
+        [
+            re.escape(pun)
+            for pun in PUNCTUATIONS
+            if pun not in [AT_SIGN, AND_SIGN, UNDERSCORE]
+        ]
+    ),
+)
+""" Pattern that matches hashtags """
 
-PATTERN_MENTIONS: str = r"(?<=\s|^|\*|\n)(@[\wأ-ي-]+)"
-""" Pattern that matches Arabic and English mentions """
-# Old: (?:\s|^|\*|\n)(@[\wأ-ي][-أ-يa-zA-Z0-9_][-\wأ-ي_]*)
+
+PATTERN_MENTIONS: str = PATTERN_HASHTAGS.replace(HASHTAG, AT_SIGN)
+""" Pattern that matches mentions """
 
 # Adopted from https://gist.github.com/gruber/8891611
 PATTERN_LINKS: str = r"""

@@ -9,6 +9,7 @@ from maha.cleaners.functions import (
     remove_english,
     remove_extra_spaces,
     remove_harakat,
+    remove_hash_keep_tag,
     remove_hashtags,
     remove_links,
     remove_mentions,
@@ -330,6 +331,33 @@ def test_reduce_repeated_substring(
     assert processed_text == expected
 
 
+@pytest.mark.parametrize(
+    "input, expected",
+    [
+        ("ولقد حقق #الأردن أول ميدالية ذهبية", "ولقد حقق الأردن أول ميدالية ذهبية"),
+        ("#الورد هو أجمل شئ في الحياة", "الورد هو أجمل شئ في الحياة"),
+        ("يا جماعة بدنا #طبيب_doctor", "يا جماعة بدنا طبيب_doctor"),
+        ("أكثر من #50 دورة من Google", "أكثر من 50 دورة من Google"),
+        ("يجب علينا إدارة # الوقت بشكل جيد", "يجب علينا إدارة # الوقت بشكل جيد"),
+        (".#كرة القدم", ".كرة القدم"),
+        ("@#برمجة", "@#برمجة"),
+        ("_#جمعة_مباركة", "_#جمعة_مباركة"),
+        ("&#مسابقة_القرآن_الكريم", "&#مسابقة_القرآن_الكريم"),
+        ("#11111رسول_الله", "11111رسول_الله"),
+        ("#مسألة_رقم_1111", "مسألة_رقم_1111"),
+        ("#Hello", "Hello"),
+        ("#مرحبا", "مرحبا"),
+        ("#لُقِّب", "لُقِّب"),
+        ("&#رمضان", "&#رمضان"),
+        ("_#العيد", "_#العيد"),
+        ("^#التعليم_للجميع", "^التعليم_للجميع"),
+        (":#الرياضة", ":الرياضة"),
+    ],
+)
+def test_remove_hash_keep_tag(input: str, expected: str):
+    assert remove_hash_keep_tag(input) == expected
+
+
 def test_remove_with_ligtures():
     text = "ﷲ اكبر"
     processed_text = remove(text=text, arabic_ligatures=True)
@@ -367,9 +395,17 @@ def test_remove_with_hashtags_with_arabic(simple_text_input: str):
         ("test at end #34hashtag-end123", "test at end"),
         ("test at endline #hashtag\ntest", "test at endline \ntest"),
         ("#123", ""),
+        # Edge cases
+        ("_#جمعة_مباركة", "_#جمعة_مباركة"),
+        ("&#مسابقة_القرآن_الكريم", "&#مسابقة_القرآن_الكريم"),
+        ("11111#رسول_الله", "11111#رسول_الله"),
+        (".#Good", "."),
+        ("@#test", "@#test"),
+        ("#لُقِّب", ""),
+        ("AB#CD", "AB#CD"),
     ],
 )
-def test_remove_with_hashtag(input_text: str, expected: str):
+def test_remove_with_hashtags(input_text: str, expected: str):
     processed_text = remove(text=input_text, hashtags=True)
     assert processed_text == expected
 
@@ -426,6 +462,7 @@ def test_remove_with_english_hashtag(input_text: str, expected: str):
         ("test at end #34hashtag-end123", "test at end #34hashtag-end123"),
         ("test at endline #hashtag\ntest", "test at endline #hashtag\ntest"),
         ("#123", "#123"),
+        ("#لُقِّب", ""),
     ],
 )
 def test_remove_with_arabic_hashtag(input_text: str, expected: str):
@@ -454,6 +491,14 @@ def test_remove_with_arabic_hashtag(input_text: str, expected: str):
         ("@123", ""),
         ("@mention @mention more than @mention one @mention", "more than one"),
         ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+        # Edge cases
+        ("_@جمعة_مباركة", "_@جمعة_مباركة"),
+        ("&@مسابقة_القرآن_الكريم", "&@مسابقة_القرآن_الكريم"),
+        ("11111@رسول_الله", "11111@رسول_الله"),
+        (".@Good", "."),
+        ("@لُقِّب", ""),
+        ("AB@CD", "AB@CD"),
+        ("#@test", "#@test"),
     ],
 )
 def test_remove_with_mentions(input_text: str, expected: str):
@@ -511,6 +556,7 @@ def test_remove_with_english_mentions(input_text: str, expected: str):
         ("test at endline @mention\ntest", "test at endline @mention\ntest"),
         ("@123", "@123"),
         ("@منشن @منشن اكثر من  @منشن واحد @منشن", "اكثر من واحد"),
+        ("@لُقِّب", ""),
     ],
 )
 def test_remove_with_arabic_mentions(input_text: str, expected: str):
