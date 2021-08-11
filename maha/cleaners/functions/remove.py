@@ -331,7 +331,7 @@ def remove_hash_keep_tag(text: str):
 
         >>> text = "We love #Jordan very much"
         >>> remove_hash_keep_tag(text)
-        "We love Jordan very much"
+        'We love Jordan very much'
     """
 
     return functions.replace_pattern(
