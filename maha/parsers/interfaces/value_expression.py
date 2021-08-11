@@ -11,9 +11,7 @@ from .expression_result import ExpressionResult
 
 @dataclass
 class ValueExpression(Expression):
-    """
-    Expression that returns a predefined value if the pattern matches.
-    """
+    """Expression that returns a predefined value if the pattern matches."""
 
     __slots__ = ["value"]
     value: Any
