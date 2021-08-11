@@ -8,9 +8,10 @@ from regex.regex import Match
 
 import maha.parsers.duration.utils as utils
 from maha.constants import EMPTY
+from maha.parsers.numeral.interface import NumeralExpression
 
-from ..helper import convert_to_number_if_possible
-from ..interfaces import DurationUnit, Expression, ExpressionResult, Unit
+from ..interfaces import DurationUnit, ExpressionResult, Unit
+from ..utils import convert_to_number_if_possible
 
 
 @dataclass
@@ -55,13 +56,21 @@ class DurationResult(ExpressionResult):
     value: DurationValue
 
 
-class DurationExpression(Expression):
+class DurationExpression(NumeralExpression):
     def parse(self, match: Match, text: str) -> DurationResult:
         start, end = match.span()
         groups = match.capturesdict()
 
         values = groups.get("value")
         units = groups.get("unit")
+
+        # If units are more than values, numeral is matched.
+        if len(values) != len(units):
+            number = super().parse(match, text).value
+            unit = utils.get_unit(units[-1])
+            return DurationResult(
+                start, end, DurationValue([ValueUnit(number, unit)]), self
+            )
 
         output_values = []
         for value, unit in zip(values, units):

@@ -34,3 +34,5 @@ TWO_SUFFIX = Expression(non_capturing_group("ين", "ان"))
 
 SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
 """ Pattern that matches the sum-suffix of words in Arabic """
+
+EXPRESSION_START = Expression(non_capturing_group("^", r"\W", r"\b"))

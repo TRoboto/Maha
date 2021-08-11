@@ -13,51 +13,42 @@ __all__ = [
     "EXPRESSION_DURATION",
 ]
 
-from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
+from maha.constants import PATTERN_SPACE
+from maha.parsers.helper import (
+    get_fractions_of_unit_pattern,
+    get_unit_group,
+    get_value_group,
+)
+from maha.parsers.numeral import EXPRESSION_NUMERAL
 
-from ..constants import HALF, NUMERAL_WORD_SEPARATOR, QUARTER, THIRD, THREE_QUARTERS
+from ..constants import EXPRESSION_START, NUMERAL_WORD_SEPARATOR
 from ..interfaces import DurationUnit, ExpressionGroup
 from .constants import *
 from .interface import DurationExpression
 
 
 def _get_pattern(unit: DurationUnit):
-    single = globals()[f"NAME_OF_{unit.name[:-1]}"]
-    dual = globals()[f"NAME_OF_TWO_{unit.name}"]
-    plural = globals()[f"NAME_OF_{unit.name}"]
-
-    _get_value_group = lambda v: f"(?P<value>{v})"
-    _get_unit_group = lambda v: f"(?P<unit>{v})"
+    single = str(globals()[f"EXPRESSION_OF_{unit.name[:-1]}"])
+    dual = str(globals()[f"EXPRESSION_OF_TWO_{unit.name}"])
+    plural = str(globals()[f"EXPRESSION_OF_{unit.name}"])
 
     pattern = (
         "(?:"
         + "|".join(
             [
-                "{decimal}{space}{unit_single_plural}",
-                "{integer}{space}{unit_single_plural}",
-                "{unit_dual}{space}{three_quarter}",
-                "{half}{space}{unit_dual}",
-                "{third}{space}{unit_dual}",
-                "{quarter}{space}{unit_dual}",
-                "{unit_single}{space}{three_quarter}",
-                "{half}{space}{unit_single}",
-                "{third}{space}{unit_single}",
-                "{quarter}{space}{unit_single}",
+                "{numeral}{space}{unit_single_plural}",
+                get_fractions_of_unit_pattern(single),
+                get_fractions_of_unit_pattern(dual),
                 "{val}{unit_dual}",
                 "{val}{unit_single}",
             ]
         ).format(
-            decimal=_get_value_group(PATTERN_DECIMAL),
-            integer=_get_value_group(PATTERN_INTEGER),
+            numeral=EXPRESSION_NUMERAL.join(),
             space=PATTERN_SPACE,
-            half=_get_value_group(HALF),
-            third=_get_value_group(THIRD),
-            quarter=_get_value_group(QUARTER),
-            three_quarter=_get_value_group(THREE_QUARTERS),
-            unit_single_plural=_get_unit_group("|".join([single, plural])),
-            unit_single=_get_unit_group(single),
-            unit_dual=_get_unit_group(dual),
-            val=_get_value_group(""),
+            unit_single_plural=get_unit_group("|".join([single, plural])),
+            unit_single=get_unit_group(single),
+            unit_dual=get_unit_group(dual),
+            val=get_value_group(""),
         )
         + ")"
     )
@@ -69,9 +60,9 @@ def _get_combined_expression(*unit: DurationUnit) -> DurationExpression:
     for i, u in enumerate(unit):
         pattern = _get_pattern(u)
         if i == 0:
-            pattern = f"(?:^|\\W|\\b){pattern}"
+            pattern = EXPRESSION_START + pattern
         else:
-            pattern = f"(?:{NUMERAL_WORD_SEPARATOR}{pattern})?"
+            pattern = f"{non_capturing_group(NUMERAL_WORD_SEPARATOR + pattern)}?"
         patterns.append(pattern + r"\b")
     return DurationExpression(f"".join(patterns))
 

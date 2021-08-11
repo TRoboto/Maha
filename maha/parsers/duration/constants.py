@@ -1,53 +1,87 @@
+from maha.parsers.interfaces import Expression
+from maha.rexy import non_capturing_group
+
 from ..constants import ALL_ALEF, TWO_SUFFIX
-from ..helper import get_non_capturing_group
 
-NAME_OF_SECOND = get_non_capturing_group("ثاني[ةه]", "لح[زضظ]")
-NAME_OF_TWO_SECONDS = get_non_capturing_group(
-    "ثانيت" + TWO_SUFFIX, "لح[زضظ]ت" + TWO_SUFFIX
+EXPRESSION_OF_SECOND = Expression(non_capturing_group("ثاني[ةه]", "لح[زضظ]"))
+EXPRESSION_OF_TWO_SECONDS = Expression(
+    non_capturing_group("ثانيت" + TWO_SUFFIX, "لح[زضظ]ت" + TWO_SUFFIX)
 )
-NAME_OF_SECONDS = get_non_capturing_group("ثواني", "لح[زضظ]ات")
-NAME_OF_MINUTE = "دقيق[ةه]"
-NAME_OF_TWO_MINUTES = "دقيقت" + TWO_SUFFIX
-NAME_OF_MINUTES = "دقا[يئ]ق"
-NAME_OF_HOUR = "ساع[ةه]"
-NAME_OF_TWO_HOURS = "ساعت" + TWO_SUFFIX
-NAME_OF_HOURS = "ساعات"
-NAME_OF_DAY = "يوما?"
-NAME_OF_TWO_DAYS = NAME_OF_DAY + TWO_SUFFIX
-NAME_OF_DAYS = "[{}]يام".format(ALL_ALEF)
-NAME_OF_WEEK = "[{}]سبوعا?".format(ALL_ALEF)
-NAME_OF_TWO_WEEKS = NAME_OF_WEEK + TWO_SUFFIX
-NAME_OF_WEEKS = "[{}]سابيعا?".format(ALL_ALEF)
-NAME_OF_MONTH = "شهرا?"
-NAME_OF_TWO_MONTHS = NAME_OF_MONTH + TWO_SUFFIX
-NAME_OF_MONTHS = get_non_capturing_group("شهور", "[أا]شهر")
-NAME_OF_YEAR = get_non_capturing_group("سن[ةه]", "عاما?")
-NAME_OF_TWO_YEARS = get_non_capturing_group("سنت" + TWO_SUFFIX, "عام" + TWO_SUFFIX)
-NAME_OF_YEARS = get_non_capturing_group("سنوات", "سنين", "[أا]عوام")
-
-SECONDS = get_non_capturing_group(NAME_OF_SECOND, NAME_OF_TWO_SECONDS, NAME_OF_SECONDS)
-MINUTES = get_non_capturing_group(NAME_OF_MINUTE, NAME_OF_TWO_MINUTES, NAME_OF_MINUTES)
-HOURS = get_non_capturing_group(NAME_OF_HOUR, NAME_OF_TWO_HOURS, NAME_OF_HOURS)
-DAYS = get_non_capturing_group(NAME_OF_DAY, NAME_OF_TWO_DAYS, NAME_OF_DAYS)
-WEEKS = get_non_capturing_group(NAME_OF_WEEK, NAME_OF_TWO_WEEKS, NAME_OF_WEEKS)
-MONTHS = get_non_capturing_group(NAME_OF_MONTH, NAME_OF_TWO_MONTHS, NAME_OF_MONTHS)
-YEARS = get_non_capturing_group(NAME_OF_YEAR, NAME_OF_TWO_YEARS, NAME_OF_YEARS)
-
-SINGULAR_DURATIONS = get_non_capturing_group(
-    NAME_OF_SECOND,
-    NAME_OF_MINUTE,
-    NAME_OF_HOUR,
-    NAME_OF_DAY,
-    NAME_OF_WEEK,
-    NAME_OF_MONTH,
-    NAME_OF_YEAR,
+EXPRESSION_OF_SECONDS = Expression(non_capturing_group("ثواني", "لح[زضظ]ات"))
+EXPRESSION_OF_MINUTE = Expression("دقيق[ةه]")
+EXPRESSION_OF_TWO_MINUTES = Expression("دقيقت" + TWO_SUFFIX)
+EXPRESSION_OF_MINUTES = Expression("دقا[يئ]ق")
+EXPRESSION_OF_HOUR = Expression("ساع[ةه]")
+EXPRESSION_OF_TWO_HOURS = Expression("ساعت" + TWO_SUFFIX)
+EXPRESSION_OF_HOURS = Expression("ساعات")
+EXPRESSION_OF_DAY = Expression("يوما?")
+EXPRESSION_OF_TWO_DAYS = Expression(EXPRESSION_OF_DAY + TWO_SUFFIX)
+EXPRESSION_OF_DAYS = Expression("{}يام".format(ALL_ALEF))
+EXPRESSION_OF_WEEK = Expression("{}سبوعا?".format(ALL_ALEF))
+EXPRESSION_OF_TWO_WEEKS = Expression(EXPRESSION_OF_WEEK + TWO_SUFFIX)
+EXPRESSION_OF_WEEKS = Expression("{}سابيعا?".format(ALL_ALEF))
+EXPRESSION_OF_MONTH = Expression("شهرا?")
+EXPRESSION_OF_TWO_MONTHS = Expression(EXPRESSION_OF_MONTH + TWO_SUFFIX)
+EXPRESSION_OF_MONTHS = Expression(non_capturing_group("شهور", "[أا]شهر"))
+EXPRESSION_OF_YEAR = Expression(non_capturing_group("سن[ةه]", "عاما?"))
+EXPRESSION_OF_TWO_YEARS = Expression(
+    non_capturing_group("سنت" + TWO_SUFFIX, "عام" + TWO_SUFFIX)
 )
-DUAL_DURATIONS = get_non_capturing_group(
-    NAME_OF_TWO_SECONDS,
-    NAME_OF_TWO_MINUTES,
-    NAME_OF_TWO_HOURS,
-    NAME_OF_TWO_DAYS,
-    NAME_OF_TWO_WEEKS,
-    NAME_OF_TWO_MONTHS,
-    NAME_OF_TWO_YEARS,
+EXPRESSION_OF_YEARS = Expression(non_capturing_group("سنوات", "سنين", "[أا]عوام"))
+
+SECONDS = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_SECOND, EXPRESSION_OF_TWO_SECONDS, EXPRESSION_OF_SECONDS
+    )
+)
+MINUTES = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_MINUTE, EXPRESSION_OF_TWO_MINUTES, EXPRESSION_OF_MINUTES
+    )
+)
+HOURS = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_HOUR, EXPRESSION_OF_TWO_HOURS, EXPRESSION_OF_HOURS
+    )
+)
+DAYS = Expression(
+    non_capturing_group(EXPRESSION_OF_DAY, EXPRESSION_OF_TWO_DAYS, EXPRESSION_OF_DAYS)
+)
+WEEKS = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_WEEK, EXPRESSION_OF_TWO_WEEKS, EXPRESSION_OF_WEEKS
+    )
+)
+MONTHS = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_MONTH, EXPRESSION_OF_TWO_MONTHS, EXPRESSION_OF_MONTHS
+    )
+)
+YEARS = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_YEAR, EXPRESSION_OF_TWO_YEARS, EXPRESSION_OF_YEARS
+    )
+)
+
+SINGULAR_DURATIONS = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_SECOND,
+        EXPRESSION_OF_MINUTE,
+        EXPRESSION_OF_HOUR,
+        EXPRESSION_OF_DAY,
+        EXPRESSION_OF_WEEK,
+        EXPRESSION_OF_MONTH,
+        EXPRESSION_OF_YEAR,
+    )
+)
+DUAL_DURATIONS = Expression(
+    non_capturing_group(
+        EXPRESSION_OF_TWO_SECONDS,
+        EXPRESSION_OF_TWO_MINUTES,
+        EXPRESSION_OF_TWO_HOURS,
+        EXPRESSION_OF_TWO_DAYS,
+        EXPRESSION_OF_TWO_WEEKS,
+        EXPRESSION_OF_TWO_MONTHS,
+        EXPRESSION_OF_TWO_YEARS,
+    )
 )

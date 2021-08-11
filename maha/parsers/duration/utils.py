@@ -118,34 +118,34 @@ def convert_between_durations(
 
 
 def get_unit(unit: str) -> DurationUnit:
-    if re.match(SECONDS, unit):
+    if SECONDS.match(unit):
         return DurationUnit.SECONDS
-    if re.match(MINUTES, unit):
+    if MINUTES.match(unit):
         return DurationUnit.MINUTES
-    if re.match(HOURS, unit):
+    if HOURS.match(unit):
         return DurationUnit.HOURS
-    if re.match(DAYS, unit):
+    if DAYS.match(unit):
         return DurationUnit.DAYS
-    if re.match(WEEKS, unit):
+    if WEEKS.match(unit):
         return DurationUnit.WEEKS
-    if re.match(MONTHS, unit):
+    if MONTHS.match(unit):
         return DurationUnit.MONTHS
-    if re.match(YEARS, unit):
+    if YEARS.match(unit):
         return DurationUnit.YEARS
     raise ValueError(f"Invalid unit: {unit}")
 
 
 def get_value(unit: str) -> float:
-    if re.match(HALF, unit):
+    if HALF.match(unit):
         return 1 / 2
-    if re.match(THIRD, unit):
+    if THIRD.match(unit):
         return 1 / 3
-    if re.match(QUARTER, unit):
+    if QUARTER.match(unit):
         return 1 / 4
-    if re.match(THREE_QUARTERS, unit):
+    if THREE_QUARTERS.match(unit):
         return 3 / 4
-    if re.match(DUAL_DURATIONS, unit):
+    if DUAL_DURATIONS.match(unit):
         return 2
-    if re.match(SINGULAR_DURATIONS, unit):
+    if SINGULAR_DURATIONS.match(unit):
         return 1
     raise ValueError(f"Invalid unit: {unit}")
