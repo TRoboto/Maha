@@ -82,11 +82,6 @@ class Expression:
         -------
         :class:`ExpressionResult`
             Extracted value.
-
-        Raises
-        ------
-        ValueError
-            If the output value is not a float or a string.
         """
         self.compile()
 
@@ -97,7 +92,7 @@ class Expression:
         """Extract the value from the input ``text`` and return it.
 
         .. note::
-            This is a simple implementation that needs a group to be found.
+            This is a simple implementation that needs a group to match.
 
         .. warning::
             This method is called by :meth:`__call__` to extract the value from
