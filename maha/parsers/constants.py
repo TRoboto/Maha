@@ -7,15 +7,15 @@ from maha.constants import (
     WAW,
 )
 from maha.parsers.interfaces import Expression, ValueExpression
-from maha.rexy import get_non_capturing_group
+from maha.rexy import non_capturing_group
 
-THIRD = ValueExpression("[ثت]ل[ثت]", 1 / 3)
+THIRD = ValueExpression(1 / 3, "[ثت]ل[ثت]")
 """ Pattern that matches the pronunciation of third in Arabic """
-QUARTER = ValueExpression("ربع", 1 / 4)
+QUARTER = ValueExpression(1 / 4, "ربع")
 """ Pattern that matches the pronunciation of quarter in Arabic """
-HALF = ValueExpression("نصف?", 1 / 2)
+HALF = ValueExpression(1 / 2, "نصف?")
 """ Pattern that matches the pronunciation of half in Arabic """
-THREE_QUARTERS = ValueExpression(f"[إا]لا {QUARTER}", 3 / 4)
+THREE_QUARTERS = ValueExpression(3 / 4, f"[إا]لا {QUARTER}")
 """ Pattern that matches the pronunciation of three quarters in Arabic """
 WAW_CONNECTOR = Expression(PATTERN_SPACE + WAW + PATTERN_SPACE_OR_NONE)
 """ Pattern that matches WAW as a connector between two words """
@@ -29,8 +29,8 @@ NUMERAL_WORD_SEPARATOR = Expression(
 ALL_ALEF = Expression(f'[{"".join(ALEF_VARIATIONS)}]')
 """ Pattern that matches all possible forms of the ALEF in Arabic """
 
-TWO_SUFFIX = Expression(get_non_capturing_group("ين", "ان"))
+TWO_SUFFIX = Expression(non_capturing_group("ين", "ان"))
 """ Pattern that matches the two-suffix of words in Arabic """
 
-SUM_SUFFIX = Expression(get_non_capturing_group("ين", "ون"))
+SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
 """ Pattern that matches the sum-suffix of words in Arabic """

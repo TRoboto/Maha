@@ -14,7 +14,7 @@ __all__ = [
 import itertools as it
 
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
-from maha.rexy import get_non_capturing_group
+from maha.rexy import non_capturing_group
 
 from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
 from ..helper import *
@@ -48,7 +48,7 @@ def _get_pattern(numeral: NumeralType):
     pattern = (
         "(?:"
         + "|".join(_pattern).format(
-            decimal=get_value_group(str(EXPRESSION_DECIMALS)),
+            decimal=get_value_group(EXPRESSION_DECIMALS),
             integer=get_value_group(PATTERN_INTEGER),
             space=PATTERN_SPACE,
             unit_single_plural=get_unit_group("|".join([single, plural])),
@@ -73,7 +73,7 @@ def get_pattern(numeral: NumeralType):
     elif numeral == NumeralType.ONES:
         pattern = get_group_value_without_unit(EXPRESSION_NUMERAL_ONES_ONLY.join())
     elif numeral == NumeralType.DECIMALS:
-        pattern = get_group_value_without_unit(str(EXPRESSION_DECIMALS))
+        pattern = get_group_value_without_unit(EXPRESSION_DECIMALS)
     elif numeral == NumeralType.INTEGERS:
         pattern = get_group_value_without_unit(PATTERN_INTEGER)
     else:
@@ -165,7 +165,7 @@ EXPRESSION_NUMERAL_PERFECT_HUNDREDS = ExpressionGroup(
 )
 
 EXPRESSION_DECIMALS = Expression(
-    get_non_capturing_group(
+    non_capturing_group(
         (PATTERN_DECIMAL),
         *list(
             get_combinations(

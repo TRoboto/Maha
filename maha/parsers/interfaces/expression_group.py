@@ -3,7 +3,7 @@ __all__ = ["ExpressionGroup"]
 from typing import Iterable, List, Union
 
 import maha.parsers.interfaces as interfaces
-from maha.rexy import get_non_capturing_group
+from maha.rexy import non_capturing_group
 
 
 class ExpressionGroup:
@@ -59,7 +59,7 @@ class ExpressionGroup:
         """
         Returns non capturing group of the expressions.
         """
-        return get_non_capturing_group(*list(map(str, self.expressions)))
+        return non_capturing_group(*list(map(str, self.expressions)))
 
     def parse(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
         """
