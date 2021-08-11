@@ -6,7 +6,6 @@ from maha.parsers.interfaces.expression_group import ExpressionGroup
 
 from ..constants import WAW_CONNECTOR
 from ..utils import convert_to_number_if_possible
-from .expressions import *
 
 
 def get_matched_numeral(numeral) -> int:

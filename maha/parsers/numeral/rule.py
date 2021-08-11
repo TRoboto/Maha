@@ -16,10 +16,17 @@ import itertools as it
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
 from maha.rexy import non_capturing_group
 
-from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
+from ..constants import (
+    EXPRESSION_START,
+    HALF,
+    QUARTER,
+    THIRD,
+    THREE_QUARTERS,
+    WAW_CONNECTOR,
+)
 from ..helper import *
 from ..interfaces import ExpressionGroup, NumeralType
-from .expressions import *
+from .constants import *
 from .interface import NumeralExpression
 
 
@@ -86,9 +93,10 @@ def get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
     for i, u in enumerate(numerals):
         pattern = get_pattern(u)
         if i == 0:
-            pattern = f"(?:^|\\W|{PATTERN_SPACE_OR_NONE}|\\b){pattern}"
+            pattern = EXPRESSION_START + pattern
         else:
-            pattern = f"(?:{WAW_CONNECTOR}{pattern})?"
+            pattern = f"{non_capturing_group(WAW_CONNECTOR + pattern)}?"
+
         if u not in [NumeralType.DECIMALS, NumeralType.INTEGERS]:
             pattern += r"\b"
         patterns.append(pattern)

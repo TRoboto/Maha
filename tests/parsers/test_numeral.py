@@ -27,8 +27,7 @@ def get_value_positions(*text: str):
         (",{}"),
         (",{},"),
         ("{},"),
-        ("و{}"),
-        ("و {}"),
+        ("{}"),
         ("{}"),
     ]
     for t in text:
