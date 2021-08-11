@@ -288,13 +288,13 @@ def reduce_repeated_substring(
     Examples
     --------
 
-    ..code-block:: python
+    ..code-block:: pycon
 
         >>> text = "ههههههههههههههه"
         >>> reduce_repeated_substring(text)
         'هه'
 
-    ..code-block:: python
+    ..code-block:: pycon
 
         >>> text = "ويييييييييين راححححححححححححوا"
         >>> reduce_repeated_substring(text, reduce_to=1)
@@ -323,6 +323,15 @@ def remove_hash_keep_tag(text: str):
     -------
     str
         Text without hashtags.
+
+    Example
+    -------
+
+    .. code-block:: pycon
+
+        >>> text = "We love #Jordan very much"
+        >>> remove_hash_keep_tag(text)
+        "We love Jordan very much"
     """
 
     return functions.replace_pattern(
