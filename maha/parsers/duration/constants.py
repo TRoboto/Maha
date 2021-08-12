@@ -1,5 +1,4 @@
-from maha.parsers.interfaces import Expression
-from maha.rexy import non_capturing_group
+from maha.rexy import Expression, non_capturing_group
 
 from ..constants import ALL_ALEF, TWO_SUFFIX
 

@@ -20,9 +20,10 @@ from maha.parsers.helper import (
     get_value_group,
 )
 from maha.parsers.numeral import EXPRESSION_NUMERAL
+from maha.rexy import ExpressionGroup
 
 from ..constants import EXPRESSION_START, NUMERAL_WORD_SEPARATOR
-from ..interfaces import DurationUnit, ExpressionGroup
+from ..interfaces import DurationUnit
 from .constants import *
 from .interface import DurationExpression
 

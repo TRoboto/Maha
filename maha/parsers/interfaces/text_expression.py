@@ -2,8 +2,7 @@ __all__ = ["TextExpression"]
 
 from regex.regex import Match
 
-from .expression import Expression
-from .expression_result import ExpressionResult
+from maha.rexy import Expression, ExpressionResult
 
 
 class TextExpression(Expression):

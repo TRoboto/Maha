@@ -1,8 +1,8 @@
 from maha.constants import PATTERN_SPACE, PATTERN_SPACE_OR_NONE
-from maha.rexy import non_capturing_group
+from maha.rexy import Expression, non_capturing_group
 
 from ..constants import ALL_ALEF, SUM_SUFFIX, TWO_SUFFIX
-from ..interfaces import Expression, ValueExpression
+from ..interfaces import ValueExpression
 
 TEN_SUFFIX = Expression(f"{PATTERN_SPACE_OR_NONE}[تط]?[اع]?شر?[ةه]?")
 TEH_OPTIONAL_SUFFIX = Expression("[ةه]?")

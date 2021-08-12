@@ -14,7 +14,7 @@ __all__ = [
 import itertools as it
 
 from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
-from maha.rexy import named_group, non_capturing_group
+from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
 from ..constants import (
     EXPRESSION_START,
@@ -25,7 +25,7 @@ from ..constants import (
     WAW_CONNECTOR,
 )
 from ..helper import *
-from ..interfaces import ExpressionGroup, NumeralType
+from ..interfaces import NumeralType
 from .constants import *
 from .interface import NumeralExpression
 

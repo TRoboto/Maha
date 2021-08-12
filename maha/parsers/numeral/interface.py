@@ -4,7 +4,8 @@ from typing import Optional
 
 from regex.regex import Match
 
-from ..interfaces import Expression, ExpressionResult
+from maha.rexy import Expression, ExpressionResult
+
 from .utils import get_matched_numeral, get_value
 
 

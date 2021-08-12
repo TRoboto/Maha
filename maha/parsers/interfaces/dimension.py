@@ -3,8 +3,9 @@ __all__ = ["Dimension"]
 from dataclasses import dataclass
 from typing import Any
 
+from maha.rexy import Expression
+
 from .enums import DimensionType
-from .expression import Expression
 
 
 @dataclass

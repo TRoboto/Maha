@@ -8,9 +8,9 @@ from regex.regex import Match
 from maha.constants import EMPTY
 from maha.parsers.constants import HALF, QUARTER, THIRD, THREE_QUARTERS
 from maha.parsers.numeral.interface import NumeralExpression
+from maha.rexy import ExpressionResult
 
 from .enums import Unit
-from .expression_result import ExpressionResult
 
 
 @dataclass

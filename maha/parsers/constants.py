@@ -6,8 +6,8 @@ from maha.constants import (
     PATTERN_SPACE_OR_NONE,
     WAW,
 )
-from maha.parsers.interfaces import Expression, ValueExpression
-from maha.rexy import non_capturing_group, positive_lookbehind
+from maha.parsers.interfaces import ValueExpression
+from maha.rexy import Expression, non_capturing_group, positive_lookbehind
 
 THIRD = ValueExpression(1 / 3, "[ثت]ل[ثت]")
 """ Pattern that matches the pronunciation of third in Arabic """

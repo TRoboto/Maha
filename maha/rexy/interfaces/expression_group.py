@@ -2,8 +2,7 @@ __all__ = ["ExpressionGroup"]
 
 from typing import Iterable, List, Union
 
-import maha.parsers.interfaces as interfaces
-from maha.rexy import non_capturing_group
+import maha.rexy as rx
 
 
 class ExpressionGroup:
@@ -12,7 +11,7 @@ class ExpressionGroup:
 
     Parameters
     ----------
-    *expressions : interfaces.Expression
+    *expressions : :class:`rx.Expression`
         List of expressions to match. High-priority expressions should be passed first.
     smart : bool, optional
         Whether to parse the text in a smart way. See :meth:`~.smart_parse`.
@@ -22,7 +21,7 @@ class ExpressionGroup:
 
     def __init__(
         self,
-        *expressions: Union[interfaces.Expression, "ExpressionGroup"],
+        *expressions: Union["rx.Expression", "ExpressionGroup"],
         smart: bool = False,
     ):
 
@@ -35,8 +34,8 @@ class ExpressionGroup:
             expression.compile()
 
     def merge_expressions(
-        self, expressions: Iterable[Union[interfaces.Expression, "ExpressionGroup"]]
-    ) -> List[interfaces.Expression]:
+        self, expressions: Iterable[Union["rx.Expression", "ExpressionGroup"]]
+    ) -> List["rx.Expression"]:
         result = []
         for expression in expressions:
             if isinstance(expression, ExpressionGroup):
@@ -45,15 +44,15 @@ class ExpressionGroup:
                 result.append(expression)
         return result
 
-    def add(self, *expression: interfaces.Expression) -> None:
+    def add(self, *expression: "rx.Expression") -> None:
         """Add an expression to the group."""
         self.expressions.extend(expression)
 
     def join(self) -> str:
         """Returns non capturing group of the expressions."""
-        return non_capturing_group(*list(map(str, self.expressions)))
+        return rx.non_capturing_group(*list(map(str, self.expressions)))
 
-    def parse(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
+    def parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
         """
         Parses the text.
 
@@ -64,7 +63,7 @@ class ExpressionGroup:
 
         Yields
         -------
-        :class:`interfaces.ExpressionResult`
+        :class:`rx.ExpressionResult`
             Extracted value.
         """
         # TODO: Maybe provide a way to clean the text before parsing?
@@ -76,14 +75,14 @@ class ExpressionGroup:
 
         self.clear_parsed()
 
-    def normal_parse(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
+    def normal_parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
         """
         Parse the input ``text`` and return the extracted values.
         """
         for expression in self.expressions:
             yield from expression(text)
 
-    def smart_parse(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
+    def smart_parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
         """
         Parses the text. If a value matches two or more expressions, only the first
         expression parses the value, no value is matched more than once. This means
@@ -96,7 +95,7 @@ class ExpressionGroup:
             self._parsed_ranges.add((result.start, result.end))
             yield result
 
-    def _is_parsed(self, result: "interfaces.ExpressionResult"):
+    def _is_parsed(self, result: "rx.ExpressionResult"):
         for start, end in self._parsed_ranges:
             if start <= result.start <= end and start <= result.end <= end:
                 return True
@@ -110,7 +109,7 @@ class ExpressionGroup:
         self.expressions.extend(other.expressions)
         return self
 
-    def __getitem__(self, index: int) -> interfaces.Expression:
+    def __getitem__(self, index: int) -> "rx.Expression":
         return self.expressions[index]
 
     def __len__(self) -> int:

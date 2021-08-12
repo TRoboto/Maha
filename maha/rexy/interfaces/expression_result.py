@@ -3,14 +3,12 @@ __all__ = ["ExpressionResult"]
 from dataclasses import dataclass
 from typing import Any
 
-import maha.parsers.interfaces as interfaces
+import maha.rexy as rx
 
 
 @dataclass
 class ExpressionResult:
-    """
-    A result of a single expression.
-    """
+    """A result of a single expression."""
 
     __slots__ = ["start", "end", "value", "expression"]
 
@@ -20,5 +18,5 @@ class ExpressionResult:
     """End index of the matched text"""
     value: Any
     """Extracted value"""
-    expression: interfaces.Expression
+    expression: "rx.Expression"
     """The expression that was used to find the value"""

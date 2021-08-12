@@ -11,12 +11,8 @@ from maha.constants import (
     KASRA,
 )
 from maha.parsers.functions import parse
-from maha.parsers.interfaces import (
-    Dimension,
-    DimensionType,
-    Expression,
-    ExpressionGroup,
-)
+from maha.parsers.interfaces import Dimension, DimensionType
+from maha.rexy import Expression, ExpressionGroup
 from tests.utils import list_only_in_string
 
 
@@ -200,7 +196,7 @@ def test_parse_with_custom_expressions(multiple_tweets):
     result = parse(multiple_tweets, custom_expressions=Expression(exp))
     assert len(result) == 1
     assert isinstance(result, list)
-    assert result[0].value == 1
+    assert result[0].value == "١"
     assert result[0].expression.pattern == exp
 
 
@@ -213,8 +209,8 @@ def test_parse_with_mutiple_expressions(multiple_tweets):
     )
     assert len(result) == 2
     assert isinstance(result, list)
-    assert result[0].value == 1
-    assert result[1].value == 10
+    assert result[0].value == "١"
+    assert result[1].value == "10"
 
 
 def test_parse_raises_value_error_with_invalid_expression():

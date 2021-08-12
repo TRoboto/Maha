@@ -9,9 +9,9 @@ from typing import Iterable, Optional
 import regex as re
 from regex.regex import Match
 
-import maha.parsers.interfaces as interfaces
 from maha import LIBRARY_PATH
-from maha.parsers.utils import convert_to_number_if_possible
+
+from .expression_result import ExpressionResult
 
 
 @dataclass
@@ -92,7 +92,7 @@ class Expression:
         self.compile()
         return self._compiled_pattern.match(text)
 
-    def __call__(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
+    def __call__(self, text: str) -> Iterable["ExpressionResult"]:
         """
         Extract values from the input ``text``.
 
@@ -111,7 +111,7 @@ class Expression:
         for m in re.finditer(self._compiled_pattern, text):
             yield self.parse(m, text)
 
-    def parse(self, match: Match, text: Optional[str]) -> "interfaces.ExpressionResult":
+    def parse(self, match: Match, text: Optional[str]) -> "ExpressionResult":
         """Extract the value from the input ``text`` and return it.
 
         .. note::
@@ -147,12 +147,11 @@ class Expression:
         if captured_groups is None:
             raise ValueError("No captured groups")
 
-        captured_groups = list(map(convert_to_number_if_possible, captured_groups))
         if len(captured_groups) == 1:
             captured_groups = captured_groups[0]
         value = captured_groups
 
-        return interfaces.ExpressionResult(start, end, value, self)
+        return ExpressionResult(start, end, value, self)
 
     def __str__(self) -> str:
         return self.pattern

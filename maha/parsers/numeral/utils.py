@@ -2,7 +2,7 @@ __all__ = ["get_matched_numeral", "get_value"]
 
 
 import maha.parsers.numeral.rule as rule
-from maha.parsers.interfaces.expression_group import ExpressionGroup
+from maha.rexy import ExpressionGroup
 
 from ..constants import WAW_CONNECTOR
 from ..utils import convert_to_number_if_possible

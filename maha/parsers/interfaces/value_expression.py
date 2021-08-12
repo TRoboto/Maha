@@ -5,8 +5,7 @@ from typing import Any
 
 from regex.regex import Match
 
-from .expression import Expression
-from .expression_result import ExpressionResult
+from maha.rexy import Expression, ExpressionResult
 
 
 @dataclass
