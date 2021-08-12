@@ -7,7 +7,7 @@ from maha.constants import (
     WAW,
 )
 from maha.parsers.interfaces import Expression, ValueExpression
-from maha.rexy import non_capturing_group
+from maha.rexy import non_capturing_group, positive_lookbehind
 
 THIRD = ValueExpression(1 / 3, "[ثت]ل[ثت]")
 """ Pattern that matches the pronunciation of third in Arabic """
@@ -35,4 +35,4 @@ TWO_SUFFIX = Expression(non_capturing_group("ين", "ان"))
 SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
 """ Pattern that matches the sum-suffix of words in Arabic """
 
-EXPRESSION_START = Expression(non_capturing_group("^", r"\W", r"\b"))
+EXPRESSION_START = Expression(positive_lookbehind("^", r"\W", r"\b", WAW))
