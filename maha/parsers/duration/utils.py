@@ -1,27 +1,13 @@
 __all__ = [
     "convert_between_durations",
     "DURATION_CONVERSION_MAP",
-    "get_unit",
-    "get_value",
 ]
 
 import re
 
 import maha.parsers.duration.interface as interface
 
-from ..constants import HALF, QUARTER, THIRD, THREE_QUARTERS
 from ..interfaces import DurationUnit
-from .constants import (
-    DAYS,
-    DUAL_DURATIONS,
-    HOURS,
-    MINUTES,
-    MONTHS,
-    SECONDS,
-    SINGULAR_DURATIONS,
-    WEEKS,
-    YEARS,
-)
 
 DURATION_CONVERSION_MAP = {
     DurationUnit.SECONDS: {
@@ -115,37 +101,3 @@ def convert_between_durations(
     for duration in durations:
         output_value += table[duration.unit] * duration.value
     return interface.ValueUnit(output_value, to_unit)
-
-
-def get_unit(unit: str) -> DurationUnit:
-    if SECONDS.match(unit):
-        return DurationUnit.SECONDS
-    if MINUTES.match(unit):
-        return DurationUnit.MINUTES
-    if HOURS.match(unit):
-        return DurationUnit.HOURS
-    if DAYS.match(unit):
-        return DurationUnit.DAYS
-    if WEEKS.match(unit):
-        return DurationUnit.WEEKS
-    if MONTHS.match(unit):
-        return DurationUnit.MONTHS
-    if YEARS.match(unit):
-        return DurationUnit.YEARS
-    return
-
-
-def get_value(unit: str) -> float:
-    if HALF.match(unit):
-        return 1 / 2
-    if THIRD.match(unit):
-        return 1 / 3
-    if QUARTER.match(unit):
-        return 1 / 4
-    if THREE_QUARTERS.match(unit):
-        return 3 / 4
-    if DUAL_DURATIONS.match(unit):
-        return 2
-    if SINGULAR_DURATIONS.match(unit):
-        return 1
-    return

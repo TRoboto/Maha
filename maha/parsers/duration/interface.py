@@ -8,20 +8,20 @@ from regex.regex import Match
 
 import maha.parsers.duration.utils as utils
 from maha.constants import EMPTY
-from maha.parsers.numeral.interface import NumeralExpression
+from maha.parsers.interfaces.unit_expression import UnitExpression, ValueUnit
 
-from ..interfaces import DurationUnit, ExpressionResult, Unit
-from ..utils import convert_to_number_if_possible
-
-
-@dataclass
-class ValueUnit:
-    """
-    Represents a value with unit.
-    """
-
-    value: float
-    unit: Unit
+from ..interfaces import DurationUnit, ExpressionResult
+from .constants import (
+    DAYS,
+    DUAL_DURATIONS,
+    HOURS,
+    MINUTES,
+    MONTHS,
+    SECONDS,
+    SINGULAR_DURATIONS,
+    WEEKS,
+    YEARS,
+)
 
 
 @dataclass(init=False)
@@ -56,31 +56,33 @@ class DurationResult(ExpressionResult):
     value: DurationValue
 
 
-class DurationExpression(NumeralExpression):
+class DurationExpression(UnitExpression):
     def parse(self, match: Match, text: str) -> DurationResult:
         start, end = match.span()
-        groups = match.capturesdict()
-
-        values = groups.get("value")
-        units = groups.get("unit")
-        multipliers = groups.get("multiplier")
-
-        multiplier_pointer = 0
-        output_values = []
-        for i, value in enumerate(values):
-            extracted_unit = utils.get_unit(units[i])
-            # if the value is empty, it's either singular or plural.
-            if value is EMPTY:
-                extracted_value = utils.get_value(units[i])
-            else:
-                extracted_value = utils.get_value(value)
-                # if the extracted_value is empty, it's a numeral value.
-                if extracted_value is None:
-                    extracted_value = self.get_numeral_value(
-                        value, multipliers[multiplier_pointer]
-                    )
-                    multiplier_pointer += 1
-            output_values.append(ValueUnit(extracted_value, extracted_unit))
-
+        output_values = self.extract_value_unit(match)
         value = DurationValue(output_values)
         return DurationResult(start, end, value, self)
+
+    def get_unit(self, unit: str) -> DurationUnit:
+        if SECONDS.match(unit):
+            return DurationUnit.SECONDS
+        if MINUTES.match(unit):
+            return DurationUnit.MINUTES
+        if HOURS.match(unit):
+            return DurationUnit.HOURS
+        if DAYS.match(unit):
+            return DurationUnit.DAYS
+        if WEEKS.match(unit):
+            return DurationUnit.WEEKS
+        if MONTHS.match(unit):
+            return DurationUnit.MONTHS
+        if YEARS.match(unit):
+            return DurationUnit.YEARS
+        return
+
+    def get_value(self, text: str) -> float:
+        if DUAL_DURATIONS.match(text):
+            return 2
+        if SINGULAR_DURATIONS.match(text):
+            return 1
+        return super().get_value(text)
