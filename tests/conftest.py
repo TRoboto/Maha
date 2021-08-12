@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from maha.parsers.duration.rule import EXPRESSION_DURATION
+from maha.parsers import EXPRESSION_DURATION, EXPRESSION_NUMERAL
 
 
 @pytest.fixture()
@@ -38,3 +38,4 @@ def empty_file():
 @pytest.fixture(scope="session", autouse=True)
 def compile_parse_expressions():
     EXPRESSION_DURATION.compile_expressions()
+    EXPRESSION_NUMERAL.compile_expressions()
