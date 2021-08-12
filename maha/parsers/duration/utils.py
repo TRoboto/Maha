@@ -132,7 +132,7 @@ def get_unit(unit: str) -> DurationUnit:
         return DurationUnit.MONTHS
     if YEARS.match(unit):
         return DurationUnit.YEARS
-    raise ValueError(f"Invalid unit: {unit}")
+    return
 
 
 def get_value(unit: str) -> float:
@@ -148,4 +148,4 @@ def get_value(unit: str) -> float:
         return 2
     if SINGULAR_DURATIONS.match(unit):
         return 1
-    raise ValueError(f"Invalid unit: {unit}")
+    return

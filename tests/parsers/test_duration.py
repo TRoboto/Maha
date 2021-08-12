@@ -429,13 +429,3 @@ def test_parse_with_smart_off():
         values = output[i].value
         assert isinstance(values, DurationValue)
         assert len(values) == 5 - i
-
-
-def test_invalid_value():
-    with pytest.raises(ValueError):
-        get_value("Wrong")
-
-
-def test_invalid_unit():
-    with pytest.raises(ValueError):
-        get_unit("Wrong")
