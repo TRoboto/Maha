@@ -22,3 +22,6 @@ class ValueExpression(Expression):
 
     def parse(self, match: Match, _: str) -> "ExpressionResult":
         return ExpressionResult(match.start(), match.end(), self.value, self)
+
+    def __hash__(self):
+        return hash(self.pattern + str(self.value))

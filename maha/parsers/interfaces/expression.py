@@ -1,12 +1,16 @@
 __all__ = ["Expression"]
 
+import hashlib
+import pickle
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Iterable, Optional
 
 import regex as re
 from regex.regex import Match
 
 import maha.parsers.interfaces as interfaces
+from maha import LIBRARY_PATH
 from maha.parsers.utils import convert_to_number_if_possible
 
 
@@ -18,9 +22,12 @@ class Expression:
     ----------
     pattern : str
         Regular expression pattern.
+    pickle : bool
+        If ``True``, the compiled pattern will be pickled. This is useful to save
+        compilation time for large patterns.
     """
 
-    __slots__ = ["pattern", "_compiled_pattern"]
+    __slots__ = ["pattern", "_compiled_pattern", "pickle"]
 
     pattern: str
     """Regular expersion(s) to match"""
@@ -28,14 +35,30 @@ class Expression:
     def __init__(
         self,
         pattern: str,
+        pickle: bool = False,
     ):
         self.pattern = pattern
+        self.pickle = pickle
         self._compiled_pattern = None
 
     def compile(self):
         """Compile the regular expersion."""
         if self._compiled_pattern is None:
+            if self.pickle:
+                self._load_compiled_pattern()
+            else:
+                self._compiled_pattern = re.compile(self.pattern, re.MULTILINE)
+
+    def _load_compiled_pattern(self):
+        # crp: compiled regex pattern
+        path = Path(LIBRARY_PATH) / f"cache/{hash(self)}.crp"
+        if path.exists():
+            with path.open("rb") as f:
+                self._compiled_pattern = pickle.load(f)
+        else:
             self._compiled_pattern = re.compile(self.pattern, re.MULTILINE)
+            with path.open("wb") as f:
+                pickle.dump(self._compiled_pattern, f)
 
     def search(self, text: str):
         """Search for the pattern in the input ``text``.
@@ -139,3 +162,6 @@ class Expression:
 
     def __radd__(self, other):
         return other + str(self)
+
+    def __hash__(self):
+        return int(hashlib.md5(self.pattern.encode()).hexdigest(), 16)
