@@ -1,4 +1,4 @@
-__all__ = ["ValueUnit", "DurationValue", "DurationResult", "DurationExpression"]
+__all__ = ["DurationValue", "DurationResult", "DurationExpression"]
 
 
 from dataclasses import dataclass
@@ -37,9 +37,7 @@ class DurationValue:
 
     @property
     def normalized_value(self) -> ValueUnit:
-        """
-        Returns the value with unit normalized.
-        """
+        """Returns the value with unit normalized."""
         return utils.convert_between_durations(
             *self.values, to_unit=self.normalized_unit
         )
@@ -63,20 +61,20 @@ class DurationExpression(UnitExpression):
         value = DurationValue(output_values)
         return DurationResult(start, end, value, self)
 
-    def get_unit(self, unit: str) -> DurationUnit:
-        if SECONDS.match(unit):
+    def get_unit(self, text: str) -> DurationUnit:
+        if SECONDS.match(text):
             return DurationUnit.SECONDS
-        if MINUTES.match(unit):
+        if MINUTES.match(text):
             return DurationUnit.MINUTES
-        if HOURS.match(unit):
+        if HOURS.match(text):
             return DurationUnit.HOURS
-        if DAYS.match(unit):
+        if DAYS.match(text):
             return DurationUnit.DAYS
-        if WEEKS.match(unit):
+        if WEEKS.match(text):
             return DurationUnit.WEEKS
-        if MONTHS.match(unit):
+        if MONTHS.match(text):
             return DurationUnit.MONTHS
-        if YEARS.match(unit):
+        if YEARS.match(text):
             return DurationUnit.YEARS
         return
 

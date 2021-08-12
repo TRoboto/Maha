@@ -1,7 +1,7 @@
 __all__ = ["ValueExpression", "ValueUnit"]
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from regex.regex import Match
 
@@ -24,7 +24,7 @@ class ValueUnit:
 class UnitExpression(NumeralExpression):
     """Expression that matches a numeric value followed by a unit."""
 
-    def parse(self, match: Match, _: str) -> "ExpressionResult":
+    def parse(self, match: Match, text: str) -> "ExpressionResult":
         """Extract the value from the input ``text`` and return it.
 
         .. warning::
@@ -47,6 +47,7 @@ class UnitExpression(NumeralExpression):
         raise NotImplementedError
 
     def extract_value_unit(self, match: Match) -> List[ValueUnit]:
+        """Extract the value and unit from the input ``match``."""
         groups = match.capturesdict()
 
         values = groups.get("value")
@@ -71,10 +72,12 @@ class UnitExpression(NumeralExpression):
             output_values.append(ValueUnit(extracted_value, extracted_unit))
         return output_values
 
-    def get_unit(self, unit: str):
+    def get_unit(self, text: str):
+        """Get the unit from the input ``text``."""
         raise NotImplementedError
 
-    def get_value(self, text: str) -> float:
+    def get_value(self, text: str) -> Optional[float]:
+        """Get the value from the input ``text``."""
         if HALF.match(text):
             return 1 / 2
         if THIRD.match(text):
