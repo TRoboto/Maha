@@ -8,16 +8,12 @@ from maha.rexy import non_capturing_group
 
 class ExpressionGroup:
     """A group of expressions that match the same dimension. Expressions are evaluated
-    in the order they were added. If ``confident_first`` is ``True``, confident
-    expressions are evaluated first in the order they were added and the rest are
-    evaluated also in the order they were added.
+    in the order they were added.
 
     Parameters
     ----------
     *expressions : interfaces.Expression
         List of expressions to match. High-priority expressions should be passed first.
-    confident_first : bool, optional
-        Whether confident expressions should be evaluated first.
     smart : bool, optional
         Whether to parse the text in a smart way. See :meth:`~.smart_parse`.
     """
@@ -50,15 +46,11 @@ class ExpressionGroup:
         return result
 
     def add(self, *expression: interfaces.Expression) -> None:
-        """
-        Add an expression to the group.
-        """
+        """Add an expression to the group."""
         self.expressions.extend(expression)
 
     def join(self) -> str:
-        """
-        Returns non capturing group of the expressions.
-        """
+        """Returns non capturing group of the expressions."""
         return non_capturing_group(*list(map(str, self.expressions)))
 
     def parse(self, text: str) -> Iterable["interfaces.ExpressionResult"]:
