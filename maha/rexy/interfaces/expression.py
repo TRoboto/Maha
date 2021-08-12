@@ -51,7 +51,7 @@ class Expression:
 
     def _load_compiled_pattern(self):
         # crp: compiled regex pattern
-        path = Path(LIBRARY_PATH) / f"cache/{hash(self)}.crp"
+        path = Path(LIBRARY_PATH) / f"rexy/cache/{hash(self)}.crp"
         if path.exists():
             with path.open("rb") as f:
                 self._compiled_pattern = pickle.load(f)
