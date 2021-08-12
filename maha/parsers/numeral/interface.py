@@ -15,23 +15,31 @@ class NumeralExpression(Expression):
         groups = match.capturesdict()
 
         values = groups.get("value")
-        units = groups.get("unit")
+        multiplier = groups.get("multiplier")
 
-        # if not units, then it's ones or tens
-        if not units:
-            return ExpressionResult(start, end, get_value(values[0]), self)
+        if len(multiplier) == 0:
+            multiplier = [None]
 
         output = 0
-        for value, unit in zip(values, units):
-            if not value:
-                output += get_matched_numeral(unit)
-                continue
-
-            value = get_value(value)
-
-            if not unit:
-                output += value
-            else:
-                output += value * get_matched_numeral(unit)
+        for value, multiplier in zip(values, multiplier):
+            output += self.get_numeral_value(value, multiplier)
 
         return ExpressionResult(start, end, output, self)
+
+    def get_numeral_value(self, value: str, multiplier: str) -> int:
+        # if not multiplier, then it's ones or tens
+        if not multiplier:
+            return get_value(value)
+
+        output = 0
+        if not value:
+            output = get_matched_numeral(multiplier)
+            return output
+
+        value = get_value(value)
+
+        if not multiplier:
+            output = value
+        else:
+            output = value * get_matched_numeral(multiplier)
+        return output

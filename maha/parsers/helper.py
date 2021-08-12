@@ -9,6 +9,8 @@ __all__ = [
 ]
 
 
+from typing import Callable
+
 import maha.rexy as rx
 from maha.constants import PATTERN_SPACE
 
@@ -25,7 +27,9 @@ def get_unit_group(pattern: str):
     return rx.named_group("unit", pattern)
 
 
-def get_fractions_of_unit_pattern(unit: str) -> str:
+def get_fractions_of_unit_pattern(
+    unit: str, group_fn: Callable = get_unit_group
+) -> str:
     """
     Returns the fractions of a unit pattern.
 
@@ -33,6 +37,8 @@ def get_fractions_of_unit_pattern(unit: str) -> str:
     ----------
     unit: str
         The unit pattern.
+    group_fn: Callable
+        The group function to use with unit pattern.
 
     Returns
     -------
@@ -53,5 +59,5 @@ def get_fractions_of_unit_pattern(unit: str) -> str:
         quarter=get_value_group(QUARTER),
         three_quarter=get_value_group(THREE_QUARTERS),
         space=PATTERN_SPACE,
-        unit=get_unit_group(unit),
+        unit=group_fn(unit),
     )
