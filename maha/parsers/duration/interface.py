@@ -63,30 +63,24 @@ class DurationExpression(NumeralExpression):
 
         values = groups.get("value")
         units = groups.get("unit")
+        multipliers = groups.get("multiplier")
 
-        # If units are more than values, numeral is matched.
-        if len(values) != len(units):
-            number = super().parse(match, text).value
-            unit = utils.get_unit(units[-1])
-            return DurationResult(
-                start, end, DurationValue([ValueUnit(number, unit)]), self
-            )
-
+        multiplier_pointer = 0
         output_values = []
-        for value, unit in zip(values, units):
-            extracted_unit = utils.get_unit(unit)
-
+        for i, value in enumerate(values):
+            extracted_unit = utils.get_unit(units[i])
+            # if the value is empty, it's either singular or plural.
             if value is EMPTY:
-                value = utils.get_value(unit)
+                extracted_value = utils.get_value(units[i])
             else:
-                # if value is number, then assign it to the value
-                number = convert_to_number_if_possible(value)
-                if not isinstance(number, str):
-                    value = number
-                else:
-                    value = utils.get_value(value)
-
-            output_values.append(ValueUnit(value, extracted_unit))
+                extracted_value = utils.get_value(value)
+                # if the extracted_value is empty, it's a numeral value.
+                if extracted_value is None:
+                    extracted_value = self.get_numeral_value(
+                        value, multipliers[multiplier_pointer]
+                    )
+                    multiplier_pointer += 1
+            output_values.append(ValueUnit(extracted_value, extracted_unit))
 
         value = DurationValue(output_values)
         return DurationResult(start, end, value, self)
