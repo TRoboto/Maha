@@ -64,7 +64,7 @@ def _get_combined_expression(*unit: DurationUnit) -> DurationExpression:
         else:
             pattern = f"{non_capturing_group(NUMERAL_WORD_SEPARATOR + pattern)}?"
         patterns.append(pattern + r"\b")
-    return DurationExpression(f"".join(patterns))
+    return DurationExpression(f"".join(patterns), pickle=True)
 
 
 EXPRESSION_DURATION_SECONDS = _get_combined_expression(DurationUnit.SECONDS)
