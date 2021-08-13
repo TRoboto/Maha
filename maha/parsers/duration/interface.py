@@ -76,7 +76,6 @@ class DurationExpression(UnitExpression):
             return DurationUnit.MONTHS
         if YEARS.match(text):
             return DurationUnit.YEARS
-        return
 
     def get_value(self, text: str) -> float:
         if DUAL_DURATIONS.match(text):

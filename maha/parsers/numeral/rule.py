@@ -112,10 +112,6 @@ def get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
     return NumeralExpression("".join(patterns), pickle=True)
 
 
-def get_simple_expression(*words: str):
-    return r"\b" + get_value_group("|".join(words)) + r"\b"
-
-
 def get_combinations(*patterns: str):
     for (a, b) in it.combinations_with_replacement(patterns, 2):
         yield a + EXPRESSION_OF_FASILA + b

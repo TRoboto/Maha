@@ -18,9 +18,6 @@ class NumeralExpression(Expression):
         values = groups.get("value")
         multiplier = groups.get("multiplier")
 
-        if len(multiplier) == 0:
-            multiplier = [None]
-
         output = 0
         for value, multiplier in zip(values, multiplier):
             output += self.get_numeral_value(value, multiplier)
@@ -32,15 +29,7 @@ class NumeralExpression(Expression):
         if not multiplier:
             return get_value(value)
 
-        output = 0
-        if not value:
-            output = get_matched_numeral(multiplier)
-            return output
-
-        value = get_value(value)
-
-        if not multiplier:
-            output = value
-        else:
-            output = value * get_matched_numeral(multiplier)
+        output = get_matched_numeral(multiplier)
+        if value:
+            output *= get_value(value)
         return output

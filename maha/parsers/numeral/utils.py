@@ -25,7 +25,6 @@ def check_for_match(expression_group: ExpressionGroup, text: str) -> float:
     for exp in expression_group:
         if exp.match(text):
             return exp.value
-    return None
 
 
 def get_value(text: str) -> float:
