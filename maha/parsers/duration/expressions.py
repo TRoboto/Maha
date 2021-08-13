@@ -1,6 +1,5 @@
+from maha.parsers.expressions import ALL_ALEF, TWO_SUFFIX
 from maha.rexy import Expression, non_capturing_group
-
-from ..constants import ALL_ALEF, TWO_SUFFIX
 
 EXPRESSION_OF_SECOND = Expression(non_capturing_group("ثاني[ةه]", "لح[زضظ]"))
 EXPRESSION_OF_TWO_SECONDS = Expression(

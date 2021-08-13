@@ -22,9 +22,9 @@ from maha.parsers.helper import (
 from maha.parsers.numeral import EXPRESSION_NUMERAL
 from maha.rexy import ExpressionGroup
 
-from ..constants import EXPRESSION_START, NUMERAL_WORD_SEPARATOR
+from ..expressions import EXPRESSION_START, NUMERAL_WORD_SEPARATOR
 from ..interfaces import DurationUnit
-from .constants import *
+from .expressions import *
 from .interface import DurationExpression
 
 

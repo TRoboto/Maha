@@ -6,7 +6,7 @@ from typing import List, Optional
 from regex.regex import Match
 
 from maha.constants import EMPTY
-from maha.parsers.constants import HALF, QUARTER, THIRD, THREE_QUARTERS
+from maha.parsers.expressions import HALF, QUARTER, THIRD, THREE_QUARTERS
 from maha.parsers.numeral.interface import NumeralExpression
 from maha.rexy import ExpressionResult
 

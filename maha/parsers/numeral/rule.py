@@ -16,7 +16,7 @@ import itertools as it
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
-from ..constants import (
+from ..expressions import (
     EXPRESSION_START,
     HALF,
     QUARTER,
@@ -26,7 +26,7 @@ from ..constants import (
 )
 from ..helper import *
 from ..interfaces import NumeralType
-from .constants import *
+from .expressions import *
 from .interface import NumeralExpression
 
 multiplier_group = lambda v: named_group("multiplier", v)

@@ -11,7 +11,7 @@ from maha.parsers.interfaces.unit_expression import UnitExpression, ValueUnit
 from maha.rexy import ExpressionResult
 
 from ..interfaces import DurationUnit
-from .constants import (
+from .expressions import (
     DAYS,
     DUAL_DURATIONS,
     HOURS,

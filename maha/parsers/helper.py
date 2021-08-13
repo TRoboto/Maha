@@ -14,7 +14,7 @@ from typing import Callable
 import maha.rexy as rx
 from maha.expressions import EXPRESSION_SPACE
 
-from .constants import HALF, QUARTER, THIRD, THREE_QUARTERS
+from .expressions import HALF, QUARTER, THIRD, THREE_QUARTERS
 
 
 def get_value_group(pattern: str):
