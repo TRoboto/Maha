@@ -20,18 +20,20 @@ from maha.constants import (
     ENGLISH_SMALL_LETTERS,
     HARAKAT,
     NUMBERS,
-    PATTERN_ARABIC_HASHTAGS,
-    PATTERN_ARABIC_MENTIONS,
-    PATTERN_EMAILS,
-    PATTERN_EMOJIS,
-    PATTERN_ENGLISH_HASHTAGS,
-    PATTERN_ENGLISH_MENTIONS,
-    PATTERN_HASHTAGS,
-    PATTERN_LINKS,
-    PATTERN_MENTIONS,
     PUNCTUATIONS,
     SPACE,
     TATWEEL,
+)
+from maha.expressions import (
+    EXPRESSION_ARABIC_HASHTAGS,
+    EXPRESSION_ARABIC_MENTIONS,
+    EXPRESSION_EMAILS,
+    EXPRESSION_EMOJIS,
+    EXPRESSION_ENGLISH_HASHTAGS,
+    EXPRESSION_ENGLISH_MENTIONS,
+    EXPRESSION_HASHTAGS,
+    EXPRESSION_LINKS,
+    EXPRESSION_MENTIONS,
 )
 from maha.parsers.interfaces import Dimension, DimensionType, TextExpression
 from maha.rexy import Expression, ExpressionGroup
@@ -70,7 +72,7 @@ def parse(
     """Extracts certain characters/patterns from the given text.
 
     To add a new parameter, make sure that its name is the same as the corresponding
-    constant. For the patterns, only remove the prefix PATTERN_ from the parameter name
+    constant. For the patterns, only remove the prefix EXPRESSION_ from the parameter name
 
     Parameters
     ----------
@@ -109,31 +111,31 @@ def parse(
     arabic_ligatures : bool, optional
         Extract :data:`~.ARABIC_LIGATURES` words, by default False
     arabic_hashtags : bool, optional
-        Extract Arabic hashtags using the pattern :data:`~.PATTERN_ARABIC_HASHTAGS`,
+        Extract Arabic hashtags using the expression :data:`~.EXPRESSION_ARABIC_HASHTAGS`,
         by default False
     arabic_mentions : bool, optional
-        Extract Arabic mentions using the pattern :data:`~.PATTERN_ARABIC_MENTIONS`,
+        Extract Arabic mentions using the expression :data:`~.EXPRESSION_ARABIC_MENTIONS`,
         by default False
     emails : bool, optional
-        Extract Arabic hashtags using the pattern :data:`~.PATTERN_EMAILS`,
+        Extract Arabic hashtags using the expression :data:`~.EXPRESSION_EMAILS`,
         by default False
     english_hashtags : bool, optional
-        Extract Arabic hashtags using the pattern :data:`~.PATTERN_ENGLISH_HASHTAGS`,
+        Extract Arabic hashtags using the expression :data:`~.EXPRESSION_ENGLISH_HASHTAGS`,
         by default False
     english_mentions : bool, optional
-        Extract Arabic hashtags using the pattern :data:`~.PATTERN_ENGLISH_MENTIONS`,
+        Extract Arabic hashtags using the expression :data:`~.EXPRESSION_ENGLISH_MENTIONS`,
         by default False
     hashtags : bool, optional
-        Extract Arabic hashtags using the pattern :data:`~.PATTERN_HASHTAGS`,
+        Extract Arabic hashtags using the expression :data:`~.EXPRESSION_HASHTAGS`,
         by default False
     links : bool, optional
-        Extract Arabic hashtags using the pattern :data:`~.PATTERN_LINKS`,
+        Extract Arabic hashtags using the expression :data:`~.EXPRESSION_LINKS`,
         by default False
     mentions : bool, optional
-        Extract Arabic hashtags using the pattern :data:`~.PATTERN_MENTIONS`,
+        Extract Arabic hashtags using the expression :data:`~.EXPRESSION_MENTIONS`,
         by default False
     emojis : bool, optional
-        Extract emojis using the pattern :data:`~.PATTERN_EMOJIS`,
+        Extract emojis using the expression :data:`~.EXPRESSION_EMOJIS`,
         by default False
     custom_expressions : Union[:class:`~.ExpressionGroup`, :class:`~.Expression`],
         optional. Include any other string(s), by default None
@@ -165,7 +167,7 @@ def parse(
     output = {}
 
     # Since each argument has the same name as the corresponding constant
-    # (But, patterns should be prefixed with "PATTERN_" to match the actual pattern.)
+    # (But, expressions should be prefixed with "EXPRESSION_" to match the actual expression.)
     # Looping through all arguments and appending constants that correspond to the
     # True arguments can work
     # TODO: Maybe find a good pythonic way to do this
@@ -176,10 +178,10 @@ def parse(
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
             continue
-        # check for pattern
-        pattern = constants.get("PATTERN_" + arg.upper())
-        if pattern and value is True:
-            expression = TextExpression(pattern)
+        # check for expression
+        expression = constants.get("EXPRESSION_" + arg.upper())
+        if expression and value is True:
+            expression = TextExpression(expression)
             parsed = parse_expression(text, expression, DimensionType[arg.upper()])
             output[arg] = parsed
 

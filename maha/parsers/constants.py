@@ -1,11 +1,5 @@
-from maha.constants import (
-    ALEF_VARIATIONS,
-    ARABIC_COMMA,
-    COMMA,
-    PATTERN_SPACE,
-    PATTERN_SPACE_OR_NONE,
-    WAW,
-)
+from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, WAW
+from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.interfaces import ValueExpression
 from maha.rexy import Expression, non_capturing_group, positive_lookbehind
 
@@ -17,12 +11,12 @@ HALF = ValueExpression(1 / 2, "نصف?")
 """ Pattern that matches the pronunciation of half in Arabic """
 THREE_QUARTERS = ValueExpression(3 / 4, f"[إا]لا {QUARTER}")
 """ Pattern that matches the pronunciation of three quarters in Arabic """
-WAW_CONNECTOR = Expression(PATTERN_SPACE + WAW + PATTERN_SPACE_OR_NONE)
+WAW_CONNECTOR = Expression(EXPRESSION_SPACE + WAW + EXPRESSION_SPACE_OR_NONE)
 """ Pattern that matches WAW as a connector between two words """
 NUMERAL_WORD_SEPARATOR = Expression(
-    f"(?:{PATTERN_SPACE_OR_NONE}(?:{COMMA}|{ARABIC_COMMA}))?"
-    f"(?:{PATTERN_SPACE}{WAW})?"
-    f"(?:{PATTERN_SPACE_OR_NONE}|\\b)"
+    f"(?:{EXPRESSION_SPACE_OR_NONE}(?:{COMMA}|{ARABIC_COMMA}))?"
+    f"(?:{EXPRESSION_SPACE}{WAW})?"
+    f"(?:{EXPRESSION_SPACE_OR_NONE}|\\b)"
 )
 """ Pattern that matches the word separator between numerals in Arabic """
 

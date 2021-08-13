@@ -12,7 +12,7 @@ __all__ = [
     "remove_harakat",
     "remove_numbers",
     "remove_tatweel",
-    "remove_patterns",
+    "remove_expressions",
     "remove_emails",
     "remove_hashtags",
     "remove_links",
@@ -44,19 +44,22 @@ from maha.constants import (
     HARAKAT,
     NOON,
     NUMBERS,
-    PATTERN_ARABIC_HASHTAGS,
-    PATTERN_ARABIC_MENTIONS,
-    PATTERN_EMAILS,
-    PATTERN_EMOJIS,
-    PATTERN_ENGLISH_HASHTAGS,
-    PATTERN_ENGLISH_MENTIONS,
-    PATTERN_HASHTAGS,
-    PATTERN_LINKS,
-    PATTERN_MENTIONS,
     PUNCTUATIONS,
     SPACE,
     TATWEEL,
 )
+from maha.expressions import (
+    EXPRESSION_ARABIC_HASHTAGS,
+    EXPRESSION_ARABIC_MENTIONS,
+    EXPRESSION_EMAILS,
+    EXPRESSION_EMOJIS,
+    EXPRESSION_ENGLISH_HASHTAGS,
+    EXPRESSION_ENGLISH_MENTIONS,
+    EXPRESSION_HASHTAGS,
+    EXPRESSION_LINKS,
+    EXPRESSION_MENTIONS,
+)
+from maha.rexy import Expression, ExpressionGroup
 from maha.utils import check_positive_integer
 
 
@@ -89,13 +92,13 @@ def remove(
     emojis: bool = False,
     use_space: bool = True,
     custom_strings: Union[List[str], str] = None,
-    custom_patterns: Union[List[str], str] = None,
+    custom_expressions: Union[ExpressionGroup, Expression] = None,
 ):
 
     """Removes certain characters from the given text.
 
     To add a new parameter, make sure that its name is the same as the corresponding
-    constant. For the patterns, only remove the prefix PATTERN_ from the parameter name
+    constant. For the patterns, only remove the prefix EXPRESSION_ from the parameter name
 
     Parameters
     ----------
@@ -134,39 +137,39 @@ def remove(
     arabic_ligatures : bool, optional
         Remove :data:`~.ARABIC_LIGATURES` words, by default False
     arabic_hashtags : bool, optional
-        Remove Arabic hashtags using the pattern :data:`~.PATTERN_ARABIC_HASHTAGS`,
+        Remove Arabic hashtags using the expression :data:`~.EXPRESSION_ARABIC_HASHTAGS`,
         by default False
     arabic_mentions : bool, optional
-        Remove Arabic mentions using the pattern :data:`~.PATTERN_ARABIC_MENTIONS`,
+        Remove Arabic mentions using the expression :data:`~.EXPRESSION_ARABIC_MENTIONS`,
         by default False
     emails : bool, optional
-        Remove Arabic hashtags using the pattern :data:`~.PATTERN_EMAILS`,
+        Remove Arabic hashtags using the expression :data:`~.EXPRESSION_EMAILS`,
         by default False
     english_hashtags : bool, optional
-        Remove Arabic hashtags using the pattern :data:`~.PATTERN_ENGLISH_HASHTAGS`,
+        Remove Arabic hashtags using the expression :data:`~.EXPRESSION_ENGLISH_HASHTAGS`,
         by default False
     english_mentions : bool, optional
-        Remove Arabic hashtags using the pattern :data:`~.PATTERN_ENGLISH_MENTIONS`,
+        Remove Arabic hashtags using the expression :data:`~.EXPRESSION_ENGLISH_MENTIONS`,
         by default False
     hashtags : bool, optional
-        Remove Arabic hashtags using the pattern :data:`~.PATTERN_HASHTAGS`,
+        Remove Arabic hashtags using the expression :data:`~.EXPRESSION_HASHTAGS`,
         by default False
     links : bool, optional
-        Remove Arabic hashtags using the pattern :data:`~.PATTERN_LINKS`,
+        Remove Arabic hashtags using the expression :data:`~.EXPRESSION_LINKS`,
         by default False
     mentions : bool, optional
-        Remove Arabic hashtags using the pattern :data:`~.PATTERN_MENTIONS`,
+        Remove Arabic hashtags using the expression :data:`~.EXPRESSION_MENTIONS`,
         by default False
     emojis : bool, optional
-        Remove emojis using the pattern :data:`~.PATTERN_EMOJIS`,
+        Remove emojis using the expression :data:`~.EXPRESSION_EMOJIS`,
         by default False
     use_space : bool, optional
         False to not replace with space, check :func:`~.remove_strings`
         for more information, by default True
     custom_strings : Union[List[str], str], optional
         Include any other string(s), by default None
-    custom_patterns , optional
-        Include any other regular expression patterns, by default None
+    custom_expressions , optional
+        Include any other regular expression expressions, by default None
 
     Returns
     -------
@@ -196,7 +199,7 @@ def remove(
         return EMPTY
 
     custom_strings = custom_strings or []
-    custom_patterns = custom_patterns or []
+    custom_expressions = custom_expressions or []
 
     # current function arguments
     current_arguments = locals()
@@ -204,20 +207,20 @@ def remove(
 
     # characters to remove
     chars_to_remove = []
-    # patterns to remove
-    patterns_to_remove = []
+    # expressions to remove
+    expressions_to_remove = []
 
     if isinstance(custom_strings, str):
         custom_strings = [custom_strings]
 
-    if isinstance(custom_patterns, str):
-        custom_patterns = [custom_patterns]
+    if isinstance(custom_expressions, str):
+        custom_expressions = [custom_expressions]
 
     chars_to_remove.extend(custom_strings)
-    patterns_to_remove.extend(custom_patterns)
+    expressions_to_remove.extend(custom_expressions)
 
     # Since each argument has the same name as the corresponding constant
-    # (But, patterns should be prefixed with "PATTERN_" to match the actual pattern.)
+    # (But, expressions should be prefixed with "EXPRESSION_" to match the actual expression.)
     # Looping through all arguments and appending constants that correspond to the
     # True arguments can work
     # TODO: Maybe find a good pythonic way to do this
@@ -226,18 +229,18 @@ def remove(
         if const and value is True:
             chars_to_remove += const
             continue
-        # check for pattern
-        pattern = constants.get("PATTERN_" + arg.upper())
-        if pattern and value is True:
-            patterns_to_remove.append(pattern)
+        # check for expression
+        expression = constants.get("EXPRESSION_" + arg.upper())
+        if expression and value is True:
+            expressions_to_remove.append(expression)
 
-    if not (chars_to_remove or patterns_to_remove):
+    if not (chars_to_remove or expressions_to_remove):
         raise ValueError("At least one argument should be True")
 
     output = text
-    # remove using patterns
-    if patterns_to_remove:
-        output = remove_patterns(output, patterns_to_remove)
+    # remove using expressions
+    if expressions_to_remove:
+        output = remove_expressions(output, ExpressionGroup(*expressions_to_remove))
 
     if chars_to_remove:
         # check for constants that cannot be replaced with a space
@@ -308,7 +311,7 @@ def reduce_repeated_substring(
         raise ValueError("`reduce_to` cannot be greater than `min_repeated`")
 
     pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
-    return functions.replace_pattern(text, pattern, r"\1" * reduce_to)
+    return functions.replace_expression(text, pattern, r"\1" * reduce_to)
 
 
 def remove_hash_keep_tag(text: str):
@@ -334,9 +337,9 @@ def remove_hash_keep_tag(text: str):
         'We love Jordan very much'
     """
 
-    return functions.replace_pattern(
+    return functions.replace_expression(
         text,
-        PATTERN_HASHTAGS,
+        EXPRESSION_HASHTAGS,
         lambda match: match.string[match.start() + 1 : match.end()],
     )
 
@@ -372,7 +375,7 @@ def remove_tatweel(text: str) -> str:
 
 
 def remove_emails(text: str) -> str:
-    """Removes emails using pattern :data:`~.PATTERN_EMAILS` from the given text.
+    """Removes emails using pattern :data:`~.EXPRESSION_EMAILS` from the given text.
 
     Parameters
     ----------
@@ -393,12 +396,12 @@ def remove_emails(text: str) -> str:
         >>> remove_emails(text)
         'يمكن استخدام الإيميل الشخصي، كمثال'
     """
-    return remove_patterns(text, PATTERN_EMAILS)
+    return remove_expressions(text, EXPRESSION_EMAILS)
 
 
 def remove_hashtags(text: str) -> str:
     """Removes hashtags (strings that start with # symbol) using pattern
-    :data:`~.PATTERN_HASHTAGS` from the given text.
+    :data:`~.EXPRESSION_HASHTAGS` from the given text.
 
     Parameters
     ----------
@@ -419,11 +422,11 @@ def remove_hashtags(text: str) -> str:
         >>> remove_hashtags(text)
         'ويمكن القول أن مكة المكرمة من أجمل المناطق على وجه الأرض'
     """
-    return remove_patterns(text, PATTERN_HASHTAGS)
+    return remove_expressions(text, EXPRESSION_HASHTAGS)
 
 
 def remove_links(text: str) -> str:
-    """Removes links using pattern :data:`~.PATTERN_LINKS` from the given text.
+    """Removes links using pattern :data:`~.EXPRESSION_LINKS` from the given text.
 
     Parameters
     ----------
@@ -444,12 +447,12 @@ def remove_links(text: str) -> str:
         >>> remove_links(text)
         'لمشاهدة آخر التطورات يرجى زيارة الموقع التالي:'
     """
-    return remove_patterns(text, PATTERN_LINKS)
+    return remove_expressions(text, EXPRESSION_LINKS)
 
 
 def remove_mentions(text: str) -> str:
     """Removes mentions (strings that start with @ symbol) using pattern
-    :data:`~.PATTERN_MENTIONS` from the given text.
+    :data:`~.EXPRESSION_MENTIONS` from the given text.
 
     Parameters
     ----------
@@ -470,7 +473,7 @@ def remove_mentions(text: str) -> str:
         >>> remove_mentions(text)
         'لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة'
     """
-    return remove_patterns(text, PATTERN_MENTIONS)
+    return remove_expressions(text, EXPRESSION_MENTIONS)
 
 
 def remove_punctuations(text: str) -> str:
@@ -598,8 +601,10 @@ def remove_numbers(text: str) -> str:
     return remove_strings(text, NUMBERS)
 
 
-def remove_patterns(
-    text: str, patterns: Union[List[str], str], remove_spaces: bool = True
+def remove_expressions(
+    text: str,
+    patterns: Union[Expression, ExpressionGroup, str],
+    remove_spaces: bool = True,
 ) -> str:
     r"""Removes matched characters from the given text ``text`` using input
     patterns ``patterns``
@@ -611,8 +616,8 @@ def remove_patterns(
     ----------
     text : str
         Text to process
-    patterns : Union[List[str], str]
-        Pattern(s) to use
+    patterns :
+        Expression(s) to use
     remove_spaces : bool, optional
         False to keep extra spaces, defaults to True
 
@@ -621,29 +626,17 @@ def remove_patterns(
     str
         Text with matched characters removed.
 
-    Raises
-    ------
-    ValueError
-        If no ``patterns`` are provided
-
     Example
     -------
 
     .. code-block:: pycon
 
         >>> text = "الأميرُ الغازي أرطُغرُل، أو اختصارًا أرطغرل (بالتركية: Ertuğrul)"
-        >>> remove_patterns(text, r"\(.*\)")
+        >>> remove_expressions(text, r"\(.*\)")
         'الأميرُ الغازي أرطُغرُل، أو اختصارًا أرطغرل'
     """
 
-    if not patterns:
-        raise ValueError("'chars' cannot be empty.")
-
-    # convert list to str
-    if isinstance(patterns, list):
-        patterns = "|".join(patterns)
-
-    output_text = functions.replace_pattern(text, patterns, EMPTY)
+    output_text = functions.replace_expression(text, patterns, EMPTY)
 
     if remove_spaces:
         output_text = remove_extra_spaces(output_text)
@@ -699,10 +692,6 @@ def remove_strings(
     if not strings:
         raise ValueError("'strings' cannot be empty.")
 
-    # convert str to list
-    if isinstance(strings, str):
-        strings = [strings]
-
     if use_space:
         output_text = functions.replace(text, strings, SPACE)
         output_text = remove_extra_spaces(output_text)
@@ -745,7 +734,9 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
     check_positive_integer(max_spaces, "max_spaces")
 
-    return functions.replace_pattern(text, SPACE * max_spaces + "+", SPACE * max_spaces)
+    return functions.replace_expression(
+        text, SPACE * max_spaces + "+", SPACE * max_spaces
+    )
 
 
 def remove_arabic_letter_dots(text: str) -> str:
@@ -771,7 +762,7 @@ def remove_arabic_letter_dots(text: str) -> str:
         >>> remove_arabic_letter_dots(text)
         'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'
     """
-    output = functions.replace_pattern(
+    output = functions.replace_expression(
         text,
         r"{}(?=[^{}]|[{}]\b|$)".format(
             NOON,

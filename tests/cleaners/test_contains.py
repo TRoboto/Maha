@@ -3,11 +3,13 @@ import pytest
 from maha.cleaners.functions import (
     contain_strings,
     contains,
-    contains_patterns,
+    contains_expressions,
     contains_repeated_substring,
     contains_single_letter_word,
 )
-from maha.constants import EMPTY, PATTERN_EMAILS
+from maha.constants import EMPTY
+from maha.expressions import EXPRESSION_EMAILS
+from maha.rexy import Expression, ExpressionGroup
 from tests.utils import is_false, is_true
 
 
@@ -190,18 +192,18 @@ def test_contains_with_custom_char(input: str, chars, expected: bool):
 
 
 @pytest.mark.parametrize(
-    "pattern, expected",
+    "expression, expected",
     [
-        ("[A-F]", True),
-        (["[A-F]"], True),
-        (PATTERN_EMAILS, False),
-        ([PATTERN_EMAILS], False),
+        (Expression("[A-F]"), True),
+        (ExpressionGroup(Expression("[A-F]")), True),
+        (EXPRESSION_EMAILS, False),
+        (ExpressionGroup(EXPRESSION_EMAILS), False),
     ],
 )
-def test_contains_with_custom_patterns(
-    simple_text_input: str, pattern: str, expected: bool
+def test_contains_with_custom_expressions(
+    simple_text_input: str, expression, expected: bool
 ):
-    assert contains(simple_text_input, custom_patterns=pattern) == expected
+    assert contains(simple_text_input, custom_expressions=expression) == expected
 
 
 def test_contains_with_multiple_inputs(simple_text_input: str):
@@ -225,14 +227,14 @@ def test_contains_raises_value_error(simple_text_input: str):
         contains(simple_text_input)
 
 
-def test_contains_patterns():
-    assert is_true(contains_patterns("email@web.com", PATTERN_EMAILS))
-    assert is_false(contains_patterns("web.com", PATTERN_EMAILS))
+def test_contains_expressions():
+    assert is_true(contains_expressions("email@web.com", EXPRESSION_EMAILS))
+    assert is_false(contains_expressions("web.com", EXPRESSION_EMAILS))
 
 
-def test_contains_patterns_raises_value_error(simple_text_input: str):
+def test_contains_expressions_raises_value_error(simple_text_input: str):
     with pytest.raises(ValueError):
-        contains_patterns(simple_text_input, EMPTY)
+        contains_expressions(simple_text_input, True)
 
 
 @pytest.mark.parametrize(

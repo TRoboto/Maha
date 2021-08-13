@@ -12,7 +12,7 @@ __all__ = [
 from typing import Callable
 
 import maha.rexy as rx
-from maha.constants import PATTERN_SPACE
+from maha.expressions import EXPRESSION_SPACE
 
 from .constants import HALF, QUARTER, THIRD, THREE_QUARTERS
 
@@ -58,6 +58,6 @@ def get_fractions_of_unit_pattern(
         third=get_value_group(THIRD),
         quarter=get_value_group(QUARTER),
         three_quarter=get_value_group(THREE_QUARTERS),
-        space=PATTERN_SPACE,
+        space=EXPRESSION_SPACE,
         unit=group_fn(unit),
     )

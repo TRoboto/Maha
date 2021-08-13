@@ -5,8 +5,8 @@ from maha.cleaners.functions import (
     connect_single_letter_word,
     replace,
     replace_except,
+    replace_expression,
     replace_pairs,
-    replace_pattern,
 )
 from maha.constants import (
     ARABIC_FOUR,
@@ -83,7 +83,7 @@ def test_arabic_numbers_to_english():
 
 
 def test_replace_pattern(simple_text_input: str):
-    processedtext = replace_pattern(simple_text_input, "[^A-Z]", EMPTY)
+    processedtext = replace_expression(simple_text_input, "[^A-Z]", EMPTY)
     assert list_only_in_string(ENGLISH_CAPITAL_LETTERS, processedtext)
 
 

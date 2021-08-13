@@ -18,9 +18,10 @@ from maha.cleaners.functions import (
     reduce_repeated_substring,
     remove,
     replace,
+    replace_expression,
     replace_pairs,
-    replace_pattern,
 )
+from maha.rexy import Expression, ExpressionGroup
 
 from .utils import ObjectGet
 
@@ -209,9 +210,13 @@ class BaseProcessor(ABC):
         self.apply(partial(replace, **self._arguments_except_self(locals())))
         return self
 
-    def replace_pattern(self, pattern: str, with_value: Union[Callable[..., str], str]):
-        """Applies :func:`~.replace_pattern` to each line"""
-        self.apply(partial(replace_pattern, **self._arguments_except_self(locals())))
+    def replace_expression(
+        self,
+        expression: Union[Expression, ExpressionGroup, str],
+        with_value: Union[Callable[..., str], str],
+    ):
+        """Applies :func:`~.replace_expression` to each line"""
+        self.apply(partial(replace_expression, **self._arguments_except_self(locals())))
         return self
 
     def replace_pairs(self, keys: List[str], values: List[str]):
@@ -255,7 +260,7 @@ class BaseProcessor(ABC):
         emojis: bool = False,
         use_space: bool = True,
         custom_strings: Union[List[str], str] = None,
-        custom_patterns: Union[List[str], str] = None,
+        custom_expressions: Union[List[str], str] = None,
     ):
         """Applies :func:`~.remove` to each line"""
         self.apply(partial(remove, **self._arguments_except_self(locals())))
@@ -292,7 +297,7 @@ class BaseProcessor(ABC):
         mentions: bool = False,
         emojis: bool = False,
         custom_strings: Union[List[str], str] = None,
-        custom_patterns: Union[List[str], str] = None,
+        custom_expressions: Union[List[str], str] = None,
         operator: str = "or",
     ):
         """Drop lines that contain any of the selected strings or patterns.
@@ -417,7 +422,7 @@ class BaseProcessor(ABC):
         mentions: bool = False,
         emojis: bool = False,
         custom_strings: Union[List[str], str] = None,
-        custom_patterns: Union[List[str], str] = None,
+        custom_expressions: Union[List[str], str] = None,
         operator: str = "or",
     ):
         """Keep lines that contain any of the selected strings or patterns.

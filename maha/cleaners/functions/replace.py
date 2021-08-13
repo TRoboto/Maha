@@ -5,7 +5,7 @@ __all__ = [
     "replace",
     "replace_except",
     "replace_pairs",
-    "replace_pattern",
+    "replace_expression",
     "arabic_numbers_to_english",
     "connect_single_letter_word",
 ]
@@ -28,6 +28,7 @@ from maha.constants import (
     TEH,
     WAW,
 )
+from maha.rexy import Expression, ExpressionGroup
 
 
 def connect_single_letter_word(
@@ -84,7 +85,7 @@ def connect_single_letter_word(
         letters.extend(re.escape(s) for s in custom_strings)
 
     letters = "|".join(letters)
-    return replace_pattern(text, r"(\b)({})(?:\s)(?=.)".format(letters), r"\1\2")
+    return replace_expression(text, r"(\b)({})(?:\s)(?=.)".format(letters), r"\1\2")
 
 
 def arabic_numbers_to_english(text: str):
@@ -119,18 +120,20 @@ def arabic_numbers_to_english(text: str):
     return replace_pairs(text, ARABIC_NUMBERS, ENGLISH_NUMBERS)
 
 
-def replace_pattern(
-    text: str, pattern: str, with_value: Union[Callable[..., str], str]
+def replace_expression(
+    text: str,
+    expression: Union[Expression, ExpressionGroup, str],
+    with_value: Union[Callable[..., str], str],
 ) -> str:
-    """Matches characters from the input text using the given ``pattern``
+    """Matches characters from the input text using the given ``expression``
     and replaces all matched characters with the given value.
 
     Parameters
     ----------
     text : str
         Text to process
-    pattern :
-        Pattern used to match characters from the text
+    expression :
+        Pattern/Expression used to match characters from the text
     with_value :
         Value to replace the matched characters with
 
@@ -144,16 +147,22 @@ def replace_pattern(
     .. code-block:: pycon
 
         >>> text = "ولقد حصلت على ١٠ من ١٠ "
-        >>> replace_pattern(text, "١٠", "عشرة")
+        >>> replace_expression(text, "١٠", "عشرة")
         'ولقد حصلت على عشرة من عشرة '
 
     .. code-block:: pycon
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
-        >>> replace_pattern(text, "ه( |$)", "ة ").strip()
+        >>> replace_expression(text, "ه( |$)", "ة ").strip()
         'ذهبت الفتاة إلى المدرسة'
     """
-    return re.sub(pattern, with_value, text)
+    if isinstance(expression, str):
+        expression = Expression(expression)
+
+    if isinstance(expression, ExpressionGroup):
+        expression = Expression(expression.join())
+
+    return expression.sub(with_value, text)
 
 
 def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
@@ -193,7 +202,7 @@ def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
     else:
         strings = str(re.escape(strings))
 
-    return replace_pattern(text, f"({strings})", with_value)
+    return replace_expression(text, f"({strings})", with_value)
 
 
 def replace_except(text: str, strings: Union[List[str], str], with_value: str) -> str:
@@ -231,7 +240,7 @@ def replace_except(text: str, strings: Union[List[str], str], with_value: str) -
     # To include the end
     strings += "|$"
 
-    return replace_pattern(
+    return replace_expression(
         text,
         f"(.*?)({strings})",
         lambda m: with_value + m.groups()[1] if m.groups()[0] else m.groups()[1],
@@ -278,4 +287,4 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
     def func(match):
         return values[keys.index(match.group(0))]
 
-    return replace_pattern(text, pattern, func)
+    return replace_expression(text, pattern, func)

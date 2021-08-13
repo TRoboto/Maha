@@ -7,6 +7,7 @@ from maha.cleaners.functions import (
     remove_arabic_letter_dots,
     remove_emails,
     remove_english,
+    remove_expressions,
     remove_extra_spaces,
     remove_harakat,
     remove_hash_keep_tag,
@@ -14,7 +15,6 @@ from maha.cleaners.functions import (
     remove_links,
     remove_mentions,
     remove_numbers,
-    remove_patterns,
     remove_punctuations,
     remove_strings,
     remove_tatweel,
@@ -271,7 +271,7 @@ def test_remove_with_custom_characters_not_found(simple_text_input: str, strings
 
 @pytest.mark.parametrize("pattern", ["[A-Za-z]", ["[A-Za-z]"]])
 def test_remove_with_custom_patterns(simple_text_input: str, pattern):
-    processed_text = remove(text=simple_text_input, custom_patterns=pattern)
+    processed_text = remove(text=simple_text_input, custom_expressions=pattern)
     assert processed_text == "1. بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ , , ."
     assert list_not_in_string(ENGLISH_LETTERS, processed_text)
 
@@ -657,14 +657,9 @@ def test_remove_strings_raise_valueerror(simple_text_input: str):
 
 
 def test_remove_patterns(simple_text_input: str):
-    processed_text = remove_patterns(simple_text_input, "[\u0600-\u06FF]+")
+    processed_text = remove_expressions(simple_text_input, "[\u0600-\u06FF]+")
     assert processed_text == "1. In the name of Allah,Most Gracious, Most Merciful."
     assert list_not_in_string(ARABIC, processed_text)
-
-
-def test_remove_patterns_raise_valueerror(simple_text_input: str):
-    with pytest.raises(ValueError):
-        remove_patterns(simple_text_input, "")
 
 
 @pytest.mark.parametrize(

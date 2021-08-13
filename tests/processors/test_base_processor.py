@@ -7,9 +7,9 @@ from maha.constants import (
     ARABIC_LETTERS,
     ARABIC_LIGATURES,
     ENGLISH_LETTERS,
-    PATTERN_HASHTAGS,
     TEH_MARBUTA,
 )
+from maha.expressions import EXPRESSION_HASHTAGS
 from maha.processors import BaseProcessor
 from tests.utils import list_not_in_string, list_only_in_string
 
@@ -119,8 +119,8 @@ class TestBaseProcessor:
             ["#Windows11", "12:00"], self.get_processed_text(processor)
         )
 
-    def test_replace_pattern(self, processor: BaseProcessor):
-        assert processor.replace_pattern(PATTERN_HASHTAGS, "HASHTAG") is processor
+    def test_replace_expression(self, processor: BaseProcessor):
+        assert processor.replace_expression(EXPRESSION_HASHTAGS, "HASHTAG") is processor
         assert len(self.get_processed_lines(processor)) == 9
         assert self.get_processed_text(processor).count("HASHTAG") == 6
         assert "#Windows11" not in self.get_processed_text(processor)

@@ -13,7 +13,7 @@ __all__ = [
 
 import itertools as it
 
-from maha.constants import PATTERN_DECIMAL, PATTERN_INTEGER, PATTERN_SPACE
+from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
 from ..constants import (
@@ -61,8 +61,8 @@ def _get_pattern(numeral: NumeralType):
         "(?:"
         + "|".join(_pattern).format(
             decimal=get_value_group(EXPRESSION_DECIMALS),
-            integer=get_value_group(PATTERN_INTEGER),
-            space=PATTERN_SPACE,
+            integer=get_value_group(EXPRESSION_INTEGER),
+            space=EXPRESSION_SPACE,
             unit_single_plural=multiplier_group("|".join([single, plural])),
             unit_single=multiplier_group(single),
             unit_dual=multiplier_group(dual),
@@ -91,7 +91,7 @@ def get_pattern(numeral: NumeralType):
     elif numeral == NumeralType.DECIMALS:
         pattern = get_group_value_without_multiplier(EXPRESSION_DECIMALS)
     elif numeral == NumeralType.INTEGERS:
-        pattern = get_group_value_without_multiplier(PATTERN_INTEGER)
+        pattern = get_group_value_without_multiplier(EXPRESSION_INTEGER)
     else:
         pattern = _get_pattern(numeral)
     return pattern
@@ -183,10 +183,10 @@ EXPRESSION_NUMERAL_PERFECT_HUNDREDS = ExpressionGroup(
 
 EXPRESSION_DECIMALS = Expression(
     non_capturing_group(
-        (PATTERN_DECIMAL),
+        (EXPRESSION_DECIMAL),
         *list(
             get_combinations(
-                PATTERN_INTEGER,
+                EXPRESSION_INTEGER,
                 EXPRESSION_NUMERAL_TENS_ONLY.join(),
                 EXPRESSION_NUMERAL_ONES_ONLY.join(),
             )

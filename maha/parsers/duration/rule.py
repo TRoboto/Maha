@@ -13,7 +13,7 @@ __all__ = [
     "EXPRESSION_DURATION",
 ]
 
-from maha.constants import PATTERN_SPACE
+from maha.expressions import EXPRESSION_SPACE
 from maha.parsers.helper import (
     get_fractions_of_unit_pattern,
     get_unit_group,
@@ -45,7 +45,7 @@ def _get_pattern(unit: DurationUnit):
             ]
         ).format(
             numeral=EXPRESSION_NUMERAL.join(),
-            space=PATTERN_SPACE,
+            space=EXPRESSION_SPACE,
             unit_single_plural=get_unit_group("|".join([single, plural])),
             unit_single=get_unit_group(single),
             unit_dual=get_unit_group(dual),

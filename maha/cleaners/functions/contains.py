@@ -4,7 +4,7 @@ Functions that operate on a string and check for values contained in it
 
 __all__ = [
     "contains",
-    "contains_patterns",
+    "contains_expressions",
     "contain_strings",
     "contains_repeated_substring",
     "contains_single_letter_word",
@@ -31,20 +31,23 @@ from maha.constants import (
     LAM_ALEF,
     LAM_ALEF_VARIATIONS,
     NUMBERS,
-    PATTERN_ARABIC_HASHTAGS,
-    PATTERN_ARABIC_MENTIONS,
-    PATTERN_EMAILS,
-    PATTERN_EMOJIS,
-    PATTERN_ENGLISH_HASHTAGS,
-    PATTERN_ENGLISH_MENTIONS,
-    PATTERN_HASHTAGS,
-    PATTERN_LINKS,
-    PATTERN_MENTIONS,
     PERSIAN,
     PUNCTUATIONS,
     SPACE,
     TATWEEL,
 )
+from maha.expressions import (
+    EXPRESSION_ARABIC_HASHTAGS,
+    EXPRESSION_ARABIC_MENTIONS,
+    EXPRESSION_EMAILS,
+    EXPRESSION_EMOJIS,
+    EXPRESSION_ENGLISH_HASHTAGS,
+    EXPRESSION_ENGLISH_MENTIONS,
+    EXPRESSION_HASHTAGS,
+    EXPRESSION_LINKS,
+    EXPRESSION_MENTIONS,
+)
+from maha.rexy import Expression, ExpressionGroup
 from maha.utils import check_positive_integer
 
 
@@ -79,14 +82,14 @@ def contains(
     mentions: bool = False,
     emojis: bool = False,
     custom_strings: Union[List[str], str] = None,
-    custom_patterns: Union[List[str], str] = None,
+    custom_expressions: Union[ExpressionGroup, Expression] = None,
     operator: str = None,
 ) -> Union[Dict[str, bool], bool]:
 
     """Check for certain characters, strings or patterns in the given text.
 
     To add a new parameter, make sure that its name is the same as the corresponding
-    constant. For the patterns, only remove the prefix PATTERN_ from the parameter name
+    constant. For the patterns, only remove the prefix EXPRESSION_ from the parameter name
 
     Parameters
     ----------
@@ -131,36 +134,36 @@ def contains(
     persian : bool, optional
         Check for :data:`~.PERSIAN` characters, by default False
     arabic_hashtags : bool, optional
-        Check for Arabic hashtags using the pattern :data:`~.PATTERN_ARABIC_HASHTAGS`,
+        Check for Arabic hashtags using the expression :data:`~.EXPRESSION_ARABIC_HASHTAGS`,
         by default False
     arabic_mentions : bool, optional
-        Check for Arabic mentions using the pattern :data:`~.PATTERN_ARABIC_MENTIONS`,
+        Check for Arabic mentions using the expression :data:`~.EXPRESSION_ARABIC_MENTIONS`,
         by default False
     emails : bool, optional
-        Check for Arabic hashtags using the pattern :data:`~.PATTERN_EMAILS`,
+        Check for Arabic hashtags using the expression :data:`~.EXPRESSION_EMAILS`,
         by default False
     english_hashtags : bool, optional
-        Check for Arabic hashtags using the pattern :data:`~.PATTERN_ENGLISH_HASHTAGS`,
+        Check for Arabic hashtags using the expression :data:`~.EXPRESSION_ENGLISH_HASHTAGS`,
         by default False
     english_mentions : bool, optional
-        Check for Arabic hashtags using the pattern :data:`~.PATTERN_ENGLISH_MENTIONS`,
+        Check for Arabic hashtags using the expression :data:`~.EXPRESSION_ENGLISH_MENTIONS`,
         by default False
     hashtags : bool, optional
-        Check for Arabic hashtags using the pattern :data:`~.PATTERN_HASHTAGS`,
+        Check for Arabic hashtags using the expression :data:`~.EXPRESSION_HASHTAGS`,
         by default False
     links : bool, optional
-        Check for Arabic hashtags using the pattern :data:`~.PATTERN_LINKS`,
+        Check for Arabic hashtags using the expression :data:`~.EXPRESSION_LINKS`,
         by default False
     mentions : bool, optional
-        Check for Arabic hashtags using the pattern :data:`~.PATTERN_MENTIONS`,
+        Check for Arabic hashtags using the expression :data:`~.EXPRESSION_MENTIONS`,
         by default False
     emojis : bool, optional
-        Check for emojis using the pattern :data:`~.PATTERN_EMOJIS`,
+        Check for emojis using the expression :data:`~.EXPRESSION_EMOJIS`,
         by default False
     custom_strings : Union[List[str], str], optional
         Include any other string(s), by default None
-    custom_patterns : Union[List[str], str], optional
-        Include any other regular expression patterns, by default None
+    custom_expressions :
+        Include any other expressions, by default None
     operator : bool, optional
         When multiple arguments are set to True, this operator is used  to combine
         the output into a boolean. Takes 'and' or 'or', by default None
@@ -204,7 +207,7 @@ def contains(
         raise ValueError("`operator` can only take 'and' or 'or'")
 
     custom_strings = custom_strings or []
-    custom_patterns = custom_patterns or []
+    custom_expressions = custom_expressions or []
 
     # current function arguments
     current_arguments = locals()
@@ -212,7 +215,7 @@ def contains(
 
     output = {}
     # Since each argument has the same name as the corresponding constant
-    # (But, patterns should be prefixed with "PATTERN_" to match the actual pattern.)
+    # (But, expressions should be prefixed with "EXPRESSION_" to match the actual expression.)
     # Looping through all arguments and checking for constants that correspond to the
     # True arguments can work
     # TODO: Maybe find a good pythonic way to do this
@@ -221,15 +224,15 @@ def contains(
         if const and value is True:
             output[arg] = contain_strings(text, const)
             continue
-        # check for pattern
-        pattern = constants.get("PATTERN_" + arg.upper())
-        if pattern and value is True:
-            output[arg] = contains_patterns(text, pattern)
+        # check for expression
+        expression = constants.get("EXPRESSION_" + arg.upper())
+        if expression and value is True:
+            output[arg] = contains_expressions(text, expression)
 
     if custom_strings:
         output["custom_strings"] = contain_strings(text, custom_strings)
-    if custom_patterns:
-        output["custom_patterns"] = contains_patterns(text, custom_patterns)
+    if custom_expressions:
+        output["custom_expressions"] = contains_expressions(text, custom_expressions)
 
     if not output:
         raise ValueError("At least one argument should be True")
@@ -277,7 +280,7 @@ def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
     check_positive_integer(min_repeated, "min_repeated")
 
     pattern = r"(.+?)\1{}".format(f"{{{min_repeated-1},}}")
-    return contains_patterns(text, pattern)
+    return contains_expressions(text, pattern)
 
 
 def contains_single_letter_word(
@@ -327,11 +330,13 @@ def contains_single_letter_word(
         raise ValueError("At least one argument should be True")
 
     pattern = r"\b[{}]\b".format("".join(letters))
-    return contains_patterns(text, pattern)
+    return contains_expressions(text, pattern)
 
 
-def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
-    r"""Check for matched strings in the given ``text`` using the input ``patterns``
+def contains_expressions(
+    text: str, expressions: Union[ExpressionGroup, Expression, str]
+) -> bool:
+    r"""Check for matched strings in the given ``text`` using the input ``expressions``
 
     .. note::
         Use lookahead/lookbehind when substrings should not be captured or removed.
@@ -340,8 +345,8 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     ----------
     text : str
         Text to check
-    patterns : Union[List[str], str]
-        Pattern(s) to use
+    expressions : Union[:class:`ExpressionGroup`, :class:`Expression`, str]
+        Expression(s) to use
 
     Returns
     -------
@@ -351,7 +356,8 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     Raises
     ------
     ValueError
-        If no ``patterns`` are provided
+        If ``expressions`` are not of type :class:`Expression`, :class:`ExpressionGroup`
+        or str
 
     Example
     -------
@@ -359,18 +365,20 @@ def contains_patterns(text: str, patterns: Union[List[str], str]) -> bool:
     .. code-block:: pycon
 
         >>> text = "علم الهندسة (Engineering)"
-        >>> contains_patterns(text, r"\([A-Za-z]+\)")
+        >>> contains_expressions(text, r"\([A-Za-z]+\)")
         True
     """
 
-    if not patterns:
-        raise ValueError("'chars' cannot be empty.")
+    if isinstance(expressions, ExpressionGroup):
+        return any(contains_expressions(text, expr) for expr in expressions)
 
-    # convert list to str
-    if isinstance(patterns, list):
-        patterns = "|".join(patterns)
+    if isinstance(expressions, Expression):
+        return bool(expressions.search(text))
 
-    return bool(re.search(patterns, text))
+    if isinstance(expressions, str):
+        return bool(Expression(expressions).search(text))
+
+    raise ValueError("'expressions' must be of type Expression, ExpressionGroup or str")
 
 
 def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
@@ -412,4 +420,5 @@ def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
     else:
         strings = str(re.escape(strings))
 
-    return contains_patterns(text, f"({strings})")
+    expression = Expression(f"({strings})")
+    return contains_expressions(text, expression)

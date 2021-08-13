@@ -2,32 +2,42 @@
 
 import re
 
-from .arabic import (
+from maha.constants import (
+    AND_SIGN,
     ARABIC_COMMA,
     ARABIC_DECIMAL_SEPARATOR,
     ARABIC_NUMBERS,
     ARABIC_THOUSANDS_SEPARATOR,
+    AT_SIGN,
+    COMMA,
+    ENGLISH_NUMBERS,
+    HASHTAG,
+    PUNCTUATIONS,
+    SPACE,
+    UNDERSCORE,
 )
-from .english import AND_SIGN, AT_SIGN, COMMA, ENGLISH_NUMBERS, HASHTAG, UNDERSCORE
-from .general import PUNCTUATIONS, SPACE
+from maha.rexy import Expression
 
-PATTERN_HASHTAGS: str = r"(?<=\s|^|\n|{})(#[\w-]+)\b".format(
-    "|".join(
-        [
-            re.escape(pun)
-            for pun in PUNCTUATIONS
-            if pun not in [AT_SIGN, AND_SIGN, UNDERSCORE]
-        ]
-    ),
+EXPRESSION_HASHTAGS = Expression(
+    r"(?<=\s|^|\n|{})(#[\w-]+)\b".format(
+        "|".join(
+            [
+                re.escape(pun)
+                for pun in PUNCTUATIONS
+                if pun not in [AT_SIGN, AND_SIGN, UNDERSCORE]
+            ]
+        ),
+    )
 )
-""" Pattern that matches hashtags """
+""" Expression that matches hashtags """
 
 
-PATTERN_MENTIONS: str = PATTERN_HASHTAGS.replace(HASHTAG, AT_SIGN)
-""" Pattern that matches mentions """
+EXPRESSION_MENTIONS = Expression(EXPRESSION_HASHTAGS.pattern.replace(HASHTAG, AT_SIGN))
+""" Expression that matches mentions """
 
 # Adopted from https://gist.github.com/gruber/8891611
-PATTERN_LINKS: str = r"""
+EXPRESSION_LINKS = Expression(
+    r"""
 (?xi)
 \b
 (							# Capture 1: entire matched URL
@@ -72,16 +82,17 @@ PATTERN_LINKS: str = r"""
   )
 )
 """
-""" Liberal, Accurate Regex Pattern for Matching Web URLs """
+)
+""" Liberal, Accurate Regex Expression for Matching Web URLs """
 
 # Adopted from https://emailregex.com/
-PATTERN_EMAILS: str = r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)"
-""" Pattern that matches emails """
+EXPRESSION_EMAILS = Expression(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+)")
+""" Expression that matches emails """
 
 # Adopted from https://gist.github.com/slowkow/7a7f61f495e3dbb7e3d767f97bd7304b
 # TODO: Validate that all of these are valid emojis
 # TODO: Remove Arabic Ligatures from the list
-PATTERN_EMOJIS: str = (
+EXPRESSION_EMOJIS = Expression(
     "["
     "\U0001F600-\U0001F64F"  # emoticons
     "\U0001F300-\U0001F5FF"  # symbols & pictographs
@@ -103,29 +114,35 @@ PATTERN_EMOJIS: str = (
     "\u3030"
     "]+"
 )
-""" Pattern that matches emojis """
+""" Expression that matches emojis """
 
-PATTERN_ALL_SPACES: str = r"[\u00A0\u1680\u2000-\u200B\u202F\u205F\u3000\uFEFF]"
+EXPRESSION_ALL_SPACES = Expression(
+    r"[\u00A0\u1680\u2000-\u200B\u202F\u205F\u3000\uFEFF]"
+)
 """
-Pattern that matches space variations. Normal space is not included.
+Expression that matches space variations. Normal space is not included.
 Taken from: https://jkorpela.fi/chars/spaces.html
 """
 
-PATTERN_INTEGER: str = r"[+-]?(?:[{0}](?:{1})?)+\%?".format(
-    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
-    "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
+EXPRESSION_INTEGER = Expression(
+    r"[+-]?(?:[{0}](?:{1})?)+\%?".format(
+        "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
+        "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
+    )
 )
-""" Pattern that matches Arabic and English integers """
+""" Expression that matches Arabic and English integers """
 
-PATTERN_DECIMAL: str = r"[+-]?(?:[{0}](?:{1})?)*[.{2}](?:[{0}](?:{1})?)+\%?".format(
-    "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
-    "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
-    ARABIC_DECIMAL_SEPARATOR,
+EXPRESSION_DECIMAL = Expression(
+    r"[+-]?(?:[{0}](?:{1})?)*[.{2}](?:[{0}](?:{1})?)+\%?".format(
+        "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
+        "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
+        ARABIC_DECIMAL_SEPARATOR,
+    )
 )
-""" Pattern that matches Arabic and English decimals """
+""" Expression that matches Arabic and English decimals """
 
-PATTERN_SPACE: str = r"\s+"
-""" Pattern that matches at least one whitespace """
+EXPRESSION_SPACE = Expression(r"\s+")
+""" Expression that matches at least one whitespace """
 
-PATTERN_SPACE_OR_NONE: str = r"\s*"
-""" Pattern that matches zero or more whitespaces """
+EXPRESSION_SPACE_OR_NONE = Expression(r"\s*")
+""" Expression that matches zero or more whitespaces """

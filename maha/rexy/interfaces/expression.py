@@ -37,7 +37,7 @@ class Expression:
         pattern: str,
         pickle: bool = False,
     ):
-        self.pattern = pattern
+        self.pattern = str(pattern)
         self.pickle = pickle
         self._compiled_pattern = None
 
@@ -91,6 +91,23 @@ class Expression:
         """
         self.compile()
         return self._compiled_pattern.match(text)
+
+    def sub(self, repl: str, text: str) -> str:
+        """Replace all occurrences of the pattern in the input ``text``.
+
+        Parameters
+        ----------
+        repl : str
+            Replacement string.
+        text : str
+            Text to replace.
+
+        Returns
+        -------
+        str
+            Text with replaced occurrences.
+        """
+        return re.sub(self.pattern, repl, text)
 
     def __call__(self, text: str) -> Iterable["ExpressionResult"]:
         """
