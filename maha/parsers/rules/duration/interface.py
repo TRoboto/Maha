@@ -6,11 +6,11 @@ from typing import List
 
 from regex.regex import Match
 
-import maha.parsers.duration.utils as utils
+import maha.parsers.rules.duration.utils as utils
+from maha.parsers.interfaces import DurationUnit
 from maha.parsers.interfaces.unit_expression import UnitExpression, ValueUnit
 from maha.rexy import ExpressionResult
 
-from ..interfaces import DurationUnit
 from .expressions import (
     DAYS,
     DUAL_DURATIONS,

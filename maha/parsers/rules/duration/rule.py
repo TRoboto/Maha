@@ -3,27 +3,27 @@ Expressions to extract duration.
 """
 
 __all__ = [
-    "EXPRESSION_DURATION_SECONDS",
-    "EXPRESSION_DURATION_MINUTES",
-    "EXPRESSION_DURATION_HOURS",
-    "EXPRESSION_DURATION_DAYS",
-    "EXPRESSION_DURATION_WEEKS",
-    "EXPRESSION_DURATION_MONTHS",
-    "EXPRESSION_DURATION_YEARS",
-    "EXPRESSION_DURATION",
+    "RULE_DURATION_SECONDS",
+    "RULE_DURATION_MINUTES",
+    "RULE_DURATION_HOURS",
+    "RULE_DURATION_DAYS",
+    "RULE_DURATION_WEEKS",
+    "RULE_DURATION_MONTHS",
+    "RULE_DURATION_YEARS",
+    "RULE_DURATION",
 ]
 
 from maha.expressions import EXPRESSION_SPACE
+from maha.parsers.expressions import EXPRESSION_START, NUMERAL_WORD_SEPARATOR
 from maha.parsers.helper import (
     get_fractions_of_unit_pattern,
     get_unit_group,
     get_value_group,
 )
-from maha.parsers.numeral import EXPRESSION_NUMERAL
+from maha.parsers.interfaces import DurationUnit
+from maha.parsers.rules.numeral import RULE_NUMERAL
 from maha.rexy import ExpressionGroup
 
-from ..expressions import EXPRESSION_START, NUMERAL_WORD_SEPARATOR
-from ..interfaces import DurationUnit
 from .expressions import *
 from .interface import DurationExpression
 
@@ -44,7 +44,7 @@ def _get_pattern(unit: DurationUnit):
                 "{val}{unit_single}",
             ]
         ).format(
-            numeral=EXPRESSION_NUMERAL.join(),
+            numeral=RULE_NUMERAL.join(),
             space=EXPRESSION_SPACE,
             unit_single_plural=get_unit_group("|".join([single, plural])),
             unit_single=get_unit_group(single),
@@ -68,21 +68,21 @@ def _get_combined_expression(*unit: DurationUnit) -> DurationExpression:
     return DurationExpression(f"".join(patterns), pickle=True)
 
 
-EXPRESSION_DURATION_SECONDS = _get_combined_expression(DurationUnit.SECONDS)
+RULE_DURATION_SECONDS = _get_combined_expression(DurationUnit.SECONDS)
 
-EXPRESSION_DURATION_MINUTES = _get_combined_expression(DurationUnit.MINUTES)
+RULE_DURATION_MINUTES = _get_combined_expression(DurationUnit.MINUTES)
 
-EXPRESSION_DURATION_HOURS = _get_combined_expression(DurationUnit.HOURS)
+RULE_DURATION_HOURS = _get_combined_expression(DurationUnit.HOURS)
 
-EXPRESSION_DURATION_DAYS = _get_combined_expression(DurationUnit.DAYS)
+RULE_DURATION_DAYS = _get_combined_expression(DurationUnit.DAYS)
 
-EXPRESSION_DURATION_WEEKS = _get_combined_expression(DurationUnit.WEEKS)
+RULE_DURATION_WEEKS = _get_combined_expression(DurationUnit.WEEKS)
 
-EXPRESSION_DURATION_MONTHS = _get_combined_expression(DurationUnit.MONTHS)
+RULE_DURATION_MONTHS = _get_combined_expression(DurationUnit.MONTHS)
 
-EXPRESSION_DURATION_YEARS = _get_combined_expression(DurationUnit.YEARS)
+RULE_DURATION_YEARS = _get_combined_expression(DurationUnit.YEARS)
 
-EXPRESSION_DURATION = ExpressionGroup(
+RULE_DURATION = ExpressionGroup(
     _get_combined_expression(
         DurationUnit.YEARS,
         DurationUnit.MONTHS,

@@ -1,11 +1,10 @@
 __all__ = ["get_matched_numeral", "get_value"]
 
 
-import maha.parsers.numeral.rule as rule
+import maha.parsers.rules.numeral.rule as rule
+from maha.parsers.expressions import WAW_CONNECTOR
+from maha.parsers.utils import convert_to_number_if_possible
 from maha.rexy import ExpressionGroup
-
-from ..expressions import WAW_CONNECTOR
-from ..utils import convert_to_number_if_possible
 
 
 def get_matched_numeral(numeral) -> int:

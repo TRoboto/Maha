@@ -1,8 +1,7 @@
 __all__ = ["convert_between_durations"]
 
-import maha.parsers.duration.interface as interface
-
-from ..interfaces import DurationUnit
+import maha.parsers.rules.duration.interface as interface
+from maha.parsers.interfaces import DurationUnit
 
 DURATION_CONVERSION_MAP = {
     DurationUnit.SECONDS: {
