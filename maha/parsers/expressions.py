@@ -11,6 +11,7 @@ __all__ = [
     "TWO_SUFFIX",
     "SUM_SUFFIX",
     "EXPRESSION_START",
+    "EXPRESSION_END",
 ]
 
 from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
@@ -53,4 +54,7 @@ SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
 """ Pattern that matches the sum-suffix of words in Arabic """
 
 EXPRESSION_START = Expression(positive_lookbehind("^", r"\W", r"\b", WAW, LAM))
+""" Pattern that matches the start of a rule expression in Arabic """
+
 EXPRESSION_END = Expression(positive_lookahead("$", r"\W", r"\b"))
+""" Pattern that matches the end of a rule expression in Arabic """
