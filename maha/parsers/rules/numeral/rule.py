@@ -15,8 +15,10 @@ import itertools as it
 
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
 from maha.parsers.expressions import (
+    EXPRESSION_END,
     EXPRESSION_START,
     HALF,
+    WORD_SEPARATOR,
     QUARTER,
     THIRD,
     THREE_QUARTERS,
@@ -92,17 +94,17 @@ def get_pattern(numeral: NumeralType):
 
 
 def get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
-    patterns = []
-    for i, u in enumerate(numerals):
-        pattern = get_pattern(u)
-        if i == 0:
-            pattern = EXPRESSION_START + pattern
-        else:
-            pattern = f"{non_capturing_group(WAW_CONNECTOR + pattern)}?"
+    all_expressions = non_capturing_group(
+        *[get_pattern(numeral) for numeral in numerals]
+    )
+    patterns = [EXPRESSION_START + all_expressions + EXPRESSION_END]
 
-        if u not in [NumeralType.DECIMALS, NumeralType.INTEGERS]:
-            pattern += r"\b"
+    for u in numerals[1:]:
+        pattern = (
+            non_capturing_group(WORD_SEPARATOR + get_pattern(u) + EXPRESSION_END) + "?"
+        )
         patterns.append(pattern)
+
     return NumeralExpression("".join(patterns), pickle=True)
 
 
@@ -227,15 +229,17 @@ RULE_NUMERAL_TRILLIONS = get_combined_expression(
 )
 
 RULE_NUMERAL = ExpressionGroup(
-    RULE_NUMERAL_TRILLIONS,
-    RULE_NUMERAL_BILLIONS,
-    RULE_NUMERAL_MILLIONS,
-    RULE_NUMERAL_THOUSANDS,
-    RULE_NUMERAL_HUNDREDS,
-    RULE_NUMERAL_DECIMALS,
-    RULE_NUMERAL_INTEGERS,
-    RULE_NUMERAL_TENS,
-    RULE_NUMERAL_ONES,
+    get_combined_expression(
+        NumeralType.TRILLIONS,
+        NumeralType.BILLIONS,
+        NumeralType.MILLIONS,
+        NumeralType.THOUSANDS,
+        NumeralType.HUNDREDS,
+        NumeralType.DECIMALS,
+        NumeralType.TENS,
+        NumeralType.ONES,
+        NumeralType.INTEGERS,
+    ),
     smart=True,
 )
 

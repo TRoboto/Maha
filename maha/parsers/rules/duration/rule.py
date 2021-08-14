@@ -14,7 +14,11 @@ __all__ = [
 ]
 
 from maha.expressions import EXPRESSION_SPACE
-from maha.parsers.expressions import EXPRESSION_START, NUMERAL_WORD_SEPARATOR
+from maha.parsers.expressions import (
+    EXPRESSION_END,
+    EXPRESSION_START,
+    WORD_SEPARATOR,
+)
 from maha.parsers.helper import (
     get_fractions_of_unit_pattern,
     get_unit_group,
@@ -56,15 +60,15 @@ def _get_pattern(unit: DurationUnit):
     return pattern
 
 
-def _get_combined_expression(*unit: DurationUnit) -> DurationExpression:
-    patterns = []
-    for i, u in enumerate(unit):
-        pattern = _get_pattern(u)
-        if i == 0:
-            pattern = EXPRESSION_START + pattern
-        else:
-            pattern = f"{non_capturing_group(NUMERAL_WORD_SEPARATOR + pattern)}?"
-        patterns.append(pattern + r"\b")
+def _get_combined_expression(*units: DurationUnit) -> DurationExpression:
+    all_expressions = non_capturing_group(*[_get_pattern(unit) for unit in units])
+    patterns = [EXPRESSION_START + all_expressions + EXPRESSION_END]
+
+    for u in units[1:]:
+        pattern = (
+            non_capturing_group(WORD_SEPARATOR + _get_pattern(u) + EXPRESSION_END) + "?"
+        )
+        patterns.append(pattern)
     return DurationExpression(f"".join(patterns), pickle=True)
 
 
@@ -90,39 +94,6 @@ RULE_DURATION = ExpressionGroup(
         DurationUnit.DAYS,
         DurationUnit.HOURS,
         DurationUnit.MINUTES,
-        DurationUnit.SECONDS,
-    ),
-    _get_combined_expression(
-        DurationUnit.MONTHS,
-        DurationUnit.WEEKS,
-        DurationUnit.DAYS,
-        DurationUnit.HOURS,
-        DurationUnit.MINUTES,
-        DurationUnit.SECONDS,
-    ),
-    _get_combined_expression(
-        DurationUnit.WEEKS,
-        DurationUnit.DAYS,
-        DurationUnit.HOURS,
-        DurationUnit.MINUTES,
-        DurationUnit.SECONDS,
-    ),
-    _get_combined_expression(
-        DurationUnit.DAYS,
-        DurationUnit.HOURS,
-        DurationUnit.MINUTES,
-        DurationUnit.SECONDS,
-    ),
-    _get_combined_expression(
-        DurationUnit.HOURS,
-        DurationUnit.MINUTES,
-        DurationUnit.SECONDS,
-    ),
-    _get_combined_expression(
-        DurationUnit.MINUTES,
-        DurationUnit.SECONDS,
-    ),
-    _get_combined_expression(
         DurationUnit.SECONDS,
     ),
     smart=True,
