@@ -16,6 +16,11 @@ def multiple_tweets(multiple_tweets_file: Path):
 
 
 @pytest.fixture()
+def wiki_arlang():
+    return Path("sample_data/wiki_arlang.txt").open(encoding="utf8").read()
+
+
+@pytest.fixture()
 def multiple_tweets_file():
     return Path("sample_data/tweets.txt")
 
