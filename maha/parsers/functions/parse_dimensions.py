@@ -69,7 +69,7 @@ def parse_dimension(
         output.extend(parse_expression(text, RULE_DURATION, DimensionType.DURATION))
     if numeral:
         output.extend(parse_expression(text, RULE_NUMERAL, DimensionType.NUMERAL))
-    if not output:
+    if not any([duration, numeral]):
         raise ValueError("At least one argument should be True")
 
     return output
