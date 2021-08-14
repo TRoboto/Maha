@@ -4,7 +4,6 @@ from maha.constants import (
     ALEF_SUPERSCRIPT,
     ARABIC,
     ARABIC_NUMBERS,
-    ARABIC_ONE,
     BEH,
     EMPTY,
     FATHA,
