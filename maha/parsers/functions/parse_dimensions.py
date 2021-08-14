@@ -1,10 +1,7 @@
 __all__ = ["parse_dimension"]
 
-from maha.parsers.interfaces import DimensionType
 from maha.parsers.rules import RULE_DURATION
 from maha.parsers.rules.numeral.rule import RULE_NUMERAL
-
-from .parse import parse_expression
 
 
 def parse_dimension(
