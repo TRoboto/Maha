@@ -197,21 +197,6 @@ def parse(
     return output
 
 
-def parse_dimension(
-    text: str,
-    amount_of_money: bool = None,
-    duration: bool = None,
-    distance: bool = None,
-    numeral: bool = None,
-    ordinal: bool = None,
-    quantity: bool = None,
-    temperature: bool = None,
-    time: bool = None,
-    volume: bool = None,
-):
-    pass
-
-
 def parse_expression(
     text: str,
     expressions: Union[ExpressionGroup, Expression],

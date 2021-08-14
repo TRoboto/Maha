@@ -8,6 +8,7 @@ class DimensionType(Enum):
     AMOUNT_OF_MONEY = auto()
     DISTANCE = auto()
     DURATION = auto()
+    NUMERAL = auto()
     ARABIC = auto()
     ENGLISH = auto()
     ARABIC_LETTERS = auto()
