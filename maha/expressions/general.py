@@ -125,7 +125,7 @@ Taken from: https://jkorpela.fi/chars/spaces.html
 """
 
 EXPRESSION_INTEGER = Expression(
-    r"[+-]?(?:[{0}](?:{1})?)+\%?".format(
+    r"[+-]?(?:[{0}](?:{1})?)+%?".format(
         "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
         "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
     )
@@ -133,7 +133,7 @@ EXPRESSION_INTEGER = Expression(
 """ Expression that matches Arabic and English integers """
 
 EXPRESSION_DECIMAL = Expression(
-    r"[+-]?(?:[{0}](?:{1})?)*[.{2}](?:[{0}](?:{1})?)+\%?".format(
+    r"[+-]?(?:[{0}](?:{1})?)*[.{2}](?:[{0}](?:{1})?)+%?".format(
         "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
         "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
         ARABIC_DECIMAL_SEPARATOR,
