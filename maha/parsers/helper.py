@@ -27,9 +27,7 @@ def get_unit_group(pattern: str):
     return rx.named_group("unit", pattern)
 
 
-def get_fractions_of_unit_pattern(
-    unit: str, group_fn: Callable = get_unit_group
-) -> str:
+def get_fractions_of_unit_pattern(unit: str) -> str:
     """
     Returns the fractions of a unit pattern.
 
@@ -37,8 +35,6 @@ def get_fractions_of_unit_pattern(
     ----------
     unit: str
         The unit pattern.
-    group_fn: Callable
-        The group function to use with unit pattern.
 
     Returns
     -------
@@ -59,5 +55,5 @@ def get_fractions_of_unit_pattern(
         quarter=get_value_group(QUARTER),
         three_quarter=get_value_group(THREE_QUARTERS),
         space=EXPRESSION_SPACE,
-        unit=group_fn(unit),
+        unit=get_unit_group(unit),
     )
