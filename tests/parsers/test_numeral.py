@@ -4,7 +4,7 @@ from typing import List
 
 import pytest
 
-from maha.parsers.functions import parse_expression
+from maha.parsers.functions import parse_dimension
 from maha.parsers.rules.numeral import *
 
 random.seed(0)
@@ -70,7 +70,7 @@ def get_value_with_integer(ar_int: str, en_int: str, values: List[str]):
     ),
 )
 def test_ones(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -146,7 +146,7 @@ def test_ones(input, expected):
     ),
 )
 def test_tens(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -164,7 +164,7 @@ def test_tens(input, expected):
     ),
 )
 def test_perfect_tens(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -204,7 +204,7 @@ def test_perfect_tens(input, expected):
     ),
 )
 def test_combines_tens(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -252,7 +252,7 @@ def test_combines_tens(input, expected):
     ),
 )
 def test_perfect_hundreds(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -271,7 +271,7 @@ def test_perfect_hundreds(input, expected):
     ),
 )
 def test_hundreds(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -289,7 +289,7 @@ def test_hundreds(input, expected):
     ),
 )
 def test_perfect_thousands(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -312,7 +312,7 @@ def test_perfect_thousands(input, expected):
     ),
 )
 def test_thousands(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -336,7 +336,7 @@ def test_thousands(input, expected):
     ],
 )
 def test_numbers(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -353,7 +353,7 @@ def test_numbers(input, expected):
     ],
 )
 def test_fasila_numbers(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -371,7 +371,7 @@ def test_fasila_numbers(input, expected):
     ),
 )
 def test_perfect_millions(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -400,4 +400,4 @@ def test_perfect_millions(input, expected):
     ),
 )
 def test_millions(input, expected):
-    assert_expression_output(parse_expression(input, RULE_NUMERAL), expected)
+    assert_expression_output(parse_dimension(input, numeral=True), expected)

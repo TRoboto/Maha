@@ -4,9 +4,10 @@ from typing import List
 
 import pytest
 
+from maha.parsers.functions import parse_dimension
 from maha.parsers.rules.duration import *
 from maha.parsers.rules.duration.interface import DurationUnit, DurationValue, ValueUnit
-from maha.rexy import ExpressionGroup, ExpressionResult
+from maha.rexy import ExpressionResult
 
 S = DurationUnit.SECONDS
 MIN = DurationUnit.MINUTES
@@ -105,7 +106,7 @@ def assert_expression_output(output, expected, unit):
     ),
 )
 def test_seconds_expression(expected, input):
-    output = list(RULE_DURATION_SECONDS(input))
+    output = RULE_DURATION_SECONDS.apply(input)
     assert_expression_output(output, expected, DurationUnit.SECONDS)
 
 
@@ -118,7 +119,7 @@ def test_seconds_expression(expected, input):
     ),
 )
 def test_minutes_expression(expected, input):
-    output = list(RULE_DURATION_MINUTES(input))
+    output = RULE_DURATION_MINUTES.apply(input)
     assert_expression_output(output, expected, DurationUnit.MINUTES)
 
 
@@ -131,7 +132,7 @@ def test_minutes_expression(expected, input):
     ),
 )
 def test_hours_expression(expected, input):
-    output = list(RULE_DURATION_HOURS(input))
+    output = RULE_DURATION_HOURS.apply(input)
     assert_expression_output(output, expected, DurationUnit.HOURS)
 
 
@@ -144,7 +145,7 @@ def test_hours_expression(expected, input):
     ),
 )
 def test_days_expression(expected, input):
-    output = list(RULE_DURATION_DAYS(input))
+    output = RULE_DURATION_DAYS.apply(input)
     assert_expression_output(output, expected, DurationUnit.DAYS)
 
 
@@ -157,7 +158,7 @@ def test_days_expression(expected, input):
     ),
 )
 def test_weeks_expression(expected, input):
-    output = list(RULE_DURATION_WEEKS(input))
+    output = RULE_DURATION_WEEKS.apply(input)
     assert_expression_output(output, expected, DurationUnit.WEEKS)
 
 
@@ -170,7 +171,7 @@ def test_weeks_expression(expected, input):
     ),
 )
 def test_months_expression(expected, input):
-    output = list(RULE_DURATION_MONTHS(input))
+    output = RULE_DURATION_MONTHS.apply(input)
     assert_expression_output(output, expected, DurationUnit.MONTHS)
 
 
@@ -183,7 +184,7 @@ def test_months_expression(expected, input):
     ),
 )
 def test_years_expression(expected, input):
-    output = list(RULE_DURATION_YEARS(input))
+    output = RULE_DURATION_YEARS.apply(input)
     assert_expression_output(output, expected, DurationUnit.YEARS)
 
 
@@ -202,7 +203,7 @@ def test_years_expression(expected, input):
     ],
 )
 def test_negative_simple_values(input: str):
-    output = list(RULE_DURATION.parse(input))
+    output = parse_dimension(input, duration=True)
     assert output == []
 
 
@@ -262,7 +263,7 @@ def assert_combined_expression_one_output(
     ],
 )
 def test_parse_with_combined_minutes(input: str, expected: List[float]):
-    output = list(RULE_DURATION.parse(input))
+    output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(
         output, expected, [DurationUnit.MINUTES, DurationUnit.SECONDS]
     )
@@ -289,7 +290,7 @@ def test_parse_with_combined_minutes(input: str, expected: List[float]):
 def test_parse_with_combined_hours(
     input: str, expected: List[float], units: List[DurationUnit]
 ):
-    output = list(RULE_DURATION.parse(input))
+    output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
 
 
@@ -313,7 +314,7 @@ def test_parse_with_combined_hours(
 def test_parse_with_combined_days(
     input: str, expected: List[float], units: List[DurationUnit]
 ):
-    output = list(RULE_DURATION.parse(input))
+    output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
 
 
@@ -341,7 +342,7 @@ def test_parse_with_combined_days(
 def test_parse_with_combined_weeks(
     input: str, expected: List[float], units: List[DurationUnit]
 ):
-    output = list(RULE_DURATION.parse(input))
+    output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
 
 
@@ -390,7 +391,7 @@ def test_parse_with_combined_weeks(
 def test_parse_with_combined_months(
     input: str, expected: List[float], units: List[DurationUnit]
 ):
-    output = list(RULE_DURATION.parse(input))
+    output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
 
 
@@ -415,7 +416,7 @@ def test_parse_with_combined_months(
 def test_parse_with_combined_years(
     input: str, expected: List[float], units: List[DurationUnit]
 ):
-    output = list(RULE_DURATION.parse(input))
+    output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
 
 
