@@ -14,18 +14,10 @@ __all__ = [
 import itertools as it
 
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
-from maha.parsers.expressions import (
-    EXPRESSION_END,
-    EXPRESSION_START,
-    HALF,
-    WORD_SEPARATOR,
-    QUARTER,
-    THIRD,
-    THREE_QUARTERS,
-    WAW_CONNECTOR,
-)
+from maha.parsers.expressions import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
 from maha.parsers.helper import *
-from maha.parsers.interfaces import NumeralType
+from maha.parsers.interfaces import DimensionType, NumeralType
+from maha.parsers.rules.interfaces.rule import Rule
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
 from .expressions import *
@@ -34,32 +26,68 @@ from .interface import NumeralExpression
 multiplier_group = lambda v: named_group("multiplier", v)
 
 
-def _get_pattern(numeral: NumeralType):
-    single = str(globals()[f"EXPRESSION_OF_{numeral.name[:-1]}"])
-    dual = str(globals()[f"EXPRESSION_OF_TWO_{numeral.name}"])
-    plural = str(globals()[f"EXPRESSION_OF_{numeral.name}"])
+def get_group_value_without_multiplier(expression: str):
+    return get_value_group(expression) + multiplier_group("")
 
-    # order matters
-    _pattern = [
-        "{decimal}{space}{unit_single_plural}",
-        "{integer}{space}{unit_single_plural}",
-        "{tens}{space}{unit_single_plural}",
-        "{ones}{space}{unit_single_plural}",
-        get_fractions_of_unit_pattern(single, multiplier_group),
-        get_fractions_of_unit_pattern(dual, multiplier_group),
-        "{val}{unit_dual}",
-        "{val}{unit_single}",
-    ]
-    # # Account for no spaces in the hundreds pattern (ثلاثمائة)
-    if numeral == NumeralType.HUNDREDS:
-        _pattern.insert(
-            2,
-            get_group_value_without_multiplier(RULE_NUMERAL_PERFECT_HUNDREDS.join()),
-        )
 
-    pattern = (
-        "(?:"
-        + "|".join(_pattern).format(
+class NumeralRule(Rule):
+    """Rule to extract a duration."""
+
+    def __init__(self, *types: NumeralType) -> NumeralExpression:
+        """Returns a combined expression for the given types."""
+        combined_patterns = self.combine_patterns(*types)
+        expression = NumeralExpression(combined_patterns, pickle=True)
+        super().__init__(expression, DimensionType.NUMERAL)
+
+    def get_single(self, numeral: NumeralType) -> "Expression":
+        return globals().get(f"EXPRESSION_OF_{numeral.name[:-1]}")
+
+    def get_dual(self, numeral: NumeralType) -> "Expression":
+        return globals().get(f"EXPRESSION_OF_TWO_{numeral.name}")
+
+    def get_plural(self, numeral: NumeralType) -> "Expression":
+        return globals().get(f"EXPRESSION_OF_{numeral.name}")
+
+    def get_pattern(self, numeral: NumeralType) -> str:
+        if numeral == NumeralType.TENS:
+            pattern = get_group_value_without_multiplier(RULE_NUMERAL_TENS_ONLY.join())
+        elif numeral == NumeralType.ONES:
+            pattern = get_group_value_without_multiplier(RULE_NUMERAL_ONES_ONLY.join())
+        elif numeral == NumeralType.DECIMALS:
+            pattern = get_group_value_without_multiplier(RULE_DECIMALS)
+        elif numeral == NumeralType.INTEGERS:
+            pattern = get_group_value_without_multiplier(RULE_INTEGERS)
+        else:
+            pattern = self._get_pattern(numeral)
+        return pattern
+
+    def _get_pattern(self, numeral: NumeralType) -> str:
+
+        single = str(self.get_single(numeral))
+        dual = str(self.get_dual(numeral))
+        plural = str(self.get_plural(numeral))
+
+        # order matters
+        _pattern = [
+            "{decimal}{space}{unit_single_plural}",
+            "{integer}{space}{unit_single_plural}",
+            "{tens}{space}{unit_single_plural}",
+            "{ones}{space}{unit_single_plural}",
+            get_fractions_of_unit_pattern(single, multiplier_group),
+            get_fractions_of_unit_pattern(dual, multiplier_group),
+            "{val}{unit_dual}",
+            "{val}{unit_single}",
+        ]
+        # # Account for no spaces in the hundreds pattern (ثلاثمائة)
+        if numeral == NumeralType.HUNDREDS:
+            _pattern.insert(
+                2,
+                get_group_value_without_multiplier(
+                    RULE_NUMERAL_PERFECT_HUNDREDS.join()
+                ),
+            )
+
+        pattern = non_capturing_group(*_pattern).format(
             decimal=get_value_group(RULE_DECIMALS),
             integer=get_value_group(RULE_INTEGERS),
             space=EXPRESSION_SPACE,
@@ -70,42 +98,7 @@ def _get_pattern(numeral: NumeralType):
             tens=get_value_group(RULE_NUMERAL_TENS_ONLY.join()),
             ones=get_value_group(RULE_NUMERAL_ONES_ONLY.join()),
         )
-        + ")"
-    )
-    return pattern
-
-
-def get_group_value_without_multiplier(expression: str):
-    return get_value_group(expression) + multiplier_group("")
-
-
-def get_pattern(numeral: NumeralType):
-    if numeral == NumeralType.TENS:
-        pattern = get_group_value_without_multiplier(RULE_NUMERAL_TENS_ONLY.join())
-    elif numeral == NumeralType.ONES:
-        pattern = get_group_value_without_multiplier(RULE_NUMERAL_ONES_ONLY.join())
-    elif numeral == NumeralType.DECIMALS:
-        pattern = get_group_value_without_multiplier(RULE_DECIMALS)
-    elif numeral == NumeralType.INTEGERS:
-        pattern = get_group_value_without_multiplier(RULE_INTEGERS)
-    else:
-        pattern = _get_pattern(numeral)
-    return pattern
-
-
-def get_combined_expression(*numerals: NumeralType) -> NumeralExpression:
-    all_expressions = non_capturing_group(
-        *[get_pattern(numeral) for numeral in numerals]
-    )
-    patterns = [EXPRESSION_START + all_expressions + EXPRESSION_END]
-
-    for u in numerals[1:]:
-        pattern = (
-            non_capturing_group(WORD_SEPARATOR + get_pattern(u) + EXPRESSION_END) + "?"
-        )
-        patterns.append(pattern)
-
-    return NumeralExpression("".join(patterns), pickle=True)
+        return pattern
 
 
 def get_combinations(*patterns: str):
@@ -185,32 +178,32 @@ RULE_DECIMALS = Expression(
     )
 )
 
-RULE_NUMERAL_DECIMALS = get_combined_expression(NumeralType.DECIMALS)
-RULE_NUMERAL_INTEGERS = get_combined_expression(NumeralType.INTEGERS)
-RULE_NUMERAL_ONES = get_combined_expression(NumeralType.ONES)
-RULE_NUMERAL_TENS = get_combined_expression(
+RULE_NUMERAL_DECIMALS = NumeralRule(NumeralType.DECIMALS)
+RULE_NUMERAL_INTEGERS = NumeralRule(NumeralType.INTEGERS)
+RULE_NUMERAL_ONES = NumeralRule(NumeralType.ONES)
+RULE_NUMERAL_TENS = NumeralRule(
     NumeralType.TENS,
     NumeralType.ONES,
 )
-RULE_NUMERAL_HUNDREDS = get_combined_expression(
+RULE_NUMERAL_HUNDREDS = NumeralRule(
     NumeralType.HUNDREDS,
     NumeralType.TENS,
     NumeralType.ONES,
 )
-RULE_NUMERAL_THOUSANDS = get_combined_expression(
+RULE_NUMERAL_THOUSANDS = NumeralRule(
     NumeralType.THOUSANDS,
     NumeralType.HUNDREDS,
     NumeralType.TENS,
     NumeralType.ONES,
 )
-RULE_NUMERAL_MILLIONS = get_combined_expression(
+RULE_NUMERAL_MILLIONS = NumeralRule(
     NumeralType.MILLIONS,
     NumeralType.THOUSANDS,
     NumeralType.HUNDREDS,
     NumeralType.TENS,
     NumeralType.ONES,
 )
-RULE_NUMERAL_BILLIONS = get_combined_expression(
+RULE_NUMERAL_BILLIONS = NumeralRule(
     NumeralType.BILLIONS,
     NumeralType.MILLIONS,
     NumeralType.THOUSANDS,
@@ -218,7 +211,7 @@ RULE_NUMERAL_BILLIONS = get_combined_expression(
     NumeralType.TENS,
     NumeralType.ONES,
 )
-RULE_NUMERAL_TRILLIONS = get_combined_expression(
+RULE_NUMERAL_TRILLIONS = NumeralRule(
     NumeralType.TRILLIONS,
     NumeralType.BILLIONS,
     NumeralType.MILLIONS,
@@ -228,19 +221,16 @@ RULE_NUMERAL_TRILLIONS = get_combined_expression(
     NumeralType.ONES,
 )
 
-RULE_NUMERAL = ExpressionGroup(
-    get_combined_expression(
-        NumeralType.TRILLIONS,
-        NumeralType.BILLIONS,
-        NumeralType.MILLIONS,
-        NumeralType.THOUSANDS,
-        NumeralType.HUNDREDS,
-        NumeralType.DECIMALS,
-        NumeralType.TENS,
-        NumeralType.ONES,
-        NumeralType.INTEGERS,
-    ),
-    smart=True,
+RULE_NUMERAL = NumeralRule(
+    NumeralType.TRILLIONS,
+    NumeralType.BILLIONS,
+    NumeralType.MILLIONS,
+    NumeralType.THOUSANDS,
+    NumeralType.HUNDREDS,
+    NumeralType.DECIMALS,
+    NumeralType.TENS,
+    NumeralType.ONES,
+    NumeralType.INTEGERS,
 )
 
 
