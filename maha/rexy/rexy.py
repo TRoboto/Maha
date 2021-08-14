@@ -3,6 +3,7 @@
 __all__ = [
     "non_capturing_group",
     "positive_lookbehind",
+    "positive_lookahead",
     "named_group",
 ]
 
@@ -15,6 +16,11 @@ def non_capturing_group(*patterns: str):
 def positive_lookbehind(*patterns: str):
     """Returns a positive lookbehind pattern."""
     return "(?<={})".format("|".join(str(p) for p in patterns))
+
+
+def positive_lookahead(*patterns: str):
+    """Returns positive lookahead pattern"""
+    return "(?={})".format("|".join(str(p) for p in patterns))
 
 
 def named_group(name: str, pattern: str):
