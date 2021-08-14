@@ -1,5 +1,6 @@
 """ Regular expersion patterns for Arabic """
 
+__all__ = ["EXPRESSION_ARABIC_HASHTAGS", "EXPRESSION_ARABIC_MENTIONS"]
 import re
 
 from maha.constants import (
