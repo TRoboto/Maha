@@ -15,7 +15,7 @@ class NumeralExpression(Expression):
         start, end = match.span()
         groups = match.capturesdict()
 
-        values = groups.get("value")
+        values = groups.get("numeral_value")
         multiplier = groups.get("multiplier")
 
         output = 0

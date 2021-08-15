@@ -24,14 +24,48 @@ from .expressions import *
 from .interface import NumeralExpression
 
 multiplier_group = lambda v: named_group("multiplier", v)
+numeral_value = lambda v: named_group("numeral_value", v)
 
 
-def get_group_value_without_multiplier(expression: str):
-    return get_value_group(expression) + multiplier_group("")
+def get_numeral_value_without_multiplier(expression: str):
+    return numeral_value(expression) + multiplier_group("")
+
+
+def get_fractions_pattern(multiplier: str) -> str:
+    """
+    Returns the fractions of a multiplier.
+
+
+    Parameters
+    ----------
+    multiplier: str
+        The multiplier text.
+
+    Returns
+    -------
+    str
+        Pattern for the fractions of the multiplier.
+    """
+
+    return non_capturing_group(
+        *[
+            "{multiplier}{space}{three_quarter}",
+            "{half}{space}{multiplier}",
+            "{third}{space}{multiplier}",
+            "{quarter}{space}{multiplier}",
+        ]
+    ).format(
+        half=numeral_value(HALF),
+        third=numeral_value(THIRD),
+        quarter=numeral_value(QUARTER),
+        three_quarter=numeral_value(THREE_QUARTERS),
+        space=EXPRESSION_SPACE,
+        multiplier=multiplier_group(multiplier),
+    )
 
 
 class NumeralRule(Rule):
-    """Rule to extract a duration."""
+    """Rule to extract a numeral."""
 
     def __init__(self, *types: NumeralType) -> NumeralExpression:
         """Returns a combined expression for the given types."""
@@ -50,13 +84,17 @@ class NumeralRule(Rule):
 
     def get_pattern(self, numeral: NumeralType) -> str:
         if numeral == NumeralType.TENS:
-            pattern = get_group_value_without_multiplier(RULE_NUMERAL_TENS_ONLY.join())
+            pattern = get_numeral_value_without_multiplier(
+                RULE_NUMERAL_TENS_ONLY.join()
+            )
         elif numeral == NumeralType.ONES:
-            pattern = get_group_value_without_multiplier(RULE_NUMERAL_ONES_ONLY.join())
+            pattern = get_numeral_value_without_multiplier(
+                RULE_NUMERAL_ONES_ONLY.join()
+            )
         elif numeral == NumeralType.DECIMALS:
-            pattern = get_group_value_without_multiplier(RULE_DECIMALS)
+            pattern = get_numeral_value_without_multiplier(RULE_DECIMALS)
         elif numeral == NumeralType.INTEGERS:
-            pattern = get_group_value_without_multiplier(RULE_INTEGERS)
+            pattern = get_numeral_value_without_multiplier(RULE_INTEGERS)
         else:
             pattern = self._get_pattern(numeral)
         return pattern
@@ -69,34 +107,34 @@ class NumeralRule(Rule):
 
         # order matters
         _pattern = [
-            "{decimal}{space}{unit_single_plural}",
-            "{integer}{space}{unit_single_plural}",
-            "{tens}{space}{unit_single_plural}",
-            "{ones}{space}{unit_single_plural}",
-            get_fractions_of_unit_pattern(single, multiplier_group),
-            get_fractions_of_unit_pattern(dual, multiplier_group),
-            "{val}{unit_dual}",
-            "{val}{unit_single}",
+            "{decimal}{space}{multiplier_single_plural}",
+            "{integer}{space}{multiplier_single_plural}",
+            "{tens}{space}{multiplier_single_plural}",
+            "{ones}{space}{multiplier_single_plural}",
+            get_fractions_pattern(single),
+            get_fractions_pattern(dual),
+            "{val}{multiplier_dual}",
+            "{val}{multiplier_single}",
         ]
         # # Account for no spaces in the hundreds pattern (ثلاثمائة)
         if numeral == NumeralType.HUNDREDS:
             _pattern.insert(
                 2,
-                get_group_value_without_multiplier(
+                get_numeral_value_without_multiplier(
                     RULE_NUMERAL_PERFECT_HUNDREDS.join()
                 ),
             )
 
         pattern = non_capturing_group(*_pattern).format(
-            decimal=get_value_group(RULE_DECIMALS),
-            integer=get_value_group(RULE_INTEGERS),
+            decimal=numeral_value(RULE_DECIMALS),
+            integer=numeral_value(RULE_INTEGERS),
             space=EXPRESSION_SPACE,
-            unit_single_plural=multiplier_group("|".join([single, plural])),
-            unit_single=multiplier_group(single),
-            unit_dual=multiplier_group(dual),
-            val=get_value_group(""),
-            tens=get_value_group(RULE_NUMERAL_TENS_ONLY.join()),
-            ones=get_value_group(RULE_NUMERAL_ONES_ONLY.join()),
+            multiplier_single_plural=multiplier_group("|".join([single, plural])),
+            multiplier_single=multiplier_group(single),
+            multiplier_dual=multiplier_group(dual),
+            val=numeral_value(""),
+            tens=numeral_value(RULE_NUMERAL_TENS_ONLY.join()),
+            ones=numeral_value(RULE_NUMERAL_ONES_ONLY.join()),
         )
         return pattern
 
