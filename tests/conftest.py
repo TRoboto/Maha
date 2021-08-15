@@ -21,6 +21,11 @@ def wiki_arlang():
 
 
 @pytest.fixture()
+def wiki_arnumbers():
+    return Path("sample_data/wiki_arnumbers.txt").open(encoding="utf8").read()
+
+
+@pytest.fixture()
 def multiple_tweets_file():
     return Path("sample_data/tweets.txt")
 
@@ -40,7 +45,7 @@ def empty_file():
     return "sample_data/empty_file.txt"
 
 
-# @pytest.fixture(scope="session", autouse=True)
-# def compile_parse_expressions():
-#     RULE_DURATION.compile_expressions()
-#     RULE_NUMERAL.compile_expressions()
+@pytest.fixture(scope="session", autouse=True)
+def compile_parse_expressions():
+    RULE_DURATION.compile()
+    RULE_NUMERAL.compile()

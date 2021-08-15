@@ -24,6 +24,9 @@ class Rule:
         self.expression = expression
         self.rule_type = rule_type
 
+    def __call__(self, text: str) -> List[Dimension]:
+        return self.apply(text)
+
     def apply(self, text: str) -> List[Dimension]:
         """Applies the rule to the given text."""
         output = []
@@ -36,6 +39,10 @@ class Rule:
                 Dimension(result.expression, body, value, start, end, self.rule_type)
             )
         return output
+
+    def compile(self):
+        """Compiles the rule."""
+        self.expression.compile()
 
     def combine_patterns(self, *types: Any) -> str:
         """
