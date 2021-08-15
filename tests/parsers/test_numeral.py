@@ -6,16 +6,19 @@ import pytest
 
 from maha.parsers.functions import parse_dimension
 from maha.parsers.rules.numeral import *
+from maha.parsers.templates import Dimension, DimensionType
 
 random.seed(0)
 
 
-def assert_expression_output(output, expected):
+def assert_expression_output(output: List[Dimension], expected):
     assert len(output) == 1
-    output = output[0]
+    assert isinstance(output[0], Dimension)
+    dim = output[0]
 
-    assert isinstance(output.value, (float, int))
-    assert pytest.approx(output.value, 0.0001) == expected
+    assert dim.dimension_type == DimensionType.NUMERAL
+    assert isinstance(dim.value, (float, int))
+    assert pytest.approx(dim.value, 0.0001) == expected
 
 
 def get_value_positions(*text: str):
@@ -320,11 +323,11 @@ def test_thousands(input, expected):
     [
         ("10,000.0", 10000),
         ("١٠٬٠٠٠٫٠٠٠", 10000),
-        ("10,000", 10000),
+        ("-10,000", -10000),
         ("1٬000 000", 1000000),
         ("1 000 000", 1000000),
-        ("١٬٠٠٠٬٠٠٠", 1000000),
-        ("١ ٠٠٠ ٠٠٠", 1000000),
+        ("-١٬٠٠٠٬٠٠٠", -1000000),
+        ("+١ ٠٠٠ ٠٠٠", +1000000),
         ("١٬٠٠٠٬٠٠٠", 1000000),
         (".1", 0.1),
         ("٫٠١", 0.01),
@@ -401,3 +404,21 @@ def test_perfect_millions(input, expected):
 )
 def test_millions(input, expected):
     assert_expression_output(parse_dimension(input, numeral=True), expected)
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("الواحد"),
+        ("العشرين"),
+        ("العشرة"),
+        ("المئة"),
+        ("الفتياني"),
+        ("المليونير"),
+        ("ولست"),
+        ("وواثنين"),
+    ],
+)
+def test_negative_simple_values(input: str):
+    output = parse_dimension(input, numeral=True)
+    assert output == []
