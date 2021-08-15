@@ -7,7 +7,7 @@ from regex.regex import Match
 
 from maha.constants import EMPTY
 from maha.parsers.expressions import HALF, QUARTER, THIRD, THREE_QUARTERS
-from maha.parsers.rules.numeral.interface import NumeralExpression
+from maha.parsers.rules.numeral.template import NumeralExpression
 from maha.rexy import ExpressionResult
 
 from .enums import Unit

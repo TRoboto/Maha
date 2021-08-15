@@ -35,7 +35,7 @@ from maha.expressions import (
     EXPRESSION_LINKS,
     EXPRESSION_MENTIONS,
 )
-from maha.parsers.interfaces import Dimension, DimensionType, TextExpression
+from maha.parsers.templates import Dimension, DimensionType, TextExpression
 from maha.rexy import Expression, ExpressionGroup
 
 

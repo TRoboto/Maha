@@ -8,8 +8,8 @@ from maha.parsers.helper import (
     get_unit_group,
     get_value_group,
 )
-from maha.parsers.interfaces import Unit
 from maha.parsers.rules.numeral.rule import RULE_NUMERAL
+from maha.parsers.templates import Unit
 from maha.rexy import Expression
 from maha.rexy.rexy import non_capturing_group
 

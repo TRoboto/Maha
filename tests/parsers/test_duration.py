@@ -6,7 +6,7 @@ import pytest
 
 from maha.parsers.functions import parse_dimension
 from maha.parsers.rules.duration import *
-from maha.parsers.rules.duration.interface import DurationUnit, DurationValue, ValueUnit
+from maha.parsers.rules.duration.template import DurationUnit, DurationValue, ValueUnit
 from maha.rexy import ExpressionResult
 
 S = DurationUnit.SECONDS

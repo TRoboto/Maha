@@ -7,11 +7,11 @@ from typing import List
 from regex.regex import Match
 
 import maha.parsers.rules.duration.utils as utils
-from maha.parsers.interfaces import DurationUnit
-from maha.parsers.interfaces.unit_expression import UnitExpression, ValueUnit
+from maha.parsers.templates import DurationUnit
+from maha.parsers.templates.unit_expression import UnitExpression, ValueUnit
 from maha.rexy import ExpressionResult
 
-from .expressions import (
+from .expression import (
     DAYS,
     DUAL_DURATIONS,
     HOURS,

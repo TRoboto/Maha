@@ -2,7 +2,7 @@ import itertools as it
 from pprint import pprint
 
 from maha.parsers.functions import parse_dimension
-from maha.parsers.interfaces.enums import DurationUnit
+from maha.parsers.templates.enums import DurationUnit
 
 
 def test_parse_numeral_wiki_arlang(wiki_arlang):

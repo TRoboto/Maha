@@ -10,7 +10,7 @@ from maha.constants import (
     KASRA,
 )
 from maha.parsers.functions import parse
-from maha.parsers.interfaces import Dimension, DimensionType
+from maha.parsers.templates import Dimension, DimensionType
 from maha.rexy import Expression, ExpressionGroup
 from tests.utils import list_only_in_string
 

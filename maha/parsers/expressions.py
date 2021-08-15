@@ -16,7 +16,7 @@ __all__ = [
 
 from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
-from maha.parsers.interfaces import ValueExpression
+from maha.parsers.templates import ValueExpression
 from maha.rexy import (
     Expression,
     non_capturing_group,

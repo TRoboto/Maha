@@ -16,12 +16,12 @@ import itertools as it
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
 from maha.parsers.expressions import HALF, QUARTER, THIRD, THREE_QUARTERS, WAW_CONNECTOR
 from maha.parsers.helper import *
-from maha.parsers.interfaces import DimensionType, NumeralType
-from maha.parsers.rules.interfaces.rule import Rule
+from maha.parsers.rules.templates.rule import Rule
+from maha.parsers.templates import DimensionType, NumeralType
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
-from .expressions import *
-from .interface import NumeralExpression
+from .expression import *
+from .template import NumeralExpression
 
 multiplier_group = lambda v: named_group("multiplier", v)
 numeral_value = lambda v: named_group("numeral_value", v)

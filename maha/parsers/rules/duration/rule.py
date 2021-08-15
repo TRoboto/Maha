@@ -14,11 +14,11 @@ __all__ = [
 ]
 
 
-from maha.parsers.interfaces import DimensionType, DurationUnit
-from maha.parsers.rules.interfaces import UnitRule
+from maha.parsers.rules.templates import UnitRule
+from maha.parsers.templates import DimensionType, DurationUnit
 
-from .expressions import *
-from .interface import DurationExpression
+from .expression import *
+from .template import DurationExpression
 
 
 class DurationRule(UnitRule):

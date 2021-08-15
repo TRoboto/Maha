@@ -4,7 +4,7 @@ from dataclasses import dataclass
 from typing import Any, List
 
 from maha.parsers.expressions import EXPRESSION_END, EXPRESSION_START, WORD_SEPARATOR
-from maha.parsers.interfaces import Dimension, DimensionType
+from maha.parsers.templates import Dimension, DimensionType
 from maha.rexy import Expression, non_capturing_group
 
 
