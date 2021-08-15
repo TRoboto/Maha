@@ -53,7 +53,9 @@ TWO_SUFFIX = Expression(non_capturing_group("ين", "ان"))
 SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
 """ Pattern that matches the sum-suffix of words in Arabic """
 
-EXPRESSION_START = Expression(positive_lookbehind("^", r"\W", r"\b", WAW, LAM))
+EXPRESSION_START = Expression(
+    positive_lookbehind("^", r"\W", r"\b", r"\b" + WAW, r"\b" + LAM)
+)
 """ Pattern that matches the start of a rule expression in Arabic """
 
 EXPRESSION_END = Expression(positive_lookahead("$", r"\W", r"\b"))
