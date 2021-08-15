@@ -8,6 +8,7 @@ class DimensionType(Enum):
     AMOUNT_OF_MONEY = auto()
     DISTANCE = auto()
     DURATION = auto()
+    ORDINAL = auto()
     NUMERAL = auto()
     ARABIC = auto()
     ENGLISH = auto()
@@ -39,6 +40,16 @@ class DimensionType(Enum):
 class NumeralType(Enum):
     DECIMALS = auto()
     INTEGERS = auto()
+    ONES = auto()
+    TENS = auto()
+    HUNDREDS = auto()
+    THOUSANDS = auto()
+    MILLIONS = auto()
+    BILLIONS = auto()
+    TRILLIONS = auto()
+
+
+class OrdinalType(Enum):
     ONES = auto()
     TENS = auto()
     HUNDREDS = auto()

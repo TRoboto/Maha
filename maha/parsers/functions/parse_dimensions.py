@@ -1,7 +1,6 @@
 __all__ = ["parse_dimension"]
 
-from maha.parsers.rules import RULE_DURATION
-from maha.parsers.rules.numeral.rule import RULE_NUMERAL
+from maha.parsers.rules import RULE_DURATION, RULE_NUMERAL, RULE_ORDINAL
 
 
 def parse_dimension(
@@ -66,8 +65,22 @@ def parse_dimension(
         output.extend(RULE_DURATION(text))
     if numeral:
         output.extend(RULE_NUMERAL(text))
+    if ordinal:
+        output.extend(RULE_ORDINAL(text))
 
-    if not any([duration, numeral]):
+    if not any(
+        [
+            amount_of_money,
+            duration,
+            distance,
+            numeral,
+            ordinal,
+            quantity,
+            temperature,
+            time,
+            volume,
+        ]
+    ):
         raise ValueError("At least one argument should be True")
 
     return output
