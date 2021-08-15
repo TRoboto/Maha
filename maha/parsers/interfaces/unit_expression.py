@@ -53,23 +53,35 @@ class UnitExpression(NumeralExpression):
         values = groups.get("value")
         units = groups.get("unit")
         multipliers = groups.get("multiplier")
+        numerals = groups.get("numeral_value")
 
-        multiplier_pointer = 0
+        units_spans = match.spans("unit")
+        multipliers_spans = match.spans("multiplier")
+        numerals_spans = match.spans("numeral_value")
+
         output_values = []
-        for i, value in enumerate(values):
-            extracted_unit = self.get_unit(units[i])
-            # if the value is empty, it's either singular or plural.
-            if value is EMPTY:
-                extracted_value = self.get_value(units[i])
-            else:
-                extracted_value = self.get_value(value)
-                # if the extracted_value is empty, it's a numeral value.
-                if extracted_value is None:
-                    extracted_value = self.get_numeral_value(
-                        value, multipliers[multiplier_pointer]
-                    )
-                    multiplier_pointer += 1
-            output_values.append(ValueUnit(extracted_value, extracted_unit))
+        value_pointer = 0
+        numeral_pointer = 0
+        for i, unit_span in enumerate(units_spans):
+            unit = units[i]
+            extracted_unit = self.get_unit(unit)
+
+            extracted_numeral = 0
+            for numeral, multiplier in zip(
+                numerals[numeral_pointer:], multipliers[numeral_pointer:]
+            ):
+                if numerals_spans[numeral_pointer][0] > unit_span[1]:
+                    break
+
+                numeral_pointer += 1
+                extracted_numeral += self.get_numeral_value(numeral, multiplier)
+
+            if not extracted_numeral:
+                extracted_numeral = self.get_value(values[value_pointer] or unit)
+                value_pointer += 1
+
+            output_values.append(ValueUnit(extracted_numeral, extracted_unit))
+
         return output_values
 
     def get_unit(self, text: str):
