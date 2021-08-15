@@ -40,7 +40,7 @@ def empty_file():
     return "sample_data/empty_file.txt"
 
 
-@pytest.fixture(scope="session", autouse=True)
-def compile_parse_expressions():
-    RULE_DURATION.compile_expressions()
-    RULE_NUMERAL.compile_expressions()
+# @pytest.fixture(scope="session", autouse=True)
+# def compile_parse_expressions():
+#     RULE_DURATION.compile_expressions()
+#     RULE_NUMERAL.compile_expressions()
