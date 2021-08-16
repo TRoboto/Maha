@@ -1,11 +1,11 @@
 import maha.parsers.rules.numeral.expression as numeral_expression
-from maha.expressions import EXPRESSION_SPACE_OR_NONE
+from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.expressions import ALL_ALEF, SUM_SUFFIX, TWO_SUFFIX
 from maha.parsers.templates import ValueExpression
 from maha.rexy import Expression, non_capturing_group
 
-TEN_SUFFIX_ALL = Expression(f"{EXPRESSION_SPACE_OR_NONE}[تط]?[اع]?شر?[ةه]?")
-TEN_SUFFIX = Expression(f"{EXPRESSION_SPACE_OR_NONE}عشر[ةه]")
+TEN_SUFFIX = Expression(f"{EXPRESSION_SPACE_OR_NONE}[تط]?[اع]?شر?[ةه]?")
+TEN_SUFFIX_SIMPLE = Expression(f"{EXPRESSION_SPACE}عشر[ةه]?")
 TEH_OPTIONAL_SUFFIX = Expression("[ةه]?")
 ALEF_LAM = Expression(non_capturing_group("ال"))
 ALEF_LAM_OPTIONAL = Expression(ALEF_LAM + "?")
@@ -40,7 +40,9 @@ EXPRESSION_OF_EIGHT = ValueExpression(
 EXPRESSION_OF_NINE = ValueExpression(9, ALEF_LAM + PREFIX_OF_NINE + TEH_OPTIONAL_SUFFIX)
 
 EXPRESSION_OF_ONE_ONLY = ValueExpression(1, ALEF_LAM_OPTIONAL + "[أا]ول[ىي]?")
-EXPRESSION_OF_TWO_ONLY = ValueExpression(2, ALEF_LAM_OPTIONAL + "[تث]ان[يى]")
+EXPRESSION_OF_TWO_ONLY = ValueExpression(
+    2, ALEF_LAM_OPTIONAL + "[تث]ان[يى]" + TEH_OPTIONAL_SUFFIX
+)
 EXPRESSION_OF_THREE_ONLY = ValueExpression(
     3, ALEF_LAM_OPTIONAL + PREFIX_OF_THREE + TEH_OPTIONAL_SUFFIX
 )
@@ -66,16 +68,40 @@ EXPRESSION_OF_TEN = ValueExpression(
     10, ALEF_LAM_OPTIONAL + PREFIX_OF_TEN + TEH_OPTIONAL_SUFFIX
 )
 EXPRESSION_OF_ELEVEN = ValueExpression(
-    11, ALEF_LAM + f"{ALL_ALEF}?حا?د[اىي]?" + TEN_SUFFIX_ALL
+    11,
+    non_capturing_group(
+        ALEF_LAM + f"{ALL_ALEF}?حد[اى]?" + TEN_SUFFIX,
+        ALEF_LAM_OPTIONAL + "حاد[يى]" + TEN_SUFFIX_SIMPLE,
+    ),
 )
-EXPRESSION_OF_TWELVE = ValueExpression(12, ALEF_LAM + PREFIX_OF_TWO + TEN_SUFFIX_ALL)
-EXPRESSION_OF_THIRTEEN = ValueExpression(13, EXPRESSION_OF_THREE_ONLY + TEN_SUFFIX)
-EXPRESSION_OF_FOURTEEN = ValueExpression(14, EXPRESSION_OF_FOUR_ONLY + TEN_SUFFIX)
-EXPRESSION_OF_FIFTEEN = ValueExpression(15, EXPRESSION_OF_FIVE_ONLY + TEN_SUFFIX)
-EXPRESSION_OF_SIXTEEN = ValueExpression(16, EXPRESSION_OF_SIX_ONLY + TEN_SUFFIX)
-EXPRESSION_OF_SEVENTEEN = ValueExpression(17, EXPRESSION_OF_SEVEN_ONLY + TEN_SUFFIX)
-EXPRESSION_OF_EIGHTEEN = ValueExpression(18, EXPRESSION_OF_EIGHT_ONLY + TEN_SUFFIX)
-EXPRESSION_OF_NINETEEN = ValueExpression(19, EXPRESSION_OF_NINE_ONLY + TEN_SUFFIX)
+EXPRESSION_OF_TWELVE = ValueExpression(
+    12,
+    non_capturing_group(
+        ALEF_LAM
+        + non_capturing_group(
+            f"{ALL_ALEF}[طت]نا?" + TEN_SUFFIX,
+            f"{ALL_ALEF}[ثت]نت?[اىي]ن?" + TEN_SUFFIX,
+        ),
+        ALEF_LAM_OPTIONAL + PREFIX_OF_TWO + TEN_SUFFIX_SIMPLE,
+    ),
+)
+EXPRESSION_OF_THIRTEEN = ValueExpression(
+    13, EXPRESSION_OF_THREE_ONLY + TEN_SUFFIX_SIMPLE
+)
+EXPRESSION_OF_FOURTEEN = ValueExpression(
+    14, EXPRESSION_OF_FOUR_ONLY + TEN_SUFFIX_SIMPLE
+)
+EXPRESSION_OF_FIFTEEN = ValueExpression(15, EXPRESSION_OF_FIVE_ONLY + TEN_SUFFIX_SIMPLE)
+EXPRESSION_OF_SIXTEEN = ValueExpression(16, EXPRESSION_OF_SIX_ONLY + TEN_SUFFIX_SIMPLE)
+EXPRESSION_OF_SEVENTEEN = ValueExpression(
+    17, EXPRESSION_OF_SEVEN_ONLY + TEN_SUFFIX_SIMPLE
+)
+EXPRESSION_OF_EIGHTEEN = ValueExpression(
+    18, EXPRESSION_OF_EIGHT_ONLY + TEN_SUFFIX_SIMPLE
+)
+EXPRESSION_OF_NINETEEN = ValueExpression(
+    19, EXPRESSION_OF_NINE_ONLY + TEN_SUFFIX_SIMPLE
+)
 EXPRESSION_OF_TWENTY = ValueExpression(20, ALEF_LAM + "عشر" + SUM_SUFFIX)
 EXPRESSION_OF_THIRTY = ValueExpression(
     30, ALEF_LAM + numeral_expression.PREFIX_OF_THREE + SUM_SUFFIX
@@ -169,5 +195,5 @@ EXPRESSION_OF_TWO_BILLIONS = ValueExpression(
 )
 EXPRESSION_OF_TRILLION = ValueExpression(1000000000000, "تري?ليون")
 EXPRESSION_OF_TWO_TRILLIONS = ValueExpression(
-    2000000000000, ALEF_LAM + EXPRESSION_OF_TRILLION + TEN_SUFFIX
+    2000000000000, ALEF_LAM + EXPRESSION_OF_TRILLION + TEN_SUFFIX_SIMPLE
 )
