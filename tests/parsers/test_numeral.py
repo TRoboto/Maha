@@ -23,14 +23,14 @@ def assert_expression_output(output: List[Dimension], expected):
 
 def get_value_positions(*text: str):
     positions = [
-        ("{}."),
-        ("{}"),
-        (" {} "),
-        (" {}"),
+        ("${}."),
+        ("@{}"),
+        ("!{}."),
+        (".{} "),
         (",{}"),
-        (",{},"),
+        ("({},"),
         ("{},"),
-        ("{}"),
+        ("&{}"),
         ("{}"),
     ]
     for t in text:
