@@ -133,49 +133,49 @@ EXPRESSION_OF_THREE_HUNDREDS = ValueExpression(
     ALEF_LAM
     + numeral_expression.EXPRESSION_OF_THREE
     + EXPRESSION_SPACE_OR_NONE
-    + EXPRESSION_OF_HUNDRED,
+    + numeral_expression.EXPRESSION_OF_HUNDRED,
 )
 EXPRESSION_OF_FOUR_HUNDREDS = ValueExpression(
     400,
     ALEF_LAM
     + numeral_expression.EXPRESSION_OF_FOUR
     + EXPRESSION_SPACE_OR_NONE
-    + EXPRESSION_OF_HUNDRED,
+    + numeral_expression.EXPRESSION_OF_HUNDRED,
 )
 EXPRESSION_OF_FIVE_HUNDREDS = ValueExpression(
     500,
     ALEF_LAM
     + numeral_expression.EXPRESSION_OF_FIVE
     + EXPRESSION_SPACE_OR_NONE
-    + EXPRESSION_OF_HUNDRED,
+    + numeral_expression.EXPRESSION_OF_HUNDRED,
 )
 EXPRESSION_OF_SIX_HUNDREDS = ValueExpression(
     600,
     ALEF_LAM
     + numeral_expression.EXPRESSION_OF_SIX
     + EXPRESSION_SPACE_OR_NONE
-    + EXPRESSION_OF_HUNDRED,
+    + numeral_expression.EXPRESSION_OF_HUNDRED,
 )
 EXPRESSION_OF_SEVEN_HUNDREDS = ValueExpression(
     700,
     ALEF_LAM
     + numeral_expression.EXPRESSION_OF_SEVEN
     + EXPRESSION_SPACE_OR_NONE
-    + EXPRESSION_OF_HUNDRED,
+    + numeral_expression.EXPRESSION_OF_HUNDRED,
 )
 EXPRESSION_OF_EIGHT_HUNDREDS = ValueExpression(
     800,
     ALEF_LAM
     + numeral_expression.EXPRESSION_OF_EIGHT
     + EXPRESSION_SPACE_OR_NONE
-    + EXPRESSION_OF_HUNDRED,
+    + numeral_expression.EXPRESSION_OF_HUNDRED,
 )
 EXPRESSION_OF_NINE_HUNDREDS = ValueExpression(
     900,
     ALEF_LAM
     + numeral_expression.EXPRESSION_OF_NINE
     + EXPRESSION_SPACE_OR_NONE
-    + EXPRESSION_OF_HUNDRED,
+    + numeral_expression.EXPRESSION_OF_HUNDRED,
 )
 EXPRESSION_OF_HUNDREDS = ValueExpression(100, ALEF_LAM + "م[يئ]ات")
 
