@@ -89,87 +89,87 @@ def test_tens(input, expected):
     assert_expression_output(parse_dimension(input, ordinal=True), expected)
 
 
-# @pytest.mark.parametrize(
-#     "input, expected",
-#     chain(
-#         get_value(10, ["عشر", "عشرة", "عشره"]),
-#         get_value(20, ["عشرون", "عشرين"]),
-#         get_value(30, ["ثلاثين", "ثلاثون", "تلاتين"]),
-#         get_value(40, ["أربعين", "أربعون", "اربعين"]),
-#         get_value(50, ["خمسين", "خمسون", "نص مئة", "نصف مئة"]),
-#         get_value(60, ["ستين", "ستون"]),
-#         get_value(70, ["سبعين", "سبعون"]),
-#         get_value(80, ["ثمانين", "ثمانون", "تمنين", "تمانون"]),
-#         get_value(90, ["تسعين", "تسعون"]),
-#     ),
-# )
-# def test_perfect_tens(input, expected):
-#     assert_expression_output(parse_dimension(input, ordinal=True), expected)
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value(10, ["العاشر", "العاشرة", "العاشره"]),
+        get_value(20, ["العشرون", "العشرين"]),
+        get_value(30, ["الثلاثين", "الثلاثون", "التلاتين"]),
+        get_value(40, ["الأربعين", "الأربعون", "الاربعين"]),
+        get_value(50, ["الخمسين", "الخمسون"]),
+        get_value(60, ["الستين", "الستون"]),
+        get_value(70, ["السبعين", "السبعون"]),
+        get_value(80, ["الثمانين", "الثمانون", "التمنين", "التمانون"]),
+        get_value(90, ["التسعين", "التسعون"]),
+    ),
+)
+def test_perfect_tens(input, expected):
+    assert_expression_output(parse_dimension(input, ordinal=True), expected)
 
 
-# @pytest.mark.parametrize(
-#     "input, expected",
-#     chain(
-#         get_value(21, ["واحد وعشرين", "واحد وعشرون", "واحدة وعشرون"]),
-#         get_value(32, ["اثنين وثلاثين", "اتنين وتلاتين", "إثنان وثلاثون"]),
-#         get_value(43, ["ثلاثة وأربعين", "ثلاث وأربعون", "تلاته واربعون"]),
-#         get_value(44, ["أربعة واربعون", "اربع واربعون", "اربعة وأربعين"]),
-#         get_value(54, ["أربعة وخمسين", "اربع وخمسون", "اربعة وخمسون"]),
-#         get_value(65, ["خمسة وستين", "خمس وستون", "خمسه وستين"]),
-#         get_value(76, ["ستة وسبعين", "ست وسبعون", "سته وسبعين"]),
-#         get_value(87, ["سبعة وتمانين", "سبع وتمانون", "سبعه وثمانين"]),
-#         get_value(98, ["ثمانية وتسعين", "ثماني وتسعون", "تمنية وتسعين"]),
-#         get_value(99, ["تسعة وتسعين"]),
-#         get_value(91, ["واحد وتسعين"]),
-#         get_value(66, ["ستة وستين"]),
-#         get_value(26, ["ستة وعشرين"]),
-#         get_value(25, ["خمسة و عشرون", "ربع مية"]),
-#         get_value(75, ["خمسة وسبعين", "مية الا ربع"]),
-#         get_value(22, ["إثنتين و عشرون"]),
-#         get_value(22, ["إثنتين و عشرون"]),
-#     ),
-# )
-# def test_combines_tens(input, expected):
-#     assert_expression_output(parse_dimension(input, ordinal=True), expected)
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value(21, ["الواحد والعشرين", "الواحد والعشرون", "الواحدة والعشرون"]),
+        get_value(32, ["الثاني والثلاثين", "الثاني والتلاتين", "الثانية والثلاثون"]),
+        get_value(43, ["الثالثة والأربعين", "الثالث والأربعون"]),
+        get_value(44, ["الرابع والاربعون", "الرابع والاربعون"]),
+        get_value(54, ["الرابع والخمسين", "الرابع والخمسون"]),
+        get_value(65, ["الخامس والستين", "الخامس والستون"]),
+        get_value(76, ["السادس والسبعين", "السادس والسبعون"]),
+        get_value(87, ["السابع والتمانين", "السابع والتمانون"]),
+        get_value(98, ["الثامن والتسعين", "التامن والتسعون"]),
+        get_value(99, ["التاسع والتسعين"]),
+        get_value(91, ["الواحد والتسعين"]),
+        get_value(66, ["السادس والستين"]),
+        get_value(26, ["السادس والعشرين"]),
+        get_value(25, ["الخامس و العشرون"]),
+        get_value(75, ["الخامس والسبعين"]),
+        get_value(22, ["الثاني و العشرون"]),
+        get_value(22, ["التانية و العشرون"]),
+    ),
+)
+def test_combines_tens(input, expected):
+    assert_expression_output(parse_dimension(input, ordinal=True), expected)
 
 
-# @pytest.mark.parametrize(
-#     "input, expected",
-#     chain(
-#         get_value(100, ["مية", "ميه", "مائة", "مائه", "مئة", "مئه", "نص ميتين"]),
-#         get_value(200, ["ميتين", "مئتين", "مئتان"]),
-#         get_value(
-#             300,
-#             ["ثلاثمية", "ثلاث ميات", "ثلاثة مائة", "تلاتمية", "ثلاثمئه"],
-#         ),
-#         get_value(
-#             400,
-#             ["أربعمية", "أربع مئات", "أربعة مائة", "اربعمية", "اربعمئه"],
-#         ),
-#         get_value(
-#             500,
-#             ["خمسمية", "خمسة مئة", "خمس مائة", "خمسميه", "خمسه مئة"],
-#         ),
-#         get_value(
-#             600,
-#             ["ستمية", "ستة مئة", "ست مائة", "ستميه", "ستمائة"],
-#         ),
-#         get_value(
-#             700,
-#             ["سبعمية", "سبعة مئة", "سبع مائة", "سبعميه", "سبعمائة"],
-#         ),
-#         get_value(
-#             800,
-#             ["ثمنمية", "ثماني مئة", "ثمان مائة", "تمنميه", "ثمانمائة"],
-#         ),
-#         get_value(
-#             900,
-#             ["تسعمية", "تسعة مئة", "تسع مائة", "تسعميه", "تسعمائة"],
-#         ),
-#     ),
-# )
-# def test_perfect_hundreds(input, expected):
-#     assert_expression_output(parse_dimension(input, ordinal=True), expected)
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
+        get_value(100, ["المية", "الميه", "المائة", "المائه", "المئة", "المئه"]),
+        get_value(200, ["الميتين", "المئتين", "المئتان"]),
+        get_value(
+            300,
+            ["الثلاثمية", "الثلاثة مائة", "التلاتمية", "الثلاثمئه"],
+        ),
+        get_value(
+            400,
+            ["الأربعمية", "الأربعة مائة", "الاربعمية", "الاربعمئه"],
+        ),
+        get_value(
+            500,
+            ["الخمسمية", "الخمسة مئة", "الخمس مائة", "الخمسميه", "الخمسه مئة"],
+        ),
+        get_value(
+            600,
+            ["الستمية", "الستة مئة", "الست مائة", "الستميه", "الستمائة"],
+        ),
+        get_value(
+            700,
+            ["السبعمية", "السبعة مئة", "السبع مائة", "السبعميه", "السبعمائة"],
+        ),
+        get_value(
+            800,
+            ["الثمنمية", "الثماني مئة", "الثمان مائة", "التمنميه", "الثمانمائة"],
+        ),
+        get_value(
+            900,
+            ["التسعمية", "التسعة مئة", "التسع مائة", "التسعميه", "التسعمائة"],
+        ),
+    ),
+)
+def test_perfect_hundreds(input, expected):
+    assert_expression_output(parse_dimension(input, ordinal=True), expected)
 
 
 # @pytest.mark.parametrize(
