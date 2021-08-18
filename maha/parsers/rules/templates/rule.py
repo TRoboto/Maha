@@ -19,7 +19,7 @@ class Rule:
     rule_type: DimensionType
     expression: Expression
 
-    def __init__(self, expression: Expression, rule_type) -> Expression:
+    def __init__(self, expression: Expression, rule_type) -> None:
         """Returns a combined expression for the given types."""
         self.expression = expression
         self.rule_type = rule_type
@@ -78,4 +78,4 @@ class Rule:
         raise NotImplementedError
 
     def __str__(self) -> str:
-        return self.expression
+        return str(self.expression)

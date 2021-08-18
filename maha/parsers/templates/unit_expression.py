@@ -1,4 +1,4 @@
-__all__ = ["ValueExpression", "ValueUnit"]
+__all__ = ["UnitExpression", "ValueUnit"]
 
 from dataclasses import dataclass
 from typing import List, Optional
@@ -56,7 +56,6 @@ class UnitExpression(NumeralExpression):
         numerals = groups.get("numeral_value")
 
         units_spans = match.spans("unit")
-        multipliers_spans = match.spans("multiplier")
         numerals_spans = match.spans("numeral_value")
 
         output_values = []
@@ -88,7 +87,7 @@ class UnitExpression(NumeralExpression):
         """Get the unit from the input ``text``."""
         raise NotImplementedError
 
-    def get_value(self, text: str) -> Optional[float]:
+    def get_value(self, text: str) -> float:  # type: ignore
         """Get the value from the input ``text``."""
         if HALF.match(text):
             return 1 / 2

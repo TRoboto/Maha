@@ -9,8 +9,6 @@ __all__ = [
 ]
 
 
-from typing import Callable
-
 import maha.rexy as rx
 from maha.expressions import EXPRESSION_SPACE
 
@@ -50,10 +48,10 @@ def get_fractions_of_unit_pattern(unit: str) -> str:
             "{quarter}{space}{unit}",
         ]
     ).format(
-        half=get_value_group(HALF),
-        third=get_value_group(THIRD),
-        quarter=get_value_group(QUARTER),
-        three_quarter=get_value_group(THREE_QUARTERS),
+        half=get_value_group(HALF),  # type: ignore
+        third=get_value_group(THIRD),  # type: ignore
+        quarter=get_value_group(QUARTER),  # type: ignore
+        three_quarter=get_value_group(THREE_QUARTERS),  # type: ignore
         space=EXPRESSION_SPACE,
         unit=get_unit_group(unit),
     )

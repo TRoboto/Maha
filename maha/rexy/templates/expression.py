@@ -4,10 +4,10 @@ import hashlib
 import pickle
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Iterable, Optional
+from typing import Callable, Iterable, Optional, Pattern, Union
 
 import regex as re
-from regex.regex import Match
+from regex import regex
 
 from maha import LIBRARY_PATH
 
@@ -39,7 +39,7 @@ class Expression:
     ):
         self.pattern = str(pattern)
         self.pickle = pickle
-        self._compiled_pattern = None
+        self._compiled_pattern: Pattern = None  # type: ignore
 
     def compile(self):
         """Compile the regular expersion."""
@@ -76,7 +76,7 @@ class Expression:
         self.compile()
         return self._compiled_pattern.search(text)
 
-    def match(self, text: str) -> Optional[Match]:
+    def match(self, text: str) -> Optional[regex.Match]:
         """Match the pattern in the input ``text``.
 
         Parameters
@@ -92,7 +92,7 @@ class Expression:
         self.compile()
         return self._compiled_pattern.match(text)
 
-    def sub(self, repl: str, text: str) -> str:
+    def sub(self, repl: Union[Callable[..., str], str], text: str) -> str:
         """Replace all occurrences of the pattern in the input ``text``.
 
         Parameters
@@ -128,7 +128,7 @@ class Expression:
         for m in re.finditer(self._compiled_pattern, text):
             yield self.parse(m, text)
 
-    def parse(self, match: Match, text: Optional[str]) -> "ExpressionResult":
+    def parse(self, match: regex.Match, text: Optional[str]) -> "ExpressionResult":
         """Extract the value from the input ``text`` and return it.
 
         .. note::

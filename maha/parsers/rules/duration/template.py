@@ -2,7 +2,7 @@ __all__ = ["DurationValue", "DurationResult", "DurationExpression"]
 
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 from regex.regex import Match
 
@@ -61,7 +61,7 @@ class DurationExpression(UnitExpression):
         value = DurationValue(output_values)
         return DurationResult(start, end, value, self)
 
-    def get_unit(self, text: str) -> DurationUnit:
+    def get_unit(self, text: str) -> Optional[DurationUnit]:
         if SECONDS.match(text):
             return DurationUnit.SECONDS
         if MINUTES.match(text):
@@ -77,7 +77,7 @@ class DurationExpression(UnitExpression):
         if YEARS.match(text):
             return DurationUnit.YEARS
 
-    def get_value(self, text: str) -> float:
+    def get_value(self, text: str) -> Optional[float]:
         if DUAL_DURATIONS.match(text):
             return 2
         if SINGULAR_DURATIONS.match(text):

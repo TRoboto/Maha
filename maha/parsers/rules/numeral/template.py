@@ -50,10 +50,10 @@ class NumeralExpression(Expression):
             output *= self._get_value(value)
         return output
 
-    def _get_matched_numeral(self, numeral) -> int:
+    def _get_matched_numeral(self, numeral) -> int:  # type: ignore
         for exp in rule.ORDERED_NUMERALS:
             if exp.match(numeral):
-                return exp.value
+                return exp.value  # type: ignore
 
     def _handle_fasila(self, text) -> float:
         """
@@ -70,7 +70,7 @@ class NumeralExpression(Expression):
             Decimal number.
         """
         fasila = rule.EXPRESSION_OF_FASILA.search(text)
-        before, after = text.split(fasila.group(0))
+        before, after = text.split(fasila.group(0))  # type: ignore
         before = self._get_value(before)
         after = self._get_value(after)
         output = float(f"{before}.{after}")

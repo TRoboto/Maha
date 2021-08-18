@@ -24,20 +24,20 @@ from .template import DurationExpression
 class DurationRule(UnitRule):
     """Rule to extract a duration."""
 
-    def __init__(self, *units: DurationUnit) -> DurationExpression:
+    def __init__(self, *units: DurationUnit) -> None:
         """Returns a combined expression for the given units."""
         combined_patterns = self.combine_patterns(*units)
         expression = DurationExpression(combined_patterns, pickle=True)
         super().__init__(expression, DimensionType.DURATION)
 
     def get_single(self, unit: DurationUnit) -> "Expression":
-        return globals().get(f"EXPRESSION_OF_{unit.name[:-1]}")
+        return globals()[(f"EXPRESSION_OF_{unit.name[:-1]}")]
 
     def get_dual(self, unit: DurationUnit) -> "Expression":
-        return globals().get(f"EXPRESSION_OF_TWO_{unit.name}")
+        return globals()[(f"EXPRESSION_OF_TWO_{unit.name}")]
 
     def get_plural(self, unit: DurationUnit) -> "Expression":
-        return globals().get(f"EXPRESSION_OF_{unit.name}")
+        return globals()[(f"EXPRESSION_OF_{unit.name}")]
 
 
 RULE_DURATION_SECONDS = DurationRule(DurationUnit.SECONDS)

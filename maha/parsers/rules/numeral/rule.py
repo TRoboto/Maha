@@ -27,7 +27,7 @@ multiplier_group = lambda v: named_group("multiplier", v)
 numeral_value = lambda v: named_group("numeral_value", v)
 
 
-def get_numeral_value_without_multiplier(expression: str):
+def get_numeral_value_without_multiplier(expression):
     return numeral_value(expression) + multiplier_group("")
 
 
@@ -67,20 +67,20 @@ def get_fractions_pattern(multiplier: str) -> str:
 class NumeralRule(Rule):
     """Rule to extract a numeral."""
 
-    def __init__(self, *types: NumeralType) -> NumeralExpression:
+    def __init__(self, *types: NumeralType) -> None:
         """Returns a combined expression for the given types."""
         combined_patterns = self.combine_patterns(*types)
         expression = NumeralExpression(combined_patterns, pickle=True)
         super().__init__(expression, DimensionType.NUMERAL)
 
     def get_single(self, numeral: NumeralType) -> "Expression":
-        return globals().get(f"EXPRESSION_OF_{numeral.name[:-1]}")
+        return globals()[(f"EXPRESSION_OF_{numeral.name[:-1]}")]
 
     def get_dual(self, numeral: NumeralType) -> "Expression":
-        return globals().get(f"EXPRESSION_OF_TWO_{numeral.name}")
+        return globals()[f"EXPRESSION_OF_TWO_{numeral.name}"]
 
     def get_plural(self, numeral: NumeralType) -> "Expression":
-        return globals().get(f"EXPRESSION_OF_{numeral.name}")
+        return globals()[f"EXPRESSION_OF_{numeral.name}"]
 
     def get_pattern(self, numeral: NumeralType) -> str:
         if numeral == NumeralType.TENS:
@@ -205,10 +205,10 @@ RULE_NUMERAL_PERFECT_HUNDREDS = ExpressionGroup(
 RULE_INTEGERS = EXPRESSION_INTEGER
 RULE_DECIMALS = Expression(
     non_capturing_group(
-        (EXPRESSION_DECIMAL),
+        str(EXPRESSION_DECIMAL),
         *list(
             get_combinations(
-                RULE_INTEGERS,
+                str(RULE_INTEGERS),
                 RULE_NUMERAL_TENS_ONLY.join(),
                 RULE_NUMERAL_ONES_ONLY.join(),
             )
