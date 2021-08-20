@@ -1,11 +1,10 @@
 __all__ = ["UnitExpression", "ValueUnit"]
 
 from dataclasses import dataclass
-from typing import List, Optional
+from typing import List
 
 from regex.regex import Match
 
-from maha.constants import EMPTY
 from maha.parsers.expressions import HALF, QUARTER, THIRD, THREE_QUARTERS
 from maha.parsers.rules.numeral.template import NumeralExpression
 from maha.rexy import ExpressionResult

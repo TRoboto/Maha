@@ -13,8 +13,7 @@ from maha.parsers.expressions import (
     WAW_CONNECTOR,
 )
 from maha.parsers.helper import wrap_pattern
-from maha.parsers.rules.templates import Rule
-from maha.parsers.templates import ValueExpression
+from maha.parsers.templates import Rule, ValueExpression
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
 from .template import NumeralExpression
@@ -191,9 +190,7 @@ Rule(
 Rule("one_million", ValueExpression(1000000, "مليون")),
 Rule("two_millions", ValueExpression(2000000, Rule.get("one_million") + TWO_SUFFIX))
 Rule("several_millions", ValueExpression(1000000, "ملايين"))
-Rule(
-    "one_billion", ValueExpression(1000000000, non_capturing_group("بلايين", "مليارات"))
-)
+Rule("one_billion", ValueExpression(1000000000, non_capturing_group("بليون", "مليار")))
 Rule("two_billions", ValueExpression(2000000000, Rule.get("one_billion") + TWO_SUFFIX))
 Rule(
     "several_billions",
@@ -228,7 +225,7 @@ Rule("combined_tens", NumeralExpression(wrap_pattern(no_multiplier(_combined_ten
 
 # 10 11 12 13 14 ... 95 96 97 98 99
 _tens_only_pattern = non_capturing_group(
-    *_perfect_tens.patterns,
+    *Rule.slice("twenty", "ninety").patterns,
     _combined_tens,
     *Rule.slice("eleven", "nineteen").patterns,
     Rule.get("ten").pattern,
@@ -381,7 +378,7 @@ ORDERED_NUMERALS = ExpressionGroup(
     ).expression_group,
     Rule.slice("three_hundreds", "nine_hundreds").expression_group,
     Rule.slice("twenty", "ninety").expression_group,
-    Rule.slice("eleven", "ninety").expression_group,
+    Rule.slice("eleven", "nineteen").expression_group,
     Rule.slice("zero", "ten").expression_group,
     THREE_QUARTERS,
     HALF,

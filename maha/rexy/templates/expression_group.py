@@ -11,7 +11,7 @@ class ExpressionGroup:
 
     Parameters
     ----------
-    *expressions : :class:`rx.Expression`
+    *expressions :
         List of expressions to match. High-priority expressions should be passed first.
     smart : bool, optional
         Whether to parse the text in a smart way. See :meth:`~.smart_parse`.
