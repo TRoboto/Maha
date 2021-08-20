@@ -14,12 +14,12 @@ def test_parse_numeral_wiki_arlang(wiki_arlang):
 
 def test_parse_numeral_wiki_arnumbers(wiki_arnumbers):
     numerals = parse_dimension(wiki_arnumbers, numeral=True)
-    for d, e in zip(numerals[:8], it.cycle((178, 43, 1997))):
+    for d, e in zip(numerals[:12], it.cycle((178, 43, 1997))):
         assert d.value == e
-    for d, e in zip(numerals[13:18], (65, 1992, 13, 1995)):
+    for d, e in zip(numerals[12:26], (65, 1992, 13, 1995)):
         assert d.value == e
     for d, e in zip(
-        numerals[-17:-2], (311, 99, 5, 2, 11, 8, 311, 99, 5, 11, 311, 99, 5, 5, 11)
+        numerals[26:-2], (311, 99, 5, 2, 11, 8, 311, 99, 5, 11, 311, 99, 5, 5, 11)
     ):
         assert d.value == e
 
