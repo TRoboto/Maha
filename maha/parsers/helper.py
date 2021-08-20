@@ -12,7 +12,14 @@ __all__ = [
 import maha.rexy as rx
 from maha.expressions import EXPRESSION_SPACE
 
-from .expressions import HALF, QUARTER, THIRD, THREE_QUARTERS
+from .expressions import (
+    EXPRESSION_END,
+    EXPRESSION_START,
+    HALF,
+    QUARTER,
+    THIRD,
+    THREE_QUARTERS,
+)
 
 
 def get_value_group(pattern: str):
@@ -48,10 +55,15 @@ def get_fractions_of_unit_pattern(unit: str) -> str:
             "{quarter}{space}{unit}",
         ]
     ).format(
-        half=get_value_group(HALF),  # type: ignore
-        third=get_value_group(THIRD),  # type: ignore
-        quarter=get_value_group(QUARTER),  # type: ignore
-        three_quarter=get_value_group(THREE_QUARTERS),  # type: ignore
+        half=get_value_group(str(HALF)),
+        third=get_value_group(str(THIRD)),
+        quarter=get_value_group(str(QUARTER)),
+        three_quarter=get_value_group(str(THREE_QUARTERS)),
         space=EXPRESSION_SPACE,
         unit=get_unit_group(unit),
     )
+
+
+def wrap_pattern(pattern: str) -> str:
+    """Adds start and end expression to the pattern."""
+    return EXPRESSION_START + pattern + EXPRESSION_END
