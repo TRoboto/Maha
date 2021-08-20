@@ -107,7 +107,8 @@ class Expression:
         str
             Text with replaced occurrences.
         """
-        return re.sub(self.pattern, repl, text)
+        self.compile()
+        return self._compiled_pattern.sub(repl, text)
 
     def __call__(self, text: str) -> Iterable["ExpressionResult"]:
         """
