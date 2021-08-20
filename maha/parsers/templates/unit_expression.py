@@ -1,7 +1,8 @@
 __all__ = ["UnitExpression", "ValueUnit"]
 
+from collections import defaultdict
 from dataclasses import dataclass
-from typing import List
+from typing import DefaultDict, List
 
 from regex.regex import Match
 
@@ -57,7 +58,7 @@ class UnitExpression(NumeralExpression):
         units_spans = match.spans("unit")
         numerals_spans = match.spans("numeral_value")
 
-        output_values = []
+        output_values = defaultdict(list)
         value_pointer = 0
         numeral_pointer = 0
         for i, unit_span in enumerate(units_spans):
@@ -78,9 +79,20 @@ class UnitExpression(NumeralExpression):
                 extracted_numeral = self.get_value(values[value_pointer] or unit)
                 value_pointer += 1
 
-            output_values.append(ValueUnit(extracted_numeral, extracted_unit))
+            output_values[extracted_unit].append(
+                ValueUnit(extracted_numeral, extracted_unit)
+            )
 
-        return output_values
+        return self.merge_units(output_values)
+
+    def merge_units(
+        self, unitvalues: DefaultDict[Unit, List[ValueUnit]]
+    ) -> List[ValueUnit]:
+        """Merge the values from the input ``values``."""
+        return list(
+            ValueUnit(sum(value.value for value in values), unit)
+            for unit, values in unitvalues.items()
+        )
 
     def get_unit(self, text: str):
         """Get the unit from the input ``text``."""
