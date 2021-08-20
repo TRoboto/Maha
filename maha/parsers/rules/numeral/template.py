@@ -11,6 +11,9 @@ from maha.rexy import Expression, ExpressionResult
 
 
 class NumeralExpression(Expression):
+    def __init__(self, pattern: str):
+        super().__init__(pattern, pickle=True)
+
     def parse(self, match: Match, text: Optional[str]) -> "ExpressionResult":
 
         start, end = match.span()
