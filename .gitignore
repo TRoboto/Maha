@@ -134,5 +134,3 @@ dmypy.json
 # disable docs for now
 docs/*
 
-
-*.crp
