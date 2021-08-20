@@ -4,8 +4,6 @@ from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_
 from maha.expressions.general import EXPRESSION_SPACE_OR_NONE
 from maha.parsers.expressions import (
     ALL_ALEF,
-    EXPRESSION_END,
-    EXPRESSION_START,
     HALF,
     QUARTER,
     SUM_SUFFIX,
@@ -14,6 +12,7 @@ from maha.parsers.expressions import (
     TWO_SUFFIX,
     WAW_CONNECTOR,
 )
+from maha.parsers.helper import wrap_pattern
 from maha.parsers.rules.templates import Rule
 from maha.parsers.templates import ValueExpression
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
@@ -105,11 +104,6 @@ def get_multiplier_pattern(singular: str, dual: str, plural: str) -> str:
         ones=numeral_value(_ones_pattern),
     )
     return pattern
-
-
-def wrap_pattern(pattern: str) -> str:
-    """Adds start and end expression to the pattern."""
-    return EXPRESSION_START + pattern + EXPRESSION_END
 
 
 def get_combinations(*patterns: str):
@@ -372,9 +366,19 @@ Rule(
 )
 
 ORDERED_NUMERALS = ExpressionGroup(
-    Rule.get_rules_with_name_startswith("two_").expression_group,
-    Rule.get_rules_with_name_startswith("one_").expression_group,
-    Rule.get_rules_with_name_startswith("several").expression_group,
+    Rule.get_rules_with_names(
+        "two_trillions", "two_billions", "two_millions", "two_thousands", "two_hundreds"
+    ).expression_group,
+    Rule.get_rules_with_names(
+        "one_trillion", "one_billion", "one_million", "one_thousand", "one_hundred"
+    ).expression_group,
+    Rule.get_rules_with_names(
+        "several_trillions",
+        "several_billions",
+        "several_millions",
+        "several_thousands",
+        "several_hundreds",
+    ).expression_group,
     Rule.slice("three_hundreds", "nine_hundreds").expression_group,
     Rule.slice("twenty", "ninety").expression_group,
     Rule.slice("eleven", "ninety").expression_group,
