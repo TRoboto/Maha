@@ -1,221 +1,338 @@
-__all__ = [
-    "RULE_ORDINAL",
-    "RULE_ORDINAL_ONES",
-    "RULE_ORDINAL_TENS",
-    "RULE_ORDINAL_HUNDREDS",
-    "RULE_ORDINAL_THOUSANDS",
-    "RULE_ORDINAL_MILLIONS",
-    "RULE_ORDINAL_BILLIONS",
-    "RULE_ORDINAL_TRILLIONS",
-]
+from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
+from maha.parsers.expressions import ALL_ALEF, SUM_SUFFIX, TWO_SUFFIX, WAW_CONNECTOR
+from maha.parsers.helper import wrap_pattern
+from maha.parsers.templates import Rule, ValueExpression
+from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
-
-from maha.expressions import EXPRESSION_SPACE
-from maha.parsers.expressions import WAW_CONNECTOR
-from maha.parsers.rules.templates.rule import Rule
-from maha.parsers.templates import DimensionType, OrdinalType
-from maha.rexy import ExpressionGroup, named_group, non_capturing_group
-
-from .expression import *
 from .template import OrdinalExpression
 
-multiplier_group = lambda v: named_group("multiplier", v)
-numeral_value = lambda v: named_group("numeral_value", v)
+
+def multiplier_group(value: str) -> str:
+    return named_group("multiplier", value)
 
 
-def get_numeral_value_without_multiplier(expression: str):
+def numeral_value(value: str) -> str:
+    return named_group("numeral_value", value)
+
+
+def get_multiplier_pattern(singular: str, dual: str) -> str:
+    # order matters
+    _pattern = [
+        "{tens}{space}{multiplier_single}",
+        "{ones}{space}{multiplier_single}",
+        "{val}{multiplier_dual}",
+        "{val}{multiplier_single}",
+    ]
+    pattern = non_capturing_group(*_pattern).format(
+        space=EXPRESSION_SPACE,
+        multiplier_single=multiplier_group(Rule.get(singular).pattern),
+        multiplier_dual=multiplier_group(Rule.get(dual).pattern),
+        val=numeral_value(""),
+        tens=numeral_value(_ones_pattern),
+        ones=numeral_value(_tens_only_pattern),
+    )
+    return pattern
+
+
+def no_multiplier(expression: str):
     return numeral_value(expression) + multiplier_group("")
 
 
-class OrdinalRule(Rule):
-    """Rule to extract a numeral."""
+def add_prefix(pattern: Rule):
+    return ALEF_LAM + pattern
 
-    def __init__(self, *types: OrdinalType) -> None:
-        """Returns a combined expression for the given types."""
-        combined_patterns = self.combine_patterns(*types)
-        expression = OrdinalExpression(combined_patterns, pickle=True)
-        super().__init__(expression, DimensionType.ORDINAL)
 
-    def get_single(self, numeral: OrdinalType) -> "Expression":
-        return globals()[(f"EXPRESSION_OF_{numeral.name[:-1]}")]
+def ones_wrap(rule_name: str):
+    return add_prefix(Rule.get(rule_name)) + TEH_OPTIONAL_SUFFIX
 
-    def get_dual(self, numeral: OrdinalType) -> "Expression":
-        return globals()[(f"EXPRESSION_OF_TWO_{numeral.name}")]
 
-    def get_pattern(self, numeral: OrdinalType) -> str:
-        if numeral == OrdinalType.TENS:
-            pattern = get_numeral_value_without_multiplier(
-                EXPRESSION_ORDINAL_TENS_ONLY.join()
-            )
-        elif numeral == OrdinalType.ONES:
-            pattern = get_numeral_value_without_multiplier(
-                EXPRESSION_ORDINAL_ONES_ONLY.join()
-            )
-        else:
-            pattern = self._get_pattern(numeral)
-        return pattern
+def ones_owrap(rule_name: str):
+    return ALEF_LAM_OPTIONAL + Rule.get(rule_name) + TEH_OPTIONAL_SUFFIX
 
-    def _get_pattern(self, numeral: OrdinalType) -> str:
 
-        single = str(self.get_single(numeral))
-        dual = str(self.get_dual(numeral))
+def perfect_tens_wrap(rule_name: str):
+    return add_prefix(Rule.get(rule_name)) + SUM_SUFFIX
 
-        # order matters
-        _pattern = [
-            "{tens}{space}{multiplier_single_plural}",
-            "{ones}{space}{multiplier_single_plural}",
-            "{val}{multiplier_dual}",
-            "{val}{multiplier_single}",
-        ]
-        # # Account for no spaces in the hundreds pattern (الثلاثمائة)
-        if numeral == OrdinalType.HUNDREDS:
-            _pattern.insert(
-                2,
-                get_numeral_value_without_multiplier(
-                    EXPRESSION_ORDINAL_PERFECT_HUNDREDS.join()
-                ),
-            )
 
-        pattern = non_capturing_group(*_pattern).format(
-            space=EXPRESSION_SPACE,
-            multiplier_single_plural=multiplier_group(single),
-            multiplier_single=multiplier_group(single),
-            multiplier_dual=multiplier_group(dual),
-            val=numeral_value(""),
-            tens=numeral_value(EXPRESSION_ORDINAL_TENS_ONLY.join()),
-            ones=numeral_value(EXPRESSION_ORDINAL_ONES_ONLY.join()),
-        )
-        return pattern
+def perfect_hundreds_wrap(rule_name: str):
+    return (
+        ALEF_LAM
+        + Rule.get(rule_name)
+        + EXPRESSION_SPACE_OR_NONE
+        + Rule.get("one_hundred")
+    )
 
+
+TEN_SUFFIX = Expression(f"{EXPRESSION_SPACE_OR_NONE}[تط]?[اع]?شر?[ةه]?")
+TEN_SUFFIX_SIMPLE = Expression(f"{EXPRESSION_SPACE}عشر[ةه]?")
+TEH_OPTIONAL_SUFFIX = Expression("[ةه]?")
+ALEF_LAM = Expression(non_capturing_group("ال"))
+ALEF_LAM_OPTIONAL = Expression(ALEF_LAM + "?")
+
+Rule("ordinal_one_prefix", "واحد")
+Rule("ordinal_two_prefix", non_capturing_group("[تث]ان[يى]", "[إا]?[ثت]نت؟[يى]"))
+Rule("ordinal_three_prefix", "[تث]ال[ثت]")
+Rule("ordinal_four_prefix", "رابع")
+Rule("ordinal_five_prefix", "خامس")
+Rule("ordinal_six_prefix", "سادس")
+Rule("ordinal_seven_prefix", "سابع")
+Rule("ordinal_eight_prefix", "[تث]امن")
+Rule("ordinal_nine_prefix", "تاسع")
+Rule("ordinal_ten_prefix", "عاشر")
+
+Rule("ordinal_one_alone", ValueExpression(1, ALEF_LAM_OPTIONAL + "[أا]ول[ىي]?"))
+Rule(
+    "ordinal_two_alone",
+    ValueExpression(2, ALEF_LAM_OPTIONAL + "[تث]ان[يى]" + TEH_OPTIONAL_SUFFIX),
+)
+Rule("ordinal_three_alone", ValueExpression(3, ones_owrap("ordinal_three_prefix")))
+Rule("ordinal_four_alone", ValueExpression(4, ones_owrap("ordinal_four_prefix")))
+Rule("ordinal_five_alone", ValueExpression(5, ones_owrap("ordinal_five_prefix")))
+Rule("ordinal_six_alone", ValueExpression(6, ones_owrap("ordinal_six_prefix")))
+Rule("ordinal_seven_alone", ValueExpression(7, ones_owrap("ordinal_seven_prefix")))
+Rule("ordinal_eight_alone", ValueExpression(8, ones_owrap("ordinal_eight_prefix")))
+Rule("ordinal_nine_alone", ValueExpression(9, ones_owrap("ordinal_nine_prefix")))
+
+Rule("ordinal_one", ValueExpression(1, ones_wrap("ordinal_one_prefix")))
+Rule("ordinal_two", ValueExpression(2, ones_wrap("ordinal_two_prefix")))
+Rule("ordinal_three", ValueExpression(3, ones_wrap("ordinal_three_prefix")))
+Rule("ordinal_four", ValueExpression(4, ones_wrap("ordinal_four_prefix")))
+Rule("ordinal_five", ValueExpression(5, ones_wrap("ordinal_five_prefix")))
+Rule("ordinal_six", ValueExpression(6, ones_wrap("ordinal_six_prefix")))
+Rule("ordinal_seven", ValueExpression(7, ones_wrap("ordinal_seven_prefix")))
+Rule("ordinal_eight", ValueExpression(8, ones_wrap("ordinal_eight_prefix")))
+Rule("ordinal_nine", ValueExpression(9, ones_wrap("ordinal_nine_prefix")))
+Rule("ordinal_ten", ValueExpression(10, ones_owrap("ordinal_ten_prefix")))
+
+Rule(
+    "ordinal_eleven",
+    ValueExpression(
+        11,
+        non_capturing_group(
+            ALEF_LAM + f"{ALL_ALEF}?حد[اى]?" + TEN_SUFFIX,
+            ALEF_LAM_OPTIONAL + "حاد[يى]" + TEN_SUFFIX_SIMPLE,
+        ),
+    ),
+)
+Rule(
+    "ordinal_twelve",
+    ValueExpression(
+        12,
+        non_capturing_group(
+            ALEF_LAM
+            + non_capturing_group(
+                f"{ALL_ALEF}[طت]نا?" + TEN_SUFFIX,
+                f"{ALL_ALEF}[ثت]نت?[اىي]ن?" + TEN_SUFFIX,
+            ),
+            ALEF_LAM_OPTIONAL + Rule.get("ordinal_two_prefix") + TEN_SUFFIX_SIMPLE,
+        ),
+    ),
+)
+Rule(
+    "ordinal_thirteen",
+    ValueExpression(13, Rule.get("ordinal_three_alone") + TEN_SUFFIX_SIMPLE),
+)
+Rule(
+    "ordinal_fourteen",
+    ValueExpression(14, Rule.get("ordinal_four_alone") + TEN_SUFFIX_SIMPLE),
+)
+Rule(
+    "ordinal_fifteen",
+    ValueExpression(15, Rule.get("ordinal_five_alone") + TEN_SUFFIX_SIMPLE),
+)
+Rule(
+    "ordinal_sixteen",
+    ValueExpression(16, Rule.get("ordinal_six_alone") + TEN_SUFFIX_SIMPLE),
+)
+Rule(
+    "ordinal_seventeen",
+    ValueExpression(17, Rule.get("ordinal_seven_alone") + TEN_SUFFIX_SIMPLE),
+)
+Rule(
+    "ordinal_eighteen",
+    ValueExpression(18, Rule.get("ordinal_eight_alone") + TEN_SUFFIX_SIMPLE),
+)
+Rule(
+    "ordinal_nineteen",
+    ValueExpression(19, Rule.get("ordinal_nine_alone") + TEN_SUFFIX_SIMPLE),
+)
+Rule(
+    "ordinal_twenty",
+    ValueExpression(20, ALEF_LAM + "عشر" + SUM_SUFFIX),
+)
+Rule("ordinal_thirty", ValueExpression(30, perfect_tens_wrap("three_prefix")))
+Rule("ordinal_forty", ValueExpression(40, perfect_tens_wrap("four_prefix")))
+Rule("ordinal_fifty", ValueExpression(50, perfect_tens_wrap("five_prefix")))
+Rule("ordinal_sixty", ValueExpression(60, perfect_tens_wrap("six_prefix")))
+Rule("ordinal_seventy", ValueExpression(70, perfect_tens_wrap("seven_prefix")))
+Rule("ordinal_eighty", ValueExpression(80, perfect_tens_wrap("eight_prefix")))
+Rule("ordinal_ninety", ValueExpression(90, perfect_tens_wrap("nine_prefix")))
+Rule("ordinal_one_hundred", ValueExpression(100, ALEF_LAM + Rule.get("one_hundred")))
+Rule("ordinal_two_hundreds", ValueExpression(200, ALEF_LAM + Rule.get("two_hundreds")))
+Rule("ordinal_three_hundreds", ValueExpression(300, perfect_hundreds_wrap("three")))
+Rule("ordinal_four_hundreds", ValueExpression(400, perfect_hundreds_wrap("four")))
+Rule("ordinal_five_hundreds", ValueExpression(500, perfect_hundreds_wrap("five")))
+Rule("ordinal_six_hundreds", ValueExpression(600, perfect_hundreds_wrap("six")))
+Rule("ordinal_seven_hundreds", ValueExpression(700, perfect_hundreds_wrap("seven")))
+Rule("ordinal_eight_hundreds", ValueExpression(800, perfect_hundreds_wrap("eight")))
+Rule("ordinal_nine_hundreds", ValueExpression(900, perfect_hundreds_wrap("nine")))
+
+Rule(
+    "ordinal_one_thousand", ValueExpression(1000, add_prefix(Rule.get("one_thousand")))
+)
+Rule(
+    "ordinal_two_thousands",
+    ValueExpression(2000, add_prefix(Rule.get("two_thousands"))),
+)
+Rule(
+    "ordinal_one_million",
+    ValueExpression(1000000, add_prefix(Rule.get("one_million"))),
+)
+Rule(
+    "ordinal_two_millions",
+    ValueExpression(2000000, add_prefix(Rule.get("two_millions"))),
+)
+Rule(
+    "ordinal_one_billion",
+    ValueExpression(1000000000, add_prefix(Rule.get("one_billion"))),
+)
+Rule(
+    "ordinal_two_billions",
+    ValueExpression(2000000000, add_prefix(Rule.get("two_billions"))),
+)
+Rule(
+    "ordinal_one_trillion",
+    ValueExpression(1000000000000, add_prefix(Rule.get("one_trillion"))),
+)
+Rule(
+    "ordinal_two_trillions",
+    ValueExpression(2000000000000, add_prefix(Rule.get("two_trillions"))),
+)
 
 # 1 2 3 4 5 6 7 8 9
-EXPRESSION_ORDINAL_ONES_ONLY = ExpressionGroup(
-    EXPRESSION_OF_ONE_ONLY,
-    EXPRESSION_OF_TWO_ONLY,
-    EXPRESSION_OF_THREE_ONLY,
-    EXPRESSION_OF_FOUR_ONLY,
-    EXPRESSION_OF_FIVE_ONLY,
-    EXPRESSION_OF_SIX_ONLY,
-    EXPRESSION_OF_SEVEN_ONLY,
-    EXPRESSION_OF_EIGHT_ONLY,
-    EXPRESSION_OF_NINE_ONLY,
-)
+_ones_pattern = Rule.slice("ordinal_one_alone", "ordinal_nine_alone").join()
+_ones = no_multiplier(_ones_pattern)
+Rule("ordinal_ones", OrdinalExpression(wrap_pattern(_ones)))
 
-_EXPRESSION_ORDINAL_ONES = ExpressionGroup(
-    EXPRESSION_OF_ONE,
-    EXPRESSION_OF_TWO,
-    EXPRESSION_OF_THREE,
-    EXPRESSION_OF_FOUR,
-    EXPRESSION_OF_FIVE,
-    EXPRESSION_OF_SIX,
-    EXPRESSION_OF_SEVEN,
-    EXPRESSION_OF_EIGHT,
-    EXPRESSION_OF_NINE,
-)
+_ones_prefix = no_multiplier(Rule.slice("ordinal_one", "ordinal_nine").join())
+Rule("ordinal_ones_prefix", OrdinalExpression(wrap_pattern(_ones_prefix)))
 
-# 20 30 40 50 60 70 80 90
-EXPRESSION_ORDINAL_PERFECT_TENS = ExpressionGroup(
-    EXPRESSION_OF_TWENTY,
-    EXPRESSION_OF_THIRTY,
-    EXPRESSION_OF_FORTY,
-    EXPRESSION_OF_FIFTY,
-    EXPRESSION_OF_SIXTY,
-    EXPRESSION_OF_SEVENTY,
-    EXPRESSION_OF_EIGHTY,
-    EXPRESSION_OF_NINETY,
+# 10 20 30 40 50 60 70 80 90
+_perfect_tens = Rule.slice("ordinal_ten", "ordinal_ninety")
+Rule(
+    "ordinal_perfect_tens",
+    OrdinalExpression(no_multiplier(wrap_pattern(_perfect_tens.join()))),
 )
 # 21 22 23 24 ... 96 97 98 99
-EXPRESSION_ORDINAL_COMBINED_TENS = Expression(
-    _EXPRESSION_ORDINAL_ONES.join()
+_combined_tens = (
+    Rule.slice("ordinal_one", "ordinal_nine").join()
     + WAW_CONNECTOR
-    + EXPRESSION_ORDINAL_PERFECT_TENS.join()
+    + Rule.slice("ordinal_twenty", "ordinal_ninety").join()
 )
 # 10 11 12 13 14 ... 95 96 97 98 99
-EXPRESSION_ORDINAL_TENS_ONLY = ExpressionGroup(
-    EXPRESSION_ORDINAL_PERFECT_TENS,
-    EXPRESSION_ORDINAL_COMBINED_TENS,
-    EXPRESSION_OF_ELEVEN,
-    EXPRESSION_OF_TWELVE,
-    EXPRESSION_OF_THIRTEEN,
-    EXPRESSION_OF_FOURTEEN,
-    EXPRESSION_OF_FIFTEEN,
-    EXPRESSION_OF_SIXTEEN,
-    EXPRESSION_OF_SEVENTEEN,
-    EXPRESSION_OF_EIGHTEEN,
-    EXPRESSION_OF_NINETEEN,
-    EXPRESSION_OF_TEN,
+_tens_only_pattern = non_capturing_group(
+    *_perfect_tens.patterns,
+    _combined_tens,
+    *Rule.slice("ordinal_eleven", "ordinal_nineteen").patterns,
 )
+_tens_only = no_multiplier(_tens_only_pattern)
+Rule("ordinal_tens_only", OrdinalExpression(wrap_pattern(_tens_only)))
 
 # 300 400 500 600 700 800 900
-EXPRESSION_ORDINAL_PERFECT_HUNDREDS = ExpressionGroup(
-    EXPRESSION_OF_THREE_HUNDREDS,
-    EXPRESSION_OF_FOUR_HUNDREDS,
-    EXPRESSION_OF_FIVE_HUNDREDS,
-    EXPRESSION_OF_SIX_HUNDREDS,
-    EXPRESSION_OF_SEVEN_HUNDREDS,
-    EXPRESSION_OF_EIGHT_HUNDREDS,
-    EXPRESSION_OF_NINE_HUNDREDS,
+_perfect_hundreds = no_multiplier(
+    Rule.slice("ordinal_three_hundreds", "ordinal_nine_hundreds").join()
 )
+Rule("ordinal_perfect_hundreds", OrdinalExpression(wrap_pattern(_perfect_hundreds)))
 
 
-RULE_ORDINAL_ONES = OrdinalRule(OrdinalType.ONES)
-RULE_ORDINAL_TENS = OrdinalRule(
-    OrdinalType.TENS,
-    OrdinalType.ONES,
+Rule("ordinal_tens", OrdinalExpression(Rule.combine_patterns(_tens_only, _ones)))
+Rule(
+    "ordinal_hundreds",
+    OrdinalExpression(
+        Rule.combine_patterns(
+            _perfect_hundreds,
+            get_multiplier_pattern("ordinal_one_hundred", "ordinal_two_hundreds"),
+            _tens_only,
+            _ones,
+        )
+    ),
 )
-RULE_ORDINAL_HUNDREDS = OrdinalRule(
-    OrdinalType.HUNDREDS,
-    OrdinalType.TENS,
-    OrdinalType.ONES,
+Rule(
+    "ordinal_thousands",
+    OrdinalExpression(
+        Rule.combine_patterns(
+            get_multiplier_pattern("ordinal_one_thousand", "ordinal_two_thousands"),
+            _perfect_hundreds,
+            get_multiplier_pattern("ordinal_one_hundred", "ordinal_two_hundreds"),
+            _tens_only,
+            _ones,
+        )
+    ),
 )
-RULE_ORDINAL_THOUSANDS = OrdinalRule(
-    OrdinalType.THOUSANDS,
-    OrdinalType.HUNDREDS,
-    OrdinalType.TENS,
-    OrdinalType.ONES,
+Rule(
+    "ordinal_millions",
+    OrdinalExpression(
+        Rule.combine_patterns(
+            get_multiplier_pattern("ordinal_one_million", "ordinal_two_millions"),
+            get_multiplier_pattern("ordinal_one_thousand", "ordinal_two_thousands"),
+            _perfect_hundreds,
+            get_multiplier_pattern("ordinal_one_hundred", "ordinal_two_hundreds"),
+            _tens_only,
+            _ones,
+        )
+    ),
 )
-RULE_ORDINAL_MILLIONS = OrdinalRule(
-    OrdinalType.MILLIONS,
-    OrdinalType.THOUSANDS,
-    OrdinalType.HUNDREDS,
-    OrdinalType.TENS,
-    OrdinalType.ONES,
-)
-RULE_ORDINAL_BILLIONS = OrdinalRule(
-    OrdinalType.BILLIONS,
-    OrdinalType.MILLIONS,
-    OrdinalType.THOUSANDS,
-    OrdinalType.HUNDREDS,
-    OrdinalType.TENS,
-    OrdinalType.ONES,
-)
-RULE_ORDINAL_TRILLIONS = OrdinalRule(
-    OrdinalType.TRILLIONS,
-    OrdinalType.BILLIONS,
-    OrdinalType.MILLIONS,
-    OrdinalType.THOUSANDS,
-    OrdinalType.HUNDREDS,
-    OrdinalType.TENS,
-    OrdinalType.ONES,
+Rule(
+    "ordinal_billions",
+    OrdinalExpression(
+        Rule.combine_patterns(
+            get_multiplier_pattern("ordinal_one_billion", "ordinal_two_billions"),
+            get_multiplier_pattern("ordinal_one_million", "ordinal_two_millions"),
+            get_multiplier_pattern("ordinal_one_thousand", "ordinal_two_thousands"),
+            _perfect_hundreds,
+            get_multiplier_pattern("ordinal_one_hundred", "ordinal_two_hundreds"),
+            _tens_only,
+            _ones,
+        )
+    ),
 )
 
-RULE_ORDINAL = RULE_ORDINAL_TRILLIONS
-
+Rule(
+    "ordinal_trillions",
+    OrdinalExpression(
+        Rule.combine_patterns(
+            get_multiplier_pattern("ordinal_one_trillion", "ordinal_two_trillions"),
+            get_multiplier_pattern("ordinal_one_billion", "ordinal_two_billions"),
+            get_multiplier_pattern("ordinal_one_million", "ordinal_two_millions"),
+            get_multiplier_pattern("ordinal_one_thousand", "ordinal_two_thousands"),
+            _perfect_hundreds,
+            get_multiplier_pattern("ordinal_one_hundred", "ordinal_two_hundreds"),
+            _tens_only,
+            _ones,
+        )
+    ),
+)
+Rule("ordinal", Rule.get("ordinal_trillions").expression)
 
 ORDERED_ORDINALS = ExpressionGroup(
-    EXPRESSION_OF_TWO_HUNDREDS,
-    EXPRESSION_OF_TWO_THOUSANDS,
-    EXPRESSION_OF_TWO_MILLIONS,
-    EXPRESSION_OF_TWO_BILLIONS,
-    EXPRESSION_OF_TWO_TRILLIONS,
-    EXPRESSION_OF_HUNDRED,
-    EXPRESSION_OF_THOUSAND,
-    EXPRESSION_OF_MILLION,
-    EXPRESSION_OF_BILLION,
-    EXPRESSION_OF_TRILLION,
-    EXPRESSION_ORDINAL_PERFECT_HUNDREDS,
-    EXPRESSION_ORDINAL_TENS_ONLY,
-    EXPRESSION_ORDINAL_ONES_ONLY,
-    _EXPRESSION_ORDINAL_ONES,
+    Rule.get_rules_with_names(
+        "ordinal_two_trillions",
+        "ordinal_two_billions",
+        "ordinal_two_millions",
+        "ordinal_two_thousands",
+        "ordinal_two_hundreds",
+    ).expression_group,
+    Rule.get_rules_with_names(
+        "ordinal_one_trillion",
+        "ordinal_one_billion",
+        "ordinal_one_million",
+        "ordinal_one_thousand",
+        "ordinal_one_hundred",
+    ).expression_group,
+    Rule.slice("ordinal_three_hundreds", "ordinal_nine_hundreds").expression_group,
+    Rule.slice("ordinal_twenty", "ordinal_ninety").expression_group,
+    Rule.slice("ordinal_eleven", "ordinal_nineteen").expression_group,
+    Rule.slice("ordinal_one_alone", "ordinal_nine_alone").expression_group,
+    Rule.slice("ordinal_one", "ordinal_ten").expression_group,
 )
 """ The order of which the expressions are evaluated. """
