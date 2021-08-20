@@ -209,6 +209,22 @@ def test_perfect_millions(input, expected):
     assert_expression_output(parse_dimension(input, ordinal=True), expected)
 
 
+# TODO:
+# This behaviour might be changed in the future.
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (141, "الأول والأربعين والمئة"),
+        (16, "الثاني والرابع عشر"),
+        (1000101, "الواحد والمئة والمليون"),
+        # Is this alright?
+        (6, "الأول والثاني والثالث"),
+    ],
+)
+def test_combinations(input, expected):
+    assert_expression_output(parse_dimension(input, ordinal=True), expected)
+
+
 @pytest.mark.parametrize(
     "input",
     [

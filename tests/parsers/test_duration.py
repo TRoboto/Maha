@@ -219,7 +219,7 @@ to_sec = {
 
 
 def assert_combined_expression_one_output(
-    output: List[Dimension], expected: List[float], unit: List[DurationUnit]
+    output: List[Dimension], expected: List[float], units: List[DurationUnit]
 ):
     """
     Asserts that the output of a combined expression is the same as the expected one.
@@ -231,19 +231,18 @@ def assert_combined_expression_one_output(
         The output of the combined expression.
     expected: List[float]
         The expected value of each :class:`ValueUnit`.
-    unit: List[DurationUnit]
+    units: List[DurationUnit]
         The unit of each :class:`ValueUnit`.
     """
     assert len(output) == 1
     result = output[0]
 
     assert isinstance(result.value, DurationValue)
-    assert len(result.value) == len(unit)
-
+    assert len(result.value) == len(units)
     normalized = 0
     for i, item in enumerate(result.value.values):
         assert isinstance(item.unit, DurationUnit)
-        assert item.unit == unit[i]
+        assert item.unit == units[i]
         assert pytest.approx(item.value, 0.001) == expected[i]
         normalized += item.value * to_sec[item.unit]
 
@@ -427,6 +426,23 @@ def test_parse_with_combined_months(
     ],
 )
 def test_parse_with_combined_years(
+    input: str, expected: List[float], units: List[DurationUnit]
+):
+    output = parse_dimension(input, duration=True)
+    assert_combined_expression_one_output(output, expected, units)
+
+
+@pytest.mark.parametrize(
+    "expected, units, input",
+    [
+        ([3, 1], [MON, Y], "3 اشهر وسنة"),
+        ([5, 5, 4], [MON, Y, S], "شهرين وثلاثة اشهر وخمسة سنين واربع ثواني"),
+        ([2.5, 1], [Y, MON], "سنتين وشهر ونص سنة"),
+        ([2, 2], [Y, MON], "سنتان وشهرين"),
+        ([179, 5], [Y, MON], "مئة وسبعة وسبعين عام وعامين وثلاثة اشهر وشهرين"),
+    ],
+)
+def test_parse_combination(
     input: str, expected: List[float], units: List[DurationUnit]
 ):
     output = parse_dimension(input, duration=True)

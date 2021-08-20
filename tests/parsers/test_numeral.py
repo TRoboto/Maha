@@ -407,6 +407,20 @@ def test_millions(input, expected):
 
 
 @pytest.mark.parametrize(
+    "expected, input",
+    [
+        (9120, "الف والفين والف وخمسة الاف ومية وعشرين"),
+        (1000110, "مئة وعشرة ومليون"),
+        (45, "اربعين وخمسة"),
+        (1000036000, "ثلاثة وثلاثين الف و3 الاف وبليون"),
+        (2991, "واحد وتسعين وتسعمية والفين"),
+    ],
+)
+def test_combinations(input, expected):
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
+
+
+@pytest.mark.parametrize(
     "input",
     [
         ("الواحد"),
