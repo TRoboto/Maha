@@ -15,7 +15,7 @@ class ValueExpression(Expression):
     __slots__ = ["value"]
     value: Any
 
-    def __init__(self, value: Any, pattern):
+    def __init__(self, value: Any, pattern: str):
         self.value = value
         super().__init__(pattern)
 

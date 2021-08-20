@@ -8,20 +8,17 @@ __all__ = [
 ]
 
 
-from typing import Any
-
-
-def non_capturing_group(*patterns: Any):
+def non_capturing_group(*patterns: str):
     """Returns a non capturing groups of patterns."""
     return "(?:{})".format("|".join(str(p) for p in patterns))
 
 
-def positive_lookbehind(*patterns: Any):
+def positive_lookbehind(*patterns: str):
     """Returns a positive lookbehind pattern."""
     return "(?<={})".format("|".join(str(p) for p in patterns))
 
 
-def positive_lookahead(*patterns: Any):
+def positive_lookahead(*patterns: str):
     """Returns positive lookahead pattern"""
     return "(?={})".format("|".join(str(p) for p in patterns))
 
