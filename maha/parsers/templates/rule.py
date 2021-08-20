@@ -73,6 +73,12 @@ class Rule:
         return other + self.pattern
 
     @classmethod
+    def compile_rules(cls):
+        """Compiles the rule."""
+        for rule in cls._rules:
+            cls._rules[rule].compile()
+
+    @classmethod
     def get(cls, name: str) -> "Rule":
         """Gets the rule with the given name."""
         return cls._rules[name]
