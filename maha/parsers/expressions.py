@@ -40,7 +40,7 @@ WORD_SEPARATOR = Expression(
         f"(?:{EXPRESSION_SPACE}{WAW})?",
         f"{EXPRESSION_SPACE}{WAW}",
     )
-    + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
+    + non_capturing_group(r"\b", str(EXPRESSION_SPACE_OR_NONE))
 )
 """ Pattern that matches the word separator between numerals in Arabic """
 
