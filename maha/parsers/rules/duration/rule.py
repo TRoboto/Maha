@@ -1,65 +1,81 @@
-"""
-Expressions to extract duration.
-"""
-
-__all__ = [
-    "RULE_DURATION_SECONDS",
-    "RULE_DURATION_MINUTES",
-    "RULE_DURATION_HOURS",
-    "RULE_DURATION_DAYS",
-    "RULE_DURATION_WEEKS",
-    "RULE_DURATION_MONTHS",
-    "RULE_DURATION_YEARS",
-    "RULE_DURATION",
-]
+"""Rules to extract duration."""
 
 
-from maha.parsers.rules.templates import UnitRule
-from maha.parsers.templates import DimensionType, DurationUnit
+from maha.parsers.expressions import ALL_ALEF, TWO_SUFFIX
+from maha.parsers.helper import wrap_pattern
+from maha.parsers.rules.templates import Rule, get_unit_pattern
+from maha.rexy import non_capturing_group
 
-from .expression import *
 from .template import DurationExpression
 
+Rule("one_second", non_capturing_group("ثاني[ةه]", "لح[زضظ][ةه]"))
+Rule("one_minute", "دقيق[ةه]")
+Rule("one_hour", "ساع[ةه]")
+Rule("one_day", "يوما?")
+Rule("one_week", f"{ALL_ALEF}سبوعا?")
+Rule("one_month", "شهرا?")
+Rule("one_year", non_capturing_group("سن[ةه]", "عاما?"))
 
-class DurationRule(UnitRule):
-    """Rule to extract a duration."""
+Rule(
+    "two_seconds",
+    non_capturing_group("ثانيت" + TWO_SUFFIX, "لح[زضظ]ت" + TWO_SUFFIX),
+),
+Rule("two_minutes", "دقيقت" + TWO_SUFFIX),
+Rule("two_hours", "ساعت" + TWO_SUFFIX),
+Rule("two_days", "يوم" + TWO_SUFFIX),
+Rule("two_weeks", f"{ALL_ALEF}سبوع" + TWO_SUFFIX),
+Rule("two_months", "شهر" + TWO_SUFFIX),
+Rule("two_years", non_capturing_group("سنت" + TWO_SUFFIX, "عام" + TWO_SUFFIX)),
 
-    def __init__(self, *units: DurationUnit) -> None:
-        """Returns a combined expression for the given units."""
-        combined_patterns = self.combine_patterns(*units)
-        expression = DurationExpression(combined_patterns, pickle=True)
-        super().__init__(expression, DimensionType.DURATION)
+Rule("several_seconds", non_capturing_group("ثواني", "لح[زضظ]ات"))
+Rule("several_minutes", "دقا[يئ]ق"),
+Rule("several_hours", "ساعات"),
+Rule("several_days", f"{ALL_ALEF}يام"),
+Rule("several_weeks", f"{ALL_ALEF}سابيعا?"),
+Rule("several_months", non_capturing_group("شهور", "[أا]شهر")),
+Rule("several_years", non_capturing_group("سنوات", "سنين", "[أا]عوام")),
 
-    def get_single(self, unit: DurationUnit) -> "Expression":
-        return globals()[(f"EXPRESSION_OF_{unit.name[:-1]}")]
+_seconds_pattern = get_unit_pattern(
+    Rule.get("one_second"), Rule.get("two_seconds"), Rule.get("several_seconds")
+)
+_minutes_pattern = get_unit_pattern(
+    Rule.get("one_minute"), Rule.get("two_minutes"), Rule.get("several_minutes")
+)
+_hours_pattern = get_unit_pattern(
+    Rule.get("one_hour"), Rule.get("two_hours"), Rule.get("several_hours")
+)
+_days_pattern = get_unit_pattern(
+    Rule.get("one_day"), Rule.get("two_days"), Rule.get("several_days")
+)
+_weeks_pattern = get_unit_pattern(
+    Rule.get("one_week"), Rule.get("two_weeks"), Rule.get("several_weeks")
+)
+_months_pattern = get_unit_pattern(
+    Rule.get("one_month"), Rule.get("two_months"), Rule.get("several_months")
+)
+_years_pattern = get_unit_pattern(
+    Rule.get("one_year"), Rule.get("two_years"), Rule.get("several_years")
+)
 
-    def get_dual(self, unit: DurationUnit) -> "Expression":
-        return globals()[(f"EXPRESSION_OF_TWO_{unit.name}")]
+Rule("seconds", DurationExpression(wrap_pattern(_seconds_pattern)))
+Rule("minutes", DurationExpression(wrap_pattern(_minutes_pattern)))
+Rule("hours", DurationExpression(wrap_pattern(_hours_pattern)))
+Rule("days", DurationExpression(wrap_pattern(_days_pattern)))
+Rule("weeks", DurationExpression(wrap_pattern(_weeks_pattern)))
+Rule("months", DurationExpression(wrap_pattern(_months_pattern)))
+Rule("years", DurationExpression(wrap_pattern(_years_pattern)))
 
-    def get_plural(self, unit: DurationUnit) -> "Expression":
-        return globals()[(f"EXPRESSION_OF_{unit.name}")]
-
-
-RULE_DURATION_SECONDS = DurationRule(DurationUnit.SECONDS)
-
-RULE_DURATION_MINUTES = DurationRule(DurationUnit.MINUTES)
-
-RULE_DURATION_HOURS = DurationRule(DurationUnit.HOURS)
-
-RULE_DURATION_DAYS = DurationRule(DurationUnit.DAYS)
-
-RULE_DURATION_WEEKS = DurationRule(DurationUnit.WEEKS)
-
-RULE_DURATION_MONTHS = DurationRule(DurationUnit.MONTHS)
-
-RULE_DURATION_YEARS = DurationRule(DurationUnit.YEARS)
-
-RULE_DURATION = DurationRule(
-    DurationUnit.YEARS,
-    DurationUnit.MONTHS,
-    DurationUnit.WEEKS,
-    DurationUnit.DAYS,
-    DurationUnit.HOURS,
-    DurationUnit.MINUTES,
-    DurationUnit.SECONDS,
+Rule(
+    "duration",
+    DurationExpression(
+        Rule.combine_patterns(
+            _years_pattern,
+            _months_pattern,
+            _weeks_pattern,
+            _days_pattern,
+            _hours_pattern,
+            _minutes_pattern,
+            _seconds_pattern,
+        )
+    ),
 )

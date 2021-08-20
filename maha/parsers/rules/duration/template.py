@@ -7,21 +7,10 @@ from typing import List, Optional
 from regex.regex import Match
 
 import maha.parsers.rules.duration.utils as utils
+from maha.parsers.rules.templates import Rule
 from maha.parsers.templates import DurationUnit
 from maha.parsers.templates.unit_expression import UnitExpression, ValueUnit
 from maha.rexy import ExpressionResult
-
-from .expression import (
-    DAYS,
-    DUAL_DURATIONS,
-    HOURS,
-    MINUTES,
-    MONTHS,
-    SECONDS,
-    SINGULAR_DURATIONS,
-    WEEKS,
-    YEARS,
-)
 
 
 @dataclass(init=False)
@@ -61,25 +50,46 @@ class DurationExpression(UnitExpression):
         value = DurationValue(output_values)
         return DurationResult(start, end, value, self)
 
+    def apply_rules(self, text, *rule_names: str) -> bool:
+        return bool(Rule.get_rules_with_names(*rule_names).apply(text))
+
     def get_unit(self, text: str) -> Optional[DurationUnit]:
-        if SECONDS.match(text):
+        if self.apply_rules(text, "one_second", "two_seconds", "several_seconds"):
             return DurationUnit.SECONDS
-        if MINUTES.match(text):
+        if self.apply_rules(text, "one_minute", "two_minutes", "several_minutes"):
             return DurationUnit.MINUTES
-        if HOURS.match(text):
+        if self.apply_rules(text, "one_hour", "two_hours", "several_hours"):
             return DurationUnit.HOURS
-        if DAYS.match(text):
+        if self.apply_rules(text, "one_day", "two_days", "several_days"):
             return DurationUnit.DAYS
-        if WEEKS.match(text):
+        if self.apply_rules(text, "one_week", "two_weeks", "several_weeks"):
             return DurationUnit.WEEKS
-        if MONTHS.match(text):
+        if self.apply_rules(text, "one_month", "two_months", "several_months"):
             return DurationUnit.MONTHS
-        if YEARS.match(text):
+        if self.apply_rules(text, "one_year", "two_years", "several_years"):
             return DurationUnit.YEARS
 
     def get_value(self, text: str) -> Optional[float]:
-        if DUAL_DURATIONS.match(text):
+        if self.apply_rules(
+            text,
+            "two_seconds",
+            "two_minutes",
+            "two_hours",
+            "two_days",
+            "two_weeks",
+            "two_months",
+            "two_years",
+        ):
             return 2
-        if SINGULAR_DURATIONS.match(text):
+        if self.apply_rules(
+            text,
+            "one_second",
+            "one_minute",
+            "one_hour",
+            "one_day",
+            "one_week",
+            "one_month",
+            "one_year",
+        ):
             return 1
         return super().get_value(text)
