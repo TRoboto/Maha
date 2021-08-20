@@ -7,7 +7,7 @@ import pytest
 from maha.parsers.functions import parse_dimension
 from maha.parsers.rules.duration import *
 from maha.parsers.rules.duration.template import DurationUnit, DurationValue, ValueUnit
-from maha.rexy import ExpressionResult
+from maha.parsers.templates import Dimension
 
 S = DurationUnit.SECONDS
 MIN = DurationUnit.MINUTES
@@ -106,7 +106,7 @@ def assert_expression_output(output, expected, unit):
     ),
 )
 def test_seconds_expression(expected, input):
-    output = RULE_DURATION_SECONDS.apply(input)
+    output = Rule.get("seconds").apply(input)
     assert_expression_output(output, expected, DurationUnit.SECONDS)
 
 
@@ -119,7 +119,7 @@ def test_seconds_expression(expected, input):
     ),
 )
 def test_minutes_expression(expected, input):
-    output = RULE_DURATION_MINUTES.apply(input)
+    output = Rule.get("minutes").apply(input)
     assert_expression_output(output, expected, DurationUnit.MINUTES)
 
 
@@ -132,7 +132,7 @@ def test_minutes_expression(expected, input):
     ),
 )
 def test_hours_expression(expected, input):
-    output = RULE_DURATION_HOURS.apply(input)
+    output = Rule.get("hours").apply(input)
     assert_expression_output(output, expected, DurationUnit.HOURS)
 
 
@@ -145,7 +145,7 @@ def test_hours_expression(expected, input):
     ),
 )
 def test_days_expression(expected, input):
-    output = RULE_DURATION_DAYS.apply(input)
+    output = Rule.get("days").apply(input)
     assert_expression_output(output, expected, DurationUnit.DAYS)
 
 
@@ -158,7 +158,7 @@ def test_days_expression(expected, input):
     ),
 )
 def test_weeks_expression(expected, input):
-    output = RULE_DURATION_WEEKS.apply(input)
+    output = Rule.get("weeks").apply(input)
     assert_expression_output(output, expected, DurationUnit.WEEKS)
 
 
@@ -171,7 +171,7 @@ def test_weeks_expression(expected, input):
     ),
 )
 def test_months_expression(expected, input):
-    output = RULE_DURATION_MONTHS.apply(input)
+    output = Rule.get("months").apply(input)
     assert_expression_output(output, expected, DurationUnit.MONTHS)
 
 
@@ -184,7 +184,7 @@ def test_months_expression(expected, input):
     ),
 )
 def test_years_expression(expected, input):
-    output = RULE_DURATION_YEARS.apply(input)
+    output = Rule.get("years").apply(input)
     assert_expression_output(output, expected, DurationUnit.YEARS)
 
 
@@ -219,7 +219,7 @@ to_sec = {
 
 
 def assert_combined_expression_one_output(
-    output: List[ExpressionResult], expected: List[float], unit: List[DurationUnit]
+    output: List[Dimension], expected: List[float], unit: List[DurationUnit]
 ):
     """
     Asserts that the output of a combined expression is the same as the expected one.
@@ -227,7 +227,7 @@ def assert_combined_expression_one_output(
 
     Parameters
     ----------
-    output: List[:class:`ExpressionResult`]
+    output: List[:class:`Dimension`]
         The output of the combined expression.
     expected: List[float]
         The expected value of each :class:`ValueUnit`.
@@ -431,14 +431,3 @@ def test_parse_with_combined_years(
 ):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
-
-
-# def test_parse_with_smart_off():
-#     NEW_EXPRESSIONS = ExpressionGroup(*RULE_DURATION.expressions)
-#     output = list(NEW_EXPRESSIONS.parse("10 سنين، 20 شهر، 14 يوم ، 13 ساعة وثلث دقيقة"))
-#     assert len(output) == 5
-
-#     for i in range(5):
-#         values = output[i].value
-#         assert isinstance(values, DurationValue)
-#         assert len(values) == 5 - i

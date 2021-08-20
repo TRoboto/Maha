@@ -3,9 +3,10 @@
 
 from maha.parsers.expressions import ALL_ALEF, TWO_SUFFIX
 from maha.parsers.helper import wrap_pattern
-from maha.parsers.rules.templates import Rule, get_unit_pattern
+from maha.parsers.templates import Rule
 from maha.rexy import non_capturing_group
 
+from ..utils import get_unit_pattern
 from .template import DurationExpression
 
 Rule("one_second", non_capturing_group("ثاني[ةه]", "لح[زضظ][ةه]"))

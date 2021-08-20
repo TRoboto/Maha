@@ -7,8 +7,7 @@ from typing import List, Optional
 from regex.regex import Match
 
 import maha.parsers.rules.duration.utils as utils
-from maha.parsers.rules.templates import Rule
-from maha.parsers.templates import DurationUnit
+from maha.parsers.templates import DurationUnit, Rule
 from maha.parsers.templates.unit_expression import UnitExpression, ValueUnit
 from maha.rexy import ExpressionResult
 

@@ -1,6 +1,8 @@
 __all__ = ["parse_dimension"]
 
-from maha.parsers.rules import RULE_DURATION, RULE_NUMERAL, RULE_ORDINAL
+from typing import List
+
+from maha.parsers.templates import Dimension, DimensionType, Rule
 
 
 def parse_dimension(
@@ -14,7 +16,7 @@ def parse_dimension(
     temperature: bool = None,
     time: bool = None,
     volume: bool = None,
-):
+) -> List[Dimension]:
     """Extract dimensions from a given text.
 
     Parameters
@@ -62,11 +64,11 @@ def parse_dimension(
     output = []
 
     if duration:
-        output.extend(RULE_DURATION(text))
+        output.extend(_get_dimensions(Rule.get("duration"), text))
     if numeral:
-        output.extend(RULE_NUMERAL(text))
+        output.extend(_get_dimensions(Rule.get("numeral"), text))
     if ordinal:
-        output.extend(RULE_ORDINAL(text))
+        output.extend(_get_dimensions(Rule.get("ordinal"), text))
 
     if not any(
         [
@@ -83,4 +85,20 @@ def parse_dimension(
     ):
         raise ValueError("At least one argument should be True")
 
+    return output
+
+
+def _get_dimensions(rule: Rule, text: str) -> List[Dimension]:
+    output = []
+    for result in rule.apply(text):
+        output.append(
+            Dimension(
+                result.expression,
+                text[result.start : result.end],
+                result.value,
+                result.start,
+                result.end,
+                DimensionType[rule.name.upper()],
+            )
+        )
     return output
