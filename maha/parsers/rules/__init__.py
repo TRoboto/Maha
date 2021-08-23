@@ -1,1 +1,1 @@
-from . import duration, numeral, ordinal
+from . import duration, numeral, ordinal, time

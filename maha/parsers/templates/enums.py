@@ -10,6 +10,7 @@ class DimensionType(Enum):
     DURATION = auto()
     ORDINAL = auto()
     NUMERAL = auto()
+    TIME = auto()
     ARABIC = auto()
     ENGLISH = auto()
     ARABIC_LETTERS = auto()

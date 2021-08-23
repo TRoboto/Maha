@@ -64,12 +64,15 @@ def parse_dimension(
     output = []
 
     if duration:
-        output.extend(_get_dimensions(Rule.get("duration"), text))
+        output.extend(
+            _get_dimensions(Rule.get("duration"), text, DimensionType.DURATION)
+        )
     if numeral:
-        output.extend(_get_dimensions(Rule.get("numeral"), text))
+        output.extend(_get_dimensions(Rule.get("numeral"), text, DimensionType.NUMERAL))
     if ordinal:
-        output.extend(_get_dimensions(Rule.get("ordinal"), text))
-
+        output.extend(_get_dimensions(Rule.get("ordinal"), text, DimensionType.ORDINAL))
+    if time:
+        output.extend(_get_dimensions(Rule.get("time"), text, DimensionType.TIME))
     if not any(
         [
             amount_of_money,
@@ -88,7 +91,9 @@ def parse_dimension(
     return output
 
 
-def _get_dimensions(rule: Rule, text: str) -> List[Dimension]:
+def _get_dimensions(
+    rule: Rule, text: str, dimension_type: DimensionType
+) -> List[Dimension]:
     output = []
     for result in rule.apply(text):
         output.append(
@@ -98,7 +103,7 @@ def _get_dimensions(rule: Rule, text: str) -> List[Dimension]:
                 result.value,
                 result.start,
                 result.end,
-                DimensionType[rule.name.upper()],
+                dimension_type,
             )
         )
     return output
