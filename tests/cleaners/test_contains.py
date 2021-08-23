@@ -234,7 +234,7 @@ def test_contains_expressions():
 
 def test_contains_expressions_raises_value_error(simple_text_input: str):
     with pytest.raises(ValueError):
-        contains_expressions(simple_text_input, True)
+        contains_expressions(simple_text_input, True)  # type: ignore
 
 
 @pytest.mark.parametrize(
