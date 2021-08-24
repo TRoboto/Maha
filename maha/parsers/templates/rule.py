@@ -129,7 +129,7 @@ class Rule:
         return RuleCollection(list(cls._rules.values())[start_index:end_index])
 
     @classmethod
-    def combine_patterns(cls, *patterns: str) -> str:
+    def combine_patterns(cls, *patterns: str, seperator: Expression = None) -> str:
         """
         Intelligently combine following input patterns.
 
@@ -137,18 +137,26 @@ class Rule:
         ----------
         patterns :
             The patterns to combine.
+        seperator :
+            The seperator to use. If None, the default seperator :data:`WORD_SEPARATOR`
+            is used.
+
 
         Returns
         -------
         str
             The combined pattern.
         """
-        from maha.parsers.expressions import WORD_SEPARATOR
+        if seperator is None:
+            from maha.parsers.expressions import WORD_SEPARATOR
+
+            seperator = WORD_SEPARATOR
+
         from maha.parsers.helper import wrap_pattern
 
         start_group = non_capturing_group(*[str(p) for p in patterns])
         pattern = wrap_pattern(
-            start_group + non_capturing_group(WORD_SEPARATOR + start_group) + "*"
+            start_group + non_capturing_group(seperator + start_group) + "*"
         )
 
         return pattern
