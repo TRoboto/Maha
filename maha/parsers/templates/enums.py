@@ -60,10 +60,44 @@ class OrdinalType(Enum):
     TRILLIONS = auto()
 
 
+class Day(Enum):
+    MONDAY = 0
+    TUESDAY = auto()
+    WEDNESDAY = auto()
+    THURSDAY = auto()
+    FRIDAY = auto()
+    SATURDAY = auto()
+    SUNDAY = auto()
+
+
+class Month(Enum):
+    JANUARY = auto()
+    FEBRUARY = auto()
+    MARCH = auto()
+    APRIL = auto()
+    MAY = auto()
+    JUNE = auto()
+    JULY = auto()
+    AUGUST = auto()
+    SEPTEMBER = auto()
+    OCTOBER = auto()
+    NOVEMBER = auto()
+    DECEMBER = auto()
+
+
 class Unit(Enum):
     """Base class for all units"""
 
     pass
+
+
+class TimeUnit(Unit):
+    SECONDS = auto()
+    MINUTES = auto()
+    HOURS = auto()
+    DAYS = auto()
+    MONTHS = auto()
+    YEARS = auto()
 
 
 class MoneyUnit(Unit):
