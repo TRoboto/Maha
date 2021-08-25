@@ -99,8 +99,6 @@ def get_pattern(name: str, values: RuleCollection) -> str:
         "{singular}{space}{value}{no_bound}{no_numeric}",
         # اليوم، الشهر، السنة
         "{alef_lam}{singular}{no_bound}{no_numeric}{no_value}",
-        # الخميس ، يناير
-        "{alef_lam}{singular}{no_bound}{no_numeric}{no_value}",
     ]
 
     pattern = non_capturing_group(*pattern_list).format(
@@ -325,6 +323,7 @@ Rule(
                 value_group(str(BEFORE_YESTERDAY)),
                 value_group(str(YESTERDAY)),
                 value_group(str(TOMORROW)),
+                value_group(Rule.slice("sunday", "saturday").join()),
                 get_pattern("day", Rule.slice("sunday", "saturday")),
             ),
         )
@@ -340,6 +339,7 @@ Rule(
                 value_group(str(NEXT_MONTH)),
                 value_group(str(LAST_TWO_MONTHS)),
                 value_group(str(LAST_MONTH)),
+                value_group(Rule.slice("january", "december").join()),
                 get_pattern("month", Rule.slice("january", "december")),
             )
         ),
@@ -360,12 +360,11 @@ Rule(
     ),
 )
 
-ORDERED_TIMES = ExpressionGroup(
-    Rule.slice("january", "december").expression_group,
-    Rule.slice("sunday", "saturday").expression_group,
-)
+ORDERED_TIMES = ExpressionGroup()
 
 SPECIAL_TIMES = ExpressionGroup(
+    Rule.slice("january", "december").expression_group,
+    Rule.slice("sunday", "saturday").expression_group,
     BEFORE_YESTERDAY,
     AFTER_TOMORROW,
     YESTERDAY,
