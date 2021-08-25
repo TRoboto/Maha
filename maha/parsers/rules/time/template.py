@@ -96,6 +96,8 @@ class TimeExpression(NumeralExpression):
         for r in rule.SPECIAL_TIMES:
             if r.match(text):
                 value = r.value  # type: ignore
+                if isinstance(value, weekday):
+                    return relativedelta(weekday=value)
                 return value
 
         raise ValueError(f"Could not parse special time value: {text}")
