@@ -107,7 +107,7 @@ def get_pattern(name: str, values: RuleCollection) -> str:
         value=get_value_group(values.join()),
         next=bound_group(str(NEXT)),
         prev=bound_group(str(PREVIOUS)),
-        in_from_this=IN_FROM_THIS,
+        in_from_this=IN_FROM_AT_THIS,
         plural=get_unit_group(plural.pattern),
         after=bound_group(str(AFTER)),
         before=bound_group(str(BEFORE)),
@@ -155,11 +155,8 @@ NEXT = ValueExpression(
 )
 AFTER_NEXT = ValueExpression(2, spaced_patterns(AFTER, NEXT))
 BEFORE_PREVIOUS = ValueExpression(-2, spaced_patterns(BEFORE, PREVIOUS))
-IN_FROM_THIS = Expression(
-    non_capturing_group(non_capturing_group("في", "من", "خلال") + str(EXPRESSION_SPACE))
-    + "?"
-    + THIS
-)
+IN_FROM_AT = Expression(non_capturing_group("في", "من", "خلال", "الموافق"))
+IN_FROM_AT_THIS = Expression(spaced_patterns(IN_FROM_AT + "?", THIS))
 AT_THE_MOMENT = ValueExpression(
     relativedelta(seconds=0),
     non_capturing_group(
@@ -349,14 +346,19 @@ Rule(
 Rule(
     "time",
     TimeExpression(
-        wrap_pattern(
-            Rule.combine_patterns(
-                Rule.get("time_now").pattern,
-                Rule.get("time_day").pattern,
-                Rule.get("time_month").pattern,
-                seperator=TIME_WORD_SEPARATOR,
-            ),
-        )
+        Rule.combine_patterns(
+            # spaced_patterns(
+            #     get_unit_group(Rule.get("one_day") + "?"),
+            #     get_value_group(Rule.slice("sunday", "saturday").join()),
+            #     IN_FROM_AT + '?',
+            #     Rule.get('integer').pattern,
+            #     value_group(Rule.slice("january", "december").join())
+            # ),
+            Rule.get("time_now").pattern,
+            Rule.get("time_day").pattern,
+            Rule.get("time_month").pattern,
+            seperator=TIME_WORD_SEPARATOR,
+        ),
     ),
 )
 
