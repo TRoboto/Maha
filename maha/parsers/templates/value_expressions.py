@@ -1,4 +1,4 @@
-__all__ = ["ValueExpression"]
+__all__ = ["Value"]
 
 from dataclasses import dataclass
 from typing import Any
@@ -9,7 +9,7 @@ from maha.rexy import Expression, ExpressionResult
 
 
 @dataclass
-class ValueExpression(Expression):
+class Value(Expression):
     """Expression that returns a predefined value if the pattern matches."""
 
     __slots__ = ["value"]
