@@ -1,6 +1,6 @@
 __all__ = ["ExpressionGroup"]
 
-from typing import Iterable, List, Union
+from typing import Iterable, List, Optional, Union
 
 import maha.rexy as rx
 
@@ -51,6 +51,12 @@ class ExpressionGroup:
     def join(self) -> str:
         """Returns non capturing group of the expressions."""
         return rx.non_capturing_group(*list(map(str, self.expressions)))
+
+    def get_matched_expression(self, text: str) -> Optional["rx.Expression"]:
+        """Returns the expression that matches the text."""
+        for expression in self.expressions:
+            if expression.match(text):
+                return expression
 
     def parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
         """
