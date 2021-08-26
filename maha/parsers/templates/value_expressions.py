@@ -30,7 +30,7 @@ class MatchedValue(Value):
     """Expression that returns a predefined value of a matched expression from the input
     expressions"""
 
-    def __init__(self, expressions: List[ExpressionGroup], pattern: str):
+    def __init__(self, expressions: ExpressionGroup, pattern: str):
         super().__init__(expressions, pattern)
 
     def parse(self, match: Match, _: str) -> "ExpressionResult":
