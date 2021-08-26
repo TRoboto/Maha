@@ -1,7 +1,7 @@
-__all__ = ["Value", "MatchedValue"]
+__all__ = ["Value", "MatchedValue", "FunctionValue"]
 
 from dataclasses import dataclass
-from typing import Any, List
+from typing import Any, Callable
 
 from regex.regex import Match
 
@@ -27,12 +27,52 @@ class Value(Expression):
 
 
 class MatchedValue(Value):
-    """Expression that returns a predefined value of a matched expression from the input
-    expressions"""
+    """
+    Expression that returns a predefined value of a matched expression from the input
+    expressions
+
+    Parameters
+    ----------
+    expressions : ExpressionGroup
+        The expressions to match
+    pattern : str
+        The pattern to match
+
+    Returns
+    -------
+    ExpressionResult
+        The result of the expression
+    """
 
     def __init__(self, expressions: ExpressionGroup, pattern: str):
         super().__init__(expressions, pattern)
 
     def parse(self, match: Match, _: str) -> "ExpressionResult":
-        value = self.value.get_matched_expression().value
+        matched_text = match.group(0)
+        value = self.value.get_matched_expression(matched_text).value
+        return ExpressionResult(match.start(), match.end(), value, self)
+
+
+class FunctionValue(Value):
+    """
+    Expression that returns the output value of an input function when matched.
+
+    Parameters
+    ----------
+    function : Callable
+        The function to be called when the pattern matches.
+    pattern : str
+        The pattern to be matched.
+
+    Returns
+    -------
+    ExpressionResult
+        The result of the expression.
+    """
+
+    def __init__(self, function: Callable, pattern: str):
+        super().__init__(function, pattern)
+
+    def parse(self, match: Match, _: str) -> "ExpressionResult":
+        value = self.value(match)
         return ExpressionResult(match.start(), match.end(), value, self)
