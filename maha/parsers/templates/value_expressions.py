@@ -1,11 +1,11 @@
-__all__ = ["Value"]
+__all__ = ["Value", "MatchedValue"]
 
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, List
 
 from regex.regex import Match
 
-from maha.rexy import Expression, ExpressionResult
+from maha.rexy import Expression, ExpressionGroup, ExpressionResult
 
 
 @dataclass
@@ -24,3 +24,15 @@ class Value(Expression):
 
     def __hash__(self):
         return hash(self.pattern + str(self.value))
+
+
+class MatchedValue(Value):
+    """Expression that returns a predefined value of a matched expression from the input
+    expressions"""
+
+    def __init__(self, expressions: List[ExpressionGroup], pattern: str):
+        super().__init__(expressions, pattern)
+
+    def parse(self, match: Match, _: str) -> "ExpressionResult":
+        value = self.value.get_matched_expression().value
+        return ExpressionResult(match.start(), match.end(), value, self)
