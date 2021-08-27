@@ -115,7 +115,12 @@ class ExpressionGroup:
         self.expressions.extend(other.expressions)
         return self
 
-    def __getitem__(self, index: int) -> "rx.Expression":
+    def __getitem__(
+        self, index: Union[int, slice]
+    ) -> Union["rx.Expression", "ExpressionGroup"]:
+        if isinstance(index, slice):
+            return ExpressionGroup(*self.expressions[index])
+
         return self.expressions[index]
 
     def __len__(self) -> int:
