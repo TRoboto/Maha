@@ -70,7 +70,7 @@ class FunctionValue(Value):
         The result of the expression.
     """
 
-    def __init__(self, function: Callable, pattern: str):
+    def __init__(self, function: Callable[..., Any], pattern: str):
         super().__init__(function, pattern)
 
     def parse(self, match: Match, _: str) -> "ExpressionResult":
