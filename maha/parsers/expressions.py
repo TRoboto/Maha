@@ -16,7 +16,7 @@ __all__ = [
 
 from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
-from maha.parsers.templates import ValueExpression
+from maha.parsers.templates import Value
 from maha.rexy import (
     Expression,
     non_capturing_group,
@@ -24,13 +24,13 @@ from maha.rexy import (
     positive_lookbehind,
 )
 
-THIRD = ValueExpression(1 / 3, "[ثت]ل[ثت]")
+THIRD = Value(1 / 3, "[ثت]ل[ثت]")
 """ Pattern that matches the pronunciation of third in Arabic """
-QUARTER = ValueExpression(1 / 4, "ربع")
+QUARTER = Value(1 / 4, "ربع")
 """ Pattern that matches the pronunciation of quarter in Arabic """
-HALF = ValueExpression(1 / 2, "نصف?")
+HALF = Value(1 / 2, "نصف?")
 """ Pattern that matches the pronunciation of half in Arabic """
-THREE_QUARTERS = ValueExpression(3 / 4, f"[إا]لا {QUARTER}")
+THREE_QUARTERS = Value(3 / 4, f"[إا]لا {QUARTER}")
 """ Pattern that matches the pronunciation of three quarters in Arabic """
 WAW_CONNECTOR = Expression(EXPRESSION_SPACE + WAW + EXPRESSION_SPACE_OR_NONE)
 """ Pattern that matches WAW as a connector between two words """

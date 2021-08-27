@@ -27,7 +27,6 @@ def get_unit_pattern(singular: Rule, dual: Rule, plural: Rule) -> str:
         *[
             "{numeral}{space}{unit_single_plural}",
             get_fractions_of_unit_pattern(singular.pattern),
-            get_fractions_of_unit_pattern(dual.pattern),
             "{val}{unit_dual}",
             "{val}{unit_single}",
         ]
@@ -40,3 +39,16 @@ def get_unit_pattern(singular: Rule, dual: Rule, plural: Rule) -> str:
         val=get_value_group(""),
     )
     return pattern
+
+
+def spaced_patterns(*patterns) -> str:
+    """
+    Returns a regex pattern that matches any of the given patterns,
+    separated by spaces.
+
+    Parameters
+    ----------
+    patterns
+        The patterns to match.
+    """
+    return non_capturing_group(str(EXPRESSION_SPACE).join(str(p) for p in patterns))

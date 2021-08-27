@@ -13,7 +13,7 @@ from maha.parsers.expressions import (
     WAW_CONNECTOR,
 )
 from maha.parsers.helper import wrap_pattern
-from maha.parsers.templates import Rule, ValueExpression
+from maha.parsers.templates import Rule, Value
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
 from .template import NumeralExpression
@@ -131,21 +131,21 @@ Rule("eight_prefix", "[تث]ما?ني?"),
 Rule("nine_prefix", "تسع"),
 Rule("ten_prefix", "عشر"),
 
-Rule("zero", ValueExpression(0, "صفر")),
-Rule("one", ValueExpression(1, "وا?حد" + TEH_OPTIONAL_SUFFIX)),
-Rule("two", ValueExpression(2, "[إا][ثت]نت?[اي]ن")),
-Rule("three", ValueExpression(3, Rule.get("three_prefix") + TEH_OPTIONAL_SUFFIX)),
-Rule("four", ValueExpression(4, Rule.get("four_prefix") + TEH_OPTIONAL_SUFFIX)),
-Rule("five", ValueExpression(5, Rule.get("five_prefix") + TEH_OPTIONAL_SUFFIX)),
-Rule("six", ValueExpression(6, Rule.get("six_prefix") + TEH_OPTIONAL_SUFFIX)),
-Rule("seven", ValueExpression(7, Rule.get("seven_prefix") + TEH_OPTIONAL_SUFFIX)),
-Rule("eight", ValueExpression(8, Rule.get("eight_prefix") + TEH_OPTIONAL_SUFFIX)),
-Rule("nine", ValueExpression(9, Rule.get("nine_prefix") + TEH_OPTIONAL_SUFFIX)),
-Rule("ten", ValueExpression(10, Rule.get("ten_prefix") + TEH_OPTIONAL_SUFFIX))
-Rule("eleven", ValueExpression(11, f"{ALL_ALEF}?حد[اى]?" + TEN_SUFFIX)),
+Rule("zero", Value(0, "صفر")),
+Rule("one", Value(1, "وا?حد" + TEH_OPTIONAL_SUFFIX)),
+Rule("two", Value(2, "[إا][ثت]نت?[اي]ن")),
+Rule("three", Value(3, Rule.get("three_prefix") + TEH_OPTIONAL_SUFFIX)),
+Rule("four", Value(4, Rule.get("four_prefix") + TEH_OPTIONAL_SUFFIX)),
+Rule("five", Value(5, Rule.get("five_prefix") + TEH_OPTIONAL_SUFFIX)),
+Rule("six", Value(6, Rule.get("six_prefix") + TEH_OPTIONAL_SUFFIX)),
+Rule("seven", Value(7, Rule.get("seven_prefix") + TEH_OPTIONAL_SUFFIX)),
+Rule("eight", Value(8, Rule.get("eight_prefix") + TEH_OPTIONAL_SUFFIX)),
+Rule("nine", Value(9, Rule.get("nine_prefix") + TEH_OPTIONAL_SUFFIX)),
+Rule("ten", Value(10, Rule.get("ten_prefix") + TEH_OPTIONAL_SUFFIX))
+Rule("eleven", Value(11, f"{ALL_ALEF}?حد[اى]?" + TEN_SUFFIX)),
 Rule(
     "twelve",
-    ValueExpression(
+    Value(
         12,
         non_capturing_group(
             f"{ALL_ALEF}[طت]نا?" + TEN_SUFFIX,
@@ -153,57 +153,55 @@ Rule(
         ),
     ),
 )
-Rule("thirteen", ValueExpression(13, "[ثت]لا?[ثت]" + TEH_OPTIONAL_SUFFIX + TEN_SUFFIX)),
-Rule("fourteen", ValueExpression(14, Rule.get("four") + TEN_SUFFIX))
-Rule("fifteen", ValueExpression(15, Rule.get("five") + TEN_SUFFIX))
-Rule("sixteen", ValueExpression(16, Rule.get("six") + TEN_SUFFIX))
-Rule("seventeen", ValueExpression(17, Rule.get("seven") + TEN_SUFFIX))
-Rule("eighteen", ValueExpression(18, "[تث]ما?ني?" + TEH_OPTIONAL_SUFFIX + TEN_SUFFIX))
-Rule("nineteen", ValueExpression(19, Rule.get("nine") + TEN_SUFFIX))
+Rule("thirteen", Value(13, "[ثت]لا?[ثت]" + TEH_OPTIONAL_SUFFIX + TEN_SUFFIX)),
+Rule("fourteen", Value(14, Rule.get("four") + TEN_SUFFIX))
+Rule("fifteen", Value(15, Rule.get("five") + TEN_SUFFIX))
+Rule("sixteen", Value(16, Rule.get("six") + TEN_SUFFIX))
+Rule("seventeen", Value(17, Rule.get("seven") + TEN_SUFFIX))
+Rule("eighteen", Value(18, "[تث]ما?ني?" + TEH_OPTIONAL_SUFFIX + TEN_SUFFIX))
+Rule("nineteen", Value(19, Rule.get("nine") + TEN_SUFFIX))
 
-Rule("twenty", ValueExpression(20, Rule.get("ten_prefix") + SUM_SUFFIX)),
-Rule("thirty", ValueExpression(30, Rule.get("three_prefix") + SUM_SUFFIX)),
-Rule("forty", ValueExpression(40, Rule.get("four_prefix") + SUM_SUFFIX)),
-Rule("fifty", ValueExpression(50, Rule.get("five_prefix") + SUM_SUFFIX)),
-Rule("sixty", ValueExpression(60, Rule.get("six_prefix") + SUM_SUFFIX)),
-Rule("seventy", ValueExpression(70, Rule.get("seven_prefix") + SUM_SUFFIX)),
-Rule("eighty", ValueExpression(80, Rule.get("eight_prefix") + SUM_SUFFIX)),
-Rule("ninety", ValueExpression(90, Rule.get("nine_prefix") + SUM_SUFFIX)),
+Rule("twenty", Value(20, Rule.get("ten_prefix") + SUM_SUFFIX)),
+Rule("thirty", Value(30, Rule.get("three_prefix") + SUM_SUFFIX)),
+Rule("forty", Value(40, Rule.get("four_prefix") + SUM_SUFFIX)),
+Rule("fifty", Value(50, Rule.get("five_prefix") + SUM_SUFFIX)),
+Rule("sixty", Value(60, Rule.get("six_prefix") + SUM_SUFFIX)),
+Rule("seventy", Value(70, Rule.get("seven_prefix") + SUM_SUFFIX)),
+Rule("eighty", Value(80, Rule.get("eight_prefix") + SUM_SUFFIX)),
+Rule("ninety", Value(90, Rule.get("nine_prefix") + SUM_SUFFIX)),
 
-Rule("one_hundred", ValueExpression(100, "ما?[يئ][ةه]"))
-Rule("two_hundreds", ValueExpression(200, "م[يئ]ت" + TWO_SUFFIX))
-Rule("three_hundreds", ValueExpression(300, _get_perfect_hundreds_pattern("three")))
-Rule("four_hundreds", ValueExpression(400, _get_perfect_hundreds_pattern("four")))
-Rule("five_hundreds", ValueExpression(500, _get_perfect_hundreds_pattern("five")))
-Rule("six_hundreds", ValueExpression(600, _get_perfect_hundreds_pattern("six")))
-Rule("seven_hundreds", ValueExpression(700, _get_perfect_hundreds_pattern("seven")))
-Rule("eight_hundreds", ValueExpression(800, _get_perfect_hundreds_pattern("eight")))
-Rule("nine_hundreds", ValueExpression(900, _get_perfect_hundreds_pattern("nine")))
-Rule("several_hundreds", ValueExpression(100, "م[يئ]ات"))
+Rule("one_hundred", Value(100, "ما?[يئ][ةه]"))
+Rule("two_hundreds", Value(200, "م[يئ]ت" + TWO_SUFFIX))
+Rule("three_hundreds", Value(300, _get_perfect_hundreds_pattern("three")))
+Rule("four_hundreds", Value(400, _get_perfect_hundreds_pattern("four")))
+Rule("five_hundreds", Value(500, _get_perfect_hundreds_pattern("five")))
+Rule("six_hundreds", Value(600, _get_perfect_hundreds_pattern("six")))
+Rule("seven_hundreds", Value(700, _get_perfect_hundreds_pattern("seven")))
+Rule("eight_hundreds", Value(800, _get_perfect_hundreds_pattern("eight")))
+Rule("nine_hundreds", Value(900, _get_perfect_hundreds_pattern("nine")))
+Rule("several_hundreds", Value(100, "م[يئ]ات"))
 
-Rule("one_thousand", ValueExpression(1000, "[أا]لف"))
-Rule("two_thousands", ValueExpression(2000, Rule.get("one_thousand") + TWO_SUFFIX))
+Rule("one_thousand", Value(1000, "[أا]لف"))
+Rule("two_thousands", Value(2000, Rule.get("one_thousand") + TWO_SUFFIX))
 Rule(
     "several_thousands",
-    ValueExpression(1000, non_capturing_group(f"{ALL_ALEF}ل[او]ف", f"{ALL_ALEF}لفات")),
+    Value(1000, non_capturing_group(f"{ALL_ALEF}ل[او]ف", f"{ALL_ALEF}لفات")),
 )
-Rule("one_million", ValueExpression(1000000, "مليون")),
-Rule("two_millions", ValueExpression(2000000, Rule.get("one_million") + TWO_SUFFIX))
-Rule("several_millions", ValueExpression(1000000, "ملايين"))
-Rule("one_billion", ValueExpression(1000000000, non_capturing_group("بليون", "مليار")))
-Rule("two_billions", ValueExpression(2000000000, Rule.get("one_billion") + TWO_SUFFIX))
+Rule("one_million", Value(1000000, "مليون")),
+Rule("two_millions", Value(2000000, Rule.get("one_million") + TWO_SUFFIX))
+Rule("several_millions", Value(1000000, "ملايين"))
+Rule("one_billion", Value(1000000000, non_capturing_group("بليون", "مليار")))
+Rule("two_billions", Value(2000000000, Rule.get("one_billion") + TWO_SUFFIX))
 Rule(
     "several_billions",
-    ValueExpression(3000000000, non_capturing_group("بلايين", "مليارات")),
+    Value(3000000000, non_capturing_group("بلايين", "مليارات")),
 )
-Rule("one_trillion", ValueExpression(1000000000000, "تري?ليون"))
+Rule("one_trillion", Value(1000000000000, "تري?ليون"))
 Rule(
     "two_trillions",
-    ValueExpression(2000000000000, Rule.get("one_trillion") + TWO_SUFFIX),
+    Value(2000000000000, Rule.get("one_trillion") + TWO_SUFFIX),
 )
-Rule(
-    "several_trillions", ValueExpression(3000000000000, Rule.get("one_trillion") + "ات")
-)
+Rule("several_trillions", Value(3000000000000, Rule.get("one_trillion") + "ات"))
 # 0 1 2 3 4 5 6 7 8 9
 _ones_pattern = Rule.slice("zero", "nine").join()
 _ones = no_multiplier(_ones_pattern)
