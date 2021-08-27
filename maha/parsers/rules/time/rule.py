@@ -9,7 +9,8 @@ from maha.parsers.rules.numeral.rule import (
     multiplier_group,
     numeral_value,
 )
-from maha.parsers.templates import Rule, RuleCollection, ValueExpression
+from maha.parsers.rules.utils import spaced_patterns
+from maha.parsers.templates import Rule, RuleCollection, Value
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
 from .template import TimeExpression
@@ -39,19 +40,6 @@ def value_group(name: str):
         + get_unit_group("")
         + bound_group("")
     )
-
-
-def spaced_patterns(*patterns) -> str:
-    """
-    Returns a regex pattern that matches any of the given patterns,
-    separated by spaces.
-
-    Parameters
-    ----------
-    patterns
-        The patterns to match.
-    """
-    return non_capturing_group(str(EXPRESSION_SPACE).join(str(p) for p in patterns))
 
 
 def previous_pattern(name: str):
@@ -139,25 +127,19 @@ TIME_WORD_SEPARATOR = Expression(
 ALEF_LAM = Expression(non_capturing_group("ال"))
 ALEF_LAM_OPTIONAL = Expression(ALEF_LAM + "?")
 THIS = Expression(non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي"))
-AFTER = ValueExpression(
-    +1, non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + f"?" + "بعد"
-)
-BEFORE = ValueExpression(
-    -1, non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "?" + "[أاق]بل"
-)
-PREVIOUS = ValueExpression(
-    -1, non_capturing_group("الماضي?", "السابق", "المنصرم", "الفا[يئ]ت")
-)
-NEXT = ValueExpression(
+AFTER = Value(+1, non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + f"?" + "بعد")
+BEFORE = Value(-1, non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "?" + "[أاق]بل")
+PREVIOUS = Value(-1, non_capturing_group("الماضي?", "السابق", "المنصرم", "الفا[يئ]ت"))
+NEXT = Value(
     1,
     non_capturing_group("الجاي", "القادم", "التالي?", "ال[اآ]تي?", "المقبل")
     + TEH_OPTIONAL_SUFFIX,
 )
-AFTER_NEXT = ValueExpression(2, spaced_patterns(AFTER, NEXT))
-BEFORE_PREVIOUS = ValueExpression(-2, spaced_patterns(BEFORE, PREVIOUS))
+AFTER_NEXT = Value(2, spaced_patterns(AFTER, NEXT))
+BEFORE_PREVIOUS = Value(-2, spaced_patterns(BEFORE, PREVIOUS))
 IN_FROM_AT = Expression(non_capturing_group("في", "من", "خلال", "الموافق"))
 IN_FROM_AT_THIS = Expression(spaced_patterns(IN_FROM_AT + "?", THIS))
-AT_THE_MOMENT = ValueExpression(
+AT_THE_MOMENT = Value(
     relativedelta(seconds=0),
     non_capturing_group(
         "ال[أآا]ن",
@@ -170,7 +152,7 @@ AT_THE_MOMENT = ValueExpression(
         "في الحال",
     ),
 )
-YESTERDAY = ValueExpression(
+YESTERDAY = Value(
     relativedelta(days=-1),
     non_capturing_group(
         "[اإ]?مبارح",
@@ -180,7 +162,7 @@ YESTERDAY = ValueExpression(
         spaced_patterns(ALEF_LAM + Rule.get("one_day"), PREVIOUS),
     ),
 )
-BEFORE_YESTERDAY = ValueExpression(
+BEFORE_YESTERDAY = Value(
     relativedelta(days=-2),
     non_capturing_group(
         spaced_patterns(non_capturing_group("[أا]ول", str(BEFORE)), YESTERDAY),
@@ -188,7 +170,7 @@ BEFORE_YESTERDAY = ValueExpression(
         spaced_patterns(BEFORE, Rule.get("two_days")),
     ),
 )
-TOMORROW = ValueExpression(
+TOMORROW = Value(
     relativedelta(days=1),
     non_capturing_group(
         ALEF_LAM_OPTIONAL + "غدا?",
@@ -197,7 +179,7 @@ TOMORROW = ValueExpression(
         spaced_patterns(AFTER, Rule.get("one_day")),
     ),
 )
-AFTER_TOMORROW = ValueExpression(
+AFTER_TOMORROW = Value(
     relativedelta(days=2),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + Rule.get("one_day"), AFTER_NEXT),
@@ -205,97 +187,85 @@ AFTER_TOMORROW = ValueExpression(
         spaced_patterns(AFTER, Rule.get("two_days")),
     ),
 )
-LAST_MONTH = ValueExpression(
+LAST_MONTH = Value(
     relativedelta(months=-1),
     non_capturing_group(
         spaced_patterns(BEFORE, Rule.get("one_month")),
         spaced_patterns(ALEF_LAM + Rule.get("one_month"), PREVIOUS),
     ),
 )
-LAST_TWO_MONTHS = ValueExpression(
+LAST_TWO_MONTHS = Value(
     relativedelta(months=-2),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + Rule.get("one_month"), BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, Rule.get("two_months")),
     ),
 )
-NEXT_MONTH = ValueExpression(
+NEXT_MONTH = Value(
     relativedelta(months=1),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + Rule.get("one_month"), NEXT),
         spaced_patterns(AFTER, Rule.get("one_month")),
     ),
 )
-NEXT_TWO_MONTHS = ValueExpression(
+NEXT_TWO_MONTHS = Value(
     relativedelta(months=2),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + Rule.get("one_month"), AFTER_NEXT),
         spaced_patterns(AFTER, Rule.get("two_months")),
     ),
 )
-Rule("sunday", ValueExpression(SU, "ال[أا]حد"))
-Rule("monday", ValueExpression(MO, "ال[إا][تث]نين"))
-Rule("tuesday", ValueExpression(TU, "ال[ثت]لا[ثت]اء"))
-Rule("wednesday", ValueExpression(WE, "ال[أا]ربعاء"))
-Rule("thursday", ValueExpression(TH, "الخميس"))
-Rule("friday", ValueExpression(FR, "الجمع[ةه]"))
-Rule("saturday", ValueExpression(SA, "السبت"))
+Rule("sunday", Value(SU, "ال[أا]حد"))
+Rule("monday", Value(MO, "ال[إا][تث]نين"))
+Rule("tuesday", Value(TU, "ال[ثت]لا[ثت]اء"))
+Rule("wednesday", Value(WE, "ال[أا]ربعاء"))
+Rule("thursday", Value(TH, "الخميس"))
+Rule("friday", Value(FR, "الجمع[ةه]"))
+Rule("saturday", Value(SA, "السبت"))
 Rule(
     "january",
-    ValueExpression(
-        relativedelta(month=1), non_capturing_group("يناير", "كانون الثاني")
-    ),
+    Value(relativedelta(month=1), non_capturing_group("يناير", "كانون الثاني")),
 )
 Rule(
     "february",
-    ValueExpression(relativedelta(month=2), non_capturing_group("فبراير", "شباط")),
+    Value(relativedelta(month=2), non_capturing_group("فبراير", "شباط")),
 )
 Rule(
     "march",
-    ValueExpression(relativedelta(month=3), non_capturing_group("مارس", "[اأآ]ذار")),
+    Value(relativedelta(month=3), non_capturing_group("مارس", "[اأآ]ذار")),
 )
 Rule(
     "april",
-    ValueExpression(
-        relativedelta(month=4), non_capturing_group("نيسان", f"{ALL_ALEF}بريل")
-    ),
+    Value(relativedelta(month=4), non_capturing_group("نيسان", f"{ALL_ALEF}بريل")),
 )
-Rule(
-    "may", ValueExpression(relativedelta(month=5), non_capturing_group("مايو", "أيار"))
-)
+Rule("may", Value(relativedelta(month=5), non_capturing_group("مايو", "أيار")))
 Rule(
     "june",
-    ValueExpression(relativedelta(month=6), non_capturing_group("يونيو", "حزيران")),
+    Value(relativedelta(month=6), non_capturing_group("يونيو", "حزيران")),
 )
 Rule(
     "july",
-    ValueExpression(relativedelta(month=7), non_capturing_group("يوليو", "تموز")),
+    Value(relativedelta(month=7), non_capturing_group("يوليو", "تموز")),
 )
 Rule(
     "august",
-    ValueExpression(relativedelta(month=8), non_capturing_group("[اأ]غسطس", "[أاآ]ب")),
+    Value(relativedelta(month=8), non_capturing_group("[اأ]غسطس", "[أاآ]ب")),
 )
 Rule(
     "september",
-    ValueExpression(relativedelta(month=9), non_capturing_group("سبتمبر", "[اأ]يلول")),
+    Value(relativedelta(month=9), non_capturing_group("سبتمبر", "[اأ]يلول")),
 )
 Rule(
     "october",
-    ValueExpression(
-        relativedelta(month=10), non_capturing_group("[اأ]كتوبر", "تشرين الأول")
-    ),
+    Value(relativedelta(month=10), non_capturing_group("[اأ]كتوبر", "تشرين الأول")),
 )
 Rule(
     "november",
-    ValueExpression(
-        relativedelta(month=11), non_capturing_group("نوفمبر", "تشرين الثاني")
-    ),
+    Value(relativedelta(month=11), non_capturing_group("نوفمبر", "تشرين الثاني")),
 )
 Rule(
     "december",
-    ValueExpression(
-        relativedelta(month=12), non_capturing_group("ديسمبر", "كانون الأول")
-    ),
+    Value(relativedelta(month=12), non_capturing_group("ديسمبر", "كانون الأول")),
 )
 
 Rule("time_now", TimeExpression(wrap_pattern(value_group(str(AT_THE_MOMENT)))))
