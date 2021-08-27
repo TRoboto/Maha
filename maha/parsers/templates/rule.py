@@ -129,7 +129,9 @@ class Rule:
         return RuleCollection(list(cls._rules.values())[start_index:end_index])
 
     @classmethod
-    def combine_patterns(cls, *patterns: str, seperator: Expression = None) -> str:
+    def combine_patterns(
+        cls, *patterns: str, seperator: Expression = None, combine_all=False
+    ) -> str:
         """
         Intelligently combine following input patterns.
 
@@ -140,6 +142,10 @@ class Rule:
         seperator :
             The seperator to use. If None, the default seperator :data:`WORD_SEPARATOR`
             is used.
+        combine_all :
+            If True, the start matches any of the input patterns. If False, the start
+            matches the first pattern only, followed by any combination of all other
+            patterns including the first pattern.
 
 
         Returns
@@ -156,7 +162,9 @@ class Rule:
 
         start_group = non_capturing_group(*[str(p) for p in patterns])
         pattern = wrap_pattern(
-            start_group + non_capturing_group(seperator + start_group) + "*"
+            (start_group if combine_all else patterns[0])
+            + non_capturing_group(seperator + start_group)
+            + "*"
         )
 
         return pattern
