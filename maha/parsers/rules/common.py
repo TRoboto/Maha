@@ -1,5 +1,7 @@
 __all__ = ["get_fractions_of_unit_pattern", "wrap_pattern", "spaced_patterns"]
 
+from dataclasses import dataclass
+
 from maha.expressions import EXPRESSION_SPACE
 from maha.parsers.expressions import (
     EXPRESSION_END,
@@ -9,7 +11,17 @@ from maha.parsers.expressions import (
     THIRD,
     THREE_QUARTERS,
 )
+from maha.parsers.templates import Unit
 from maha.rexy import Expression, ExpressionGroup, non_capturing_group
+
+
+@dataclass
+class ValueUnit:
+    """Represents a value with unit."""
+
+    value: float
+    unit: Unit
+
 
 FRACTIONS = ExpressionGroup(THREE_QUARTERS, QUARTER, HALF, THIRD)
 
