@@ -2,7 +2,8 @@ __all__ = ["parse_dimension"]
 
 from typing import List
 
-from maha.parsers.templates import Dimension, DimensionType, Rule
+from maha.parsers.rules import RULE_DURATION, RULE_NUMERAL, RULE_ORDINAL
+from maha.parsers.templates import Dimension, DimensionType, FunctionValue
 
 
 def parse_dimension(
@@ -64,13 +65,11 @@ def parse_dimension(
     output = []
 
     if duration:
-        output.extend(
-            _get_dimensions(Rule.get("duration"), text, DimensionType.DURATION)
-        )
+        output.extend(_get_dimensions(RULE_DURATION, text, DimensionType.DURATION))
     if numeral:
-        output.extend(_get_dimensions(Rule.get("numeral"), text, DimensionType.NUMERAL))
+        output.extend(_get_dimensions(RULE_NUMERAL, text, DimensionType.NUMERAL))
     if ordinal:
-        output.extend(_get_dimensions(Rule.get("ordinal"), text, DimensionType.ORDINAL))
+        output.extend(_get_dimensions(RULE_ORDINAL, text, DimensionType.ORDINAL))
     if time:
         output.extend(_get_dimensions(Rule.get("time"), text, DimensionType.TIME))
     if not any(
@@ -92,10 +91,10 @@ def parse_dimension(
 
 
 def _get_dimensions(
-    rule: Rule, text: str, dimension_type: DimensionType
+    rule: FunctionValue, text: str, dimension_type: DimensionType
 ) -> List[Dimension]:
     output = []
-    for result in rule.apply(text):
+    for result in rule(text):
         output.append(
             Dimension(
                 result.expression,
