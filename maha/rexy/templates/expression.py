@@ -92,6 +92,22 @@ class Expression:
         self.compile()
         return self._compiled_pattern.match(text)
 
+    def fullmatch(self, text: str) -> Optional[regex.Match]:
+        """Match the pattern in the input ``text``.
+
+        Parameters
+        ----------
+        text : str
+            Text to match in.
+
+        Returns
+        -------
+        :class:`regex.Match`
+            Matched object.
+        """
+        self.compile()
+        return self._compiled_pattern.fullmatch(text)
+
     def sub(self, repl: Union[Callable[..., str], str], text: str) -> str:
         """Replace all occurrences of the pattern in the input ``text``.
 
