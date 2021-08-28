@@ -1,7 +1,8 @@
 __all__ = ["convert_between_durations"]
 
-import maha.parsers.rules.duration.template as template
 from maha.parsers.templates import DurationUnit
+
+from ..common import ValueUnit
 
 DURATION_CONVERSION_MAP = {
     DurationUnit.SECONDS: {
@@ -71,8 +72,8 @@ DURATION_CONVERSION_MAP = {
 
 
 def convert_between_durations(
-    *durations: "template.ValueUnit", to_unit: DurationUnit
-) -> "template.ValueUnit":
+    *durations: ValueUnit, to_unit: DurationUnit
+) -> ValueUnit:
     """
     Converts a list of durations to another unit using the mapping
     :data:`~.DURATION_CONVERSION_MAP`.
@@ -94,4 +95,4 @@ def convert_between_durations(
     output_value = 0
     for duration in durations:
         output_value += table[duration.unit] * duration.value
-    return template.ValueUnit(output_value, to_unit)
+    return ValueUnit(output_value, to_unit)
