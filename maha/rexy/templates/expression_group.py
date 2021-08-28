@@ -1,6 +1,6 @@
 __all__ = ["ExpressionGroup"]
 
-from typing import Iterable, List, Optional, Union
+from typing import Iterable, List, Optional, Union, overload
 
 import maha.rexy as rx
 
@@ -55,7 +55,7 @@ class ExpressionGroup:
     def get_matched_expression(self, text: str) -> Optional["rx.Expression"]:
         """Returns the expression that matches the text."""
         for expression in self.expressions:
-            if expression.match(text):
+            if expression.fullmatch(text):
                 return expression
 
     def parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
@@ -114,6 +114,14 @@ class ExpressionGroup:
     def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
         self.expressions.extend(other.expressions)
         return self
+
+    @overload
+    def __getitem__(self, index: int) -> "rx.Expression":
+        ...
+
+    @overload
+    def __getitem__(self, index: slice) -> "ExpressionGroup":
+        ...
 
     def __getitem__(
         self, index: Union[int, slice]
