@@ -214,7 +214,7 @@ def test_combines_tens(input, expected):
     "input, expected",
     chain(
         get_value_with_integer(
-            "١٠٠", "100", ["مية", "ميه", "مائة", "مائه", "مئة", "مئه", "نص ميتين"]
+            "١٠٠", "100", ["مية", "ميه", "مائة", "مائه", "مئة", "مئه"]
         ),
         get_value_with_integer("٢٠٠", "200", ["ميتين", "مئتين", "مئتان"]),
         get_value_with_integer(
