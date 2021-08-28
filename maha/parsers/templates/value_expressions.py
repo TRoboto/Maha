@@ -8,22 +8,18 @@ from regex.regex import Match
 from maha.rexy import Expression, ExpressionGroup, ExpressionResult
 
 
-@dataclass
 class Value(Expression):
     """Expression that returns a predefined value if the pattern matches."""
 
     __slots__ = ["value"]
     value: Any
 
-    def __init__(self, value: Any, pattern: str):
+    def __init__(self, value: Any, pattern: str, pickle: bool = False):
         self.value = value
-        super().__init__(pattern)
+        super().__init__(pattern, pickle)
 
     def parse(self, match: Match, _: str) -> "ExpressionResult":
         return ExpressionResult(match.start(), match.end(), self.value, self)
-
-    def __hash__(self):
-        return hash(self.pattern + str(self.value))
 
 
 class MatchedValue(Value):
@@ -70,8 +66,8 @@ class FunctionValue(Value):
         The result of the expression.
     """
 
-    def __init__(self, function: Callable[..., Any], pattern: str):
-        super().__init__(function, pattern)
+    def __init__(self, function: Callable[..., Any], pattern: str, pickle: bool = True):
+        super().__init__(function, pattern, pickle)
 
     def parse(self, match: Match, _: str) -> "ExpressionResult":
         value = self.value(match)
