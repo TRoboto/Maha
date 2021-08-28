@@ -106,7 +106,7 @@ def assert_expression_output(output, expected, unit):
     ),
 )
 def test_seconds_expression(expected, input):
-    output = Rule.get("seconds").apply(input)
+    output = list(RULE_DURATION_SECONDS(input))
     assert_expression_output(output, expected, DurationUnit.SECONDS)
 
 
@@ -119,7 +119,7 @@ def test_seconds_expression(expected, input):
     ),
 )
 def test_minutes_expression(expected, input):
-    output = Rule.get("minutes").apply(input)
+    output = list(RULE_DURATION_MINUTES(input))
     assert_expression_output(output, expected, DurationUnit.MINUTES)
 
 
@@ -132,7 +132,7 @@ def test_minutes_expression(expected, input):
     ),
 )
 def test_hours_expression(expected, input):
-    output = Rule.get("hours").apply(input)
+    output = list(RULE_DURATION_HOURS(input))
     assert_expression_output(output, expected, DurationUnit.HOURS)
 
 
@@ -145,7 +145,7 @@ def test_hours_expression(expected, input):
     ),
 )
 def test_days_expression(expected, input):
-    output = Rule.get("days").apply(input)
+    output = list(RULE_DURATION_DAYS(input))
     assert_expression_output(output, expected, DurationUnit.DAYS)
 
 
@@ -158,7 +158,7 @@ def test_days_expression(expected, input):
     ),
 )
 def test_weeks_expression(expected, input):
-    output = Rule.get("weeks").apply(input)
+    output = list(RULE_DURATION_WEEKS(input))
     assert_expression_output(output, expected, DurationUnit.WEEKS)
 
 
@@ -171,7 +171,7 @@ def test_weeks_expression(expected, input):
     ),
 )
 def test_months_expression(expected, input):
-    output = Rule.get("months").apply(input)
+    output = list(RULE_DURATION_MONTHS(input))
     assert_expression_output(output, expected, DurationUnit.MONTHS)
 
 
@@ -184,7 +184,7 @@ def test_months_expression(expected, input):
     ),
 )
 def test_years_expression(expected, input):
-    output = Rule.get("years").apply(input)
+    output = list(RULE_DURATION_YEARS(input))
     assert_expression_output(output, expected, DurationUnit.YEARS)
 
 
@@ -435,8 +435,8 @@ def test_parse_with_combined_years(
 @pytest.mark.parametrize(
     "expected, units, input",
     [
-        ([3, 1], [MON, Y], "3 اشهر وسنة"),
-        ([5, 5, 4], [MON, Y, S], "شهرين وثلاثة اشهر وخمسة سنين واربع ثواني"),
+        ([1, 3], [Y, MON], "3 اشهر وسنة"),
+        ([5, 5, 4], [Y, MON, S], "شهرين وثلاثة اشهر وخمسة سنين واربع ثواني"),
         ([2.5, 1], [Y, MON], "سنتين وشهر ونص سنة"),
         ([2, 2], [Y, MON], "سنتان وشهرين"),
         ([179, 5], [Y, MON], "مئة وسبعة وسبعين عام وعامين وثلاثة اشهر وشهرين"),
