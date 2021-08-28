@@ -1,6 +1,6 @@
 __all__ = ["convert_to_number_if_possible"]
 
-from typing import Union
+from typing import Optional, Union
 
 from maha.constants import (
     ARABIC_COMMA,
@@ -14,7 +14,7 @@ from maha.constants import (
 )
 
 
-def convert_to_number_if_possible(value: str) -> Union[str, int, float]:
+def convert_to_number_if_possible(value: str) -> Optional[Union[int, float]]:
     """
     Converts the given value to number if possible.
 
@@ -44,4 +44,4 @@ def convert_to_number_if_possible(value: str) -> Union[str, int, float]:
         try:
             return round(float(modified_value) * multiplier, 10)
         except ValueError:
-            return value
+            return
