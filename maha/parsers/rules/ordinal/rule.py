@@ -1,12 +1,10 @@
 from typing import List, Union
 
 from maha.parsers.expressions import WAW_CONNECTOR
-from maha.parsers.helper import wrap_pattern
-from maha.parsers.rules.utils import spaced_patterns
-from maha.parsers.templates import FunctionValue, Rule
-from maha.rexy import ExpressionGroup, named_group, non_capturing_group
-from maha.rexy.templates.expression import Expression
+from maha.parsers.templates import FunctionValue
+from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
+from ..common import combine_patterns, spaced_patterns
 from .values import *
 
 
@@ -96,25 +94,12 @@ perfect_hundreds = ExpressionGroup(
     EIGHT_HUNDREDS,
     NINE_HUNDREDS,
 )
-Rule("ordinal_ones", MatchedValue(ones, wrap_pattern(ones.join())))
 
-# 10 20 30 40 50 60 70 80 90
-Rule(
-    "ordinal_perfect_tens",
-    MatchedValue(perfect_tens, wrap_pattern(perfect_tens.join())),
-)
 # 10 11 12 13 14 ... 95 96 97 98 99
 tens = non_capturing_group(
     perfect_tens.join(),
     combined_tens,
     eleven_to_nineteen.join(),
-)
-Rule("ordinal_tens", FunctionValue(match_tens, wrap_pattern(tens)))
-
-# 300 400 500 600 700 800 900
-Rule(
-    "ordinal_perfect_hundreds",
-    MatchedValue(perfect_hundreds, wrap_pattern(perfect_hundreds.join())),
 )
 
 tens_group = named_group("tens", tens)
@@ -164,76 +149,55 @@ trillions_group = named_group(
     ),
 )
 
-Rule(
-    "ordinal_tens_ones",
-    FunctionValue(parse_ordinal, Rule.combine_patterns(tens_group, ones_group)),
-)
 
-Rule(
-    "ordinal_hundreds",
-    FunctionValue(
-        parse_ordinal, Rule.combine_patterns(hundreds_group, tens_group, ones_group)
+RULE_ORDINAL_ONES = FunctionValue(parse_ordinal, combine_patterns(ones_group))
+RULE_ORDINAL_TENS = FunctionValue(parse_ordinal, combine_patterns(tens_group))
+RULE_ORDINAL_HUNDREDS = FunctionValue(
+    parse_ordinal, combine_patterns(hundreds_group, tens_group, ones_group)
+)
+RULE_ORDINAL_THOUSANDS = FunctionValue(
+    parse_ordinal,
+    combine_patterns(thousands_group, hundreds_group, tens_group, ones_group),
+)
+RULE_ORDINAL_MILLIONS = FunctionValue(
+    parse_ordinal,
+    combine_patterns(
+        millions_group, thousands_group, hundreds_group, tens_group, ones_group
     ),
 )
-Rule(
-    "ordinal_thousands",
-    FunctionValue(
-        parse_ordinal,
-        Rule.combine_patterns(thousands_group, hundreds_group, tens_group, ones_group),
+RULE_ORDINAL_BILLIONS = FunctionValue(
+    parse_ordinal,
+    combine_patterns(
+        billions_group,
+        millions_group,
+        thousands_group,
+        hundreds_group,
+        tens_group,
+        ones_group,
     ),
 )
-Rule(
-    "ordinal_millions",
-    FunctionValue(
-        parse_ordinal,
-        Rule.combine_patterns(
-            millions_group, thousands_group, hundreds_group, tens_group, ones_group
-        ),
+RULE_ORDINAL_TRILLIONS = FunctionValue(
+    parse_ordinal,
+    combine_patterns(
+        trillions_group,
+        billions_group,
+        millions_group,
+        thousands_group,
+        hundreds_group,
+        tens_group,
+        ones_group,
     ),
 )
-Rule(
-    "ordinal_billions",
-    FunctionValue(
-        parse_ordinal,
-        Rule.combine_patterns(
-            billions_group,
-            millions_group,
-            thousands_group,
-            hundreds_group,
-            tens_group,
-            ones_group,
-        ),
-    ),
-)
-Rule(
-    "ordinal_trillions",
-    FunctionValue(
-        parse_ordinal,
-        Rule.combine_patterns(
-            trillions_group,
-            billions_group,
-            millions_group,
-            thousands_group,
-            hundreds_group,
-            tens_group,
-            ones_group,
-        ),
-    ),
-)
-
-Rule(
-    "ordinal",
-    FunctionValue(
-        parse_ordinal,
-        Rule.combine_patterns(
-            trillions_group,
-            billions_group,
-            millions_group,
-            thousands_group,
-            hundreds_group,
-            tens_group,
-            ones_group,
-            combine_all=True,
-        ),
+RULE_ORDINAL = FunctionValue(
+    parse_ordinal,
+    combine_patterns(
+        trillions_group,
+        billions_group,
+        millions_group,
+        thousands_group,
+        hundreds_group,
+        tens_group,
+        ones_group,
+        combine_all=True,
     ),
 )

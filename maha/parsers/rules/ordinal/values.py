@@ -1,7 +1,7 @@
+import maha.parsers.rules.numeral.values as numvalues
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.expressions import ALL_ALEF, SUM_SUFFIX
-from maha.parsers.templates import MatchedValue, Value
-from maha.parsers.templates.rule import Rule
+from maha.parsers.templates import Value
 from maha.rexy import non_capturing_group
 
 TEN_SUFFIX = f"{EXPRESSION_SPACE_OR_NONE}[تط]?[اع]?شر?[ةه]?"
@@ -70,48 +70,48 @@ EIGHTEEN = Value(18, EIGHT + TEN_SUFFIX_SIMPLE)
 NINETEEN = Value(19, NINE + TEN_SUFFIX_SIMPLE)
 
 TWENTY = Value(20, ALEF_LAM + "عشر" + SUM_SUFFIX)
-THIRTY = Value(30, ALEF_LAM + Rule.get("three_prefix") + SUM_SUFFIX)
-FORTY = Value(40, ALEF_LAM + Rule.get("four_prefix") + SUM_SUFFIX)
-FIFTY = Value(50, ALEF_LAM + Rule.get("five_prefix") + SUM_SUFFIX)
-SIXTY = Value(60, ALEF_LAM + Rule.get("six_prefix") + SUM_SUFFIX)
-SEVENTY = Value(70, ALEF_LAM + Rule.get("seven_prefix") + SUM_SUFFIX)
-EIGHTY = Value(80, ALEF_LAM + Rule.get("eight_prefix") + SUM_SUFFIX)
-NINETY = Value(90, ALEF_LAM + Rule.get("nine_prefix") + SUM_SUFFIX)
+THIRTY = Value(30, ALEF_LAM + numvalues.three_prefix + SUM_SUFFIX)
+FORTY = Value(40, ALEF_LAM + numvalues.four_prefix + SUM_SUFFIX)
+FIFTY = Value(50, ALEF_LAM + numvalues.five_prefix + SUM_SUFFIX)
+SIXTY = Value(60, ALEF_LAM + numvalues.six_prefix + SUM_SUFFIX)
+SEVENTY = Value(70, ALEF_LAM + numvalues.seven_prefix + SUM_SUFFIX)
+EIGHTY = Value(80, ALEF_LAM + numvalues.eight_prefix + SUM_SUFFIX)
+NINETY = Value(90, ALEF_LAM + numvalues.nine_prefix + SUM_SUFFIX)
 
-ONE_HUNDRED = Value(100, ALEF_LAM + Rule.get("one_hundred"))
-TWO_HUNDREDS = Value(200, ALEF_LAM + Rule.get("two_hundreds"))
+ONE_HUNDRED = Value(100, ALEF_LAM + numvalues.ONE_HUNDRED)
+TWO_HUNDREDS = Value(200, ALEF_LAM + numvalues.TWO_HUNDREDS)
 THREE_HUNDREDS = Value(
     300,
-    ALEF_LAM + Rule.get("three") + EXPRESSION_SPACE_OR_NONE + Rule.get("one_hundred"),
+    ALEF_LAM + numvalues.THREE + EXPRESSION_SPACE_OR_NONE + numvalues.ONE_HUNDRED,
 )
 FOUR_HUNDREDS = Value(
     400,
-    ALEF_LAM + Rule.get("four") + EXPRESSION_SPACE_OR_NONE + Rule.get("one_hundred"),
+    ALEF_LAM + numvalues.FOUR + EXPRESSION_SPACE_OR_NONE + numvalues.ONE_HUNDRED,
 )
 FIVE_HUNDREDS = Value(
     500,
-    ALEF_LAM + Rule.get("five") + EXPRESSION_SPACE_OR_NONE + Rule.get("one_hundred"),
+    ALEF_LAM + numvalues.FIVE + EXPRESSION_SPACE_OR_NONE + numvalues.ONE_HUNDRED,
 )
 SIX_HUNDREDS = Value(
-    600, ALEF_LAM + Rule.get("six") + EXPRESSION_SPACE_OR_NONE + Rule.get("one_hundred")
+    600, ALEF_LAM + numvalues.SIX + EXPRESSION_SPACE_OR_NONE + numvalues.ONE_HUNDRED
 )
 SEVEN_HUNDREDS = Value(
     700,
-    ALEF_LAM + Rule.get("seven") + EXPRESSION_SPACE_OR_NONE + Rule.get("one_hundred"),
+    ALEF_LAM + numvalues.SEVEN + EXPRESSION_SPACE_OR_NONE + numvalues.ONE_HUNDRED,
 )
 EIGHT_HUNDREDS = Value(
     800,
-    ALEF_LAM + Rule.get("eight") + EXPRESSION_SPACE_OR_NONE + Rule.get("one_hundred"),
+    ALEF_LAM + numvalues.EIGHT + EXPRESSION_SPACE_OR_NONE + numvalues.ONE_HUNDRED,
 )
 NINE_HUNDREDS = Value(
     900,
-    ALEF_LAM + Rule.get("nine") + EXPRESSION_SPACE_OR_NONE + Rule.get("one_hundred"),
+    ALEF_LAM + numvalues.NINE + EXPRESSION_SPACE_OR_NONE + numvalues.ONE_HUNDRED,
 )
-ONE_THOUSAND = Value(1000, ALEF_LAM + Rule.get("one_thousand"))
-TWO_THOUSANDS = Value(2000, ALEF_LAM + Rule.get("two_thousands"))
-ONE_MILLION = Value(1000000, ALEF_LAM + Rule.get("one_million"))
-TWO_MILLIONS = Value(2000000, ALEF_LAM + Rule.get("two_millions"))
-ONE_BILLION = Value(1000000000, ALEF_LAM + Rule.get("one_billion"))
-TWO_BILLIONS = Value(2000000000, ALEF_LAM + Rule.get("two_billions"))
-ONE_TRILLION = Value(1000000000000, ALEF_LAM + Rule.get("one_trillion"))
-TWO_TRILLIONS = Value(2000000000000, ALEF_LAM + Rule.get("two_trillions"))
+ONE_THOUSAND = Value(1000, ALEF_LAM + numvalues.ONE_THOUSAND)
+TWO_THOUSANDS = Value(2000, ALEF_LAM + numvalues.TWO_THOUSANDS)
+ONE_MILLION = Value(1000000, ALEF_LAM + numvalues.ONE_MILLION)
+TWO_MILLIONS = Value(2000000, ALEF_LAM + numvalues.TWO_MILLIONS)
+ONE_BILLION = Value(1000000000, ALEF_LAM + numvalues.ONE_BILLION)
+TWO_BILLIONS = Value(2000000000, ALEF_LAM + numvalues.TWO_BILLIONS)
+ONE_TRILLION = Value(1000000000000, ALEF_LAM + numvalues.ONE_TRILLION)
+TWO_TRILLIONS = Value(2000000000000, ALEF_LAM + numvalues.TWO_TRILLIONS)
