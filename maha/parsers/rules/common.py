@@ -1,18 +1,71 @@
-__all__ = ["get_fractions_of_unit_pattern", "wrap_pattern", "spaced_patterns"]
+__all__ = [
+    "get_fractions_of_unit_pattern",
+    "wrap_pattern",
+    "spaced_patterns",
+    "THIRD",
+    "QUARTER",
+    "HALF",
+    "THREE_QUARTERS",
+    "WAW_CONNECTOR",
+    "WORD_SEPARATOR",
+    "ALL_ALEF",
+    "TWO_SUFFIX",
+    "SUM_SUFFIX",
+    "EXPRESSION_START",
+    "EXPRESSION_END",
+]
 
 from dataclasses import dataclass
 
-from maha.expressions import EXPRESSION_SPACE
-from maha.parsers.expressions import (
-    EXPRESSION_END,
-    EXPRESSION_START,
-    HALF,
-    QUARTER,
-    THIRD,
-    THREE_QUARTERS,
+from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
+from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
+from maha.parsers.templates import Unit, Value
+from maha.rexy import (
+    Expression,
+    ExpressionGroup,
+    non_capturing_group,
+    positive_lookahead,
+    positive_lookbehind,
 )
-from maha.parsers.templates import Unit
-from maha.rexy import Expression, ExpressionGroup, non_capturing_group
+
+THIRD = Value(1 / 3, "[ثت]ل[ثت]")
+""" Pattern that matches the pronunciation of third in Arabic """
+QUARTER = Value(1 / 4, "ربع")
+""" Pattern that matches the pronunciation of quarter in Arabic """
+HALF = Value(1 / 2, "نصف?")
+""" Pattern that matches the pronunciation of half in Arabic """
+THREE_QUARTERS = Value(3 / 4, f"[إا]لا {QUARTER}")
+""" Pattern that matches the pronunciation of three quarters in Arabic """
+WAW_CONNECTOR = Expression(EXPRESSION_SPACE + WAW + EXPRESSION_SPACE_OR_NONE)
+""" Pattern that matches WAW as a connector between two words """
+WORD_SEPARATOR = Expression(
+    non_capturing_group(
+        f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}"
+        f"(?:{EXPRESSION_SPACE}{WAW})?",
+        f"{EXPRESSION_SPACE}{WAW}",
+    )
+    + non_capturing_group(r"\b", str(EXPRESSION_SPACE_OR_NONE))
+)
+""" Pattern that matches the word separator between numerals in Arabic """
+
+ALL_ALEF = Expression(f'[{"".join(ALEF_VARIATIONS)}]')
+""" Pattern that matches all possible forms of the ALEF in Arabic """
+
+TWO_SUFFIX = Expression(non_capturing_group("ين", "ان"))
+""" Pattern that matches the two-suffix of words in Arabic """
+
+SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
+""" Pattern that matches the sum-suffix of words in Arabic """
+
+EXPRESSION_START = Expression(
+    positive_lookbehind("^", r"\W", r"\b", r"\b" + WAW, r"\b" + LAM)
+)
+""" Pattern that matches the start of a rule expression in Arabic """
+
+EXPRESSION_END = Expression(positive_lookahead("$", r"\W", r"\b"))
+""" Pattern that matches the end of a rule expression in Arabic """
+
+FRACTIONS = ExpressionGroup(THREE_QUARTERS, QUARTER, HALF, THIRD)
 
 
 @dataclass
@@ -21,9 +74,6 @@ class ValueUnit:
 
     value: float
     unit: Unit
-
-
-FRACTIONS = ExpressionGroup(THREE_QUARTERS, QUARTER, HALF, THIRD)
 
 
 def get_fractions_of_unit_pattern(unit: str) -> str:
@@ -92,11 +142,7 @@ def combine_patterns(
         The combined pattern.
     """
     if seperator is None:
-        from maha.parsers.expressions import WORD_SEPARATOR
-
         seperator = WORD_SEPARATOR
-
-    from maha.parsers.rules.common import wrap_pattern
 
     start_group = non_capturing_group(*[str(p) for p in patterns])
     pattern = wrap_pattern(

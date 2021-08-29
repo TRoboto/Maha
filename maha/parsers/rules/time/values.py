@@ -2,7 +2,6 @@ from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE, relativedelta
 
 from maha.constants import ARABIC_COMMA, COMMA
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
-from maha.parsers.expressions import ALL_ALEF
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
     ONE_MONTH,
@@ -17,9 +16,16 @@ from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL
 from maha.parsers.templates import FunctionValue, Value
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
-from ..common import spaced_patterns
+from ..common import ALL_ALEF, spaced_patterns
 
-value_group = lambda v: named_group("value", v)
+
+def value_group(value):
+    return named_group("value", value)
+
+
+def parse_value(value: dict) -> relativedelta:
+    return relativedelta(**value)
+
 
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
@@ -156,11 +162,6 @@ AFTER_TOMORROW = Value(
         spaced_patterns(AFTER, TWO_DAYS),
     ),
 )
-
-
-def parse_value(value: dict) -> relativedelta:
-    return relativedelta(**value)
-
 
 AFTER_N_DAYS = FunctionValue(
     lambda match: parse_value({"days": list(RULE_NUMERAL(match.group("value")))[0]}),

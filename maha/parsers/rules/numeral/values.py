@@ -1,7 +1,8 @@
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
-from maha.parsers.expressions import ALL_ALEF, SUM_SUFFIX, TWO_SUFFIX
 from maha.parsers.templates import Value
 from maha.rexy import Expression, non_capturing_group
+
+from ..common import ALL_ALEF, SUM_SUFFIX, TWO_SUFFIX
 
 TEN_SUFFIX = f"{EXPRESSION_SPACE_OR_NONE}[تط]?[اع]?شر?[ةه]?"
 TEH_OPTIONAL_SUFFIX = "[ةه]?"

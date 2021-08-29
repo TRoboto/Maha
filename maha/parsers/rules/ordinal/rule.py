@@ -11,11 +11,10 @@ __all__ = [
 
 from typing import List, Union
 
-from maha.parsers.expressions import WAW_CONNECTOR
 from maha.parsers.templates import FunctionValue
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
-from ..common import combine_patterns, spaced_patterns
+from ..common import WAW_CONNECTOR, combine_patterns, spaced_patterns
 from .values import *
 
 

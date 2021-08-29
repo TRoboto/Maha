@@ -1,8 +1,7 @@
-from maha.parsers.expressions import ALL_ALEF, TWO_SUFFIX
 from maha.parsers.templates import DurationUnit, Value
 from maha.rexy import non_capturing_group
 
-from ..common import ValueUnit
+from ..common import ALL_ALEF, TWO_SUFFIX, ValueUnit
 
 ONE_SECOND = Value(
     ValueUnit(1, DurationUnit.SECONDS), non_capturing_group("ثاني[ةه]", "لح[زضظ][ةه]")

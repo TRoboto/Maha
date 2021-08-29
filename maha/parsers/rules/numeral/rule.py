@@ -15,13 +15,13 @@ import itertools as it
 from typing import Optional
 
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER
-from maha.parsers.expressions import WAW_CONNECTOR
 from maha.parsers.templates import FunctionValue
 from maha.parsers.utils import convert_to_number_if_possible
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
 from ..common import (
     FRACTIONS,
+    WAW_CONNECTOR,
     combine_patterns,
     get_fractions_of_unit_pattern,
     spaced_patterns,
