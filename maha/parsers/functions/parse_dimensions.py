@@ -2,7 +2,7 @@ __all__ = ["parse_dimension"]
 
 from typing import List
 
-from maha.parsers.rules import RULE_DURATION, RULE_NUMERAL, RULE_ORDINAL
+from maha.parsers.rules import RULE_DURATION, RULE_NUMERAL, RULE_ORDINAL, RULE_TIME
 from maha.parsers.templates import Dimension, DimensionType, FunctionValue
 
 
@@ -71,7 +71,7 @@ def parse_dimension(
     if ordinal:
         output.extend(_get_dimensions(RULE_ORDINAL, text, DimensionType.ORDINAL))
     if time:
-        output.extend(_get_dimensions(Rule.get("time"), text, DimensionType.TIME))
+        output.extend(_get_dimensions(RULE_TIME, text, DimensionType.TIME))
     if not any(
         [
             amount_of_money,
