@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE, relativedelta
 
 from maha.constants import ARABIC_COMMA, COMMA
@@ -61,51 +63,6 @@ AT_THE_MOMENT = Value(
         "في الحال",
     ),
 )
-LAST_MONTH = Value(
-    relativedelta(months=-1),
-    non_capturing_group(
-        spaced_patterns(BEFORE, ONE_MONTH),
-        spaced_patterns(ALEF_LAM + ONE_MONTH, PREVIOUS),
-    ),
-)
-LAST_TWO_MONTHS = Value(
-    relativedelta(months=-2),
-    non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MONTH, BEFORE_PREVIOUS),
-        spaced_patterns(BEFORE, TWO_MONTHS),
-    ),
-)
-NEXT_MONTH = Value(
-    relativedelta(months=1),
-    non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MONTH, NEXT),
-        spaced_patterns(AFTER, ONE_MONTH),
-    ),
-)
-NEXT_TWO_MONTHS = Value(
-    relativedelta(months=2),
-    non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MONTH, AFTER_NEXT),
-        spaced_patterns(AFTER, TWO_MONTHS),
-    ),
-)
-
-
-JANUARY = Value(relativedelta(month=1), non_capturing_group("يناير", "كانون الثاني"))
-FEBRUARY = Value(relativedelta(month=2), non_capturing_group("فبراير", "شباط"))
-MARCH = Value(relativedelta(month=3), non_capturing_group("مارس", "[اأآ]ذار"))
-APRIL = Value(relativedelta(month=4), non_capturing_group("نيسان", f"{ALL_ALEF}بريل"))
-MAY = Value(relativedelta(month=5), non_capturing_group("مايو", "أيار"))
-JUNE = Value(relativedelta(month=6), non_capturing_group("يونيو", "حزيران"))
-JULY = Value(relativedelta(month=7), non_capturing_group("يوليو", "تموز"))
-AUGUST = Value(relativedelta(month=8), non_capturing_group("[اأآ]غسطس", "[أاآ]ب"))
-SEPTEMBER = Value(relativedelta(month=9), non_capturing_group("سبتمبر", "[اأ]يلول"))
-OCTOBER = Value(
-    relativedelta(month=10), non_capturing_group("[اأ]كتوبر", "تشرين الأول")
-)
-NOVEMBER = Value(relativedelta(month=11), non_capturing_group("نوفمبر", "تشرين الثاني"))
-DECEMBER = Value(relativedelta(month=12), non_capturing_group("ديسمبر", "كانون الأول"))
-
 # ----------------------------------------------------
 # DAYS
 # ----------------------------------------------------
@@ -122,10 +79,14 @@ WEEKDAY = FunctionValue(
     lambda match: relativedelta(
         weekday=_days.get_matched_expression(match.group("value")).value  # type: ignore
     ),
-    non_capturing_group("يوم") + "?" + named_group("value", _days.join()),
+    non_capturing_group(
+        spaced_patterns("يوم", named_group("value", _days.join())),
+        named_group("value", _days.join()),
+    ),
 )
 THIS_DAY = Value(
-    relativedelta(days=0), non_capturing_group("اليوم", IN_FROM_AT_THIS + "اليوم")
+    relativedelta(days=0),
+    non_capturing_group("اليوم", spaced_patterns(IN_FROM_AT_THIS, "اليوم")),
 )
 YESTERDAY = Value(
     relativedelta(days=-1),
@@ -175,23 +136,155 @@ NEXT_WEEKDAY = FunctionValue(
     lambda match: parse_value(
         {"weekday": _days.get_matched_expression(match.group("value")).value(1)}  # type: ignore
     ),
-    spaced_patterns("يوم", value_group(_days.join()), NEXT),
+    non_capturing_group(
+        spaced_patterns("يوم", value_group(_days.join()), NEXT),
+        spaced_patterns(value_group(_days.join()), NEXT),
+    ),
 )
 PREVIOUS_WEEKDAY = FunctionValue(
     lambda match: parse_value(
         {"weekday": _days.get_matched_expression(match.group("value")).value(-1)}  # type: ignore
     ),
-    spaced_patterns("يوم", value_group(_days.join()), PREVIOUS),
+    non_capturing_group(
+        spaced_patterns("يوم", value_group(_days.join()), PREVIOUS),
+        spaced_patterns(value_group(_days.join()), PREVIOUS),
+    ),
 )
 AFTER_NEXT_WEEKDAY = FunctionValue(
     lambda match: parse_value(
         {"weekday": _days.get_matched_expression(match.group("value")).value(2)}  # type: ignore
     ),
-    spaced_patterns("يوم", value_group(_days.join()), AFTER_NEXT),
+    non_capturing_group(
+        spaced_patterns("يوم", value_group(_days.join()), AFTER_NEXT),
+        spaced_patterns(value_group(_days.join()), AFTER_NEXT),
+    ),
 )
 BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
     lambda match: parse_value(
         {"weekday": _days.get_matched_expression(match.group("value")).value(-2)}  # type: ignore
     ),
-    spaced_patterns("يوم", value_group(_days.join()), BEFORE_PREVIOUS),
+    non_capturing_group(
+        spaced_patterns("يوم", value_group(_days.join()), BEFORE_PREVIOUS),
+        spaced_patterns(value_group(_days.join()), BEFORE_PREVIOUS),
+    ),
+)
+
+# -----------------------------------------------------------
+# MONTHS
+# -----------------------------------------------------------
+JANUARY = Value(relativedelta(month=1), non_capturing_group("يناير", "كانون الثاني"))
+FEBRUARY = Value(relativedelta(month=2), non_capturing_group("فبراير", "شباط"))
+MARCH = Value(relativedelta(month=3), non_capturing_group("مارس", "[اأآ]ذار"))
+APRIL = Value(relativedelta(month=4), non_capturing_group("نيسان", f"{ALL_ALEF}بريل"))
+MAY = Value(relativedelta(month=5), non_capturing_group("مايو", "أيار"))
+JUNE = Value(relativedelta(month=6), non_capturing_group("يونيو", "حزيران"))
+JULY = Value(relativedelta(month=7), non_capturing_group("يوليو", "تموز"))
+AUGUST = Value(relativedelta(month=8), non_capturing_group("[اأآ]غسطس", "[أاآ]ب"))
+SEPTEMBER = Value(relativedelta(month=9), non_capturing_group("سبتمبر", "[اأ]يلول"))
+OCTOBER = Value(
+    relativedelta(month=10), non_capturing_group("[اأ]كتوبر", "تشرين الأول")
+)
+NOVEMBER = Value(relativedelta(month=11), non_capturing_group("نوفمبر", "تشرين الثاني"))
+DECEMBER = Value(relativedelta(month=12), non_capturing_group("ديسمبر", "كانون الأول"))
+
+_months = ExpressionGroup(
+    JANUARY,
+    FEBRUARY,
+    MARCH,
+    APRIL,
+    MAY,
+    JUNE,
+    JULY,
+    AUGUST,
+    SEPTEMBER,
+    OCTOBER,
+    NOVEMBER,
+    DECEMBER,
+)
+
+THIS_MONTH = Value(
+    relativedelta(months=0),
+    non_capturing_group("الشهر", spaced_patterns(IN_FROM_AT_THIS, "الشهر")),
+)
+LAST_MONTH = Value(
+    relativedelta(months=-1),
+    non_capturing_group(
+        spaced_patterns(BEFORE, ONE_MONTH),
+        spaced_patterns(ALEF_LAM + ONE_MONTH, PREVIOUS),
+    ),
+)
+LAST_TWO_MONTHS = Value(
+    relativedelta(months=-2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_MONTH, BEFORE_PREVIOUS),
+        spaced_patterns(BEFORE, TWO_MONTHS),
+    ),
+)
+NEXT_MONTH = Value(
+    relativedelta(months=1),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_MONTH, NEXT),
+        spaced_patterns(AFTER, ONE_MONTH),
+    ),
+)
+NEXT_TWO_MONTHS = Value(
+    relativedelta(months=2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_MONTH, AFTER_NEXT),
+        spaced_patterns(AFTER, TWO_MONTHS),
+    ),
+)
+
+AFTER_N_MONTHS = FunctionValue(
+    lambda match: parse_value({"months": list(RULE_NUMERAL(match.group("value")))[0]}),
+    spaced_patterns(AFTER, value_group(RULE_NUMERAL), SEVERAL_MONTHS),
+)
+BEFORE_N_MONTHS = FunctionValue(
+    lambda match: parse_value({"months": list(RULE_NUMERAL(match.group("value")))[0]}),
+    spaced_patterns(BEFORE, value_group(RULE_NUMERAL), SEVERAL_MONTHS),
+)
+
+
+def specific_month(match, next_month=False, years=0):
+    month = _months.get_matched_expression(match.group("value")).value.month  # type: ignore
+    current_month = datetime.now().month
+    if next_month:
+        years += 1 if month <= current_month else 0
+    else:
+        years += 0 if month <= current_month else -1
+    return parse_value(
+        {
+            "month": month,
+            "years": years,
+        }
+    )
+
+
+NEXT_SPECIFIC_MONTH = FunctionValue(
+    lambda match: specific_month(match, next_month=True),
+    non_capturing_group(
+        spaced_patterns("شهر", value_group(_months.join()), NEXT),
+        spaced_patterns(value_group(_months.join()), NEXT),
+    ),
+)
+PREVIOUS_SPECIFIC_MONTH = FunctionValue(
+    lambda match: specific_month(match, next_month=False),
+    non_capturing_group(
+        spaced_patterns("شهر", value_group(_months.join()), PREVIOUS),
+        spaced_patterns(value_group(_months.join()), PREVIOUS),
+    ),
+)
+AFTER_NEXT_MONTH = FunctionValue(
+    lambda match: specific_month(match, next_month=True, years=1),
+    non_capturing_group(
+        spaced_patterns("شهر", value_group(_months.join()), AFTER_NEXT),
+        spaced_patterns(value_group(_months.join()), AFTER_NEXT),
+    ),
+)
+BEFORE_PREVIOUS_MONTH = FunctionValue(
+    lambda match: specific_month(match, years=-1),
+    non_capturing_group(
+        spaced_patterns("شهر", value_group(_months.join()), BEFORE_PREVIOUS),
+        spaced_patterns(value_group(_months.join()), BEFORE_PREVIOUS),
+    ),
 )
