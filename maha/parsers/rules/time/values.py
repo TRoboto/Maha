@@ -38,21 +38,22 @@ TIME_WORD_SEPARATOR = Expression(
     + non_capturing_group(r"\b", str(EXPRESSION_SPACE_OR_NONE))
 )
 
-THIS = Expression(non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي"))
-AFTER = Value(+1, non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + f"?" + "بعد")
-BEFORE = Value(-1, non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "?" + "[أاق]بل")
-PREVIOUS = Value(-1, non_capturing_group("الماضي?", "السابق", "المنصرم", "الفا[يئ]ت"))
-NEXT = Value(
-    1,
+THIS = non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي")
+AFTER = non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + f"?" + "بعد"
+BEFORE = non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "?" + "[أاق]بل"
+PREVIOUS = non_capturing_group("الماضي?", "السابق", "المنصرم", "الفا[يئ]ت")
+NEXT = (
     non_capturing_group("الجاي", "القادم", "التالي?", "ال[اآ]تي?", "المقبل")
-    + TEH_OPTIONAL_SUFFIX,
+    + TEH_OPTIONAL_SUFFIX
 )
-AFTER_NEXT = Value(2, spaced_patterns(AFTER, NEXT))
-BEFORE_PREVIOUS = Value(-2, spaced_patterns(BEFORE, PREVIOUS))
-IN_FROM_AT = Expression(non_capturing_group("في", "من", "خلال", "الموافق"))
-IN_FROM_AT_THIS = Expression(spaced_patterns(IN_FROM_AT + "?", THIS))
+AFTER_NEXT = spaced_patterns(AFTER, NEXT)
+BEFORE_PREVIOUS = spaced_patterns(BEFORE, PREVIOUS)
+IN_FROM_AT = non_capturing_group("في", "من", "خلال", "الموافق")
+IN_FROM_AT_THIS = spaced_patterns(IN_FROM_AT + "?", THIS)
+
+# region this time
 AT_THE_MOMENT = Value(
-    TimeValue(seconds=0),
+    TimeValue(years=0, months=0, days=0, hours=0, minutes=0, seconds=0),
     non_capturing_group(
         "ال[أآا]ن",
         THIS
@@ -64,6 +65,9 @@ AT_THE_MOMENT = Value(
         "في الحال",
     ),
 )
+# endregion
+
+# region DAYS
 # ----------------------------------------------------
 # DAYS
 # ----------------------------------------------------
@@ -169,7 +173,9 @@ BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
         spaced_patterns(value_group(_days.join()), BEFORE_PREVIOUS),
     ),
 )
+# endregion
 
+# region MONTHS
 # -----------------------------------------------------------
 # MONTHS
 # -----------------------------------------------------------
@@ -287,3 +293,4 @@ BEFORE_PREVIOUS_MONTH = FunctionValue(
         spaced_patterns(value_group(_months.join()), BEFORE_PREVIOUS),
     ),
 )
+# endregion
