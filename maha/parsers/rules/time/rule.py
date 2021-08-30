@@ -3,7 +3,7 @@ from .values import *
 
 
 def get_combined_value(groups, expression):
-    value = relativedelta()
+    value = TimeValue()
     for group in groups:
         value += next(iter(expression.parse(group))).value
     return value
@@ -15,7 +15,7 @@ def parse_time(match):
     _months = groups.get("months")
     _days = groups.get("days")
 
-    value = relativedelta()
+    value = TimeValue()
 
     if _days:
         value += get_combined_value(_days, days_expressions)

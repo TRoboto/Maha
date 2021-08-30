@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE, relativedelta
+from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE
 
 from maha.constants import ARABIC_COMMA, COMMA
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
@@ -19,14 +19,15 @@ from maha.parsers.templates import FunctionValue, Value
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
 from ..common import ALL_ALEF, spaced_patterns
+from .template import TimeValue
 
 
 def value_group(value):
     return named_group("value", value)
 
 
-def parse_value(value: dict) -> relativedelta:
-    return relativedelta(**value)
+def parse_value(value: dict) -> TimeValue:
+    return TimeValue(**value)
 
 
 TIME_WORD_SEPARATOR = Expression(
@@ -51,7 +52,7 @@ BEFORE_PREVIOUS = Value(-2, spaced_patterns(BEFORE, PREVIOUS))
 IN_FROM_AT = Expression(non_capturing_group("في", "من", "خلال", "الموافق"))
 IN_FROM_AT_THIS = Expression(spaced_patterns(IN_FROM_AT + "?", THIS))
 AT_THE_MOMENT = Value(
-    relativedelta(seconds=0),
+    TimeValue(seconds=0),
     non_capturing_group(
         "ال[أآا]ن",
         THIS
@@ -76,7 +77,7 @@ SATURDAY = Value(SA, "السبت")
 _days = ExpressionGroup(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY)
 
 WEEKDAY = FunctionValue(
-    lambda match: relativedelta(
+    lambda match: TimeValue(
         weekday=_days.get_matched_expression(match.group("value")).value  # type: ignore
     ),
     non_capturing_group(
@@ -85,11 +86,11 @@ WEEKDAY = FunctionValue(
     ),
 )
 THIS_DAY = Value(
-    relativedelta(days=0),
+    TimeValue(days=0),
     non_capturing_group("اليوم", spaced_patterns(IN_FROM_AT_THIS, "اليوم")),
 )
 YESTERDAY = Value(
-    relativedelta(days=-1),
+    TimeValue(days=-1),
     non_capturing_group(
         "[اإ]?مبارح",
         ALEF_LAM + "بارح[ةه]",
@@ -99,7 +100,7 @@ YESTERDAY = Value(
     ),
 )
 BEFORE_YESTERDAY = Value(
-    relativedelta(days=-2),
+    TimeValue(days=-2),
     non_capturing_group(
         spaced_patterns(non_capturing_group("[أا]ول", str(BEFORE)), YESTERDAY),
         spaced_patterns(ALEF_LAM + ONE_DAY, BEFORE_PREVIOUS),
@@ -107,7 +108,7 @@ BEFORE_YESTERDAY = Value(
     ),
 )
 TOMORROW = Value(
-    relativedelta(days=1),
+    TimeValue(days=1),
     non_capturing_group(
         ALEF_LAM_OPTIONAL + "غدا?",
         "بكر[ةه]",
@@ -116,7 +117,7 @@ TOMORROW = Value(
     ),
 )
 AFTER_TOMORROW = Value(
-    relativedelta(days=2),
+    TimeValue(days=2),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + ONE_DAY, AFTER_NEXT),
         spaced_patterns(AFTER, TOMORROW),
@@ -172,20 +173,18 @@ BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
 # -----------------------------------------------------------
 # MONTHS
 # -----------------------------------------------------------
-JANUARY = Value(relativedelta(month=1), non_capturing_group("يناير", "كانون الثاني"))
-FEBRUARY = Value(relativedelta(month=2), non_capturing_group("فبراير", "شباط"))
-MARCH = Value(relativedelta(month=3), non_capturing_group("مارس", "[اأآ]ذار"))
-APRIL = Value(relativedelta(month=4), non_capturing_group("نيسان", f"{ALL_ALEF}بريل"))
-MAY = Value(relativedelta(month=5), non_capturing_group("مايو", "أيار"))
-JUNE = Value(relativedelta(month=6), non_capturing_group("يونيو", "حزيران"))
-JULY = Value(relativedelta(month=7), non_capturing_group("يوليو", "تموز"))
-AUGUST = Value(relativedelta(month=8), non_capturing_group("[اأآ]غسطس", "[أاآ]ب"))
-SEPTEMBER = Value(relativedelta(month=9), non_capturing_group("سبتمبر", "[اأ]يلول"))
-OCTOBER = Value(
-    relativedelta(month=10), non_capturing_group("[اأ]كتوبر", "تشرين الأول")
-)
-NOVEMBER = Value(relativedelta(month=11), non_capturing_group("نوفمبر", "تشرين الثاني"))
-DECEMBER = Value(relativedelta(month=12), non_capturing_group("ديسمبر", "كانون الأول"))
+JANUARY = Value(TimeValue(month=1), non_capturing_group("يناير", "كانون الثاني"))
+FEBRUARY = Value(TimeValue(month=2), non_capturing_group("فبراير", "شباط"))
+MARCH = Value(TimeValue(month=3), non_capturing_group("مارس", "[اأآ]ذار"))
+APRIL = Value(TimeValue(month=4), non_capturing_group("نيسان", f"{ALL_ALEF}بريل"))
+MAY = Value(TimeValue(month=5), non_capturing_group("مايو", "أيار"))
+JUNE = Value(TimeValue(month=6), non_capturing_group("يونيو", "حزيران"))
+JULY = Value(TimeValue(month=7), non_capturing_group("يوليو", "تموز"))
+AUGUST = Value(TimeValue(month=8), non_capturing_group("[اأآ]غسطس", "[أاآ]ب"))
+SEPTEMBER = Value(TimeValue(month=9), non_capturing_group("سبتمبر", "[اأ]يلول"))
+OCTOBER = Value(TimeValue(month=10), non_capturing_group("[اأ]كتوبر", "تشرين الأول"))
+NOVEMBER = Value(TimeValue(month=11), non_capturing_group("نوفمبر", "تشرين الثاني"))
+DECEMBER = Value(TimeValue(month=12), non_capturing_group("ديسمبر", "كانون الأول"))
 
 _months = ExpressionGroup(
     JANUARY,
@@ -203,32 +202,32 @@ _months = ExpressionGroup(
 )
 
 THIS_MONTH = Value(
-    relativedelta(months=0),
+    TimeValue(months=0),
     non_capturing_group("الشهر", spaced_patterns(IN_FROM_AT_THIS, "الشهر")),
 )
 LAST_MONTH = Value(
-    relativedelta(months=-1),
+    TimeValue(months=-1),
     non_capturing_group(
         spaced_patterns(BEFORE, ONE_MONTH),
         spaced_patterns(ALEF_LAM + ONE_MONTH, PREVIOUS),
     ),
 )
 LAST_TWO_MONTHS = Value(
-    relativedelta(months=-2),
+    TimeValue(months=-2),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + ONE_MONTH, BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, TWO_MONTHS),
     ),
 )
 NEXT_MONTH = Value(
-    relativedelta(months=1),
+    TimeValue(months=1),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + ONE_MONTH, NEXT),
         spaced_patterns(AFTER, ONE_MONTH),
     ),
 )
 NEXT_TWO_MONTHS = Value(
-    relativedelta(months=2),
+    TimeValue(months=2),
     non_capturing_group(
         spaced_patterns(ALEF_LAM + ONE_MONTH, AFTER_NEXT),
         spaced_patterns(AFTER, TWO_MONTHS),
