@@ -8,10 +8,13 @@ from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
     ONE_MONTH,
+    ONE_WEEK,
     SEVERAL_DAYS,
     SEVERAL_MONTHS,
+    SEVERAL_WEEKS,
     TWO_DAYS,
     TWO_MONTHS,
+    TWO_WEEKS,
 )
 from maha.parsers.rules.numeral.rule import (
     RULE_NUMERAL,
@@ -416,7 +419,6 @@ BEFORE_PREVIOUS_MONTH = FunctionValue(
 )
 # endregion
 
-
 # region DAY WITH MONTH
 # ----------------------------------------------------
 # DAY WITH MONTH
@@ -485,3 +487,52 @@ NUMERAL_AND_THIS_MONTH = FunctionValue(
     ),
 )
 # endregion
+
+# region WEEKS
+# ----------------------------------------------------
+# WEEKS
+# ----------------------------------------------------
+
+THIS_WEEK = Value(
+    TimeValue(weeks=0),
+    non_capturing_group(
+        ALEF_LAM + ONE_WEEK, spaced_patterns(IN_FROM_AT_THIS, ALEF_LAM + ONE_WEEK)
+    ),
+)
+LAST_WEEK = Value(
+    TimeValue(weeks=-1),
+    non_capturing_group(
+        spaced_patterns(BEFORE, ONE_WEEK),
+        spaced_patterns(ALEF_LAM + ONE_WEEK, PREVIOUS),
+    ),
+)
+LAST_TWO_WEEKS = Value(
+    TimeValue(weeks=-2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_WEEK, BEFORE_PREVIOUS),
+        spaced_patterns(BEFORE, TWO_WEEKS),
+    ),
+)
+NEXT_WEEK = Value(
+    TimeValue(weeks=1),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_WEEK, NEXT),
+        spaced_patterns(AFTER, ONE_WEEK),
+    ),
+)
+NEXT_TWO_WEEKS = Value(
+    TimeValue(weeks=2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_WEEK, AFTER_NEXT),
+        spaced_patterns(AFTER, TWO_WEEKS),
+    ),
+)
+
+AFTER_N_WEEKS = FunctionValue(
+    lambda match: parse_value({"weeks": list(RULE_NUMERAL(match.group("value")))[0]}),
+    spaced_patterns(AFTER, value_group(RULE_NUMERAL), SEVERAL_WEEKS),
+)
+BEFORE_N_WEEKS = FunctionValue(
+    lambda match: parse_value({"weeks": list(RULE_NUMERAL(match.group("value")))[0]}),
+    spaced_patterns(BEFORE, value_group(RULE_NUMERAL), SEVERAL_WEEKS),
+)
