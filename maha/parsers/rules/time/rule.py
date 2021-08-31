@@ -33,8 +33,8 @@ def parse_time(match):
 months_expressions = ExpressionGroup(
     AFTER_N_MONTHS,
     BEFORE_N_MONTHS,
-    BEFORE_PREVIOUS_MONTH,
-    AFTER_NEXT_MONTH,
+    BEFORE_SPECIFIC_PREVIOUS_MONTH,
+    AFTER_SPECIFIC_NEXT_MONTH,
     LAST_TWO_MONTHS,
     NEXT_TWO_MONTHS,
     LAST_MONTH,

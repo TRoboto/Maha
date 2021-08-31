@@ -212,61 +212,64 @@ DECEMBER = Value(TimeValue(month=12), non_capturing_group("ديسمبر", "كا�
 JANUARY_IN_NUMBERS = Value(
     TimeValue(month=1),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.ONE, arabic.ARABIC_ONE, english.ONE)
+        ONE_MONTH, non_capturing_group(numvalues.ONE, arabic.ARABIC_ONE, english.ONE)
     ),
 )
 FEBRUARY_IN_NUMBERS = Value(
     TimeValue(month=2),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.TWO, arabic.ARABIC_TWO, english.TWO)
+        ONE_MONTH, non_capturing_group(numvalues.TWO, arabic.ARABIC_TWO, english.TWO)
     ),
 )
 MARCH_IN_NUMBERS = Value(
     TimeValue(month=3),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.THREE, arabic.ARABIC_THREE, english.THREE)
+        ONE_MONTH,
+        non_capturing_group(numvalues.THREE, arabic.ARABIC_THREE, english.THREE),
     ),
 )
 APRIL_IN_NUMBERS = Value(
     TimeValue(month=4),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.FOUR, arabic.ARABIC_FOUR, english.FOUR)
+        ONE_MONTH, non_capturing_group(numvalues.FOUR, arabic.ARABIC_FOUR, english.FOUR)
     ),
 )
 MAY_IN_NUMBERS = Value(
     TimeValue(month=5),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE)
+        ONE_MONTH, non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE)
     ),
 )
 JUNE_IN_NUMBERS = Value(
     TimeValue(month=6),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.SIX, arabic.ARABIC_SIX, english.SIX)
+        ONE_MONTH, non_capturing_group(numvalues.SIX, arabic.ARABIC_SIX, english.SIX)
     ),
 )
 JULY_IN_NUMBERS = Value(
     TimeValue(month=7),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.SEVEN, arabic.ARABIC_SEVEN, english.SEVEN)
+        ONE_MONTH,
+        non_capturing_group(numvalues.SEVEN, arabic.ARABIC_SEVEN, english.SEVEN),
     ),
 )
 AUGUST_IN_NUMBERS = Value(
     TimeValue(month=8),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.EIGHT, arabic.ARABIC_EIGHT, english.EIGHT)
+        ONE_MONTH,
+        non_capturing_group(numvalues.EIGHT, arabic.ARABIC_EIGHT, english.EIGHT),
     ),
 )
 SEPTEMBER_IN_NUMBERS = Value(
     TimeValue(month=9),
     spaced_patterns(
-        "شهر", non_capturing_group(numvalues.NINE, arabic.ARABIC_NINE, english.NINE)
+        ONE_MONTH, non_capturing_group(numvalues.NINE, arabic.ARABIC_NINE, english.NINE)
     ),
 )
 OCTOBER_IN_NUMBERS = Value(
     TimeValue(month=10),
     spaced_patterns(
-        "شهر",
+        ONE_MONTH,
         non_capturing_group(
             numvalues.TEN,
             arabic.ARABIC_ONE + arabic.ARABIC_ZERO,
@@ -277,7 +280,7 @@ OCTOBER_IN_NUMBERS = Value(
 NOVEMBER_IN_NUMBERS = Value(
     TimeValue(month=11),
     spaced_patterns(
-        "شهر",
+        ONE_MONTH,
         non_capturing_group(
             numvalues.ELEVEN,
             arabic.ARABIC_ONE + arabic.ARABIC_ONE,
@@ -288,7 +291,7 @@ NOVEMBER_IN_NUMBERS = Value(
 DECEMBER_IN_NUMBERS = Value(
     TimeValue(month=12),
     spaced_patterns(
-        "شهر",
+        ONE_MONTH,
         non_capturing_group(
             numvalues.TWELVE,
             arabic.ARABIC_ONE + arabic.ARABIC_TWO,
@@ -392,28 +395,28 @@ SPECIFIC_MONTH = MatchedValue(_months, _months.join())
 NEXT_SPECIFIC_MONTH = FunctionValue(
     lambda match: specific_month(match, next_month=True),
     non_capturing_group(
-        spaced_patterns("شهر", value_group(_months.join()), NEXT),
+        spaced_patterns(ONE_MONTH, value_group(_months.join()), NEXT),
         spaced_patterns(value_group(_months.join()), NEXT),
     ),
 )
 PREVIOUS_SPECIFIC_MONTH = FunctionValue(
     lambda match: specific_month(match, next_month=False),
     non_capturing_group(
-        spaced_patterns("شهر", value_group(_months.join()), PREVIOUS),
+        spaced_patterns(ONE_MONTH, value_group(_months.join()), PREVIOUS),
         spaced_patterns(value_group(_months.join()), PREVIOUS),
     ),
 )
-AFTER_NEXT_MONTH = FunctionValue(
+AFTER_SPECIFIC_NEXT_MONTH = FunctionValue(
     lambda match: specific_month(match, next_month=True, years=1),
     non_capturing_group(
-        spaced_patterns("شهر", value_group(_months.join()), AFTER_NEXT),
+        spaced_patterns(ONE_MONTH, value_group(_months.join()), AFTER_NEXT),
         spaced_patterns(value_group(_months.join()), AFTER_NEXT),
     ),
 )
-BEFORE_PREVIOUS_MONTH = FunctionValue(
+BEFORE_SPECIFIC_PREVIOUS_MONTH = FunctionValue(
     lambda match: specific_month(match, years=-1),
     non_capturing_group(
-        spaced_patterns("شهر", value_group(_months.join()), BEFORE_PREVIOUS),
+        spaced_patterns(ONE_MONTH, value_group(_months.join()), BEFORE_PREVIOUS),
         spaced_patterns(value_group(_months.join()), BEFORE_PREVIOUS),
     ),
 )
@@ -430,7 +433,7 @@ numeral_ones_tens = ExpressionGroup(
 
 _optional_middle = optional_non_capturing_group(
     IN_FROM_AT + EXPRESSION_SPACE
-) + optional_non_capturing_group("شهر" + EXPRESSION_SPACE)
+) + optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
 
 _optional_start = (
     optional_non_capturing_group("يوم" + EXPRESSION_SPACE)
