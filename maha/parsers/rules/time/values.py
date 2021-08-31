@@ -539,3 +539,5 @@ BEFORE_N_WEEKS = FunctionValue(
     lambda match: parse_value({"weeks": list(RULE_NUMERAL(match.group("value")))[0]}),
     spaced_patterns(BEFORE, value_group(RULE_NUMERAL), SEVERAL_WEEKS),
 )
+
+# endregion
