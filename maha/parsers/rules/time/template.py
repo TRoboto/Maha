@@ -129,6 +129,7 @@ class TimeValue(relativedelta):
         for attr in [
             "_years",
             "_months",
+            "_weeks",
             "_days",
             "_leapdays",
             "_hours",
