@@ -598,6 +598,7 @@ _start_of_last_day = (
         + IN_FROM_AT,
         optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
         + named_group("day", _days.join())
+        + EXPRESSION_SPACE
         + LAST
         + EXPRESSION_SPACE
         + IN_FROM_AT,
