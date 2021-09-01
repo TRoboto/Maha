@@ -77,7 +77,12 @@ month_day_expressions = ExpressionGroup(
     NUMERAL_AND_THIS_MONTH,
 )
 last_day_of_month_expressions = ExpressionGroup(
-    LAST_DAY_OF_SPECIFIC_MONTH, LAST_DAY_OF_NEXT_MONTH, LAST_DAY_OF_LAST_MONTH
+    LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH,
+    LAST_SPECIFIC_DAY_OF_NEXT_MONTH,
+    LAST_SPECIFIC_DAY_OF_LAST_MONTH,
+    LAST_DAY_OF_SPECIFIC_MONTH,
+    LAST_DAY_OF_NEXT_MONTH,
+    LAST_DAY_OF_LAST_MONTH,
 )
 
 months_group = named_group("months", months_expressions.join())

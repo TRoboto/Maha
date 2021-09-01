@@ -103,7 +103,7 @@ WEEKDAY = FunctionValue(
         weekday=_days.get_matched_expression(match.group("value")).value  # type: ignore
     ),
     non_capturing_group(
-        spaced_patterns("يوم", named_group("value", _days.join())),
+        spaced_patterns(ONE_DAY, named_group("value", _days.join())),
         named_group("value", _days.join()),
     ),
 )
@@ -160,7 +160,7 @@ NEXT_WEEKDAY = FunctionValue(
         {"weekday": _days.get_matched_expression(match.group("value")).value(1)}  # type: ignore
     ),
     non_capturing_group(
-        spaced_patterns("يوم", value_group(_days.join()), NEXT),
+        spaced_patterns(ONE_DAY, value_group(_days.join()), NEXT),
         spaced_patterns(value_group(_days.join()), NEXT),
     ),
 )
@@ -169,7 +169,7 @@ PREVIOUS_WEEKDAY = FunctionValue(
         {"weekday": _days.get_matched_expression(match.group("value")).value(-1)}  # type: ignore
     ),
     non_capturing_group(
-        spaced_patterns("يوم", value_group(_days.join()), PREVIOUS),
+        spaced_patterns(ONE_DAY, value_group(_days.join()), PREVIOUS),
         spaced_patterns(value_group(_days.join()), PREVIOUS),
     ),
 )
@@ -178,7 +178,7 @@ AFTER_NEXT_WEEKDAY = FunctionValue(
         {"weekday": _days.get_matched_expression(match.group("value")).value(2)}  # type: ignore
     ),
     non_capturing_group(
-        spaced_patterns("يوم", value_group(_days.join()), AFTER_NEXT),
+        spaced_patterns(ONE_DAY, value_group(_days.join()), AFTER_NEXT),
         spaced_patterns(value_group(_days.join()), AFTER_NEXT),
     ),
 )
@@ -187,7 +187,7 @@ BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
         {"weekday": _days.get_matched_expression(match.group("value")).value(-2)}  # type: ignore
     ),
     non_capturing_group(
-        spaced_patterns("يوم", value_group(_days.join()), BEFORE_PREVIOUS),
+        spaced_patterns(ONE_DAY, value_group(_days.join()), BEFORE_PREVIOUS),
         spaced_patterns(value_group(_days.join()), BEFORE_PREVIOUS),
     ),
 )
@@ -461,8 +461,8 @@ _optional_middle = optional_non_capturing_group(
 ) + optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
 
 _optional_start = (
-    optional_non_capturing_group("يوم" + EXPRESSION_SPACE)
-    + optional_non_capturing_group("اليوم" + EXPRESSION_SPACE)
+    optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
+    + optional_non_capturing_group(ALEF_LAM + ONE_DAY + EXPRESSION_SPACE)
     + optional_non_capturing_group(_days.join() + EXPRESSION_SPACE)
     + optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE)
 )
@@ -585,6 +585,9 @@ BEFORE_N_WEEKS = FunctionValue(
 # ----------------------------------------------------
 # LAST DAY OF MONTH
 # ----------------------------------------------------
+_optional_month_start = optional_non_capturing_group(
+    EXPRESSION_SPACE + ALEF_LAM_OPTIONAL + ONE_MONTH
+)
 _start_of_last_day = (
     non_capturing_group(
         LAST
@@ -599,10 +602,10 @@ _start_of_last_day = (
         + EXPRESSION_SPACE
         + IN_FROM_AT,
     )
-    + optional_non_capturing_group(EXPRESSION_SPACE + ALEF_LAM_OPTIONAL + ONE_MONTH)
+    + _optional_month_start
 )
 
-LAST_DAY_OF_SPECIFIC_MONTH = FunctionValue(
+LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH = FunctionValue(
     lambda match: parse_value(
         {
             "month": _months.get_matched_expression(match.group("month")).value.month  # type: ignore
@@ -616,21 +619,51 @@ LAST_DAY_OF_SPECIFIC_MONTH = FunctionValue(
     ),
     spaced_patterns(_start_of_last_day, named_group("month", _months.join())),
 )
-LAST_DAY_OF_NEXT_MONTH = FunctionValue(
+LAST_SPECIFIC_DAY_OF_NEXT_MONTH = FunctionValue(
     lambda match: parse_value(
         {
             "months": 1,
             "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
         }
     ),
-    spaced_patterns(_start_of_last_day, NEXT_MONTH),
+    spaced_patterns(_start_of_last_day, NEXT),
 )
-LAST_DAY_OF_LAST_MONTH = FunctionValue(
+LAST_SPECIFIC_DAY_OF_LAST_MONTH = FunctionValue(
     lambda match: parse_value(
         {
             "months": -1,
             "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
         }
     ),
-    spaced_patterns(_start_of_last_day, LAST_MONTH),
+    spaced_patterns(_start_of_last_day, LAST),
 )
+LAST_DAY_OF_SPECIFIC_MONTH = FunctionValue(
+    lambda match: parse_value(
+        {
+            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
+            "day": 31,
+        }
+    ),
+    spaced_patterns(LAST, ONE_DAY)
+    + spaced_patterns(_optional_month_start, named_group("month", _months.join())),
+)
+LAST_DAY_OF_LAST_MONTH = FunctionValue(
+    lambda _: parse_value(
+        {
+            "months": -1,
+            "day": 31,
+        }
+    ),
+    spaced_patterns(LAST, ONE_DAY) + spaced_patterns(_optional_month_start, LAST),
+)
+LAST_DAY_OF_NEXT_MONTH = FunctionValue(
+    lambda _: parse_value(
+        {
+            "months": 1,
+            "day": 31,
+        }
+    ),
+    spaced_patterns(LAST, ONE_DAY, IN_FROM_AT)
+    + spaced_patterns(_optional_month_start, NEXT),
+)
+# endregion
