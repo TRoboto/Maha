@@ -88,13 +88,13 @@ AT_THE_MOMENT = Value(
 # ----------------------------------------------------
 # DAYS
 # ----------------------------------------------------
-SUNDAY = Value(SU, "ال[أا]حد")
-MONDAY = Value(MO, "ال[إا][تث]نين")
-TUESDAY = Value(TU, "ال[ثت]لا[ثت]اء")
-WEDNESDAY = Value(WE, "ال[أا]ربعاء")
-THURSDAY = Value(TH, "الخميس")
-FRIDAY = Value(FR, "الجمع[ةه]")
-SATURDAY = Value(SA, "السبت")
+SUNDAY = Value(SU, ALEF_LAM_OPTIONAL + "[أا]حد")
+MONDAY = Value(MO, ALEF_LAM_OPTIONAL + "[إا][تث]نين")
+TUESDAY = Value(TU, ALEF_LAM_OPTIONAL + "[ثت]لا[ثت]اء")
+WEDNESDAY = Value(WE, ALEF_LAM_OPTIONAL + "[أا]ربعاء")
+THURSDAY = Value(TH, ALEF_LAM_OPTIONAL + "خميس")
+FRIDAY = Value(FR, ALEF_LAM_OPTIONAL + "جمع[ةه]")
+SATURDAY = Value(SA, ALEF_LAM_OPTIONAL + "سبت")
 _days = ExpressionGroup(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY)
 
 WEEKDAY = FunctionValue(
