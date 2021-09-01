@@ -47,14 +47,6 @@ def parse_value(value: dict) -> TimeValue:
     return TimeValue(**value)
 
 
-TIME_WORD_SEPARATOR = Expression(
-    non_capturing_group(
-        f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
-        str(EXPRESSION_SPACE),
-    )
-    + non_capturing_group(r"\b", str(EXPRESSION_SPACE_OR_NONE))
-)
-
 THIS = non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي")
 AFTER = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد"
 BEFORE = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
@@ -68,6 +60,15 @@ BEFORE_PREVIOUS = spaced_patterns(BEFORE, PREVIOUS)
 IN_FROM_AT = non_capturing_group("في", "من", "خلال", "الموافق")
 IN_FROM_AT_THIS = spaced_patterns(IN_FROM_AT + "?", THIS)
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
+
+TIME_WORD_SEPARATOR = Expression(
+    non_capturing_group(
+        f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
+        EXPRESSION_SPACE,
+        EXPRESSION_SPACE + IN_FROM_AT + EXPRESSION_SPACE,
+    )
+    + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
+)
 
 # region this time
 AT_THE_MOMENT = Value(
@@ -191,6 +192,28 @@ BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
         spaced_patterns(value_group(_days.join()), BEFORE_PREVIOUS),
     ),
 )
+LAST_DAY = FunctionValue(
+    lambda _: parse_value({"day": 31}),
+    non_capturing_group(
+        spaced_patterns(LAST, ONE_DAY),
+        spaced_patterns(ALEF_LAM_OPTIONAL + ONE_DAY, LAST),
+    ),
+)
+LAST_SPECIFIC_DAY = FunctionValue(
+    lambda match: parse_value(
+        {"weekday": _days.get_matched_expression(match.group("day")).value(-1)}  # type: ignore
+    ),
+    non_capturing_group(
+        LAST
+        + EXPRESSION_SPACE
+        + optional_non_capturing_group("يوم" + EXPRESSION_SPACE)
+        + named_group("day", _days.join()),
+        optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY)
+        + EXPRESSION_SPACE
+        + named_group("day", _days.join())
+        + LAST,
+    ),
+)
 # endregion
 
 # region MONTHS
@@ -199,145 +222,121 @@ BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
 # -----------------------------------------------------------
 JANUARY = Value(
     TimeValue(month=1),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "يناير",
         "كانون الثاني",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.ONE, arabic.ARABIC_ONE, english.ONE),
-        ),
+        non_capturing_group(numvalues.ONE, arabic.ARABIC_ONE, english.ONE),
     ),
 )
 FEBRUARY = Value(
     TimeValue(month=2),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "فبراير",
         "شباط",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.TWO, arabic.ARABIC_TWO, english.TWO),
-        ),
+        non_capturing_group(numvalues.TWO, arabic.ARABIC_TWO, english.TWO),
     ),
 )
 MARCH = Value(
     TimeValue(month=3),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "مارس",
         "[اأآ]ذار",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.THREE, arabic.ARABIC_THREE, english.THREE),
-        ),
+        non_capturing_group(numvalues.THREE, arabic.ARABIC_THREE, english.THREE),
     ),
 )
 APRIL = Value(
     TimeValue(month=4),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "نيسان",
         f"{ALL_ALEF}بريل",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.FOUR, arabic.ARABIC_FOUR, english.FOUR),
-        ),
+        non_capturing_group(numvalues.FOUR, arabic.ARABIC_FOUR, english.FOUR),
     ),
 )
 MAY = Value(
     TimeValue(month=5),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "مايو",
         "أيار",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE),
-        ),
+        non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE),
     ),
 )
 JUNE = Value(
     TimeValue(month=6),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "يونيو",
         "حزيران",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.SIX, arabic.ARABIC_SIX, english.SIX),
-        ),
+        non_capturing_group(numvalues.SIX, arabic.ARABIC_SIX, english.SIX),
     ),
 )
 JULY = Value(
     TimeValue(month=7),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "يوليو",
         "تموز",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.SEVEN, arabic.ARABIC_SEVEN, english.SEVEN),
-        ),
+        non_capturing_group(numvalues.SEVEN, arabic.ARABIC_SEVEN, english.SEVEN),
     ),
 )
 AUGUST = Value(
     TimeValue(month=8),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "[اأآ]غسطس",
         "[أاآ]ب",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.EIGHT, arabic.ARABIC_EIGHT, english.EIGHT),
-        ),
+        non_capturing_group(numvalues.EIGHT, arabic.ARABIC_EIGHT, english.EIGHT),
     ),
 )
 SEPTEMBER = Value(
     TimeValue(month=9),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "سبتمبر",
         "[اأ]يلول",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(numvalues.NINE, arabic.ARABIC_NINE, english.NINE),
-        ),
+        non_capturing_group(numvalues.NINE, arabic.ARABIC_NINE, english.NINE),
     ),
 )
 OCTOBER = Value(
     TimeValue(month=10),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "[اأ]كتوبر",
         "تشرين الأول",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(
-                numvalues.TEN,
-                arabic.ARABIC_ONE + arabic.ARABIC_ZERO,
-                english.ONE + english.ZERO,
-            ),
+        non_capturing_group(
+            numvalues.TEN,
+            arabic.ARABIC_ONE + arabic.ARABIC_ZERO,
+            english.ONE + english.ZERO,
         ),
     ),
 )
 NOVEMBER = Value(
     TimeValue(month=11),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "نوفمبر",
         "تشرين الثاني",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(
-                numvalues.ELEVEN,
-                arabic.ARABIC_ONE + arabic.ARABIC_ONE,
-                english.ONE + english.ONE,
-            ),
+        non_capturing_group(
+            numvalues.ELEVEN,
+            arabic.ARABIC_ONE + arabic.ARABIC_ONE,
+            english.ONE + english.ONE,
         ),
     ),
 )
 DECEMBER = Value(
     TimeValue(month=12),
-    non_capturing_group(
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + non_capturing_group(
         "ديسمبر",
         "كانون الأول",
-        spaced_patterns(
-            ONE_MONTH,
-            non_capturing_group(
-                numvalues.TWELVE,
-                arabic.ARABIC_ONE + arabic.ARABIC_TWO,
-                english.ONE + english.TWO,
-            ),
+        non_capturing_group(
+            numvalues.TWELVE,
+            arabic.ARABIC_ONE + arabic.ARABIC_TWO,
+            english.ONE + english.TWO,
         ),
     ),
 )
@@ -619,52 +618,5 @@ LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH = FunctionValue(
         }
     ),
     spaced_patterns(_start_of_last_day, named_group("month", _months.join())),
-)
-LAST_SPECIFIC_DAY_OF_NEXT_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "months": 1,
-            "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
-        }
-    ),
-    spaced_patterns(_start_of_last_day, NEXT),
-)
-LAST_SPECIFIC_DAY_OF_LAST_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "months": -1,
-            "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
-        }
-    ),
-    spaced_patterns(_start_of_last_day, LAST),
-)
-LAST_DAY_OF_SPECIFIC_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
-            "day": 31,
-        }
-    ),
-    spaced_patterns(LAST, ONE_DAY)
-    + spaced_patterns(_optional_month_start, named_group("month", _months.join())),
-)
-LAST_DAY_OF_LAST_MONTH = FunctionValue(
-    lambda _: parse_value(
-        {
-            "months": -1,
-            "day": 31,
-        }
-    ),
-    spaced_patterns(LAST, ONE_DAY) + spaced_patterns(_optional_month_start, LAST),
-)
-LAST_DAY_OF_NEXT_MONTH = FunctionValue(
-    lambda _: parse_value(
-        {
-            "months": 1,
-            "day": 31,
-        }
-    ),
-    spaced_patterns(LAST, ONE_DAY, IN_FROM_AT)
-    + spaced_patterns(_optional_month_start, NEXT),
 )
 # endregion

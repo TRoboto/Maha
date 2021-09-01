@@ -28,8 +28,6 @@ def parse_time(match):
         value += get_combined_value(_days, days_expressions)
     if _months:
         value += get_combined_value(_months, months_expressions)
-    if _last_day_of_month:
-        value += get_combined_value(_last_day_of_month, last_day_of_month_expressions)
     return value
 
 
@@ -67,6 +65,8 @@ days_expressions = ExpressionGroup(
     TOMORROW,
     BEFORE_YESTERDAY,
     YESTERDAY,
+    LAST_DAY,
+    LAST_SPECIFIC_DAY,
     THIS_DAY,
     WEEKDAY,
 )
@@ -76,22 +76,11 @@ month_day_expressions = ExpressionGroup(
     NUMERAL_AND_SPECIFIC_MONTH,
     NUMERAL_AND_THIS_MONTH,
 )
-last_day_of_month_expressions = ExpressionGroup(
-    LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH,
-    LAST_SPECIFIC_DAY_OF_NEXT_MONTH,
-    LAST_SPECIFIC_DAY_OF_LAST_MONTH,
-    LAST_DAY_OF_SPECIFIC_MONTH,
-    LAST_DAY_OF_NEXT_MONTH,
-    LAST_DAY_OF_LAST_MONTH,
-)
 
 months_group = named_group("months", months_expressions.join())
 weeks_group = named_group("weeks", weeks_expressions.join())
 days_group = named_group("days", days_expressions.join())
 month_day_group = named_group("month_day", month_day_expressions.join())
-last_day_of_month_group = named_group(
-    "last_day_of_month", last_day_of_month_expressions.join()
-)
 
 RULE_TIME_MONTHS = FunctionValue(parse_time, combine_patterns(months_group))
 RULE_TIME_WEEKS = FunctionValue(parse_time, combine_patterns(weeks_group))
@@ -101,7 +90,6 @@ RULE_TIME_MONTH_DAY = FunctionValue(parse_time, combine_patterns(month_day_group
 RULE_TIME = FunctionValue(
     parse_time,
     combine_patterns(
-        last_day_of_month_group,
         month_day_group,
         months_group,
         weeks_group,
