@@ -473,9 +473,16 @@ ORDINAL_AND_SPECIFIC_MONTH = FunctionValue(
             "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
         }
     ),
-    spaced_patterns(
-        _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
-        _optional_middle + value_group(_months.join()),
+    non_capturing_group(
+        spaced_patterns(
+            _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
+            _optional_middle + value_group(_months.join()),
+        ),
+        spaced_patterns(
+            named_group("ordinal", ordinal_ones_tens.join()),
+            ONE_DAY,
+            _optional_middle + value_group(_months.join()),
+        ),
     ),
 )
 ORDINAL_AND_THIS_MONTH = FunctionValue(
@@ -485,9 +492,16 @@ ORDINAL_AND_THIS_MONTH = FunctionValue(
             "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
         }
     ),
-    spaced_patterns(
-        _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
-        _optional_middle + THIS_MONTH,
+    non_capturing_group(
+        spaced_patterns(
+            _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
+            _optional_middle + THIS_MONTH,
+        ),
+        spaced_patterns(
+            named_group("ordinal", ordinal_ones_tens.join()),
+            ONE_DAY,
+            _optional_middle + THIS_MONTH,
+        ),
     ),
 )
 NUMERAL_AND_SPECIFIC_MONTH = FunctionValue(
