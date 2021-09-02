@@ -71,6 +71,7 @@ days_expressions = ExpressionGroup(
     WEEKDAY,
 )
 month_day_expressions = ExpressionGroup(
+    LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH,
     ORDINAL_AND_SPECIFIC_MONTH,
     ORDINAL_AND_THIS_MONTH,
     NUMERAL_AND_SPECIFIC_MONTH,

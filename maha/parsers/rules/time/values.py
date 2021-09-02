@@ -92,8 +92,8 @@ AT_THE_MOMENT = Value(
 # ----------------------------------------------------
 SUNDAY = Value(SU, ALEF_LAM_OPTIONAL + "[أا]حد")
 MONDAY = Value(MO, ALEF_LAM_OPTIONAL + "[إا][تث]نين")
-TUESDAY = Value(TU, ALEF_LAM_OPTIONAL + "[ثت]لا[ثت]اء")
-WEDNESDAY = Value(WE, ALEF_LAM_OPTIONAL + "[أا]ربعاء")
+TUESDAY = Value(TU, ALEF_LAM_OPTIONAL + "[ثت]لا[ثت]اء?")
+WEDNESDAY = Value(WE, ALEF_LAM_OPTIONAL + "[أا]ربعاء?")
 THURSDAY = Value(TH, ALEF_LAM_OPTIONAL + "خميس")
 FRIDAY = Value(FR, ALEF_LAM_OPTIONAL + "جمع[ةه]")
 SATURDAY = Value(SA, ALEF_LAM_OPTIONAL + "سبت")
@@ -110,7 +110,9 @@ WEEKDAY = FunctionValue(
 )
 THIS_DAY = Value(
     TimeValue(days=0),
-    non_capturing_group("اليوم", spaced_patterns(IN_FROM_AT_THIS, "اليوم")),
+    non_capturing_group(
+        ALEF_LAM + ONE_DAY, spaced_patterns(IN_FROM_AT_THIS, ALEF_LAM + ONE_DAY)
+    ),
 )
 YESTERDAY = Value(
     TimeValue(days=-1),
@@ -201,12 +203,15 @@ LAST_DAY = FunctionValue(
 )
 LAST_SPECIFIC_DAY = FunctionValue(
     lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("day")).value(-1)}  # type: ignore
+        {
+            "day": 31,
+            "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
+        }
     ),
     non_capturing_group(
         LAST
         + EXPRESSION_SPACE
-        + optional_non_capturing_group("يوم" + EXPRESSION_SPACE)
+        + optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
         + named_group("day", _days.join()),
         optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY)
         + EXPRESSION_SPACE
