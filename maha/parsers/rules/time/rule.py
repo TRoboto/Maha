@@ -16,7 +16,6 @@ def parse_time(match):
     _weeks = groups.get("weeks")
     _days = groups.get("days")
     _month_day = groups.get("month_day")
-    _last_day_of_month = groups.get("last_day_of_month")
 
     value = TimeValue()
 
@@ -71,6 +70,7 @@ days_expressions = ExpressionGroup(
     WEEKDAY,
 )
 month_day_expressions = ExpressionGroup(
+    ORDINAL_SPECIFIC_DAY,
     LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH,
     ORDINAL_AND_SPECIFIC_MONTH,
     ORDINAL_AND_THIS_MONTH,

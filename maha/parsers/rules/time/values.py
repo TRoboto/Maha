@@ -219,6 +219,28 @@ LAST_SPECIFIC_DAY = FunctionValue(
         + LAST,
     ),
 )
+ORDINAL_SPECIFIC_DAY = FunctionValue(
+    lambda match: parse_value(
+        {
+            "day": 1,
+            "weekday": _days.get_matched_expression(match.group("day")).value(  # type: ignore
+                list(RULE_ORDINAL_ONES(match.group("ordinal")))[0].value
+            ),
+        }
+    ),
+    non_capturing_group(
+        spaced_patterns(
+            named_group("ordinal", RULE_ORDINAL_ONES),
+            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
+            + named_group("day", _days.join()),
+        ),
+        spaced_patterns(
+            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
+            + named_group("day", _days.join()),
+            named_group("ordinal", RULE_ORDINAL_ONES),
+        ),
+    ),
+)
 # endregion
 
 # region MONTHS
