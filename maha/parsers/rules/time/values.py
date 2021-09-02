@@ -64,7 +64,7 @@ LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
         f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
-        EXPRESSION_SPACE,
+        EXPRESSION_SPACE + "ب?",
         EXPRESSION_SPACE + IN_FROM_AT + EXPRESSION_SPACE,
     )
     + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
