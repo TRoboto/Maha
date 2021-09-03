@@ -7,17 +7,19 @@ from maha.constants import ARABIC_COMMA, COMMA, arabic, english
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
+    ONE_HOUR,
     ONE_MONTH,
     ONE_WEEK,
     SEVERAL_DAYS,
+    SEVERAL_HOURS,
     SEVERAL_MONTHS,
     SEVERAL_WEEKS,
     TWO_DAYS,
+    TWO_HOURS,
     TWO_MONTHS,
     TWO_WEEKS,
 )
 from maha.parsers.rules.numeral.rule import (
-    RULE_NUMERAL,
     RULE_NUMERAL_INTEGERS,
     RULE_NUMERAL_ONES,
     RULE_NUMERAL_TENS,
@@ -57,9 +59,26 @@ NEXT = (
 )
 AFTER_NEXT = spaced_patterns(AFTER, NEXT)
 BEFORE_PREVIOUS = spaced_patterns(BEFORE, PREVIOUS)
-IN_FROM_AT = non_capturing_group("في", "من", "خلال", "الموافق", "عند")
-IN_FROM_AT_THIS = spaced_patterns(IN_FROM_AT + "?", THIS)
+IN_FROM_AT = non_capturing_group("في", "من", "خلال", "الموافق", "عند", "قراب[ةه]")
+THIS = optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE) + THIS
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
+
+PM = non_capturing_group(
+    optional_non_capturing_group(AFTER + EXPRESSION_SPACE)
+    + non_capturing_group(
+        ALEF_LAM_OPTIONAL + "مساء?",
+        ALEF_LAM_OPTIONAL + "مغرب",
+        ALEF_LAM_OPTIONAL + "عشاء?",
+        ALEF_LAM_OPTIONAL + "عصرا?",
+        ALEF_LAM_OPTIONAL + "ليل[اةه]?",
+    ),
+    spaced_patterns(AFTER, ALEF_LAM_OPTIONAL + "ظهرا?"),
+)
+AM = optional_non_capturing_group(BEFORE + EXPRESSION_SPACE) + non_capturing_group(
+    ALEF_LAM_OPTIONAL + "صباحا?",
+    ALEF_LAM_OPTIONAL + "فجرا?",
+    ALEF_LAM_OPTIONAL + "ظهرا?",
+)
 
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
@@ -108,16 +127,12 @@ WEEKDAY = FunctionValue(
     lambda match: TimeValue(
         weekday=_days.get_matched_expression(match.group("value")).value  # type: ignore
     ),
-    non_capturing_group(
-        spaced_patterns(ONE_DAY, named_group("value", _days.join())),
-        named_group("value", _days.join()),
-    ),
+    optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
+    + named_group("value", _days.join()),
 )
 THIS_DAY = Value(
     TimeValue(days=0),
-    non_capturing_group(
-        ALEF_LAM + ONE_DAY, spaced_patterns(IN_FROM_AT_THIS, ALEF_LAM + ONE_DAY)
-    ),
+    non_capturing_group(ALEF_LAM + ONE_DAY, spaced_patterns(THIS, ALEF_LAM + ONE_DAY)),
 )
 YESTERDAY = Value(
     TimeValue(days=-1),
@@ -156,12 +171,24 @@ AFTER_TOMORROW = Value(
 )
 
 AFTER_N_DAYS = FunctionValue(
-    lambda match: parse_value({"days": list(RULE_NUMERAL(match.group("value")))[0]}),
-    spaced_patterns(AFTER, value_group(RULE_NUMERAL), SEVERAL_DAYS),
+    lambda match: parse_value(
+        {"days": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        AFTER,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_DAY, SEVERAL_DAYS),
+    ),
 )
 BEFORE_N_DAYS = FunctionValue(
-    lambda match: parse_value({"days": list(RULE_NUMERAL(match.group("value")))[0]}),
-    spaced_patterns(BEFORE, value_group(RULE_NUMERAL), SEVERAL_DAYS),
+    lambda match: parse_value(
+        {"days": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        BEFORE,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_DAY, SEVERAL_DAYS),
+    ),
 )
 NEXT_WEEKDAY = FunctionValue(
     lambda match: parse_value(
@@ -391,7 +418,9 @@ _months = ExpressionGroup(
 
 THIS_MONTH = Value(
     TimeValue(months=0),
-    non_capturing_group("الشهر", spaced_patterns(IN_FROM_AT_THIS, "الشهر")),
+    non_capturing_group(
+        ALEF_LAM + ONE_MONTH, spaced_patterns(THIS, ALEF_LAM + ONE_MONTH)
+    ),
 )
 LAST_MONTH = Value(
     TimeValue(months=-1),
@@ -423,12 +452,24 @@ NEXT_TWO_MONTHS = Value(
 )
 
 AFTER_N_MONTHS = FunctionValue(
-    lambda match: parse_value({"months": list(RULE_NUMERAL(match.group("value")))[0]}),
-    spaced_patterns(AFTER, value_group(RULE_NUMERAL), SEVERAL_MONTHS),
+    lambda match: parse_value(
+        {"months": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        AFTER,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_MONTH, SEVERAL_MONTHS),
+    ),
 )
 BEFORE_N_MONTHS = FunctionValue(
-    lambda match: parse_value({"months": list(RULE_NUMERAL(match.group("value")))[0]}),
-    spaced_patterns(BEFORE, value_group(RULE_NUMERAL), SEVERAL_MONTHS),
+    lambda match: parse_value(
+        {"months": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        BEFORE,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_MONTH, SEVERAL_MONTHS),
+    ),
 )
 
 
@@ -564,7 +605,7 @@ NUMERAL_AND_THIS_MONTH = FunctionValue(
 THIS_WEEK = Value(
     TimeValue(weeks=0),
     non_capturing_group(
-        ALEF_LAM + ONE_WEEK, spaced_patterns(IN_FROM_AT_THIS, ALEF_LAM + ONE_WEEK)
+        ALEF_LAM + ONE_WEEK, spaced_patterns(THIS, ALEF_LAM + ONE_WEEK)
     ),
 )
 LAST_WEEK = Value(
@@ -597,12 +638,24 @@ NEXT_TWO_WEEKS = Value(
 )
 
 AFTER_N_WEEKS = FunctionValue(
-    lambda match: parse_value({"weeks": list(RULE_NUMERAL(match.group("value")))[0]}),
-    spaced_patterns(AFTER, value_group(RULE_NUMERAL), SEVERAL_WEEKS),
+    lambda match: parse_value(
+        {"weeks": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        AFTER,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_WEEK, SEVERAL_WEEKS),
+    ),
 )
 BEFORE_N_WEEKS = FunctionValue(
-    lambda match: parse_value({"weeks": list(RULE_NUMERAL(match.group("value")))[0]}),
-    spaced_patterns(BEFORE, value_group(RULE_NUMERAL), SEVERAL_WEEKS),
+    lambda match: parse_value(
+        {"weeks": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        BEFORE,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_WEEK, SEVERAL_WEEKS),
+    ),
 )
 
 # endregion
@@ -645,5 +698,82 @@ LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH = FunctionValue(
         }
     ),
     spaced_patterns(_start_of_last_day, named_group("month", _months.join())),
+)
+# endregion
+
+# region HOURS
+# -----------------------------------------------
+# HOURS
+# -----------------------------------------------
+NUMERAL_HOUR = FunctionValue(
+    lambda match: parse_value(
+        {"hour": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_HOUR, value_group(numeral_ones_tens.join())
+    ),
+)
+
+ORDINAL_HOUR = FunctionValue(
+    lambda match: parse_value(
+        {"hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_HOUR, value_group(ordinal_ones_tens.join())
+    ),
+)
+
+THIS_HOUR = Value(
+    TimeValue(hours=0),
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_HOUR,
+)
+LAST_HOUR = Value(
+    TimeValue(hours=-1),
+    non_capturing_group(
+        spaced_patterns(BEFORE, ONE_HOUR),
+        spaced_patterns(ALEF_LAM + ONE_HOUR, PREVIOUS),
+    ),
+)
+LAST_TWO_HOURS = Value(
+    TimeValue(hours=-2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_HOUR, BEFORE_PREVIOUS),
+        spaced_patterns(BEFORE, TWO_HOURS),
+    ),
+)
+NEXT_HOUR = Value(
+    TimeValue(hours=1),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_HOUR, NEXT),
+        spaced_patterns(AFTER, ONE_HOUR),
+    ),
+)
+NEXT_TWO_HOURS = Value(
+    TimeValue(hours=2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_HOUR, AFTER_NEXT),
+        spaced_patterns(AFTER, TWO_HOURS),
+    ),
+)
+
+AFTER_N_HOURS = FunctionValue(
+    lambda match: parse_value(
+        {"hours": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        AFTER,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_HOUR, SEVERAL_HOURS),
+    ),
+)
+BEFORE_N_HOURS = FunctionValue(
+    lambda match: parse_value(
+        {"hours": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        BEFORE,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_HOUR, SEVERAL_HOURS),
+    ),
 )
 # endregion
