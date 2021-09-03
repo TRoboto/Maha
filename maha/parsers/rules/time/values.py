@@ -281,121 +281,145 @@ ORDINAL_SPECIFIC_DAY = FunctionValue(
 # -----------------------------------------------------------
 JANUARY = Value(
     TimeValue(month=1),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "يناير",
         "كانون الثاني",
-        non_capturing_group(numvalues.ONE, arabic.ARABIC_ONE, english.ONE),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.ONE, arabic.ARABIC_ONE, english.ONE),
+        ),
     ),
 )
 FEBRUARY = Value(
     TimeValue(month=2),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "فبراير",
         "شباط",
-        non_capturing_group(numvalues.TWO, arabic.ARABIC_TWO, english.TWO),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.TWO, arabic.ARABIC_TWO, english.TWO),
+        ),
     ),
 )
 MARCH = Value(
     TimeValue(month=3),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "مارس",
         "[اأآ]ذار",
-        non_capturing_group(numvalues.THREE, arabic.ARABIC_THREE, english.THREE),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.THREE, arabic.ARABIC_THREE, english.THREE),
+        ),
     ),
 )
 APRIL = Value(
     TimeValue(month=4),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "نيسان",
         f"{ALL_ALEF}بريل",
-        non_capturing_group(numvalues.FOUR, arabic.ARABIC_FOUR, english.FOUR),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.FOUR, arabic.ARABIC_FOUR, english.FOUR),
+        ),
     ),
 )
 MAY = Value(
     TimeValue(month=5),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "مايو",
         "أيار",
-        non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE),
+        ),
     ),
 )
 JUNE = Value(
     TimeValue(month=6),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "يونيو",
         "حزيران",
-        non_capturing_group(numvalues.SIX, arabic.ARABIC_SIX, english.SIX),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.SIX, arabic.ARABIC_SIX, english.SIX),
+        ),
     ),
 )
 JULY = Value(
     TimeValue(month=7),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "يوليو",
         "تموز",
-        non_capturing_group(numvalues.SEVEN, arabic.ARABIC_SEVEN, english.SEVEN),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.SEVEN, arabic.ARABIC_SEVEN, english.SEVEN),
+        ),
     ),
 )
 AUGUST = Value(
     TimeValue(month=8),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "[اأآ]غسطس",
         "[أاآ]ب",
-        non_capturing_group(numvalues.EIGHT, arabic.ARABIC_EIGHT, english.EIGHT),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.EIGHT, arabic.ARABIC_EIGHT, english.EIGHT),
+        ),
     ),
 )
 SEPTEMBER = Value(
     TimeValue(month=9),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "سبتمبر",
         "[اأ]يلول",
-        non_capturing_group(numvalues.NINE, arabic.ARABIC_NINE, english.NINE),
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(numvalues.NINE, arabic.ARABIC_NINE, english.NINE),
+        ),
     ),
 )
 OCTOBER = Value(
     TimeValue(month=10),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "[اأ]كتوبر",
         "تشرين الأول",
-        non_capturing_group(
-            numvalues.TEN,
-            arabic.ARABIC_ONE + arabic.ARABIC_ZERO,
-            english.ONE + english.ZERO,
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(
+                numvalues.TEN,
+                arabic.ARABIC_ONE + arabic.ARABIC_ZERO,
+                english.ONE + english.ZERO,
+            ),
         ),
     ),
 )
 NOVEMBER = Value(
     TimeValue(month=11),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "نوفمبر",
         "تشرين الثاني",
-        non_capturing_group(
-            numvalues.ELEVEN,
-            arabic.ARABIC_ONE + arabic.ARABIC_ONE,
-            english.ONE + english.ONE,
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(
+                numvalues.ELEVEN,
+                arabic.ARABIC_ONE + arabic.ARABIC_ONE,
+                english.ONE + english.ONE,
+            ),
         ),
     ),
 )
 DECEMBER = Value(
     TimeValue(month=12),
-    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-    + non_capturing_group(
+    non_capturing_group(
         "ديسمبر",
         "كانون الأول",
-        non_capturing_group(
-            numvalues.TWELVE,
-            arabic.ARABIC_ONE + arabic.ARABIC_TWO,
-            english.ONE + english.TWO,
+        spaced_patterns(
+            ONE_MONTH,
+            non_capturing_group(
+                numvalues.TWELVE,
+                arabic.ARABIC_ONE + arabic.ARABIC_TWO,
+                english.ONE + english.TWO,
+            ),
         ),
     ),
 )
