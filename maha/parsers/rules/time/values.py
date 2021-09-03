@@ -3,7 +3,7 @@ from datetime import datetime
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE
 
 import maha.parsers.rules.numeral.values as numvalues
-from maha.constants import ARABIC_COMMA, COMMA, arabic, english
+from maha.constants import ARABIC_COMMA, COMMA, WAW, arabic, english
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
@@ -88,6 +88,7 @@ TIME_WORD_SEPARATOR = Expression(
         f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
         EXPRESSION_SPACE + "ب?",
         EXPRESSION_SPACE + IN_FROM_AT + EXPRESSION_SPACE,
+        f"{EXPRESSION_SPACE}{WAW}",
     )
     + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
 )
