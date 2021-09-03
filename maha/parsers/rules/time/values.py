@@ -57,7 +57,7 @@ NEXT = (
 )
 AFTER_NEXT = spaced_patterns(AFTER, NEXT)
 BEFORE_PREVIOUS = spaced_patterns(BEFORE, PREVIOUS)
-IN_FROM_AT = non_capturing_group("في", "من", "خلال", "الموافق")
+IN_FROM_AT = non_capturing_group("في", "من", "خلال", "الموافق", "عند")
 IN_FROM_AT_THIS = spaced_patterns(IN_FROM_AT + "?", THIS)
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
 
@@ -68,6 +68,11 @@ TIME_WORD_SEPARATOR = Expression(
         EXPRESSION_SPACE + IN_FROM_AT + EXPRESSION_SPACE,
     )
     + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
+)
+
+ordinal_ones_tens = ExpressionGroup(RULE_ORDINAL_TENS, RULE_ORDINAL_ONES)
+numeral_ones_tens = ExpressionGroup(
+    RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
 )
 
 # region this time
@@ -224,20 +229,20 @@ ORDINAL_SPECIFIC_DAY = FunctionValue(
         {
             "day": 1,
             "weekday": _days.get_matched_expression(match.group("day")).value(  # type: ignore
-                list(RULE_ORDINAL_ONES(match.group("ordinal")))[0].value
+                list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value
             ),
         }
     ),
     non_capturing_group(
         spaced_patterns(
-            named_group("ordinal", RULE_ORDINAL_ONES),
+            named_group("ordinal", ordinal_ones_tens.join()),
             optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
             + named_group("day", _days.join()),
         ),
         spaced_patterns(
             optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
             + named_group("day", _days.join()),
-            named_group("ordinal", RULE_ORDINAL_ONES),
+            named_group("ordinal", ordinal_ones_tens.join()),
         ),
     ),
 )
@@ -477,11 +482,6 @@ BEFORE_SPECIFIC_PREVIOUS_MONTH = FunctionValue(
 # ----------------------------------------------------
 # DAY WITH MONTH
 # ----------------------------------------------------
-ordinal_ones_tens = ExpressionGroup(RULE_ORDINAL_TENS, RULE_ORDINAL_ONES)
-numeral_ones_tens = ExpressionGroup(
-    RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
-)
-
 _optional_middle = optional_non_capturing_group(
     IN_FROM_AT + EXPRESSION_SPACE
 ) + optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
