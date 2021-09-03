@@ -11,24 +11,32 @@ from maha.parsers.rules.duration.values import (
     ONE_MINUTE,
     ONE_MONTH,
     ONE_WEEK,
+    ONE_YEAR,
     SEVERAL_DAYS,
     SEVERAL_HOURS,
     SEVERAL_MINUTES,
     SEVERAL_MONTHS,
     SEVERAL_WEEKS,
+    SEVERAL_YEARS,
     TWO_DAYS,
     TWO_HOURS,
     TWO_MINUTES,
     TWO_MONTHS,
     TWO_WEEKS,
+    TWO_YEARS,
 )
 from maha.parsers.rules.numeral.rule import (
     RULE_NUMERAL_INTEGERS,
     RULE_NUMERAL_ONES,
     RULE_NUMERAL_TENS,
+    RULE_NUMERAL_THOUSANDS,
 )
 from maha.parsers.rules.numeral.values import TEH_OPTIONAL_SUFFIX
-from maha.parsers.rules.ordinal.rule import RULE_ORDINAL_ONES, RULE_ORDINAL_TENS
+from maha.parsers.rules.ordinal.rule import (
+    RULE_ORDINAL_ONES,
+    RULE_ORDINAL_TENS,
+    RULE_ORDINAL_THOUSANDS,
+)
 from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL
 from maha.parsers.templates import FunctionValue, Value
 from maha.parsers.templates.value_expressions import MatchedValue
@@ -38,6 +46,7 @@ from maha.rexy import (
     named_group,
     non_capturing_group,
     optional_non_capturing_group,
+    positive_lookbehind,
 )
 
 from ..common import ALL_ALEF, spaced_patterns
@@ -86,7 +95,7 @@ AM = optional_non_capturing_group(BEFORE + EXPRESSION_SPACE) + non_capturing_gro
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
         f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
-        EXPRESSION_SPACE + "ب?",
+        EXPRESSION_SPACE + "ب?ل?",
         EXPRESSION_SPACE + IN_FROM_AT + EXPRESSION_SPACE,
         f"{EXPRESSION_SPACE}{WAW}",
     )
@@ -286,8 +295,8 @@ ORDINAL_SPECIFIC_DAY = FunctionValue(
 JANUARY = Value(
     TimeValue(month=1),
     non_capturing_group(
-        "يناير",
-        "كانون الثاني",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "يناير",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "كانون الثاني",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.ONE, arabic.ARABIC_ONE, english.ONE),
@@ -297,8 +306,8 @@ JANUARY = Value(
 FEBRUARY = Value(
     TimeValue(month=2),
     non_capturing_group(
-        "فبراير",
-        "شباط",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "فبراير",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "شباط",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.TWO, arabic.ARABIC_TWO, english.TWO),
@@ -308,8 +317,8 @@ FEBRUARY = Value(
 MARCH = Value(
     TimeValue(month=3),
     non_capturing_group(
-        "مارس",
-        "[اأآ]ذار",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "مارس",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "[اأآ]ذار",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.THREE, arabic.ARABIC_THREE, english.THREE),
@@ -319,8 +328,8 @@ MARCH = Value(
 APRIL = Value(
     TimeValue(month=4),
     non_capturing_group(
-        "نيسان",
-        f"{ALL_ALEF}بريل",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "نيسان",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + f"{ALL_ALEF}بريل",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.FOUR, arabic.ARABIC_FOUR, english.FOUR),
@@ -330,8 +339,8 @@ APRIL = Value(
 MAY = Value(
     TimeValue(month=5),
     non_capturing_group(
-        "مايو",
-        "أيار",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "مايو",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "أيار",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE),
@@ -341,8 +350,8 @@ MAY = Value(
 JUNE = Value(
     TimeValue(month=6),
     non_capturing_group(
-        "يونيو",
-        "حزيران",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "يونيو",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "حزيران",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.SIX, arabic.ARABIC_SIX, english.SIX),
@@ -352,8 +361,8 @@ JUNE = Value(
 JULY = Value(
     TimeValue(month=7),
     non_capturing_group(
-        "يوليو",
-        "تموز",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "يوليو",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "تموز",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.SEVEN, arabic.ARABIC_SEVEN, english.SEVEN),
@@ -363,8 +372,8 @@ JULY = Value(
 AUGUST = Value(
     TimeValue(month=8),
     non_capturing_group(
-        "[اأآ]غسطس",
-        "[أاآ]ب",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "[اأآ]غسطس",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "[أاآ]ب",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.EIGHT, arabic.ARABIC_EIGHT, english.EIGHT),
@@ -374,8 +383,8 @@ AUGUST = Value(
 SEPTEMBER = Value(
     TimeValue(month=9),
     non_capturing_group(
-        "سبتمبر",
-        "[اأ]يلول",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "سبتمبر",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "[اأ]يلول",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.NINE, arabic.ARABIC_NINE, english.NINE),
@@ -385,8 +394,8 @@ SEPTEMBER = Value(
 OCTOBER = Value(
     TimeValue(month=10),
     non_capturing_group(
-        "[اأ]كتوبر",
-        "تشرين الأول",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "[اأ]كتوبر",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "تشرين الأول",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(
@@ -400,8 +409,8 @@ OCTOBER = Value(
 NOVEMBER = Value(
     TimeValue(month=11),
     non_capturing_group(
-        "نوفمبر",
-        "تشرين الثاني",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "نوفمبر",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "تشرين الثاني",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(
@@ -415,8 +424,8 @@ NOVEMBER = Value(
 DECEMBER = Value(
     TimeValue(month=12),
     non_capturing_group(
-        "ديسمبر",
-        "كانون الأول",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ديسمبر",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "كانون الأول",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(
@@ -885,6 +894,103 @@ BEFORE_N_MINUTES = FunctionValue(
         BEFORE,
         value_group(numeral_ones_tens.join()),
         non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+    ),
+)
+# endregion
+
+# region YEARS
+# ----------------------------------------------------
+# YEARS
+# ----------------------------------------------------
+numeral_thousands = ExpressionGroup(RULE_NUMERAL_THOUSANDS, RULE_NUMERAL_INTEGERS)
+ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
+NUMERAL_YEAR = FunctionValue(
+    lambda match: parse_value(
+        {"year": list(numeral_thousands.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_YEAR,
+        value_group(numeral_thousands.join()),
+    ),
+)
+ORDINAL_YEAR = FunctionValue(
+    lambda match: parse_value(
+        {"year": list(ordinal_thousands.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_YEAR, value_group(ordinal_thousands.join())
+    ),
+)
+
+THIS_YEAR = Value(
+    TimeValue(years=0),
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_YEAR,
+)
+LAST_YEAR = Value(
+    TimeValue(years=-1),
+    non_capturing_group(
+        spaced_patterns(BEFORE, ONE_YEAR),
+        spaced_patterns(ALEF_LAM + ONE_YEAR, PREVIOUS),
+    ),
+)
+LAST_TWO_YEARS = Value(
+    TimeValue(years=-2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_YEAR, BEFORE_PREVIOUS),
+        spaced_patterns(BEFORE, TWO_YEARS),
+    ),
+)
+NEXT_YEAR = Value(
+    TimeValue(years=1),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_YEAR, NEXT),
+        spaced_patterns(AFTER, ONE_YEAR),
+    ),
+)
+NEXT_TWO_YEARS = Value(
+    TimeValue(years=2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_YEAR, AFTER_NEXT),
+        spaced_patterns(AFTER, TWO_YEARS),
+    ),
+)
+
+AFTER_N_YEARS = FunctionValue(
+    lambda match: parse_value(
+        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        AFTER,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
+    ),
+)
+BEFORE_N_YEARS = FunctionValue(
+    lambda match: parse_value(
+        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        BEFORE,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
+    ),
+)
+# endregion
+
+
+# region YEARS + MONTHS
+# ----------------------------------------------------
+# YEARS + MONTHS
+# ----------------------------------------------------
+YEAR_WITH_MONTH = FunctionValue(
+    lambda match: parse_value(
+        {
+            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
+            "year": list(numeral_thousands.parse(match.group("value")))[0].value,
+        }
+    ),
+    spaced_patterns(
+        named_group("month", _months.join()), value_group(numeral_thousands.join())
     ),
 )
 # endregion
