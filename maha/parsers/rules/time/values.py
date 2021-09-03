@@ -8,14 +8,17 @@ from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
     ONE_HOUR,
+    ONE_MINUTE,
     ONE_MONTH,
     ONE_WEEK,
     SEVERAL_DAYS,
     SEVERAL_HOURS,
+    SEVERAL_MINUTES,
     SEVERAL_MONTHS,
     SEVERAL_WEEKS,
     TWO_DAYS,
     TWO_HOURS,
+    TWO_MINUTES,
     TWO_MONTHS,
     TWO_WEEKS,
 )
@@ -798,6 +801,89 @@ BEFORE_N_HOURS = FunctionValue(
         BEFORE,
         value_group(numeral_ones_tens.join()),
         non_capturing_group(ONE_HOUR, SEVERAL_HOURS),
+    ),
+)
+# endregion
+
+# region MINUTES
+# ----------------------------------------------------
+# MINUTES
+# ----------------------------------------------------
+NUMERAL_MINUTE = FunctionValue(
+    lambda match: parse_value(
+        {"minute": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    non_capturing_group(
+        spaced_patterns(
+            ALEF_LAM_OPTIONAL + ONE_MINUTE, value_group(numeral_ones_tens.join())
+        ),
+        spaced_patterns(value_group(numeral_ones_tens.join()), ONE_MINUTE),
+    ),
+)
+
+ORDINAL_MINUTE = FunctionValue(
+    lambda match: parse_value(
+        {"minute": list(ordinal_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    non_capturing_group(
+        spaced_patterns(
+            ALEF_LAM_OPTIONAL + ONE_MINUTE, value_group(ordinal_ones_tens.join())
+        ),
+        spaced_patterns(value_group(ordinal_ones_tens.join()), ONE_MINUTE),
+    ),
+)
+
+THIS_MINUTE = Value(
+    TimeValue(minutes=0),
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_MINUTE,
+)
+LAST_MINUTE = Value(
+    TimeValue(minutes=-1),
+    non_capturing_group(
+        spaced_patterns(BEFORE, ONE_MINUTE),
+        spaced_patterns(ALEF_LAM + ONE_MINUTE, PREVIOUS),
+    ),
+)
+LAST_TWO_MINUTES = Value(
+    TimeValue(minutes=-2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_MINUTE, BEFORE_PREVIOUS),
+        spaced_patterns(BEFORE, TWO_MINUTES),
+    ),
+)
+NEXT_MINUTE = Value(
+    TimeValue(minutes=1),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_MINUTE, NEXT),
+        spaced_patterns(AFTER, ONE_MINUTE),
+    ),
+)
+NEXT_TWO_MINUTES = Value(
+    TimeValue(minutes=2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_MINUTE, AFTER_NEXT),
+        spaced_patterns(AFTER, TWO_MINUTES),
+    ),
+)
+
+AFTER_N_MINUTES = FunctionValue(
+    lambda match: parse_value(
+        {"minutes": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        AFTER,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+    ),
+)
+BEFORE_N_MINUTES = FunctionValue(
+    lambda match: parse_value(
+        {"minutes": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        BEFORE,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
     ),
 )
 # endregion
