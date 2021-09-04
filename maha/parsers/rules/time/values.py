@@ -243,7 +243,7 @@ MAY = Value(
     TimeValue(month=5),
     non_capturing_group(
         optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "مايو",
-        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "أيار",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "[أا]يار",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(numvalues.FIVE, arabic.ARABIC_FIVE, english.FIVE),
@@ -298,7 +298,7 @@ OCTOBER = Value(
     TimeValue(month=10),
     non_capturing_group(
         optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "[اأ]كتوبر",
-        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "تشرين الأول",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "تشرين ال[اأ]ول",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(
@@ -313,7 +313,7 @@ NOVEMBER = Value(
     TimeValue(month=11),
     non_capturing_group(
         optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "نوفمبر",
-        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "تشرين الثاني",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "تشرين ال[تث]اني",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(
@@ -328,7 +328,7 @@ DECEMBER = Value(
     TimeValue(month=12),
     non_capturing_group(
         optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ديسمبر",
-        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "كانون الأول",
+        optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "كانون ال[اأ]ول",
         spaced_patterns(
             ONE_MONTH,
             non_capturing_group(
