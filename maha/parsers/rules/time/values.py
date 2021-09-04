@@ -906,7 +906,7 @@ AM = FunctionValue(
     lambda _: TimeValue(am_pm="AM"),
     optional_non_capturing_group(BEFORE + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
     + non_capturing_group(
-        ALEF_LAM_OPTIONAL + "صباحا?",
+        ALEF_LAM_OPTIONAL + "صبا?حا?",
         ALEF_LAM_OPTIONAL + "فجرا?",
         ALEF_LAM_OPTIONAL + "ظهرا?",
     ),
