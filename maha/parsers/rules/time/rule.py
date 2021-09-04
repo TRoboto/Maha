@@ -2,7 +2,7 @@ from ..common import combine_patterns
 from .values import *
 
 
-def get_combined_value(groups, expression):
+def get_combined_value(groups, expression: ExpressionGroup):
     value = TimeValue()
     for group in groups:
         value += next(iter(expression.parse(group))).value
@@ -19,6 +19,7 @@ def parse_time(match):
     _hours = groups.get("hours")
     _minutes = groups.get("minutes")
     _am_pm = groups.get("am_pm")
+    _now = groups.get("now")
     _month_day = groups.get("month_day")
     _year_month = groups.get("year_month")
     _hour_minute = groups.get("hour_minute")
@@ -45,6 +46,9 @@ def parse_time(match):
         value += get_combined_value(_minutes, minutes_expressions)
     if _am_pm:
         value += get_combined_value(_am_pm, am_pm_expressions)
+    if _now:
+        value += get_combined_value(_now, now_expressions)
+
     return value
 
 
@@ -121,6 +125,7 @@ minutes_expressions = ExpressionGroup(
     THIS_MINUTE,
 )
 am_pm_expressions = ExpressionGroup(PM, AM)
+now_expressions = ExpressionGroup(AT_THE_MOMENT)
 
 month_day_expressions = ExpressionGroup(
     ORDINAL_SPECIFIC_DAY,
@@ -135,6 +140,7 @@ hour_minute_expressions = ExpressionGroup(
     NUMERAL_FRACTION_HOUR_MINUTE, ORDINAL_FRACTION_HOUR_MINUTE
 )
 
+now_group = named_group("now", now_expressions.join())
 years_group = named_group("years", years_expressions.join())
 months_group = named_group("months", months_expressions.join())
 weeks_group = named_group("weeks", weeks_expressions.join())
@@ -155,6 +161,7 @@ RULE_TIME_MINUTES = FunctionValue(parse_time, combine_patterns(minutes_group))
 RULE_TIME_MONTH_DAY = FunctionValue(parse_time, combine_patterns(month_day_group))
 RULE_TIME_YEAR_MONTH = FunctionValue(parse_time, combine_patterns(year_month_group))
 RULE_TIME_AM_PM = FunctionValue(parse_time, combine_patterns(am_pm_group))
+RULE_TIME_NOW = FunctionValue(parse_time, combine_patterns(now_group))
 
 RULE_TIME = FunctionValue(
     parse_time,
@@ -162,6 +169,7 @@ RULE_TIME = FunctionValue(
         month_day_group,
         hour_minute_group,
         year_month_group,
+        now_group,
         years_group,
         months_group,
         weeks_group,

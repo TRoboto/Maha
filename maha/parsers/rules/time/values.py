@@ -100,13 +100,10 @@ AT_THE_MOMENT = Value(
     TimeValue(years=0, months=0, days=0, hours=0, minutes=0, seconds=0),
     non_capturing_group(
         "ال[أآا]ن",
-        THIS
-        + non_capturing_group(
-            "الوقت",
-            "اللح[زضظ][ةه]",
-        ),
+        spaced_patterns(THIS, non_capturing_group("الوقت", "اللح[زضظ][ةه]")),
         "هس[ةه]",
         "في الحال",
+        "حالا",
     ),
 )
 # endregion
