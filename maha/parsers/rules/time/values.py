@@ -915,6 +915,7 @@ ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
     ),
 )
 # endregion
+
 # region YEARS
 # ----------------------------------------------------
 # YEARS
@@ -1018,7 +1019,7 @@ YEAR_WITH_MONTH = FunctionValue(
 PM = FunctionValue(
     lambda _: TimeValue(am_pm="PM"),
     non_capturing_group(
-        optional_non_capturing_group(AFTER + EXPRESSION_SPACE)
+        optional_non_capturing_group(AFTER + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
         + non_capturing_group(
             ALEF_LAM_OPTIONAL + "مساء?ا?",
             ALEF_LAM_OPTIONAL + "مغرب",
@@ -1031,7 +1032,7 @@ PM = FunctionValue(
 )
 AM = FunctionValue(
     lambda _: TimeValue(am_pm="AM"),
-    optional_non_capturing_group(BEFORE + EXPRESSION_SPACE)
+    optional_non_capturing_group(BEFORE + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
     + non_capturing_group(
         ALEF_LAM_OPTIONAL + "صباحا?",
         ALEF_LAM_OPTIONAL + "فجرا?",
