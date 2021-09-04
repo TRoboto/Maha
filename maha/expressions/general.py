@@ -141,7 +141,7 @@ Taken from: https://jkorpela.fi/chars/spaces.html
 EXPRESSION_INTEGER = Expression(
     r"[+-]?(?:[{0}](?:{1})?)+%?".format(
         "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
-        "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
+        "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, r"\s+\d"]),
     )
 )
 """ Expression that matches Arabic and English integers """
@@ -149,7 +149,7 @@ EXPRESSION_INTEGER = Expression(
 EXPRESSION_DECIMAL = Expression(
     r"[+-]?(?:[{0}](?:{1})?)*[.{2}](?:[{0}](?:{1})?)+%?".format(
         "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
-        "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, SPACE]),
+        "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, r"\s+\d"]),
         ARABIC_DECIMAL_SEPARATOR,
     )
 )
