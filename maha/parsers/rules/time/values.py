@@ -95,7 +95,7 @@ numeral_ones_tens = ExpressionGroup(
     RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
 )
 
-# region this time
+# region NOW
 AT_THE_MOMENT = Value(
     TimeValue(years=0, months=0, days=0, hours=0, minutes=0, seconds=0),
     non_capturing_group(
@@ -111,167 +111,81 @@ AT_THE_MOMENT = Value(
 )
 # endregion
 
-# region DAYS
+# region YEARS
 # ----------------------------------------------------
-# DAYS
+# YEARS
 # ----------------------------------------------------
-SUNDAY = Value(SU, ALEF_LAM_OPTIONAL + "[أا]حد")
-MONDAY = Value(MO, ALEF_LAM_OPTIONAL + "[إا][تث]نين")
-TUESDAY = Value(TU, ALEF_LAM_OPTIONAL + "[ثت]لا[ثت]اء?")
-WEDNESDAY = Value(WE, ALEF_LAM_OPTIONAL + "[أا]ربعاء?")
-THURSDAY = Value(TH, ALEF_LAM_OPTIONAL + "خميس")
-FRIDAY = Value(FR, ALEF_LAM_OPTIONAL + "جمع[ةه]")
-SATURDAY = Value(SA, ALEF_LAM_OPTIONAL + "سبت")
-_days = ExpressionGroup(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY)
-
-WEEKDAY = FunctionValue(
-    lambda match: TimeValue(
-        weekday=_days.get_matched_expression(match.group("value")).value  # type: ignore
-    ),
-    optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
-    + named_group("value", _days.join()),
-)
-THIS_DAY = Value(
-    TimeValue(days=0),
-    non_capturing_group(ALEF_LAM + ONE_DAY, spaced_patterns(THIS, ALEF_LAM + ONE_DAY)),
-)
-YESTERDAY = Value(
-    TimeValue(days=-1),
-    non_capturing_group(
-        "[اإ]?مبارح",
-        ALEF_LAM + "بارح[ةه]",
-        ALEF_LAM_OPTIONAL + "[أا]مس",
-        spaced_patterns(BEFORE, ONE_DAY),
-        spaced_patterns(ALEF_LAM + ONE_DAY, PREVIOUS),
-    ),
-)
-BEFORE_YESTERDAY = Value(
-    TimeValue(days=-2),
-    non_capturing_group(
-        spaced_patterns(non_capturing_group("[أا]ول", str(BEFORE)), YESTERDAY),
-        spaced_patterns(ALEF_LAM + ONE_DAY, BEFORE_PREVIOUS),
-        spaced_patterns(BEFORE, TWO_DAYS),
-    ),
-)
-TOMORROW = Value(
-    TimeValue(days=1),
-    non_capturing_group(
-        ALEF_LAM_OPTIONAL + "غدا?",
-        "بكر[ةه]",
-        spaced_patterns(ALEF_LAM + ONE_DAY, NEXT),
-        spaced_patterns(AFTER, ONE_DAY),
-    ),
-)
-AFTER_TOMORROW = Value(
-    TimeValue(days=2),
-    non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_DAY, AFTER_NEXT),
-        spaced_patterns(AFTER, TOMORROW),
-        spaced_patterns(AFTER, TWO_DAYS),
-    ),
-)
-
-AFTER_N_DAYS = FunctionValue(
+numeral_thousands = ExpressionGroup(RULE_NUMERAL_THOUSANDS, RULE_NUMERAL_INTEGERS)
+ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
+NUMERAL_YEAR = FunctionValue(
     lambda match: parse_value(
-        {"days": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {"year": list(numeral_thousands.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_YEAR,
+        value_group(numeral_thousands.join()),
+    ),
+)
+ORDINAL_YEAR = FunctionValue(
+    lambda match: parse_value(
+        {"year": list(ordinal_thousands.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_YEAR, value_group(ordinal_thousands.join())
+    ),
+)
+
+THIS_YEAR = Value(
+    TimeValue(years=0),
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_YEAR,
+)
+LAST_YEAR = Value(
+    TimeValue(years=-1),
+    non_capturing_group(
+        spaced_patterns(BEFORE, ONE_YEAR),
+        spaced_patterns(ALEF_LAM + ONE_YEAR, PREVIOUS),
+    ),
+)
+LAST_TWO_YEARS = Value(
+    TimeValue(years=-2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_YEAR, BEFORE_PREVIOUS),
+        spaced_patterns(BEFORE, TWO_YEARS),
+    ),
+)
+NEXT_YEAR = Value(
+    TimeValue(years=1),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_YEAR, NEXT),
+        spaced_patterns(AFTER, ONE_YEAR),
+    ),
+)
+NEXT_TWO_YEARS = Value(
+    TimeValue(years=2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_YEAR, AFTER_NEXT),
+        spaced_patterns(AFTER, TWO_YEARS),
+    ),
+)
+
+AFTER_N_YEARS = FunctionValue(
+    lambda match: parse_value(
+        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
     ),
     spaced_patterns(
         AFTER,
         value_group(numeral_ones_tens.join()),
-        non_capturing_group(ONE_DAY, SEVERAL_DAYS),
+        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
     ),
 )
-BEFORE_N_DAYS = FunctionValue(
+BEFORE_N_YEARS = FunctionValue(
     lambda match: parse_value(
-        {"days": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
     ),
     spaced_patterns(
         BEFORE,
         value_group(numeral_ones_tens.join()),
-        non_capturing_group(ONE_DAY, SEVERAL_DAYS),
-    ),
-)
-NEXT_WEEKDAY = FunctionValue(
-    lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(1)}  # type: ignore
-    ),
-    non_capturing_group(
-        spaced_patterns(ONE_DAY, value_group(_days.join()), NEXT),
-        spaced_patterns(value_group(_days.join()), NEXT),
-    ),
-)
-PREVIOUS_WEEKDAY = FunctionValue(
-    lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(-1)}  # type: ignore
-    ),
-    non_capturing_group(
-        spaced_patterns(ONE_DAY, value_group(_days.join()), PREVIOUS),
-        spaced_patterns(value_group(_days.join()), PREVIOUS),
-    ),
-)
-AFTER_NEXT_WEEKDAY = FunctionValue(
-    lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(2)}  # type: ignore
-    ),
-    non_capturing_group(
-        spaced_patterns(ONE_DAY, value_group(_days.join()), AFTER_NEXT),
-        spaced_patterns(value_group(_days.join()), AFTER_NEXT),
-    ),
-)
-BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
-    lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(-2)}  # type: ignore
-    ),
-    non_capturing_group(
-        spaced_patterns(ONE_DAY, value_group(_days.join()), BEFORE_PREVIOUS),
-        spaced_patterns(value_group(_days.join()), BEFORE_PREVIOUS),
-    ),
-)
-LAST_DAY = FunctionValue(
-    lambda _: parse_value({"day": 31}),
-    non_capturing_group(
-        spaced_patterns(LAST, ONE_DAY),
-        spaced_patterns(ALEF_LAM_OPTIONAL + ONE_DAY, LAST),
-    ),
-)
-LAST_SPECIFIC_DAY = FunctionValue(
-    lambda match: parse_value(
-        {
-            "day": 31,
-            "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
-        }
-    ),
-    non_capturing_group(
-        LAST
-        + EXPRESSION_SPACE
-        + optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
-        + named_group("day", _days.join()),
-        optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY)
-        + EXPRESSION_SPACE
-        + named_group("day", _days.join())
-        + LAST,
-    ),
-)
-ORDINAL_SPECIFIC_DAY = FunctionValue(
-    lambda match: parse_value(
-        {
-            "day": 1,
-            "weekday": _days.get_matched_expression(match.group("day")).value(  # type: ignore
-                list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value
-            ),
-        }
-    ),
-    non_capturing_group(
-        spaced_patterns(
-            named_group("ordinal", ordinal_ones_tens.join()),
-            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
-            + named_group("day", _days.join()),
-        ),
-        spaced_patterns(
-            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
-            + named_group("day", _days.join()),
-            named_group("ordinal", ordinal_ones_tens.join()),
-        ),
+        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
     ),
 )
 # endregion
@@ -544,84 +458,6 @@ BEFORE_SPECIFIC_PREVIOUS_MONTH = FunctionValue(
 )
 # endregion
 
-# region DAY WITH MONTH
-# ----------------------------------------------------
-# DAY WITH MONTH
-# ----------------------------------------------------
-_optional_middle = optional_non_capturing_group(
-    IN_FROM_AT + EXPRESSION_SPACE
-) + optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
-
-_optional_start = (
-    optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
-    + optional_non_capturing_group(ALEF_LAM + ONE_DAY + EXPRESSION_SPACE)
-    + optional_non_capturing_group(_days.join() + EXPRESSION_SPACE)
-    + optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE)
-)
-ORDINAL_AND_SPECIFIC_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
-            "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
-        }
-    ),
-    non_capturing_group(
-        spaced_patterns(
-            _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
-            _optional_middle + value_group(_months.join()),
-        ),
-        spaced_patterns(
-            named_group("ordinal", ordinal_ones_tens.join()),
-            ONE_DAY,
-            _optional_middle + value_group(_months.join()),
-        ),
-    ),
-)
-ORDINAL_AND_THIS_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "months": 0,
-            "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
-        }
-    ),
-    non_capturing_group(
-        spaced_patterns(
-            _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
-            _optional_middle + THIS_MONTH,
-        ),
-        spaced_patterns(
-            named_group("ordinal", ordinal_ones_tens.join()),
-            ONE_DAY,
-            _optional_middle + THIS_MONTH,
-        ),
-    ),
-)
-NUMERAL_AND_SPECIFIC_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
-            "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
-        }
-    ),
-    spaced_patterns(
-        _optional_start + named_group("numeral", numeral_ones_tens.join()),
-        _optional_middle + value_group(_months.join()),
-    ),
-)
-NUMERAL_AND_THIS_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "month": 0,
-            "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
-        }
-    ),
-    spaced_patterns(
-        _optional_start + named_group("numeral", numeral_ones_tens.join()),
-        _optional_middle + THIS_MONTH,
-    ),
-)
-# endregion
-
 # region WEEKS
 # ----------------------------------------------------
 # WEEKS
@@ -683,6 +519,171 @@ BEFORE_N_WEEKS = FunctionValue(
     ),
 )
 
+# endregion
+
+# region DAYS
+# ----------------------------------------------------
+# DAYS
+# ----------------------------------------------------
+SUNDAY = Value(SU, ALEF_LAM_OPTIONAL + "[أا]حد")
+MONDAY = Value(MO, ALEF_LAM_OPTIONAL + "[إا][تث]نين")
+TUESDAY = Value(TU, ALEF_LAM_OPTIONAL + "[ثت]لا[ثت]اء?")
+WEDNESDAY = Value(WE, ALEF_LAM_OPTIONAL + "[أا]ربعاء?")
+THURSDAY = Value(TH, ALEF_LAM_OPTIONAL + "خميس")
+FRIDAY = Value(FR, ALEF_LAM_OPTIONAL + "جمع[ةه]")
+SATURDAY = Value(SA, ALEF_LAM_OPTIONAL + "سبت")
+_days = ExpressionGroup(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY)
+
+WEEKDAY = FunctionValue(
+    lambda match: TimeValue(
+        weekday=_days.get_matched_expression(match.group("value")).value  # type: ignore
+    ),
+    optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
+    + named_group("value", _days.join()),
+)
+THIS_DAY = Value(
+    TimeValue(days=0),
+    non_capturing_group(ALEF_LAM + ONE_DAY, spaced_patterns(THIS, ALEF_LAM + ONE_DAY)),
+)
+YESTERDAY = Value(
+    TimeValue(days=-1),
+    non_capturing_group(
+        "[اإ]?مبارح",
+        ALEF_LAM + "بارح[ةه]",
+        ALEF_LAM_OPTIONAL + "[أا]مس",
+        spaced_patterns(BEFORE, ONE_DAY),
+        spaced_patterns(ALEF_LAM + ONE_DAY, PREVIOUS),
+    ),
+)
+BEFORE_YESTERDAY = Value(
+    TimeValue(days=-2),
+    non_capturing_group(
+        spaced_patterns(non_capturing_group("[أا]ول", str(BEFORE)), YESTERDAY),
+        spaced_patterns(ALEF_LAM + ONE_DAY, BEFORE_PREVIOUS),
+        spaced_patterns(BEFORE, TWO_DAYS),
+    ),
+)
+TOMORROW = Value(
+    TimeValue(days=1),
+    non_capturing_group(
+        ALEF_LAM_OPTIONAL + "غدا?",
+        "بكر[ةه]",
+        spaced_patterns(ALEF_LAM + ONE_DAY, NEXT),
+        spaced_patterns(AFTER, ONE_DAY),
+    ),
+)
+AFTER_TOMORROW = Value(
+    TimeValue(days=2),
+    non_capturing_group(
+        spaced_patterns(ALEF_LAM + ONE_DAY, AFTER_NEXT),
+        spaced_patterns(AFTER, TOMORROW),
+        spaced_patterns(AFTER, TWO_DAYS),
+    ),
+)
+
+AFTER_N_DAYS = FunctionValue(
+    lambda match: parse_value(
+        {"days": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        AFTER,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_DAY, SEVERAL_DAYS),
+    ),
+)
+BEFORE_N_DAYS = FunctionValue(
+    lambda match: parse_value(
+        {"days": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+    ),
+    spaced_patterns(
+        BEFORE,
+        value_group(numeral_ones_tens.join()),
+        non_capturing_group(ONE_DAY, SEVERAL_DAYS),
+    ),
+)
+NEXT_WEEKDAY = FunctionValue(
+    lambda match: parse_value(
+        {"weekday": _days.get_matched_expression(match.group("value")).value(1)}  # type: ignore
+    ),
+    non_capturing_group(
+        spaced_patterns(ONE_DAY, value_group(_days.join()), NEXT),
+        spaced_patterns(value_group(_days.join()), NEXT),
+    ),
+)
+PREVIOUS_WEEKDAY = FunctionValue(
+    lambda match: parse_value(
+        {"weekday": _days.get_matched_expression(match.group("value")).value(-1)}  # type: ignore
+    ),
+    non_capturing_group(
+        spaced_patterns(ONE_DAY, value_group(_days.join()), PREVIOUS),
+        spaced_patterns(value_group(_days.join()), PREVIOUS),
+    ),
+)
+AFTER_NEXT_WEEKDAY = FunctionValue(
+    lambda match: parse_value(
+        {"weekday": _days.get_matched_expression(match.group("value")).value(2)}  # type: ignore
+    ),
+    non_capturing_group(
+        spaced_patterns(ONE_DAY, value_group(_days.join()), AFTER_NEXT),
+        spaced_patterns(value_group(_days.join()), AFTER_NEXT),
+    ),
+)
+BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
+    lambda match: parse_value(
+        {"weekday": _days.get_matched_expression(match.group("value")).value(-2)}  # type: ignore
+    ),
+    non_capturing_group(
+        spaced_patterns(ONE_DAY, value_group(_days.join()), BEFORE_PREVIOUS),
+        spaced_patterns(value_group(_days.join()), BEFORE_PREVIOUS),
+    ),
+)
+LAST_DAY = FunctionValue(
+    lambda _: parse_value({"day": 31}),
+    non_capturing_group(
+        spaced_patterns(LAST, ONE_DAY),
+        spaced_patterns(ALEF_LAM_OPTIONAL + ONE_DAY, LAST),
+    ),
+)
+LAST_SPECIFIC_DAY = FunctionValue(
+    lambda match: parse_value(
+        {
+            "day": 31,
+            "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
+        }
+    ),
+    non_capturing_group(
+        LAST
+        + EXPRESSION_SPACE
+        + optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
+        + named_group("day", _days.join()),
+        optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY)
+        + EXPRESSION_SPACE
+        + named_group("day", _days.join())
+        + LAST,
+    ),
+)
+ORDINAL_SPECIFIC_DAY = FunctionValue(
+    lambda match: parse_value(
+        {
+            "day": 1,
+            "weekday": _days.get_matched_expression(match.group("day")).value(  # type: ignore
+                list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value
+            ),
+        }
+    ),
+    non_capturing_group(
+        spaced_patterns(
+            named_group("ordinal", ordinal_ones_tens.join()),
+            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
+            + named_group("day", _days.join()),
+        ),
+        spaced_patterns(
+            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
+            + named_group("day", _days.join()),
+            named_group("ordinal", ordinal_ones_tens.join()),
+        ),
+    ),
+)
 # endregion
 
 # region LAST DAY OF MONTH
@@ -886,132 +887,6 @@ BEFORE_N_MINUTES = FunctionValue(
 )
 # endregion
 
-# region HOURS AND MINUTES
-# ----------------------------------------------------
-# HOURS AND MINUTES
-# ----------------------------------------------------
-def parse_time_fraction(match, expression):
-    fraction = list(FRACTIONS.parse(match.group("value")))[0].value
-    ella = ELLA.search(match.group("value"))
-    minute = int(60 * fraction)
-    hour = list(expression.parse(match.group("value")))[0].value
-    if ella:
-        hour = hour - 1 if hour > 0 else 23
-    return parse_value({"minute": minute, "hour": hour})
-
-
-NUMERAL_FRACTION_HOUR_MINUTE = FunctionValue(
-    lambda match: parse_time_fraction(match, numeral_ones_tens),
-    spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_HOUR,
-        value_group(get_fractions_of_unit_pattern(numeral_ones_tens.join())),
-    ),
-)
-ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
-    lambda match: parse_time_fraction(match, ordinal_ones_tens),
-    spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_HOUR,
-        value_group(get_fractions_of_unit_pattern(ordinal_ones_tens.join())),
-    ),
-)
-# endregion
-
-# region YEARS
-# ----------------------------------------------------
-# YEARS
-# ----------------------------------------------------
-numeral_thousands = ExpressionGroup(RULE_NUMERAL_THOUSANDS, RULE_NUMERAL_INTEGERS)
-ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
-NUMERAL_YEAR = FunctionValue(
-    lambda match: parse_value(
-        {"year": list(numeral_thousands.parse(match.group("value")))[0].value}
-    ),
-    spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_YEAR,
-        value_group(numeral_thousands.join()),
-    ),
-)
-ORDINAL_YEAR = FunctionValue(
-    lambda match: parse_value(
-        {"year": list(ordinal_thousands.parse(match.group("value")))[0].value}
-    ),
-    spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_YEAR, value_group(ordinal_thousands.join())
-    ),
-)
-
-THIS_YEAR = Value(
-    TimeValue(years=0),
-    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_YEAR,
-)
-LAST_YEAR = Value(
-    TimeValue(years=-1),
-    non_capturing_group(
-        spaced_patterns(BEFORE, ONE_YEAR),
-        spaced_patterns(ALEF_LAM + ONE_YEAR, PREVIOUS),
-    ),
-)
-LAST_TWO_YEARS = Value(
-    TimeValue(years=-2),
-    non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_YEAR, BEFORE_PREVIOUS),
-        spaced_patterns(BEFORE, TWO_YEARS),
-    ),
-)
-NEXT_YEAR = Value(
-    TimeValue(years=1),
-    non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_YEAR, NEXT),
-        spaced_patterns(AFTER, ONE_YEAR),
-    ),
-)
-NEXT_TWO_YEARS = Value(
-    TimeValue(years=2),
-    non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_YEAR, AFTER_NEXT),
-        spaced_patterns(AFTER, TWO_YEARS),
-    ),
-)
-
-AFTER_N_YEARS = FunctionValue(
-    lambda match: parse_value(
-        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
-    ),
-    spaced_patterns(
-        AFTER,
-        value_group(numeral_ones_tens.join()),
-        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
-    ),
-)
-BEFORE_N_YEARS = FunctionValue(
-    lambda match: parse_value(
-        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
-    ),
-    spaced_patterns(
-        BEFORE,
-        value_group(numeral_ones_tens.join()),
-        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
-    ),
-)
-# endregion
-
-# region YEARS + MONTHS
-# ----------------------------------------------------
-# YEARS + MONTHS
-# ----------------------------------------------------
-YEAR_WITH_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
-            "year": list(numeral_thousands.parse(match.group("value")))[0].value,
-        }
-    ),
-    spaced_patterns(
-        named_group("month", _months.join()), value_group(numeral_thousands.join())
-    ),
-)
-# endregion
-
 # region AM PM
 # ----------------------------------------------------
 # AM PM
@@ -1040,4 +915,129 @@ AM = FunctionValue(
     ),
 )
 
+# endregion
+
+# region YEARS + MONTHS
+# ----------------------------------------------------
+# YEARS + MONTHS
+# ----------------------------------------------------
+YEAR_WITH_MONTH = FunctionValue(
+    lambda match: parse_value(
+        {
+            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
+            "year": list(numeral_thousands.parse(match.group("value")))[0].value,
+        }
+    ),
+    spaced_patterns(
+        named_group("month", _months.join()), value_group(numeral_thousands.join())
+    ),
+)
+# endregion
+
+# region DAY + MONTH
+# ----------------------------------------------------
+# DAY WITH MONTH
+# ----------------------------------------------------
+_optional_middle = optional_non_capturing_group(
+    IN_FROM_AT + EXPRESSION_SPACE
+) + optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+
+_optional_start = (
+    optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
+    + optional_non_capturing_group(ALEF_LAM + ONE_DAY + EXPRESSION_SPACE)
+    + optional_non_capturing_group(_days.join() + EXPRESSION_SPACE)
+    + optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE)
+)
+ORDINAL_AND_SPECIFIC_MONTH = FunctionValue(
+    lambda match: parse_value(
+        {
+            "month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
+            "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
+        }
+    ),
+    non_capturing_group(
+        spaced_patterns(
+            _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
+            _optional_middle + value_group(_months.join()),
+        ),
+        spaced_patterns(
+            named_group("ordinal", ordinal_ones_tens.join()),
+            ONE_DAY,
+            _optional_middle + value_group(_months.join()),
+        ),
+    ),
+)
+ORDINAL_AND_THIS_MONTH = FunctionValue(
+    lambda match: parse_value(
+        {
+            "months": 0,
+            "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
+        }
+    ),
+    non_capturing_group(
+        spaced_patterns(
+            _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
+            _optional_middle + THIS_MONTH,
+        ),
+        spaced_patterns(
+            named_group("ordinal", ordinal_ones_tens.join()),
+            ONE_DAY,
+            _optional_middle + THIS_MONTH,
+        ),
+    ),
+)
+NUMERAL_AND_SPECIFIC_MONTH = FunctionValue(
+    lambda match: parse_value(
+        {
+            "month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
+            "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
+        }
+    ),
+    spaced_patterns(
+        _optional_start + named_group("numeral", numeral_ones_tens.join()),
+        _optional_middle + value_group(_months.join()),
+    ),
+)
+NUMERAL_AND_THIS_MONTH = FunctionValue(
+    lambda match: parse_value(
+        {
+            "month": 0,
+            "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
+        }
+    ),
+    spaced_patterns(
+        _optional_start + named_group("numeral", numeral_ones_tens.join()),
+        _optional_middle + THIS_MONTH,
+    ),
+)
+# endregion
+
+# region HOURS + MINUTES
+# ----------------------------------------------------
+# HOURS AND MINUTES
+# ----------------------------------------------------
+def parse_time_fraction(match, expression):
+    fraction = list(FRACTIONS.parse(match.group("value")))[0].value
+    ella = ELLA.search(match.group("value"))
+    minute = int(60 * fraction)
+    hour = list(expression.parse(match.group("value")))[0].value
+    if ella:
+        hour = hour - 1 if hour > 0 else 23
+    return parse_value({"minute": minute, "hour": hour})
+
+
+NUMERAL_FRACTION_HOUR_MINUTE = FunctionValue(
+    lambda match: parse_time_fraction(match, numeral_ones_tens),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_HOUR,
+        value_group(get_fractions_of_unit_pattern(numeral_ones_tens.join())),
+    ),
+)
+ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
+    lambda match: parse_time_fraction(match, ordinal_ones_tens),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_HOUR,
+        value_group(get_fractions_of_unit_pattern(ordinal_ones_tens.join())),
+    ),
+)
 # endregion
