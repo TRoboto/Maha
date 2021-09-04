@@ -154,6 +154,114 @@ def test_this_year(input):
     )
 
 
+@pytest.mark.parametrize(
+    "expected_month,input",
+    [
+        (3, "بعد ثلاث اشهر"),
+        (2, "بعد شهرين"),
+        (1, "بعد شهر"),
+    ],
+)
+def test_after_n_months(expected_month, input):
+    output = list(RULE_TIME_MONTHS(input))
+    assert_expression_output(output, datetime(2021, 9 + expected_month, 1))
+    assert output[0].value == TimeValue(months=expected_month)
+
+
+def test_after_30_months():
+    output = list(RULE_TIME_MONTHS("بعد 30 شهر"))
+    assert_expression_output(output, datetime(2024, 3, 1))
+    assert output[0].value == TimeValue(months=30)
+
+
+@pytest.mark.parametrize(
+    "expected_month,input",
+    [
+        (12, "شهر كانون الأول"),
+        (12, "كانون الأول"),
+        (12, "ديسمبر"),
+        (1, "شهر 1"),
+        (2, "شهر 2"),
+        (2, "شباط"),
+        (2, "فبراير"),
+    ],
+)
+def test_specific_month(expected_month, input):
+    output = list(RULE_TIME_MONTHS(input))
+    assert_expression_output(output, datetime(2021, expected_month, 1))
+    assert output[0].value == TimeValue(month=expected_month)
+
+
+@pytest.mark.parametrize(
+    "expected_month,input",
+    [
+        (11, "شهر نوفمبر القادم"),
+        (11, "شهر 11 القادم"),
+        (11, "شهر حدعشر القادم"),
+        (11, "تشرين الثاني الجاي"),
+        (12, "شهر 12 الجاي"),
+        (10, "اكتوبر القادم"),
+        (10, "تشرين الاول الجاي"),
+        (12, "شهر كانون الاول الآتي"),
+        (12, "كانون الاول الآتي"),
+    ],
+)
+def test_next_specific_month_same_year(expected_month, input):
+    output = list(RULE_TIME_MONTHS(input))
+    assert_expression_output(output, datetime(2021, expected_month, 1))
+    assert output[0].value == TimeValue(years=0, month=expected_month)
+
+
+@pytest.mark.parametrize(
+    "expected_month,input",
+    [
+        (11, "شهر نوفمبر بعد القادم"),
+        (11, "شهر 11 بعد الجاي"),
+        (10, "اكتوبر بعد التالي"),
+        (2, "شباط المقبل"),
+        (3, "آذار الجاي"),
+        (3, "أذار الجاي"),
+    ],
+)
+def test_next_specific_month_next_year(expected_month, input):
+    output = list(RULE_TIME_MONTHS(input))
+    assert_expression_output(output, datetime(2022, expected_month, 1))
+    assert output[0].value == TimeValue(years=1, month=expected_month)
+
+
+@pytest.mark.parametrize(
+    "expected_month,input",
+    [
+        (11, "شهر نوفمبر الماضي"),
+        (11, "شهر 11 الماضي"),
+        (11, "شهر حدعشر الماض"),
+        (11, "تشرين الثاني الفايت"),
+        (12, "شهر 12 السابق"),
+        (10, "اكتوبر الماضي"),
+        (2, "شباط قبل الماضي"),
+        (10, "تشرين الاول الفايت"),
+        (12, "كانون الاول المنصرم"),
+    ],
+)
+def test_previous_specific_month_previous_year(expected_month, input):
+    output = list(RULE_TIME_MONTHS(input))
+    assert_expression_output(output, datetime(2020, expected_month, 1))
+    assert output[0].value == TimeValue(years=-1, month=expected_month)
+
+
+@pytest.mark.parametrize(
+    "expected_month,input",
+    [
+        (9, "شهر تسعة الماضي"),
+        (2, "شباط الماضي"),
+    ],
+)
+def test_previous_specific_month_same_year(expected_month, input):
+    output = list(RULE_TIME_MONTHS(input))
+    assert_expression_output(output, datetime(2021, expected_month, 1))
+    assert output[0].value == TimeValue(years=0, month=expected_month)
+
+
 # @pytest.mark.parametrize(
 #     "expected_year,input",
 #     [
