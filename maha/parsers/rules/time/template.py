@@ -161,3 +161,32 @@ class TimeValue(relativedelta):
         return "{classname}({attrs})".format(
             classname=self.__class__.__name__, attrs=", ".join(l)
         )
+
+    def __eq__(self, other):
+        if not isinstance(other, TimeValue):
+            return NotImplemented
+        if self.weekday or other.weekday:
+            if not self.weekday or not other.weekday:
+                return False
+            if self.weekday.weekday != other.weekday.weekday:
+                return False
+            n1, n2 = self.weekday.n, other.weekday.n
+            if n1 != n2 and not ((not n1 or n1 == 1) and (not n2 or n2 == 1)):
+                return False
+        return (
+            self._years == other._years
+            and self._months == other._months
+            and self._days == other._days
+            and self._hours == other._hours
+            and self._minutes == other._minutes
+            and self._seconds == other._seconds
+            and self._microseconds == other._microseconds
+            and self._leapdays == other._leapdays
+            and self.year == other.year
+            and self.month == other.month
+            and self.day == other.day
+            and self.hour == other.hour
+            and self.minute == other.minute
+            and self.second == other.second
+            and self.microsecond == other.microsecond
+        )
