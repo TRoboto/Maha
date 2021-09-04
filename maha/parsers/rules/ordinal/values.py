@@ -48,7 +48,7 @@ ELEVEN = Value(
     11,
     non_capturing_group(
         ALEF_LAM + f"{ALL_ALEF}?حد[اى]?" + TEN_SUFFIX,
-        ALEF_LAM_OPTIONAL + "حاد[يى]" + TEN_SUFFIX_SIMPLE,
+        ALEF_LAM_OPTIONAL + "حاد[يى][ةه]?" + TEN_SUFFIX_SIMPLE,
     ),
 )
 TWELVE = Value(
@@ -59,7 +59,7 @@ TWELVE = Value(
             f"{ALL_ALEF}[طت]نا?" + TEN_SUFFIX,
             f"{ALL_ALEF}[ثت]نت?[اىي]ن?" + TEN_SUFFIX,
         ),
-        ALEF_LAM_OPTIONAL + two_prefix + TEN_SUFFIX_SIMPLE,
+        ALEF_LAM_OPTIONAL + two_prefix + TEH_OPTIONAL_SUFFIX + TEN_SUFFIX_SIMPLE,
     ),
 )
 THIRTEEN = Value(13, THREE + TEN_SUFFIX_SIMPLE)
