@@ -24,18 +24,22 @@ from maha.rexy import (
     Expression,
     ExpressionGroup,
     non_capturing_group,
+    optional_non_capturing_group,
     positive_lookahead,
     positive_lookbehind,
 )
 
-THIRD = Value(1 / 3, "[ثت]ل[ثت]")
+ELLA = Expression("[إا]لا")
+THIRD = Value(1 / 3, optional_non_capturing_group("ال") + "[ثت]ل[ثت]")
 """ Pattern that matches the pronunciation of third in Arabic """
-QUARTER = Value(1 / 4, "ربع")
+QUARTER = Value(1 / 4, optional_non_capturing_group("ال") + "ربع")
 """ Pattern that matches the pronunciation of quarter in Arabic """
-HALF = Value(1 / 2, "نصف?")
+HALF = Value(1 / 2, optional_non_capturing_group("ال") + "نصف?")
 """ Pattern that matches the pronunciation of half in Arabic """
-THREE_QUARTERS = Value(3 / 4, f"[إا]لا {QUARTER}")
+THREE_QUARTERS = Value(3 / 4, ELLA + EXPRESSION_SPACE + QUARTER)
 """ Pattern that matches the pronunciation of three quarters in Arabic """
+TWO_THIRDS = Value(2 / 3, ELLA + EXPRESSION_SPACE + THIRD)
+""" Pattern that matches the pronunciation of two thirds in Arabic """
 WAW_CONNECTOR = Expression(EXPRESSION_SPACE + WAW + EXPRESSION_SPACE_OR_NONE)
 """ Pattern that matches WAW as a connector between two words """
 WORD_SEPARATOR = Expression(
@@ -65,7 +69,7 @@ EXPRESSION_START = Expression(
 EXPRESSION_END = Expression(positive_lookahead("$", r"\W", r"\b"))
 """ Pattern that matches the end of a rule expression in Arabic """
 
-FRACTIONS = ExpressionGroup(THREE_QUARTERS, QUARTER, HALF, THIRD)
+FRACTIONS = ExpressionGroup(THREE_QUARTERS, TWO_THIRDS, QUARTER, HALF, THIRD)
 
 
 @dataclass
@@ -93,6 +97,7 @@ def get_fractions_of_unit_pattern(unit: str) -> str:
 
     return non_capturing_group(
         spaced_patterns(unit, THREE_QUARTERS),
+        spaced_patterns(unit, TWO_THIRDS),
         spaced_patterns(HALF, unit),
         spaced_patterns(THIRD, unit),
         spaced_patterns(QUARTER, unit),

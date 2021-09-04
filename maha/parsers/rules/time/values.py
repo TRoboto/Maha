@@ -49,7 +49,13 @@ from maha.rexy import (
     positive_lookbehind,
 )
 
-from ..common import ALL_ALEF, spaced_patterns
+from ..common import (
+    ALL_ALEF,
+    ELLA,
+    FRACTIONS,
+    get_fractions_of_unit_pattern,
+    spaced_patterns,
+)
 from .template import TimeValue
 
 
@@ -880,6 +886,35 @@ BEFORE_N_MINUTES = FunctionValue(
 )
 # endregion
 
+# region HOURS AND MINUTES
+# ----------------------------------------------------
+# HOURS AND MINUTES
+# ----------------------------------------------------
+def parse_time_fraction(match, expression):
+    fraction = list(FRACTIONS.parse(match.group("value")))[0].value
+    ella = ELLA.search(match.group("value"))
+    minute = int(60 * fraction)
+    hour = list(expression.parse(match.group("value")))[0].value
+    if ella:
+        hour = hour - 1 if hour > 0 else 23
+    return parse_value({"minute": minute, "hour": hour})
+
+
+NUMERAL_FRACTION_HOUR_MINUTE = FunctionValue(
+    lambda match: parse_time_fraction(match, numeral_ones_tens),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_HOUR,
+        value_group(get_fractions_of_unit_pattern(numeral_ones_tens.join())),
+    ),
+)
+ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
+    lambda match: parse_time_fraction(match, ordinal_ones_tens),
+    spaced_patterns(
+        ALEF_LAM_OPTIONAL + ONE_HOUR,
+        value_group(get_fractions_of_unit_pattern(ordinal_ones_tens.join())),
+    ),
+)
+# endregion
 # region YEARS
 # ----------------------------------------------------
 # YEARS

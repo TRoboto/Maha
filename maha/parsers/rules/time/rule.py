@@ -18,9 +18,10 @@ def parse_time(match):
     _days = groups.get("days")
     _hours = groups.get("hours")
     _minutes = groups.get("minutes")
+    _am_pm = groups.get("am_pm")
     _month_day = groups.get("month_day")
     _year_month = groups.get("year_month")
-    _am_pm = groups.get("am_pm")
+    _hour_minute = groups.get("hour_minute")
 
     value = TimeValue()
 
@@ -28,6 +29,8 @@ def parse_time(match):
         value += get_combined_value(_month_day, month_day_expressions)
     if _year_month:
         value += get_combined_value(_year_month, year_month_expressions)
+    if _hour_minute:
+        value += get_combined_value(_hour_minute, hour_minute_expressions)
     if _year:
         value += get_combined_value(_year, years_expressions)
     if _weeks:
@@ -117,6 +120,7 @@ minutes_expressions = ExpressionGroup(
     ORDINAL_MINUTE,
     THIS_MINUTE,
 )
+am_pm_expressions = ExpressionGroup(PM, AM)
 
 month_day_expressions = ExpressionGroup(
     ORDINAL_SPECIFIC_DAY,
@@ -127,7 +131,9 @@ month_day_expressions = ExpressionGroup(
     NUMERAL_AND_THIS_MONTH,
 )
 year_month_expressions = ExpressionGroup(YEAR_WITH_MONTH)
-am_pm_expressions = ExpressionGroup(PM, AM)
+hour_minute_expressions = ExpressionGroup(
+    NUMERAL_FRACTION_HOUR_MINUTE, ORDINAL_FRACTION_HOUR_MINUTE
+)
 
 years_group = named_group("years", years_expressions.join())
 months_group = named_group("months", months_expressions.join())
@@ -135,9 +141,10 @@ weeks_group = named_group("weeks", weeks_expressions.join())
 days_group = named_group("days", days_expressions.join())
 hours_group = named_group("hours", hours_expressions.join())
 minutes_group = named_group("minutes", minutes_expressions.join())
+am_pm_group = named_group("am_pm", am_pm_expressions.join())
 month_day_group = named_group("month_day", month_day_expressions.join())
 year_month_group = named_group("year_month", year_month_expressions.join())
-am_pm_group = named_group("am_pm", am_pm_expressions.join())
+hour_minute_group = named_group("hour_minute", hour_minute_expressions.join())
 
 RULE_TIME_YEARS = FunctionValue(parse_time, combine_patterns(years_group))
 RULE_TIME_MONTHS = FunctionValue(parse_time, combine_patterns(months_group))
@@ -153,6 +160,7 @@ RULE_TIME = FunctionValue(
     parse_time,
     combine_patterns(
         month_day_group,
+        hour_minute_group,
         year_month_group,
         years_group,
         months_group,
