@@ -27,6 +27,7 @@ class TimeValue(relativedelta):
         minute=None,
         second=None,
         microsecond=None,
+        am_pm=None,
     ):
         self._years = years
         self._months = months
@@ -37,6 +38,11 @@ class TimeValue(relativedelta):
         self._minutes = minutes
         self._seconds = seconds
         self._microseconds = microseconds
+        self._am_pm = am_pm
+
+        # handle hour am pm
+        if am_pm == "PM" and hour is not None and hour < 12:
+            hour += 12
 
         super().__init__(
             dt1=dt1,
@@ -121,6 +127,7 @@ class TimeValue(relativedelta):
                     if other.microsecond is not None
                     else self.microsecond
                 ),
+                am_pm=other._am_pm or self._am_pm,
             )
         return super().__add__(other)
 
@@ -136,6 +143,7 @@ class TimeValue(relativedelta):
             "_minutes",
             "_seconds",
             "_microseconds",
+            "_am_pm",
             "year",
             "month",
             "day",

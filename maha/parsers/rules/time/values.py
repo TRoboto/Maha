@@ -3,7 +3,7 @@ from datetime import datetime
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE
 
 import maha.parsers.rules.numeral.values as numvalues
-from maha.constants import ARABIC_COMMA, COMMA, WAW, arabic, english
+from maha.constants import ARABIC_COMMA, COMMA, arabic, english
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
@@ -75,29 +75,11 @@ IN_FROM_AT = non_capturing_group("في", "من", "خلال", "الموافق", "
 THIS = optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE) + THIS
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
 
-PM = non_capturing_group(
-    optional_non_capturing_group(AFTER + EXPRESSION_SPACE)
-    + non_capturing_group(
-        ALEF_LAM_OPTIONAL + "مساء?",
-        ALEF_LAM_OPTIONAL + "مغرب",
-        ALEF_LAM_OPTIONAL + "عشاء?",
-        ALEF_LAM_OPTIONAL + "عصرا?",
-        ALEF_LAM_OPTIONAL + "ليل[اةه]?",
-    ),
-    spaced_patterns(AFTER, ALEF_LAM_OPTIONAL + "ظهرا?"),
-)
-AM = optional_non_capturing_group(BEFORE + EXPRESSION_SPACE) + non_capturing_group(
-    ALEF_LAM_OPTIONAL + "صباحا?",
-    ALEF_LAM_OPTIONAL + "فجرا?",
-    ALEF_LAM_OPTIONAL + "ظهرا?",
-)
-
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
         f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
-        EXPRESSION_SPACE + "ب?ل?",
+        EXPRESSION_SPACE + "ب?ل?و?",
         EXPRESSION_SPACE + IN_FROM_AT + EXPRESSION_SPACE,
-        f"{EXPRESSION_SPACE}{WAW}",
     )
     + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
 )
@@ -977,7 +959,6 @@ BEFORE_N_YEARS = FunctionValue(
 )
 # endregion
 
-
 # region YEARS + MONTHS
 # ----------------------------------------------------
 # YEARS + MONTHS
@@ -993,4 +974,34 @@ YEAR_WITH_MONTH = FunctionValue(
         named_group("month", _months.join()), value_group(numeral_thousands.join())
     ),
 )
+# endregion
+
+# region AM PM
+# ----------------------------------------------------
+# AM PM
+# ----------------------------------------------------
+PM = FunctionValue(
+    lambda _: TimeValue(am_pm="PM"),
+    non_capturing_group(
+        optional_non_capturing_group(AFTER + EXPRESSION_SPACE)
+        + non_capturing_group(
+            ALEF_LAM_OPTIONAL + "مساء?ا?",
+            ALEF_LAM_OPTIONAL + "مغرب",
+            ALEF_LAM_OPTIONAL + "عشاء?ا?",
+            ALEF_LAM_OPTIONAL + "عصرا?",
+            ALEF_LAM_OPTIONAL + "ليل[اةه]?",
+        ),
+        spaced_patterns(AFTER, ALEF_LAM_OPTIONAL + "ظهرا?"),
+    ),
+)
+AM = FunctionValue(
+    lambda _: TimeValue(am_pm="AM"),
+    optional_non_capturing_group(BEFORE + EXPRESSION_SPACE)
+    + non_capturing_group(
+        ALEF_LAM_OPTIONAL + "صباحا?",
+        ALEF_LAM_OPTIONAL + "فجرا?",
+        ALEF_LAM_OPTIONAL + "ظهرا?",
+    ),
+)
+
 # endregion
