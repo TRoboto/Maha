@@ -23,6 +23,7 @@ def parse_time(match):
     _month_day = groups.get("month_day")
     _year_month = groups.get("year_month")
     _hour_minute = groups.get("hour_minute")
+    _hour_am_pm = groups.get("hour_am_pm")
 
     value = TimeValue()
 
@@ -32,6 +33,8 @@ def parse_time(match):
         value += get_combined_value(_year_month, year_month_expressions)
     if _hour_minute:
         value += get_combined_value(_hour_minute, hour_minute_expressions)
+    if _hour_am_pm:
+        value += get_combined_value(_hour_am_pm, hour_am_pm_expressions)
     if _year:
         value += get_combined_value(_year, years_expressions)
     if _weeks:
@@ -139,6 +142,16 @@ year_month_expressions = ExpressionGroup(YEAR_WITH_MONTH)
 hour_minute_expressions = ExpressionGroup(
     NUMERAL_FRACTION_HOUR_MINUTE, ORDINAL_FRACTION_HOUR_MINUTE
 )
+hour_am_pm_expressions = ExpressionGroup(
+    NUMERAL_FRACTION_HOUR_AM,
+    ORDINAL_FRACTION_HOUR_AM,
+    NUMERAL_FRACTION_HOUR_PM,
+    ORDINAL_FRACTION_HOUR_PM,
+    NUMERAL_HOUR_AM,
+    NUMERAL_HOUR_PM,
+    ORDINAL_HOUR_AM,
+    ORDINAL_HOUR_PM,
+)
 
 now_group = named_group("now", now_expressions.join())
 years_group = named_group("years", years_expressions.join())
@@ -151,6 +164,7 @@ am_pm_group = named_group("am_pm", am_pm_expressions.join())
 month_day_group = named_group("month_day", month_day_expressions.join())
 year_month_group = named_group("year_month", year_month_expressions.join())
 hour_minute_group = named_group("hour_minute", hour_minute_expressions.join())
+hour_am_pm_group = named_group("hour_am_pm", hour_am_pm_expressions.join())
 
 RULE_TIME_YEARS = FunctionValue(parse_time, combine_patterns(years_group))
 RULE_TIME_MONTHS = FunctionValue(parse_time, combine_patterns(months_group))
@@ -166,6 +180,7 @@ RULE_TIME_NOW = FunctionValue(parse_time, combine_patterns(now_group))
 RULE_TIME = FunctionValue(
     parse_time,
     combine_patterns(
+        hour_am_pm_group,
         month_day_group,
         hour_minute_group,
         year_month_group,

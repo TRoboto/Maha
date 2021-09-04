@@ -53,7 +53,7 @@ from ..common import (
     ALL_ALEF,
     ELLA,
     FRACTIONS,
-    get_fractions_of_unit_pattern,
+    get_fractions_of_pattern,
     spaced_patterns,
 )
 from .template import TimeValue
@@ -1013,28 +1013,97 @@ NUMERAL_AND_THIS_MONTH = FunctionValue(
 # ----------------------------------------------------
 # HOURS AND MINUTES
 # ----------------------------------------------------
-def parse_time_fraction(match, expression):
+def parse_time_fraction(match, expression, am_pm=None):
     fraction = list(FRACTIONS.parse(match.group("value")))[0].value
     ella = ELLA.search(match.group("value"))
     minute = int(60 * fraction)
     hour = list(expression.parse(match.group("value")))[0].value
     if ella:
         hour = hour - 1 if hour > 0 else 23
-    return parse_value({"minute": minute, "hour": hour})
+    time = {"minute": minute, "hour": hour}
+    if am_pm:
+        time["am_pm"] = am_pm
+    return parse_value(time)
 
 
 NUMERAL_FRACTION_HOUR_MINUTE = FunctionValue(
     lambda match: parse_time_fraction(match, numeral_ones_tens),
     spaced_patterns(
         ALEF_LAM_OPTIONAL + ONE_HOUR,
-        value_group(get_fractions_of_unit_pattern(numeral_ones_tens.join())),
+        value_group(get_fractions_of_pattern(numeral_ones_tens.join())),
     ),
 )
 ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
     lambda match: parse_time_fraction(match, ordinal_ones_tens),
     spaced_patterns(
         ALEF_LAM_OPTIONAL + ONE_HOUR,
-        value_group(get_fractions_of_unit_pattern(ordinal_ones_tens.join())),
+        value_group(get_fractions_of_pattern(ordinal_ones_tens.join())),
+    ),
+)
+# endregion
+
+# region HOUR + AM/PM
+# ----------------------------------------------------
+# HOUR + AM/PM
+# ----------------------------------------------------
+NUMERAL_HOUR_PM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "am_pm": "PM",
+            "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+        }
+    ),
+    spaced_patterns(value_group(numeral_ones_tens.join()), PM),
+)
+NUMERAL_HOUR_AM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "am_pm": "AM",
+            "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+        }
+    ),
+    spaced_patterns(value_group(numeral_ones_tens.join()), AM),
+)
+NUMERAL_FRACTION_HOUR_AM = FunctionValue(
+    lambda match: parse_time_fraction(match, numeral_ones_tens, "AM"),
+    spaced_patterns(
+        value_group(get_fractions_of_pattern(numeral_ones_tens.join())), AM
+    ),
+)
+NUMERAL_FRACTION_HOUR_PM = FunctionValue(
+    lambda match: parse_time_fraction(match, numeral_ones_tens, "PM"),
+    spaced_patterns(
+        value_group(get_fractions_of_pattern(numeral_ones_tens.join())), PM
+    ),
+)
+ORDINAL_HOUR_PM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "am_pm": "PM",
+            "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
+        }
+    ),
+    spaced_patterns(value_group(ordinal_ones_tens.join()), PM),
+)
+ORDINAL_HOUR_AM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "am_pm": "AM",
+            "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
+        }
+    ),
+    spaced_patterns(value_group(ordinal_ones_tens.join()), AM),
+)
+ORDINAL_FRACTION_HOUR_AM = FunctionValue(
+    lambda match: parse_time_fraction(match, ordinal_ones_tens, "AM"),
+    spaced_patterns(
+        value_group(get_fractions_of_pattern(ordinal_ones_tens.join())), AM
+    ),
+)
+ORDINAL_FRACTION_HOUR_PM = FunctionValue(
+    lambda match: parse_time_fraction(match, ordinal_ones_tens, "PM"),
+    spaced_patterns(
+        value_group(get_fractions_of_pattern(ordinal_ones_tens.join())), PM
     ),
 )
 # endregion
