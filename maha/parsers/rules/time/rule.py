@@ -22,7 +22,9 @@ def parse_time(match):
     _now = groups.get("now")
     _month_day = groups.get("month_day")
     _year_month = groups.get("year_month")
+    _year_month_day = groups.get("year_month_day")
     _hour_minute = groups.get("hour_minute")
+    _hour_minute_second = groups.get("h_m_s")
     _hour_am_pm = groups.get("hour_am_pm")
 
     value = TimeValue()
@@ -31,10 +33,14 @@ def parse_time(match):
         value += get_combined_value(_month_day, month_day_expressions)
     if _year_month:
         value += get_combined_value(_year_month, year_month_expressions)
+    if _year_month_day:
+        value += get_combined_value(_year_month_day, year_month_day_expressions)
     if _hour_minute:
         value += get_combined_value(_hour_minute, hour_minute_expressions)
     if _hour_am_pm:
         value += get_combined_value(_hour_am_pm, hour_am_pm_expressions)
+    if _hour_minute_second:
+        value += get_combined_value(_hour_minute_second, hour_minute_second_expressions)
     if _year:
         value += get_combined_value(_year, years_expressions)
     if _weeks:
@@ -131,6 +137,7 @@ am_pm_expressions = ExpressionGroup(PM, AM)
 now_expressions = ExpressionGroup(AT_THE_MOMENT)
 
 month_day_expressions = ExpressionGroup(
+    DAY_MONTH_FORM,
     ORDINAL_SPECIFIC_DAY,
     LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH,
     ORDINAL_AND_SPECIFIC_MONTH,
@@ -138,10 +145,14 @@ month_day_expressions = ExpressionGroup(
     NUMERAL_AND_SPECIFIC_MONTH,
     NUMERAL_AND_THIS_MONTH,
 )
-year_month_expressions = ExpressionGroup(YEAR_WITH_MONTH)
-hour_minute_expressions = ExpressionGroup(
-    NUMERAL_FRACTION_HOUR_MINUTE, ORDINAL_FRACTION_HOUR_MINUTE
+year_month_day_expressions = ExpressionGroup(
+    DAY_MONTH_YEAR_FORM,
 )
+year_month_expressions = ExpressionGroup(MONTH_YEAR_FORM, YEAR_WITH_MONTH)
+hour_minute_expressions = ExpressionGroup(
+    NUMERAL_FRACTION_HOUR_MINUTE, ORDINAL_FRACTION_HOUR_MINUTE, HOUR_MINUTE_FORM
+)
+hour_minute_second_expressions = ExpressionGroup(HOUR_MINUTE_SECOND_FORM)
 hour_am_pm_expressions = ExpressionGroup(
     NUMERAL_FRACTION_HOUR_AM,
     ORDINAL_FRACTION_HOUR_AM,
@@ -163,7 +174,9 @@ minutes_group = named_group("minutes", minutes_expressions.join())
 am_pm_group = named_group("am_pm", am_pm_expressions.join())
 month_day_group = named_group("month_day", month_day_expressions.join())
 year_month_group = named_group("year_month", year_month_expressions.join())
+year_month_day_group = named_group("year_month_day", year_month_day_expressions.join())
 hour_minute_group = named_group("hour_minute", hour_minute_expressions.join())
+hour_minute_second_group = named_group("h_m_s", hour_minute_second_expressions.join())
 hour_am_pm_group = named_group("hour_am_pm", hour_am_pm_expressions.join())
 
 RULE_TIME_YEARS = FunctionValue(parse_time, combine_patterns(years_group))
@@ -180,9 +193,11 @@ RULE_TIME_NOW = FunctionValue(parse_time, combine_patterns(now_group))
 RULE_TIME = FunctionValue(
     parse_time,
     combine_patterns(
-        hour_am_pm_group,
         month_day_group,
+        year_month_day_group,
+        hour_minute_second_group,
         hour_minute_group,
+        hour_am_pm_group,
         year_month_group,
         now_group,
         years_group,

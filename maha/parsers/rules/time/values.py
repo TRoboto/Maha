@@ -929,6 +929,17 @@ YEAR_WITH_MONTH = FunctionValue(
         named_group("month", _months.join()), value_group(numeral_thousands.join())
     ),
 )
+MONTH_YEAR_FORM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "month": int(match.group("month")),
+            "year": int(match.group("year")),
+        }
+    ),
+    named_group("month", r"\d{1,2}")
+    + non_capturing_group("/", "-")
+    + named_group("year", r"\d{4}"),
+)
 # endregion
 
 # region DAY + MONTH
@@ -1007,6 +1018,38 @@ NUMERAL_AND_THIS_MONTH = FunctionValue(
         _optional_middle + THIS_MONTH,
     ),
 )
+
+DAY_MONTH_FORM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "day": int(match.group("day")),
+            "month": int(match.group("month")),
+        }
+    ),
+    named_group("day", r"\d{1,2}")
+    + non_capturing_group("/", "-")
+    + named_group("month", r"\d{1,2}"),
+)
+# endregion
+
+# region DAY + MONTH + YEAR
+# ----------------------------------------------------
+# DAY + MONTH + YEAR
+# ----------------------------------------------------
+DAY_MONTH_YEAR_FORM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "day": int(match.group("day")),
+            "month": int(match.group("month")),
+            "year": int(match.group("year")),
+        }
+    ),
+    named_group("day", r"\d{1,2}")
+    + non_capturing_group("/", "-")
+    + named_group("month", r"\d{1,2}")
+    + non_capturing_group("/", "-")
+    + named_group("year", r"\d{4}"),
+)
 # endregion
 
 # region HOURS + MINUTES
@@ -1039,6 +1082,39 @@ ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
         ALEF_LAM_OPTIONAL + ONE_HOUR,
         value_group(get_fractions_of_pattern(ordinal_ones_tens.join())),
     ),
+)
+HOUR_MINUTE_FORM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "hour": int(match.group("hour")),
+            "minute": int(match.group("minute")),
+        }
+    ),
+    optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE)
+    + named_group("hour", r"\d{1,2}")
+    + ":"
+    + named_group("minute", r"\d{1,2}"),
+)
+# endregion
+
+# region HOUR + MINUTES + SECONDS
+# ----------------------------------------------------
+# HOUR + MINUTES + SECONDS
+# ----------------------------------------------------
+HOUR_MINUTE_SECOND_FORM = FunctionValue(
+    lambda match: parse_value(
+        {
+            "hour": int(match.group("hour")),
+            "minute": int(match.group("minute")),
+            "second": int(match.group("second")),
+        }
+    ),
+    optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE)
+    + named_group("hour", r"\d{1,2}")
+    + ":"
+    + named_group("minute", r"\d{1,2}")
+    + ":"
+    + named_group("second", r"\d{1,2}"),
 )
 # endregion
 
