@@ -10,7 +10,7 @@ from maha.parsers.rules import (
     RULE_TIME_MONTHS,
     RULE_TIME_YEARS,
 )
-from maha.parsers.rules.time.rule import RULE_TIME_AM_PM, RULE_TIME_WEEKS
+from maha.parsers.rules.time.rule import RULE_TIME_AM_PM, RULE_TIME_NOW, RULE_TIME_WEEKS
 from maha.parsers.rules.time.template import TimeValue
 
 NOW = datetime(2021, 9, 1)
@@ -604,3 +604,21 @@ def test_am(input):
 def test_pm(input):
     output = list(RULE_TIME_AM_PM(input))
     assert output[0].value == TimeValue(am_pm="PM")
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("حالا"),
+        ("في الحال"),
+        ("هسة"),
+        ("الآن"),
+        ("هاي اللحظة"),
+        ("هذا الوقت"),
+    ],
+)
+def test_npw(input):
+    output = list(RULE_TIME_NOW(input))
+    assert output[0].value == TimeValue(
+        years=0, months=0, days=0, hours=0, minutes=0, seconds=0
+    )
