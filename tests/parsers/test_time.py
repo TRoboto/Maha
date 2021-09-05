@@ -10,7 +10,7 @@ from maha.parsers.rules import (
     RULE_TIME_MONTHS,
     RULE_TIME_YEARS,
 )
-from maha.parsers.rules.time.rule import RULE_TIME_WEEKS
+from maha.parsers.rules.time.rule import RULE_TIME_AM_PM, RULE_TIME_WEEKS
 from maha.parsers.rules.time.template import TimeValue
 
 NOW = datetime(2021, 9, 1)
@@ -563,3 +563,44 @@ def test_before_minutes(expected_minute, input):
     output = list(RULE_TIME_MINUTES(input))
     assert_expression_output(output, datetime(2021, 8, 31, 23, 60 + expected_minute))
     assert output[0].value == TimeValue(minutes=expected_minute)
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("قبل الظهر"),
+        ("الفجر"),
+        ("الظهر"),
+        ("الصبح"),
+        ("في الصباح"),
+        ("صباحا"),
+        ("ظهرا"),
+        ("فجرا"),
+        ("فجر"),
+    ],
+)
+def test_am(input):
+    output = list(RULE_TIME_AM_PM(input))
+    assert output[0].value == TimeValue(am_pm="AM")
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("بعد الظهر"),
+        ("العصر"),
+        ("المغرب"),
+        ("العشاء"),
+        ("بعد العشا"),
+        ("قبل المغرب"),
+        ("في الليل"),
+        ("الليلة"),
+        ("الليله"),
+        ("المسا"),
+        ("مساء"),
+        ("مساءا"),
+    ],
+)
+def test_pm(input):
+    output = list(RULE_TIME_AM_PM(input))
+    assert output[0].value == TimeValue(am_pm="PM")
