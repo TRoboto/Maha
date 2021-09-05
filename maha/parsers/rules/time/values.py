@@ -829,7 +829,10 @@ NUMERAL_MINUTE = FunctionValue(
         spaced_patterns(
             ALEF_LAM_OPTIONAL + ONE_MINUTE, value_group(numeral_ones_tens.join())
         ),
-        spaced_patterns(value_group(numeral_ones_tens.join()), ONE_MINUTE),
+        spaced_patterns(
+            value_group(numeral_ones_tens.join()),
+            non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+        ),
     ),
 )
 
@@ -841,7 +844,10 @@ ORDINAL_MINUTE = FunctionValue(
         spaced_patterns(
             ALEF_LAM_OPTIONAL + ONE_MINUTE, value_group(ordinal_ones_tens.join())
         ),
-        spaced_patterns(value_group(ordinal_ones_tens.join()), ONE_MINUTE),
+        spaced_patterns(
+            value_group(ordinal_ones_tens.join()),
+            non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+        ),
     ),
 )
 
