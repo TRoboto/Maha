@@ -415,3 +415,74 @@ def test_specific_next_weekday(expected_day, input):
 def test_specific_previous_weekday(expected_day, input):
     output = list(RULE_TIME_DAYS(input))
     assert_expression_output(output, datetime(2021, 8, expected_day))
+
+
+@pytest.mark.parametrize(
+    "expected_hour,input",
+    [
+        (3, "الساعة ثلاثة "),
+        (3, "الساعة 3 "),
+        (3, "الساعة الثالثة "),
+        (5, "الساعة الخامسة "),
+        (1, "الساعة الأولى "),
+        (1, "الساعة الواحدة "),
+        (1, "الساعة 1 "),
+        (10, "الساعة 10 "),
+        (2, "الساعة الثانية "),
+        (12, "الساعة الثانية عشرة "),
+        (12, "الساعة 12 "),
+        (12, "الساعة اطنعش "),
+    ],
+)
+def test_specific_hour(expected_hour, input):
+    output = list(RULE_TIME_HOURS(input))
+    assert_expression_output(output, datetime(2021, 9, 1, expected_hour))
+    assert output[0].value == TimeValue(hour=expected_hour)
+
+
+@pytest.mark.parametrize(
+    "expected_hour,input",
+    [
+        (5, "بعد خمسة ساعات"),
+        (6, "بعد 6 ساعات"),
+        (21, "بعد واحد وعشرين ساعات"),
+        (1, "بعد ساعة"),
+        (1, "بعد ساعة واحدة"),
+        (2, "بعد ساعتين "),
+        (2, "بعد ساعتان "),
+        (2, "الساعة بعد الجاي"),
+        (1, "الساعة الجاي"),
+        (1, "الساعة الجاية"),
+        (1, "الساعة المقبله"),
+        (1, "الساعة القادمة"),
+        (0, "الساعة "),
+        (0, "هذه الساعة "),
+        (0, "هذي الساعة "),
+    ],
+)
+def test_after_hours(expected_hour, input):
+    output = list(RULE_TIME_HOURS(input))
+    assert_expression_output(output, datetime(2021, 9, 1, expected_hour))
+    assert output[0].value == TimeValue(hours=expected_hour)
+
+
+@pytest.mark.parametrize(
+    "expected_hour,input",
+    [
+        (-5, "قبل خمسة ساعات"),
+        (-6, "قبل 6 ساعات"),
+        (-21, "قبل واحد وعشرين ساعات"),
+        (-1, "قبل ساعة"),
+        (-1, "قبل ساعة واحدة"),
+        (-2, "قبل ساعتين "),
+        (-2, "قبل ساعتان "),
+        (-2, "الساعة قبل الماضية"),
+        (-1, "الساعة الماضية"),
+        (-1, "الساعة السابقة"),
+        (-1, "الساعة الفائتة"),
+    ],
+)
+def test_before_hours(expected_hour, input):
+    output = list(RULE_TIME_HOURS(input))
+    assert_expression_output(output, datetime(2021, 8, 31, 24 + expected_hour))
+    assert output[0].value == TimeValue(hours=expected_hour)
