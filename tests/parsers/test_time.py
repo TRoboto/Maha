@@ -318,3 +318,100 @@ def test_previous_weeks(expected_week, input):
     output = list(RULE_TIME_WEEKS(input))
     assert_expression_output(output, datetime(2021, 8, 32 + 7 * expected_week))
     assert output[0].value == TimeValue(weeks=expected_week)
+
+
+@pytest.mark.parametrize(
+    "expected_day,input",
+    [
+        (3, "بعد ثلاث ايام"),
+        (3, "بعد 3 أيام"),
+        (3, "بعد تلاتة أيام"),
+        (21, "بعد واحد وعشرين يوم"),
+        (1, "بعد يوم"),
+        (2, "بعد يومان"),
+        (1, "بكرة"),
+        (1, "بكره"),
+        (1, "الغد"),
+        (1, "غدا"),
+        (2, "بعد بكرة"),
+        (1, "اليوم الجاي"),
+        (2, "اليوم بعد  القادم"),
+        (0, "هذا اليوم"),
+        (0, " اليوم"),
+    ],
+)
+def test_next_days(expected_day, input):
+    output = list(RULE_TIME_DAYS(input))
+    assert_expression_output(output, datetime(2021, 9, 1 + expected_day))
+    assert output[0].value == TimeValue(days=expected_day)
+
+
+@pytest.mark.parametrize(
+    "expected_day,input",
+    [
+        (-1, "قبل يوم"),
+        (-1, "اليوم المنصرم"),
+        (-1, "اليوم الماضي"),
+        (-1, "البارحة"),
+        (-1, "مبارح"),
+        (-1, "امبارح"),
+        (-2, "اول مبارح"),
+        (-2, "اليوم قبل الماضي"),
+        (-20, "قبل عشرين يوم"),
+        (-10, "قبل عشرة يوم"),
+        (-10, "قبل عشر يوم"),
+        (-10, "قبل 10 يوم"),
+        (-1, "قبل 1 يوم"),
+        (-2, "قبل  يومين"),
+    ],
+)
+def test_previous_days(expected_day, input):
+    output = list(RULE_TIME_DAYS(input))
+    assert_expression_output(output, datetime(2021, 8, 32 + expected_day))
+    assert output[0].value == TimeValue(days=expected_day)
+
+
+@pytest.mark.parametrize(
+    "expected_day,input",
+    [
+        (7, "يوم الثلاثاء الجاي"),
+        (1, "الأربعا "),
+        (1, "هذا الأربعاء"),
+        (2, "الخميس"),
+        (2, "هذا الخميس"),
+        (2, "الخميس القادم "),
+        (5, "يوم الأحد"),
+        (5, "يوم الأحد القادم"),
+        (5, "الاحد الجاي"),
+        (6, "الاثنين"),
+        (7, "الثلاثا"),
+        (7, "ثلاثاء"),
+        (8, "الأربعاء القادم "),
+        (15, "الاربعا بعد الجاي "),
+        (9, "الخميس بعد القادم"),
+        (9, "يوم الخميس بعد الجاي"),
+    ],
+)
+def test_specific_next_weekday(expected_day, input):
+    output = list(RULE_TIME_DAYS(input))
+    assert_expression_output(output, datetime(2021, 9, expected_day))
+
+
+@pytest.mark.parametrize(
+    "expected_day,input",
+    [
+        (31, "يوم الثلاثاء الماضي"),
+        (25, "الأربعا الماض"),
+        (26, "الخميس السابق "),
+        (29, "يوم الأحد الماضي"),
+        (27, "الجمعة الماضية"),
+        (28, "السبت الماضي"),
+        (30, "الإثنين الماضي"),
+        (18, "الاربعا قبل المنصرم "),
+        (24, "الثلاثاء قبل الماضي"),
+        (23, "يوم الإثنين قبل المنصرم"),
+    ],
+)
+def test_specific_previous_weekday(expected_day, input):
+    output = list(RULE_TIME_DAYS(input))
+    assert_expression_output(output, datetime(2021, 8, expected_day))
