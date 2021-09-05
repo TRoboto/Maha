@@ -486,3 +486,80 @@ def test_before_hours(expected_hour, input):
     output = list(RULE_TIME_HOURS(input))
     assert_expression_output(output, datetime(2021, 8, 31, 24 + expected_hour))
     assert output[0].value == TimeValue(hours=expected_hour)
+
+
+@pytest.mark.parametrize(
+    "expected_minute,input",
+    [
+        (3, "الدقيقة ثلاثة "),
+        (3, "ثلاث دقائق"),
+        (10, "عشرة دقايق"),
+        (3, "الدقيقة 3 "),
+        (3, "الدقيقة الثالثة "),
+        (5, "الدقيقة الخامسة "),
+        (1, "الدقيقة الأولى "),
+        (1, "الدقيقة الواحدة "),
+        (1, "الدقيقة 1 "),
+        (10, "الدقيقة 10 "),
+        (59, "الدقيقة 59 "),
+        (59, "الدقيقة تسعة وخمسين "),
+        (59, " تسعة وخمسين دقيقة"),
+        (2, "الدقيقة الثانية "),
+        (12, "12 دقيقه"),
+        (12, "الدقيقة الثانية عشرة "),
+        (12, "الدقيقة 12 "),
+        (12, "الدقيقة اطنعش "),
+    ],
+)
+def test_specific_minute(expected_minute, input):
+    output = list(RULE_TIME_MINUTES(input))
+    assert_expression_output(output, datetime(2021, 9, 1, 0, expected_minute))
+    assert output[0].value == TimeValue(minute=expected_minute)
+
+
+@pytest.mark.parametrize(
+    "expected_minute,input",
+    [
+        (5, "بعد خمسة دقائق"),
+        (6, "بعد 6 دقائق"),
+        (21, "بعد واحد وعشرين دقائق"),
+        (1, "بعد دقيقه"),
+        (1, "بعد دقيقه واحدة"),
+        (2, "بعد دقيقتين "),
+        (2, "بعد دقيقتان "),
+        (2, "الدقيقه بعد الجاي"),
+        (1, "الدقيقه الجاي"),
+        (1, "الدقيقه الجاية"),
+        (1, "الدقيقه المقبله"),
+        (1, "الدقيقه القادمة"),
+        (0, "الدقيقه "),
+        (0, "هذه الدقيقه "),
+        (0, "هذي الدقيقه "),
+    ],
+)
+def test_after_minutes(expected_minute, input):
+    output = list(RULE_TIME_MINUTES(input))
+    assert_expression_output(output, datetime(2021, 9, 1, 0, expected_minute))
+    assert output[0].value == TimeValue(minutes=expected_minute)
+
+
+@pytest.mark.parametrize(
+    "expected_minute,input",
+    [
+        (-5, "قبل خمسة دقايق"),
+        (-30, "قبل 30 دقيقة"),
+        (-21, "قبل واحد وعشرين دقايق"),
+        (-1, "قبل دقيقة"),
+        (-1, "قبل دقيقة واحدة"),
+        (-2, "قبل دقيقتين "),
+        (-2, "قبل دقيقتان "),
+        (-2, "الدقيقة قبل الماضية"),
+        (-1, "الدقيقة الماضية"),
+        (-1, "الدقيقة السابقة"),
+        (-1, "الدقيقة الفائتة"),
+    ],
+)
+def test_before_minutes(expected_minute, input):
+    output = list(RULE_TIME_MINUTES(input))
+    assert_expression_output(output, datetime(2021, 8, 31, 23, 60 + expected_minute))
+    assert output[0].value == TimeValue(minutes=expected_minute)
