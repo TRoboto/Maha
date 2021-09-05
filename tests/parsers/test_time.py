@@ -142,6 +142,7 @@ def test_previous_two_years(input):
         ("العام"),
         ("السنة الحالية"),
         ("عام 2021"),
+        ("هاي السنة"),
         ("عام الفين وواحد وعشرين"),
         ("العام الألفان والواحد والعشرون"),
     ],
@@ -160,9 +161,16 @@ def test_this_year(input):
         (3, "بعد ثلاث اشهر"),
         (2, "بعد شهرين"),
         (1, "بعد شهر"),
+        (-8, "قبل ثمان اشهر"),
+        (-2, "قبل شهرين"),
+        (-1, "قبل شهر"),
+        (1, "الشهر الجاي"),
+        (-1, "الشهر الماضي"),
+        (2, "الشهر بعد الجاي"),
+        (-2, "الشهر قبل الماضي"),
     ],
 )
-def test_after_n_months(expected_month, input):
+def test_n_months(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
     assert_expression_output(output, datetime(2021, 9 + expected_month, 1))
     assert output[0].value == TimeValue(months=expected_month)
@@ -262,13 +270,15 @@ def test_previous_specific_month_same_year(expected_month, input):
     assert output[0].value == TimeValue(years=0, month=expected_month)
 
 
-# @pytest.mark.parametrize(
-#     "expected_year,input",
-#     [
-#         (0, ""),
-#     ],
-# )
-# def test_numeral_years(expected_year, input):
-#     output = list(RULE_TIME_YEARS(input))
-#     assert_expression_output(output, datetime(2021 + expected_year, 9, 1))
-#     assert output[0].value == TimeValue(years=expected_year)
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("هذا الشهر"),
+        ("الشهر هذا"),
+        ("خلال هذا الشهر "),
+    ],
+)
+def test_previous_this_month(input):
+    output = list(RULE_TIME_MONTHS(input))
+    assert_expression_output(output, datetime(2021, 9, 1))
+    assert output[0].value == TimeValue(months=0)
