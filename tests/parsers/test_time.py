@@ -10,6 +10,7 @@ from maha.parsers.rules import (
     RULE_TIME_MONTHS,
     RULE_TIME_YEARS,
 )
+from maha.parsers.rules.time.rule import RULE_TIME_WEEKS
 from maha.parsers.rules.time.template import TimeValue
 
 NOW = datetime(2021, 9, 1)
@@ -282,3 +283,38 @@ def test_previous_this_month(input):
     output = list(RULE_TIME_MONTHS(input))
     assert_expression_output(output, datetime(2021, 9, 1))
     assert output[0].value == TimeValue(months=0)
+
+
+@pytest.mark.parametrize(
+    "expected_week,input",
+    [
+        (3, "بعد ثلاث اسابيع"),
+        (2, "بعد اسبوعين"),
+        (1, "بعد أسبوع"),
+        (1, "الأسبوع الجاي"),
+        (2, "الأسبوع بعد  القادم"),
+        (0, "هذا الأسبوع"),
+        (0, " الأسبوع"),
+    ],
+)
+def test_next_weeks(expected_week, input):
+    output = list(RULE_TIME_WEEKS(input))
+    assert_expression_output(output, datetime(2021, 9, 1 + 7 * expected_week))
+    assert output[0].value == TimeValue(weeks=expected_week)
+
+
+@pytest.mark.parametrize(
+    "expected_week,input",
+    [
+        (-1, "قبل إسبوع"),
+        (-1, "الإسبوع الماضي"),
+        (-1, "الاسبوع السابق"),
+        (-2, "الأسبوع قبل الماضي"),
+        (-4, "قبل اربعة أسابيع"),
+        (-2, "قبل  أسبوعان"),
+    ],
+)
+def test_previous_weeks(expected_week, input):
+    output = list(RULE_TIME_WEEKS(input))
+    assert_expression_output(output, datetime(2021, 8, 32 + 7 * expected_week))
+    assert output[0].value == TimeValue(weeks=expected_week)
