@@ -117,11 +117,11 @@ days_expressions = ExpressionGroup(
     NEXT_WEEKDAY,
     AFTER_TOMORROW,
     TOMORROW,
-    YESTERDAY,
-    LAST_DAY,
     LAST_SPECIFIC_DAY,
     BEFORE_PREVIOUS_WEEKDAY,
     BEFORE_YESTERDAY,
+    YESTERDAY,
+    LAST_DAY,
     THIS_DAY,
     WEEKDAY,
 )

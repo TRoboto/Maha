@@ -604,7 +604,10 @@ BEFORE_N_DAYS = FunctionValue(
 )
 NEXT_WEEKDAY = FunctionValue(
     lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(1)}  # type: ignore
+        {
+            "days": 1,
+            "weekday": _days.get_matched_expression(match.group("value")).value(1),  # type: ignore
+        }
     ),
     non_capturing_group(
         spaced_patterns(ONE_DAY, value_group(_days.join()), NEXT),
@@ -613,7 +616,10 @@ NEXT_WEEKDAY = FunctionValue(
 )
 PREVIOUS_WEEKDAY = FunctionValue(
     lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(-1)}  # type: ignore
+        {
+            "days": -1,
+            "weekday": _days.get_matched_expression(match.group("value")).value(-1),  # type: ignore
+        }
     ),
     non_capturing_group(
         spaced_patterns(ONE_DAY, value_group(_days.join()), PREVIOUS),
@@ -622,7 +628,10 @@ PREVIOUS_WEEKDAY = FunctionValue(
 )
 AFTER_NEXT_WEEKDAY = FunctionValue(
     lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(2)}  # type: ignore
+        {
+            "days": 1,
+            "weekday": _days.get_matched_expression(match.group("value")).value(2),  # type: ignore
+        }
     ),
     non_capturing_group(
         spaced_patterns(ONE_DAY, value_group(_days.join()), AFTER_NEXT),
@@ -631,7 +640,10 @@ AFTER_NEXT_WEEKDAY = FunctionValue(
 )
 BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
     lambda match: parse_value(
-        {"weekday": _days.get_matched_expression(match.group("value")).value(-2)}  # type: ignore
+        {
+            "days": -1,
+            "weekday": _days.get_matched_expression(match.group("value")).value(-2),  # type: ignore
+        }
     ),
     non_capturing_group(
         spaced_patterns(ONE_DAY, value_group(_days.join()), BEFORE_PREVIOUS),
