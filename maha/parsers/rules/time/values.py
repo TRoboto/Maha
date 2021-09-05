@@ -37,7 +37,7 @@ from maha.parsers.rules.ordinal.rule import (
     RULE_ORDINAL_TENS,
     RULE_ORDINAL_THOUSANDS,
 )
-from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL
+from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL, ONE_PREFIX
 from maha.parsers.templates import FunctionValue, Value
 from maha.parsers.templates.value_expressions import MatchedValue
 from maha.rexy import (
@@ -94,7 +94,7 @@ TIME_WORD_SEPARATOR = Expression(
     + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
 )
 
-ordinal_ones_tens = ExpressionGroup(RULE_ORDINAL_TENS, RULE_ORDINAL_ONES)
+ordinal_ones_tens = ExpressionGroup(RULE_ORDINAL_TENS, RULE_ORDINAL_ONES, ONE_PREFIX)
 numeral_ones_tens = ExpressionGroup(
     RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
 )
