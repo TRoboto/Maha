@@ -715,3 +715,22 @@ def test_month_and_year(input):
 def test_time(expected, input):
     output = parse_dimension(input, time=True)
     assert_expression_output(output, expected)
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("11"),
+        ("الحادي عشر"),
+        ("احد عشر"),
+        ("اثنين"),
+        ("ثلاثة"),
+        ("يوم"),
+        ("اربعة وخمسين ساعة"),
+        ("جمع"),
+        ("السبتت"),
+    ],
+)
+def test_negative_cases(input):
+    output = parse_dimension(input, time=True)
+    assert output == []
