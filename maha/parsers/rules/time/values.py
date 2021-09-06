@@ -540,7 +540,9 @@ WEEKDAY = FunctionValue(
         weekday=_days.get_matched_expression(match.group("value")).value  # type: ignore
     ),
     optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
-    + named_group("value", _days.join()),
+    + non_capturing_group(
+        ALEF_LAM + value_group(_days[:2].join()), value_group(_days[2:].join())
+    ),
 )
 THIS_DAY = Value(
     TimeValue(days=0),
