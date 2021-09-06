@@ -342,6 +342,9 @@ DECEMBER = Value(
 
 
 _months = ExpressionGroup(
+    OCTOBER,
+    NOVEMBER,
+    DECEMBER,
     JANUARY,
     FEBRUARY,
     MARCH,
@@ -351,9 +354,6 @@ _months = ExpressionGroup(
     JULY,
     AUGUST,
     SEPTEMBER,
-    OCTOBER,
-    NOVEMBER,
-    DECEMBER,
 )
 
 THIS_MONTH = Value(
@@ -1031,7 +1031,7 @@ NUMERAL_AND_SPECIFIC_MONTH = FunctionValue(
 NUMERAL_AND_THIS_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "month": 0,
+            "months": 0,
             "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
         }
     ),

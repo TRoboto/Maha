@@ -284,8 +284,8 @@ RULE_NUMERAL_TRILLIONS = FunctionValue(
         ones_group,
     ),
 )
-RULE_NUMERAL_INTEGERS = FunctionValue(parse_numeral, combine_patterns(integer_group))
-RULE_NUMERAL_DECIMALS = FunctionValue(parse_numeral, combine_patterns(decimal_group))
+RULE_NUMERAL_INTEGERS = FunctionValue(parse_numeral, integer_group)
+RULE_NUMERAL_DECIMALS = FunctionValue(parse_numeral, decimal_group)
 
 RULE_NUMERAL = FunctionValue(
     parse_numeral,

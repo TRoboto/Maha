@@ -5,8 +5,6 @@ __all__ = [
     "RULE_TIME_DAYS",
     "RULE_TIME_HOURS",
     "RULE_TIME_MINUTES",
-    "RULE_TIME_MONTH_DAY",
-    "RULE_TIME_YEAR_MONTH",
     "RULE_TIME_AM_PM",
     "RULE_TIME_NOW",
     "RULE_TIME",
@@ -19,7 +17,8 @@ from .values import *
 def get_combined_value(groups, expression: ExpressionGroup):
     value = TimeValue()
     for group in groups:
-        value += next(iter(expression.parse(group))).value
+        exp = expression.get_matched_expression(group)
+        value += next(iter(exp(group))).value  # type: ignore
     return value
 
 
@@ -199,8 +198,6 @@ RULE_TIME_WEEKS = FunctionValue(parse_time, combine_patterns(weeks_group))
 RULE_TIME_DAYS = FunctionValue(parse_time, combine_patterns(days_group))
 RULE_TIME_HOURS = FunctionValue(parse_time, combine_patterns(hours_group))
 RULE_TIME_MINUTES = FunctionValue(parse_time, combine_patterns(minutes_group))
-RULE_TIME_MONTH_DAY = FunctionValue(parse_time, combine_patterns(month_day_group))
-RULE_TIME_YEAR_MONTH = FunctionValue(parse_time, combine_patterns(year_month_group))
 RULE_TIME_AM_PM = FunctionValue(parse_time, combine_patterns(am_pm_group))
 RULE_TIME_NOW = FunctionValue(parse_time, combine_patterns(now_group))
 
