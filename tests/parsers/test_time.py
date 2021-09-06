@@ -617,8 +617,101 @@ def test_pm(input):
         ("هذا الوقت"),
     ],
 )
-def test_npw(input):
+def test_now(input):
     output = list(RULE_TIME_NOW(input))
     assert output[0].value == TimeValue(
         years=0, months=0, days=0, hours=0, minutes=0, seconds=0
     )
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("خلال اول شهر 9"),
+        ("اول شهر سبتمبر"),
+        ("اول  سبتمبر"),
+        ("1  سبتمبر"),
+        ("الأول من ايلول"),
+        ("الأول من شهر ايلول"),
+        ("1/9"),
+    ],
+)
+def test_first_day_and_month(input):
+    output = parse_dimension(input, time=True)
+    assert_expression_output(output, NOW)
+    assert output[0].value == TimeValue(month=9, day=1)
+
+
+@pytest.mark.parametrize(
+    "input",
+    [
+        ("شهر 9 2021"),
+        ("  سبتمبر 2021"),
+        (" شهر سبتمبر عام الفين وواحد وعشرين"),
+        ("9/2021"),
+    ],
+)
+def test_month_and_year(input):
+    output = parse_dimension(input, time=True)
+    assert_expression_output(output, NOW)
+    assert output[0].value == TimeValue(year=2021, month=9)
+
+
+@pytest.mark.parametrize(
+    "expected,input",
+    [
+        (NOW.replace(day=2, hour=17), "بكرة على الخمسة العصر"),
+        (NOW.replace(day=16), "الخميس الموافق السادس عشر من هذا الشهر"),
+        (NOW.replace(day=16), "الخميس الموافق 16 من هذا الشهر"),
+        (NOW.replace(day=16), "الخميس بعد اسبوعين"),
+        (NOW.replace(day=16, month=10), "الخميس الموافق السادس عشر من شهر 10"),
+        (NOW.replace(day=4, month=11), "بعد شهرين يوم الخميس "),
+        (NOW.replace(day=6, month=8), "الجمعة 6/8"),
+        (NOW.replace(day=9, month=10), "السبت 9 اكتوبر"),
+        (NOW.replace(month=2, day=2), "الثاني من شباط"),
+        (NOW.replace(month=2, day=10), "العاشر من شهر شباط"),
+        (NOW.replace(month=3, day=10), "10 اذار"),
+        (NOW.replace(month=3, day=10), "10 اذار"),
+        (NOW.replace(month=8, day=25), "الأربعا الأسبوع الماضي"),
+        (NOW.replace(day=4, hour=1, minute=30), "السبت هذا الأسبوع الساعة 1 ونص"),
+        (NOW.replace(day=31, month=10), "آخر يوم بالشهر الجاي"),
+        (NOW.replace(day=30), "آخر يوم من  الشهر الحالي"),
+        (NOW.replace(day=28), "آخر ثلاثا"),
+        (NOW.replace(day=4, month=8), "اول اربعا من الشهر الماضي"),
+        (NOW.replace(day=25, month=8), "اخر اربعا من الشهر الماضي"),
+        (NOW.replace(day=3, month=2, year=2022), "ثالث يوم من شهر 2 السنة الجاي"),
+        (NOW.replace(day=15, month=5, year=2020), "ثالث جمعة من شهر 5 السنة الماضية"),
+        (NOW.replace(hour=7, minute=10, month=8, day=31), "الساعة 7 وعشر دقايق مبارح"),
+        (NOW.replace(hour=15, minute=15), "الساعة 3 و15 دقيقة العصر"),
+        (NOW.replace(hour=15, minute=20), "الساعة 3 وثلث مساءا"),
+        (NOW.replace(hour=2, minute=45), "الساعة 3 الا ربع الفجر"),
+        (NOW.replace(hour=12, minute=30), "12 ونص مساء"),
+        (NOW.replace(hour=12, minute=49), "الساعة الثانية عشر وتسعة واربعون دقيقة"),
+        (NOW.replace(year=1040), "في العام الف واربعين"),
+        (
+            NOW.replace(year=2061, day=21, month=11, hour=2),
+            "بعد اربعين سنة الموافق 21/11 خلال الساعة الثانية فجرا",
+        ),
+        (
+            NOW.replace(day=3, hour=20, minute=40),
+            "بعد الغد عند الساعه تسعة الا ثلث في الليل",
+        ),
+        (NOW.replace(hour=3, minute=20), "3:20"),
+        (
+            NOW.replace(hour=11, minute=2, second=40, month=8, day=30),
+            "اول مبارح الساعة 11:2:40",
+        ),
+        (NOW, "1/9/2021"),
+        (
+            NOW.replace(day=11, month=10, hour=13, minute=15),
+            "الاثنين 11/10 الساعة الواحدة والربع بعد الظهر",
+        ),
+        (
+            NOW.replace(day=4, hour=13, minute=30),
+            "السبت هذا الأسبوع الساعة 1 ونص بعد الظهر",
+        ),
+    ],
+)
+def test_time(expected, input):
+    output = parse_dimension(input, time=True)
+    assert_expression_output(output, expected)
