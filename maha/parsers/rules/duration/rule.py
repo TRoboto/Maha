@@ -1,5 +1,15 @@
 """Rules to extract duration."""
 
+__all__ = [
+    "RULE_DURATION_SECONDS",
+    "RULE_DURATION_MINUTES",
+    "RULE_DURATION_HOURS",
+    "RULE_DURATION_DAYS",
+    "RULE_DURATION_WEEKS",
+    "RULE_DURATION_MONTHS",
+    "RULE_DURATION_YEARS",
+    "RULE_DURATION",
+]
 
 from typing import List
 

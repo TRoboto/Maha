@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pytest
 
-from maha.parsers.templates import Rule
+import maha.parsers.rules as rules
 
 
 @pytest.fixture()
@@ -47,4 +47,4 @@ def empty_file():
 
 @pytest.fixture(scope="session", autouse=True)
 def compile_rules():
-    Rule.compile_rules()
+    rules.compile_rules()
