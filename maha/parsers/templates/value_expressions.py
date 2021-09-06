@@ -1,6 +1,5 @@
 __all__ = ["Value", "MatchedValue", "FunctionValue"]
 
-from dataclasses import dataclass
 from typing import Any, Callable
 
 from regex.regex import Match
