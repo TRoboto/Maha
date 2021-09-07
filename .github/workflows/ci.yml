@@ -35,7 +35,7 @@ jobs:
         run: poetry run pytest --cov-append --doctest-modules maha
 
       - name: Run tests
-        run: poetry run pytest --cov=maha tests/ --cov-report=xml --cov-fail-under=80
+        run: poetry run pytest --cov=maha tests/ --cov-report=xml
 
       - uses: codecov/codecov-action@v1
         with:
