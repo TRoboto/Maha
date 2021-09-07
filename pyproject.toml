@@ -23,7 +23,7 @@ classifiers= [
     ]
 exclude = ["tools/","images/",".vscode/"]
 packages = [
-    { include = "mahad" },
+    { include = "maha" },
 ]
 
 [tool.poetry.dependencies]
