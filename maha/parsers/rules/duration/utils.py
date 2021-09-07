@@ -1,10 +1,12 @@
 __all__ = ["convert_between_durations"]
 
+from typing import Dict
+
 from maha.parsers.templates import DurationUnit
 
 from ..common import ValueUnit
 
-DURATION_CONVERSION_MAP = {
+DURATION_CONVERSION_MAP: Dict[DurationUnit, Dict[DurationUnit, float]] = {
     DurationUnit.SECONDS: {
         DurationUnit.SECONDS: 1,
         DurationUnit.MINUTES: 60,
@@ -80,9 +82,9 @@ def convert_between_durations(
 
     Parameters
     ----------
-    *durations: List[Tuple[float, DurationUnit]]
+    *durations:
         List of durations to convert.
-    to_unit
+    to_unit:
         The unit to convert to.
 
     Returns
@@ -92,7 +94,10 @@ def convert_between_durations(
     """
 
     table = DURATION_CONVERSION_MAP[to_unit]
-    output_value = 0
+    output_value = 0.0
     for duration in durations:
+        assert isinstance(duration.unit, DurationUnit)
         output_value += table[duration.unit] * duration.value
+    if output_value.is_integer():
+        output_value = int(output_value)
     return ValueUnit(output_value, to_unit)

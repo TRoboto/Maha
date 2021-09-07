@@ -269,7 +269,7 @@ def test_remove_with_custom_characters_not_found(simple_text_input: str, strings
     assert processed_text == simple_text_input.strip()
 
 
-@pytest.mark.parametrize("pattern", ["[A-Za-z]", ["[A-Za-z]"]])
+@pytest.mark.parametrize("pattern", ["[A-Za-z]"])
 def test_remove_with_custom_patterns(simple_text_input: str, pattern):
     processed_text = remove(text=simple_text_input, custom_expressions=pattern)
     assert processed_text == "1. بِسْمِ،اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ , , ."

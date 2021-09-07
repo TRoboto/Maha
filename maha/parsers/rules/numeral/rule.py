@@ -98,7 +98,7 @@ def parse_fasila(matched_text: str) -> Optional[float]:
 
     fasila = EXPRESSION_OF_FASILA.search(matched_text)
     if not fasila:
-        return
+        return None
     before, after = matched_text.split(fasila.group(0))
     before = parse_combined(before)
     after = parse_combined(after)

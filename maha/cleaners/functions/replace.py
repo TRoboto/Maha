@@ -84,8 +84,8 @@ def connect_single_letter_word(
     if custom_strings:
         letters.extend(re.escape(s) for s in custom_strings)
 
-    letters = "|".join(letters)
-    return replace_expression(text, r"(\b)({})(?:\s)(?=.)".format(letters), r"\1\2")
+    chars = "|".join(letters)
+    return replace_expression(text, r"(\b)({})(?:\s)(?=.)".format(chars), r"\1\2")
 
 
 def arabic_numbers_to_english(text: str):

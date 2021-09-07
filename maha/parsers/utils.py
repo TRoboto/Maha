@@ -34,14 +34,15 @@ def convert_to_number_if_possible(value: str) -> Optional[Union[int, float]]:
     for separator in (ARABIC_THOUSANDS_SEPARATOR, COMMA, ARABIC_COMMA, SPACE):
         modified_value = modified_value.replace(separator, EMPTY)
 
-    multiplier = 1
     if PERCENT_SIGN in modified_value:
         modified_value = modified_value.replace(PERCENT_SIGN, EMPTY)
         multiplier = 0.01
+    else:
+        multiplier = 1
     try:
         return int(modified_value) * multiplier
     except ValueError:
         try:
             return round(float(modified_value) * multiplier, 10)
         except ValueError:
-            return
+            return None

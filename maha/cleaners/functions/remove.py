@@ -92,7 +92,7 @@ def remove(
     emojis: bool = False,
     use_space: bool = True,
     custom_strings: Union[List[str], str] = None,
-    custom_expressions: Union[ExpressionGroup, Expression] = None,
+    custom_expressions: Union[ExpressionGroup, Expression, str] = None,
 ):
 
     """Removes certain characters from the given text.
@@ -166,9 +166,9 @@ def remove(
     use_space : bool, optional
         False to not replace with space, check :func:`~.remove_strings`
         for more information, by default True
-    custom_strings : Union[List[str], str], optional
+    custom_strings:
         Include any other string(s), by default None
-    custom_expressions , optional
+    custom_expressions:
         Include any other regular expression expressions, by default None
 
     Returns
@@ -199,7 +199,7 @@ def remove(
         return EMPTY
 
     custom_strings = custom_strings or []
-    custom_expressions = custom_expressions or []
+    custom_expressions = custom_expressions or ExpressionGroup()
 
     # current function arguments
     current_arguments = locals()
@@ -207,17 +207,16 @@ def remove(
 
     # characters to remove
     chars_to_remove = []
-    # expressions to remove
-    expressions_to_remove = []
 
     if isinstance(custom_strings, str):
         custom_strings = [custom_strings]
 
     if isinstance(custom_expressions, str):
-        custom_expressions = [custom_expressions]
+        custom_expressions = Expression(custom_expressions)
 
     chars_to_remove.extend(custom_strings)
-    expressions_to_remove.extend(custom_expressions)
+    # expressions to remove
+    expressions_to_remove = ExpressionGroup(custom_expressions)
 
     # Since each argument has the same name as the corresponding constant
     # (But, expressions should be prefixed with "EXPRESSION_" to match the actual expression.)
@@ -232,7 +231,7 @@ def remove(
         # check for expression
         expression = constants.get("EXPRESSION_" + arg.upper())
         if expression and value is True:
-            expressions_to_remove.append(expression)
+            expressions_to_remove.add(expression)
 
     if not (chars_to_remove or expressions_to_remove):
         raise ValueError("At least one argument should be True")
@@ -240,7 +239,7 @@ def remove(
     output = text
     # remove using expressions
     if expressions_to_remove:
-        output = remove_expressions(output, ExpressionGroup(*expressions_to_remove))
+        output = remove_expressions(output, expressions_to_remove)
 
     if chars_to_remove:
         # check for constants that cannot be replaced with a space

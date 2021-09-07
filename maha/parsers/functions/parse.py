@@ -2,7 +2,7 @@
 
 __all__ = ["parse", "parse_expression"]
 
-from typing import Dict, List, Union
+from typing import Dict, List, Optional, Union
 
 from maha.constants import (
     ALL_HARAKAT,
@@ -174,15 +174,15 @@ def parse(
     for arg, value in current_arguments.items():
         const = constants.get(arg.upper())
         if const and value is True:
-            expression = TextExpression(f"[{''.join(const)}]+")
-            parsed = parse_expression(text, expression, DimensionType[arg.upper()])
+            text_exp = TextExpression(f"[{''.join(const)}]+")
+            parsed = parse_expression(text, text_exp, DimensionType[arg.upper()])
             output[arg] = parsed
             continue
         # check for expression
-        expression = constants.get("EXPRESSION_" + arg.upper())
+        expression: Optional[Expression] = constants.get("EXPRESSION_" + arg.upper())
         if expression and value is True:
-            expression = TextExpression(expression)
-            parsed = parse_expression(text, expression, DimensionType[arg.upper()])
+            text_exp = TextExpression(str(expression))
+            parsed = parse_expression(text, text_exp, DimensionType[arg.upper()])
             output[arg] = parsed
 
     if custom_expressions:
@@ -192,7 +192,7 @@ def parse(
         raise ValueError("At least one argument should be True")
 
     if len(output) == 1:
-        output = list(output.values())[0]
+        return list(output.values())[0]
 
     return output
 

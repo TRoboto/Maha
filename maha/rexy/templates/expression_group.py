@@ -1,6 +1,6 @@
 __all__ = ["ExpressionGroup"]
 
-from typing import Iterable, List, Optional, Union, overload
+from typing import Iterable, List, Optional, Set, Tuple, Union, overload
 
 import maha.rexy as rx
 
@@ -26,7 +26,7 @@ class ExpressionGroup:
     ):
 
         self.expressions = self.merge_expressions(expressions)
-        self._parsed_ranges = set()
+        self._parsed_ranges: Set[Tuple[int, int]] = set()
         self.smart = smart
 
     def compile_expressions(self):
@@ -57,6 +57,7 @@ class ExpressionGroup:
         for expression in self.expressions:
             if expression.fullmatch(text):
                 return expression
+        return None
 
     def parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
         """
@@ -114,6 +115,9 @@ class ExpressionGroup:
     def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
         self.expressions.extend(other.expressions)
         return self
+
+    def __iter__(self):
+        return iter(self.expressions)
 
     @overload
     def __getitem__(self, index: int) -> "rx.Expression":

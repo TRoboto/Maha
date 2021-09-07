@@ -207,7 +207,7 @@ def contains(
         raise ValueError("`operator` can only take 'and' or 'or'")
 
     custom_strings = custom_strings or []
-    custom_expressions = custom_expressions or []
+    custom_expressions = custom_expressions or ExpressionGroup()
 
     # current function arguments
     current_arguments = locals()
@@ -238,11 +238,11 @@ def contains(
         raise ValueError("At least one argument should be True")
 
     if len(output) == 1:
-        output = list(output.values())[0]
+        return list(output.values())[0]
     elif operator == "and":
-        output = all(list(output.values()))
+        return all(list(output.values()))
     elif operator == "or":
-        output = any(list(output.values()))
+        return any(list(output.values()))
 
     return output
 

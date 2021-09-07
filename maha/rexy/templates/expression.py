@@ -145,7 +145,7 @@ class Expression:
         for m in re.finditer(self._compiled_pattern, text):
             yield self.parse(m, text)
 
-    def parse(self, match: regex.Match, text: Optional[str]) -> "ExpressionResult":
+    def parse(self, match: regex.Match, text: str) -> "ExpressionResult":
         """Extract the value from the input ``text`` and return it.
 
         .. note::
@@ -190,11 +190,11 @@ class Expression:
     def __str__(self) -> str:
         return self.pattern
 
-    def __add__(self, other: str) -> str:
-        return str(self) + other
+    def __add__(self, other: Union[str, "Expression"]) -> str:
+        return str(self) + str(other)
 
     def __radd__(self, other):
-        return other + str(self)
+        return str(other) + str(self)
 
     def __hash__(self):
         return int(hashlib.md5(self.pattern.encode()).hexdigest(), 16)

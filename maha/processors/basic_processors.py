@@ -25,7 +25,7 @@ class TextProcessor(BaseProcessor):
         self.set_lines(text)
 
     def apply(self, fn: Callable[[str], str]):
-        self.lines = list(map(fn, self.lines))
+        self.lines: List[str] = list(map(fn, self.lines))
 
     def filter(self, fn: Callable[[str], bool]):
         self.lines = list(filter(fn, self.lines))
@@ -76,10 +76,10 @@ class TextProcessor(BaseProcessor):
         TextProcessor
             New text processor
         """
-        out = text
         if sep:
-            out = text.split(sep)
-        return TextProcessor(out)
+            return TextProcessor(text.split(sep))
+
+        return TextProcessor(text)
 
     @classmethod
     def from_list(cls, lines: List[str]):
