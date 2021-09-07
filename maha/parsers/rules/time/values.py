@@ -748,7 +748,12 @@ LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH = FunctionValue(
 # -----------------------------------------------
 NUMERAL_HOUR = FunctionValue(
     lambda match: parse_value(
-        {"hour": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
+            "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+        }
     ),
     spaced_patterns(
         ALEF_LAM_OPTIONAL + ONE_HOUR, value_group(numeral_ones_tens.join())
@@ -757,7 +762,12 @@ NUMERAL_HOUR = FunctionValue(
 
 ORDINAL_HOUR = FunctionValue(
     lambda match: parse_value(
-        {"hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
+            "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
+        }
     ),
     spaced_patterns(
         ALEF_LAM_OPTIONAL + ONE_HOUR, value_group(ordinal_ones_tens.join())
@@ -825,7 +835,11 @@ BEFORE_N_HOURS = FunctionValue(
 # ----------------------------------------------------
 NUMERAL_MINUTE = FunctionValue(
     lambda match: parse_value(
-        {"minute": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "microsecond": 0,
+            "second": 0,
+            "minute": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+        }
     ),
     non_capturing_group(
         spaced_patterns(
@@ -840,7 +854,11 @@ NUMERAL_MINUTE = FunctionValue(
 
 ORDINAL_MINUTE = FunctionValue(
     lambda match: parse_value(
-        {"minute": list(ordinal_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "microsecond": 0,
+            "second": 0,
+            "minute": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
+        }
     ),
     non_capturing_group(
         spaced_patterns(
@@ -956,6 +974,10 @@ YEAR_WITH_MONTH = FunctionValue(
 MONTH_YEAR_FORM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
+            "hour": 0,
             "month": int(match.group("month")),
             "year": int(match.group("year")),
         }
@@ -1046,6 +1068,10 @@ NUMERAL_AND_THIS_MONTH = FunctionValue(
 DAY_MONTH_FORM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
+            "hour": 0,
             "day": int(match.group("day")),
             "month": int(match.group("month")),
         }
@@ -1063,6 +1089,10 @@ DAY_MONTH_FORM = FunctionValue(
 DAY_MONTH_YEAR_FORM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
+            "hour": 0,
             "day": int(match.group("day")),
             "month": int(match.group("month")),
             "year": int(match.group("year")),
@@ -1087,7 +1117,7 @@ def parse_time_fraction(match, expression, am_pm=None):
     hour = list(expression.parse(match.group("value")))[0].value
     if ella:
         hour = hour - 1 if hour > 0 else 23
-    time = {"minute": minute, "hour": hour}
+    time = {"microsecond": 0, "second": 0, "minute": minute, "hour": hour}
     if am_pm:
         time["am_pm"] = am_pm
     return parse_value(time)
@@ -1110,6 +1140,8 @@ ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
 HOUR_MINUTE_FORM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
             "hour": int(match.group("hour")),
             "minute": int(match.group("minute")),
         }
@@ -1131,6 +1163,7 @@ HOUR_MINUTE_SECOND_FORM = FunctionValue(
             "hour": int(match.group("hour")),
             "minute": int(match.group("minute")),
             "second": int(match.group("second")),
+            "microsecond": 0,
         }
     ),
     optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE)
@@ -1149,6 +1182,9 @@ HOUR_MINUTE_SECOND_FORM = FunctionValue(
 NUMERAL_HOUR_PM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
             "am_pm": "PM",
             "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
         }
@@ -1158,6 +1194,9 @@ NUMERAL_HOUR_PM = FunctionValue(
 NUMERAL_HOUR_AM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
             "am_pm": "AM",
             "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
         }
@@ -1183,6 +1222,9 @@ NUMERAL_FRACTION_HOUR_PM = FunctionValue(
 ORDINAL_HOUR_PM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
             "am_pm": "PM",
             "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
         }
@@ -1192,6 +1234,9 @@ ORDINAL_HOUR_PM = FunctionValue(
 ORDINAL_HOUR_AM = FunctionValue(
     lambda match: parse_value(
         {
+            "microsecond": 0,
+            "second": 0,
+            "minute": 0,
             "am_pm": "AM",
             "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
         }

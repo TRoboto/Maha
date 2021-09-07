@@ -13,7 +13,8 @@ from maha.parsers.rules import (
 from maha.parsers.rules.time.rule import RULE_TIME_AM_PM, RULE_TIME_NOW, RULE_TIME_WEEKS
 from maha.parsers.rules.time.template import TimeValue
 
-NOW = datetime(2021, 9, 1)
+DATE = datetime(2021, 9, 1)
+NOW = DATE.replace(hour=10, minute=38, second=4)
 
 
 def assert_expression_output(output, expected):
@@ -22,6 +23,14 @@ def assert_expression_output(output, expected):
 
     assert isinstance(output.value, TimeValue)
     assert NOW + output.value == expected
+
+
+def assert_expression_date_output(output, expected):
+    assert len(output) == 1
+    output = output[0]
+
+    assert isinstance(output.value, TimeValue)
+    assert DATE + output.value == expected
 
 
 @pytest.mark.parametrize(
@@ -36,7 +45,7 @@ def assert_expression_output(output, expected):
 )
 def test_current_year(input):
     output = list(RULE_TIME_YEARS(input))
-    assert_expression_output(output, datetime(2021, 9, 1))
+    assert_expression_date_output(output, datetime(2021, 9, 1))
     assert output[0].value == TimeValue(years=0)
 
 
@@ -54,7 +63,7 @@ def test_current_year(input):
 )
 def test_previous_year(input):
     output = list(RULE_TIME_YEARS(input))
-    assert_expression_output(output, datetime(2020, 9, 1))
+    assert_expression_date_output(output, datetime(2020, 9, 1))
     assert output[0].value == TimeValue(years=-1)
 
 
@@ -74,7 +83,7 @@ def test_previous_year(input):
 )
 def test_next_year(input):
     output = list(RULE_TIME_YEARS(input))
-    assert_expression_output(output, datetime(2022, 9, 1))
+    assert_expression_date_output(output, datetime(2022, 9, 1))
     assert output[0].value == TimeValue(years=1)
 
 
@@ -93,7 +102,7 @@ def test_next_year(input):
 )
 def test_after_before_years(expected_year, input):
     output = list(RULE_TIME_YEARS(input))
-    assert_expression_output(output, datetime(expected_year + 2021, 9, 1))
+    assert_expression_date_output(output, datetime(expected_year + 2021, 9, 1))
     assert output[0].value == TimeValue(years=expected_year)
 
 
@@ -112,7 +121,7 @@ def test_after_before_years(expected_year, input):
 )
 def test_next_two_years(input):
     output = list(RULE_TIME_YEARS(input))
-    assert_expression_output(output, datetime(2023, 9, 1))
+    assert_expression_date_output(output, datetime(2023, 9, 1))
     assert output[0].value == TimeValue(years=2)
 
 
@@ -131,7 +140,7 @@ def test_next_two_years(input):
 )
 def test_previous_two_years(input):
     output = list(RULE_TIME_YEARS(input))
-    assert_expression_output(output, datetime(2019, 9, 1))
+    assert_expression_date_output(output, datetime(2019, 9, 1))
     assert output[0].value == TimeValue(years=-2)
 
 
@@ -150,7 +159,7 @@ def test_previous_two_years(input):
 )
 def test_this_year(input):
     output = list(RULE_TIME_YEARS(input))
-    assert_expression_output(output, datetime(2021, 9, 1))
+    assert_expression_date_output(output, datetime(2021, 9, 1))
     assert output[0].value == TimeValue(years=0) or output[0].value == TimeValue(
         year=2021
     )
@@ -173,13 +182,13 @@ def test_this_year(input):
 )
 def test_n_months(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
-    assert_expression_output(output, datetime(2021, 9 + expected_month, 1))
+    assert_expression_date_output(output, datetime(2021, 9 + expected_month, 1))
     assert output[0].value == TimeValue(months=expected_month)
 
 
 def test_after_30_months():
     output = list(RULE_TIME_MONTHS("بعد 30 شهر"))
-    assert_expression_output(output, datetime(2024, 3, 1))
+    assert_expression_date_output(output, datetime(2024, 3, 1))
     assert output[0].value == TimeValue(months=30)
 
 
@@ -197,7 +206,7 @@ def test_after_30_months():
 )
 def test_specific_month(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
-    assert_expression_output(output, datetime(2021, expected_month, 1))
+    assert_expression_date_output(output, datetime(2021, expected_month, 1))
     assert output[0].value == TimeValue(month=expected_month)
 
 
@@ -217,7 +226,7 @@ def test_specific_month(expected_month, input):
 )
 def test_next_specific_month_same_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
-    assert_expression_output(output, datetime(2021, expected_month, 1))
+    assert_expression_date_output(output, datetime(2021, expected_month, 1))
     assert output[0].value == TimeValue(years=0, month=expected_month)
 
 
@@ -234,7 +243,7 @@ def test_next_specific_month_same_year(expected_month, input):
 )
 def test_next_specific_month_next_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
-    assert_expression_output(output, datetime(2022, expected_month, 1))
+    assert_expression_date_output(output, datetime(2022, expected_month, 1))
     assert output[0].value == TimeValue(years=1, month=expected_month)
 
 
@@ -254,7 +263,7 @@ def test_next_specific_month_next_year(expected_month, input):
 )
 def test_previous_specific_month_previous_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
-    assert_expression_output(output, datetime(2020, expected_month, 1))
+    assert_expression_date_output(output, datetime(2020, expected_month, 1))
     assert output[0].value == TimeValue(years=-1, month=expected_month)
 
 
@@ -267,7 +276,7 @@ def test_previous_specific_month_previous_year(expected_month, input):
 )
 def test_previous_specific_month_same_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
-    assert_expression_output(output, datetime(2021, expected_month, 1))
+    assert_expression_date_output(output, datetime(2021, expected_month, 1))
     assert output[0].value == TimeValue(years=0, month=expected_month)
 
 
@@ -281,7 +290,7 @@ def test_previous_specific_month_same_year(expected_month, input):
 )
 def test_previous_this_month(input):
     output = list(RULE_TIME_MONTHS(input))
-    assert_expression_output(output, datetime(2021, 9, 1))
+    assert_expression_date_output(output, datetime(2021, 9, 1))
     assert output[0].value == TimeValue(months=0)
 
 
@@ -299,7 +308,7 @@ def test_previous_this_month(input):
 )
 def test_next_weeks(expected_week, input):
     output = list(RULE_TIME_WEEKS(input))
-    assert_expression_output(output, datetime(2021, 9, 1 + 7 * expected_week))
+    assert_expression_date_output(output, datetime(2021, 9, 1 + 7 * expected_week))
     assert output[0].value == TimeValue(weeks=expected_week)
 
 
@@ -316,7 +325,7 @@ def test_next_weeks(expected_week, input):
 )
 def test_previous_weeks(expected_week, input):
     output = list(RULE_TIME_WEEKS(input))
-    assert_expression_output(output, datetime(2021, 8, 32 + 7 * expected_week))
+    assert_expression_date_output(output, datetime(2021, 8, 32 + 7 * expected_week))
     assert output[0].value == TimeValue(weeks=expected_week)
 
 
@@ -342,7 +351,7 @@ def test_previous_weeks(expected_week, input):
 )
 def test_next_days(expected_day, input):
     output = list(RULE_TIME_DAYS(input))
-    assert_expression_output(output, datetime(2021, 9, 1 + expected_day))
+    assert_expression_date_output(output, datetime(2021, 9, 1 + expected_day))
     assert output[0].value == TimeValue(days=expected_day)
 
 
@@ -367,7 +376,7 @@ def test_next_days(expected_day, input):
 )
 def test_previous_days(expected_day, input):
     output = list(RULE_TIME_DAYS(input))
-    assert_expression_output(output, datetime(2021, 8, 32 + expected_day))
+    assert_expression_date_output(output, datetime(2021, 8, 32 + expected_day))
     assert output[0].value == TimeValue(days=expected_day)
 
 
@@ -394,7 +403,7 @@ def test_previous_days(expected_day, input):
 )
 def test_specific_next_weekday(expected_day, input):
     output = list(RULE_TIME_DAYS(input))
-    assert_expression_output(output, datetime(2021, 9, expected_day))
+    assert_expression_date_output(output, datetime(2021, 9, expected_day))
 
 
 @pytest.mark.parametrize(
@@ -414,7 +423,7 @@ def test_specific_next_weekday(expected_day, input):
 )
 def test_specific_previous_weekday(expected_day, input):
     output = list(RULE_TIME_DAYS(input))
-    assert_expression_output(output, datetime(2021, 8, expected_day))
+    assert_expression_date_output(output, datetime(2021, 8, expected_day))
 
 
 @pytest.mark.parametrize(
@@ -437,7 +446,9 @@ def test_specific_previous_weekday(expected_day, input):
 def test_specific_hour(expected_hour, input):
     output = list(RULE_TIME_HOURS(input))
     assert_expression_output(output, datetime(2021, 9, 1, expected_hour))
-    assert output[0].value == TimeValue(hour=expected_hour)
+    assert output[0].value == TimeValue(
+        hour=expected_hour, minute=0, second=0, microsecond=0
+    )
 
 
 @pytest.mark.parametrize(
@@ -445,7 +456,7 @@ def test_specific_hour(expected_hour, input):
     [
         (5, "بعد خمسة ساعات"),
         (6, "بعد 6 ساعات"),
-        (21, "بعد واحد وعشرين ساعات"),
+        (13, "بعد ثلاثة عشر ساعات"),
         (1, "بعد ساعة"),
         (1, "بعد ساعة واحدة"),
         (2, "بعد ساعتين "),
@@ -462,7 +473,7 @@ def test_specific_hour(expected_hour, input):
 )
 def test_after_hours(expected_hour, input):
     output = list(RULE_TIME_HOURS(input))
-    assert_expression_output(output, datetime(2021, 9, 1, expected_hour))
+    assert_expression_output(output, NOW.replace(hour=NOW.hour + expected_hour))
     assert output[0].value == TimeValue(hours=expected_hour)
 
 
@@ -471,7 +482,7 @@ def test_after_hours(expected_hour, input):
     [
         (-5, "قبل خمسة ساعات"),
         (-6, "قبل 6 ساعات"),
-        (-21, "قبل واحد وعشرين ساعات"),
+        (-10, "قبل عشر ساعات"),
         (-1, "قبل ساعة"),
         (-1, "قبل ساعة واحدة"),
         (-2, "قبل ساعتين "),
@@ -484,7 +495,7 @@ def test_after_hours(expected_hour, input):
 )
 def test_before_hours(expected_hour, input):
     output = list(RULE_TIME_HOURS(input))
-    assert_expression_output(output, datetime(2021, 8, 31, 24 + expected_hour))
+    assert_expression_output(output, NOW.replace(hour=NOW.hour + expected_hour))
     assert output[0].value == TimeValue(hours=expected_hour)
 
 
@@ -513,8 +524,8 @@ def test_before_hours(expected_hour, input):
 )
 def test_specific_minute(expected_minute, input):
     output = list(RULE_TIME_MINUTES(input))
-    assert_expression_output(output, datetime(2021, 9, 1, 0, expected_minute))
-    assert output[0].value == TimeValue(minute=expected_minute)
+    assert_expression_output(output, datetime(2021, 9, 1, NOW.hour, expected_minute))
+    assert output[0].value == TimeValue(minute=expected_minute, second=0, microsecond=0)
 
 
 @pytest.mark.parametrize(
@@ -539,7 +550,7 @@ def test_specific_minute(expected_minute, input):
 )
 def test_after_minutes(expected_minute, input):
     output = list(RULE_TIME_MINUTES(input))
-    assert_expression_output(output, datetime(2021, 9, 1, 0, expected_minute))
+    assert_expression_output(output, NOW.replace(minute=NOW.minute + expected_minute))
     assert output[0].value == TimeValue(minutes=expected_minute)
 
 
@@ -561,7 +572,7 @@ def test_after_minutes(expected_minute, input):
 )
 def test_before_minutes(expected_minute, input):
     output = list(RULE_TIME_MINUTES(input))
-    assert_expression_output(output, datetime(2021, 8, 31, 23, 60 + expected_minute))
+    assert_expression_output(output, NOW.replace(minute=NOW.minute + expected_minute))
     assert output[0].value == TimeValue(minutes=expected_minute)
 
 
@@ -638,8 +649,7 @@ def test_now(input):
 )
 def test_first_day_and_month(input):
     output = parse_dimension(input, time=True)
-    assert_expression_output(output, NOW)
-    assert output[0].value == TimeValue(month=9, day=1)
+    assert_expression_date_output(output, datetime(2021, 9, 1))
 
 
 @pytest.mark.parametrize(
@@ -653,27 +663,26 @@ def test_first_day_and_month(input):
 )
 def test_month_and_year(input):
     output = parse_dimension(input, time=True)
-    assert_expression_output(output, NOW)
-    assert output[0].value == TimeValue(year=2021, month=9)
+    assert_expression_date_output(output, datetime(2021, 9, 1))
 
 
 @pytest.mark.parametrize(
     "expected,input",
     [
-        (NOW.replace(day=2, hour=17), "بكرة على الخمسة العصر"),
+        (DATE.replace(day=2, hour=17), "بكرة على الخمسة العصر"),
         (NOW.replace(day=16), "الخميس الموافق السادس عشر من هذا الشهر"),
         (NOW.replace(day=16), "الخميس الموافق 16 من هذا الشهر"),
         (NOW.replace(day=16), "الخميس بعد اسبوعين"),
         (NOW.replace(day=16, month=10), "الخميس الموافق السادس عشر من شهر 10"),
         (NOW.replace(day=4, month=11), "بعد شهرين يوم الخميس "),
-        (NOW.replace(day=6, month=8), "الجمعة 6/8"),
+        (DATE.replace(day=6, month=8), "الجمعة 6/8"),
         (NOW.replace(day=9, month=10), "السبت 9 اكتوبر"),
         (NOW.replace(month=2, day=2), "الثاني من شباط"),
         (NOW.replace(month=2, day=10), "العاشر من شهر شباط"),
         (NOW.replace(month=3, day=10), "10 اذار"),
         (NOW.replace(month=3, day=10), "10 اذار"),
         (NOW.replace(month=8, day=25), "الأربعا الأسبوع الماضي"),
-        (NOW.replace(day=4, hour=1, minute=30), "السبت هذا الأسبوع الساعة 1 ونص"),
+        (DATE.replace(day=4, hour=1, minute=30), "السبت هذا الأسبوع الساعة 1 ونص"),
         (NOW.replace(day=31, month=10), "آخر يوم بالشهر الجاي"),
         (NOW.replace(day=30), "آخر يوم من  الشهر الحالي"),
         (NOW.replace(day=28), "آخر ثلاثا"),
@@ -681,33 +690,33 @@ def test_month_and_year(input):
         (NOW.replace(day=25, month=8), "اخر اربعا من الشهر الماضي"),
         (NOW.replace(day=3, month=2, year=2022), "ثالث يوم من شهر 2 السنة الجاي"),
         (NOW.replace(day=15, month=5, year=2020), "ثالث جمعة من شهر 5 السنة الماضية"),
-        (NOW.replace(hour=7, minute=10, month=8, day=31), "الساعة 7 وعشر دقايق مبارح"),
-        (NOW.replace(hour=15, minute=15), "الساعة 3 و15 دقيقة العصر"),
-        (NOW.replace(hour=15, minute=20), "الساعة 3 وثلث مساءا"),
-        (NOW.replace(hour=2, minute=45), "الساعة 3 الا ربع الفجر"),
-        (NOW.replace(hour=12, minute=30), "12 ونص مساء"),
-        (NOW.replace(hour=12, minute=49), "الساعة الثانية عشر وتسعة واربعون دقيقة"),
+        (DATE.replace(hour=7, minute=10, month=8, day=31), "الساعة 7 وعشر دقايق مبارح"),
+        (DATE.replace(hour=15, minute=15), "الساعة 3 و15 دقيقة العصر"),
+        (DATE.replace(hour=15, minute=20), "الساعة 3 وثلث مساءا"),
+        (DATE.replace(hour=2, minute=45), "الساعة 3 الا ربع الفجر"),
+        (DATE.replace(hour=12, minute=30), "12 ونص مساء"),
+        (DATE.replace(hour=12, minute=49), "الساعة الثانية عشر وتسعة واربعون دقيقة"),
         (NOW.replace(year=1040), "في العام الف واربعين"),
         (
-            NOW.replace(year=2061, day=21, month=11, hour=2),
+            DATE.replace(year=2061, day=21, month=11, hour=2),
             "بعد اربعين سنة الموافق 21/11 خلال الساعة الثانية فجرا",
         ),
         (
-            NOW.replace(day=3, hour=20, minute=40),
+            DATE.replace(day=3, hour=20, minute=40),
             "بعد الغد عند الساعه تسعة الا ثلث في الليل",
         ),
-        (NOW.replace(hour=3, minute=20), "3:20"),
+        (DATE.replace(hour=3, minute=20), "3:20"),
         (
-            NOW.replace(hour=11, minute=2, second=40, month=8, day=30),
+            DATE.replace(hour=11, minute=2, second=40, month=8, day=30),
             "اول مبارح الساعة 11:2:40",
         ),
-        (NOW, "1/9/2021"),
+        (DATE, "1/9/2021"),
         (
-            NOW.replace(day=11, month=10, hour=13, minute=15),
+            DATE.replace(day=11, month=10, hour=13, minute=15),
             "الاثنين 11/10 الساعة الواحدة والربع بعد الظهر",
         ),
         (
-            NOW.replace(day=4, hour=13, minute=30),
+            DATE.replace(day=4, hour=13, minute=30),
             "السبت هذا الأسبوع الساعة 1 ونص بعد الظهر",
         ),
     ],
