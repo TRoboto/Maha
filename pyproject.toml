@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "maha"
+name = "mahad"
 version = "0.1.0"
 description = "An Arabic text processing library intended for use in NLP applications."
 authors = ["Mohammad Al-Fetyani <m4bh@hotmail.com>"]
@@ -23,7 +23,7 @@ classifiers= [
     ]
 exclude = ["tools/","images/",".vscode/"]
 packages = [
-    { include = "maha" },
+    { include = "mahad" },
 ]
 
 [tool.poetry.dependencies]
@@ -49,7 +49,6 @@ types-python-dateutil = "^2.8.0"
 "Bug Tracker" = "https://github.com/TRoboto/Maha/issues"
 "Discord" = "https://discord.gg/WdNCU6yG"
 "Documentation" = "https://maha.readthedocs.io"
-"GitHub" = "https://github.com/TRoboto/Maha"
 
 
 [tool.isort]
