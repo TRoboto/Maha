@@ -69,31 +69,31 @@ class TimeValue(relativedelta):
         )
 
     def is_years_set(self):
-        return self._years or self.year
+        return self._years is not None or self.year is not None
 
     def is_months_set(self):
-        return self._months or self.month
+        return self._months is not None or self.month is not None
 
     def is_days_set(self):
-        return self._days or self.day
+        return self._days is not None or self.day is not None
 
     def is_leapdays_set(self):
-        return self._leapdays
+        return self._leapdays is not None
 
     def is_weeks_set(self):
-        return self._weeks
+        return self._weeks is not None
 
     def is_hours_set(self):
-        return self._hours or self.hour
+        return self._hours is not None or self.hour is not None
 
     def is_minutes_set(self):
-        return self._minutes or self.minute
+        return self._minutes is not None or self.minute is not None
 
     def is_seconds_set(self):
-        return self._seconds or self.second
+        return self._seconds is not None or self.second is not None
 
     def is_microseconds_set(self):
-        return self._microseconds or self.microsecond
+        return self._microseconds is not None or self.microsecond is not None
 
     def _add(self, value1, value2):
         if value1 is not None and value2 is not None:
