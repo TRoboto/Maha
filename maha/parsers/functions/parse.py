@@ -67,7 +67,8 @@ def parse(
     mentions: bool = False,
     emojis: bool = False,
     custom_expressions: Union[ExpressionGroup, Expression] = None,
-) -> Union[List[Dimension], Dict[str, List[Dimension]]]:
+    include_space=False,
+) -> List[Dimension]:
 
     """Extracts certain characters/patterns from the given text.
 
@@ -139,15 +140,13 @@ def parse(
         by default False
     custom_expressions : Union[:class:`~.ExpressionGroup`, :class:`~.Expression`],
         optional. Include any other string(s), by default None
-
+    include_space : bool, optional
+        Include the space expression :data:`~.EXPRESSION_SPACE` with all characters,
+        by default False
     Returns
     -------
-    Union[List[:class:`~.Dimension`], Dict[str, List[:class:`~.Dimension`]]]
-        * If one argument is set to True, a list of dimensions is returned. Can be
-        empty if no match found.
-        * If more than one argument is set to True, a dictionary is returned where
-        keys are the True passed arguments and the corresponding values are
-        list of dimensions, any of which can be empty if no match found.
+    List[:class:`~.Dimension`]
+        List of dimensions extracted from the text
 
     Raises
     ------
@@ -155,8 +154,6 @@ def parse(
         If no argument is set to True
     """
 
-    # TODO: Maybe add `include_space` option to allow including spaces in the expressions
-    # TODO: Maybe add `merge` option to allow merging of the expressions
     if not text:
         return []
 
@@ -164,7 +161,8 @@ def parse(
     current_arguments = locals()
     constants = globals()
 
-    output = {}
+    output = []
+    any_argument_set = False
 
     # Since each argument has the same name as the corresponding constant
     # (But, expressions should be prefixed with "EXPRESSION_" to match the actual expression.)
@@ -174,25 +172,29 @@ def parse(
     for arg, value in current_arguments.items():
         const = constants.get(arg.upper())
         if const and value is True:
-            text_exp = TextExpression(f"[{''.join(const)}]+")
+            any_argument_set = True
+            if include_space:
+                pattern = f"(?:[{''.join(const)}](?:\\s+)?)+"
+            else:
+                pattern = f"[{''.join(const)}]+"
+            text_exp = TextExpression(pattern)
             parsed = parse_expression(text, text_exp, DimensionType[arg.upper()])
-            output[arg] = parsed
+            output.extend(parsed)
             continue
         # check for expression
         expression: Optional[Expression] = constants.get("EXPRESSION_" + arg.upper())
         if expression and value is True:
+            any_argument_set = True
             text_exp = TextExpression(str(expression))
             parsed = parse_expression(text, text_exp, DimensionType[arg.upper()])
-            output[arg] = parsed
+            output.extend(parsed)
 
     if custom_expressions:
-        output["custom_expressions"] = parse_expression(text, custom_expressions)
+        any_argument_set = True
+        output.extend(parse_expression(text, custom_expressions))
 
-    if not output:
+    if not any_argument_set:
         raise ValueError("At least one argument should be True")
-
-    if len(output) == 1:
-        return list(output.values())[0]
 
     return output
 

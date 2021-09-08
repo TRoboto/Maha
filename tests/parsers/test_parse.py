@@ -48,7 +48,13 @@ def test_parse_with_one_argument(simple_text_input):
 
 def test_parse_with_more_than_one_argument(simple_text_input):
     result = parse(simple_text_input, arabic=True, english=True, emojis=True)
-    assert isinstance(result, dict)
+    assert len(result) == 12
+
+
+def test_parse_with_more_than_one_argument_with_space(simple_text_input):
+    result = parse(
+        simple_text_input, arabic=True, english=True, emojis=True, include_space=True
+    )
     assert len(result) == 3
 
 
