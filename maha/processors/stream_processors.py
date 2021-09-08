@@ -173,5 +173,6 @@ class StreamFileProcessor(StreamTextProcessor):
             self.openfile.close()
 
 
-class FolderProcessor:
-    pass
+class StreamFolderProcessor:
+    def __init__(self):
+        raise NotImplementedError()

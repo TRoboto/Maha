@@ -345,7 +345,7 @@ def remove_hash_keep_tag(text: str):
 
 def remove_hashtags_at_end(text: str):
     # TODO: Add function that removes only hashtags that appear at the end of a text
-    pass
+    raise NotImplementedError()
 
 
 def remove_tatweel(text: str) -> str:

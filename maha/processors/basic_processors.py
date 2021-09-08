@@ -140,8 +140,10 @@ class FileProcessor(TextProcessor):
 
 
 class DataFrameProcessor:
-    pass
+    def __init__(self):
+        raise NotImplementedError()
 
 
 class FolderProcessor:
-    pass
+    def __init__(self):
+        raise NotImplementedError()

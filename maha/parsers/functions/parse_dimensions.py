@@ -64,14 +64,25 @@ def parse_dimension(
     """
     output = []
 
+    if amount_of_money:
+        raise NotImplementedError("amount_of_money is not implemented yet")
     if duration:
         output.extend(_get_dimensions(RULE_DURATION, text, DimensionType.DURATION))
+    if distance:
+        raise NotImplementedError("raise is not implemented yet")
     if numeral:
         output.extend(_get_dimensions(RULE_NUMERAL, text, DimensionType.NUMERAL))
     if ordinal:
         output.extend(_get_dimensions(RULE_ORDINAL, text, DimensionType.ORDINAL))
+    if quantity:
+        raise NotImplementedError("quantity is not implemented yet")
+    if temperature:
+        raise NotImplementedError("temperature is not implemented yet")
     if time:
         output.extend(_get_dimensions(RULE_TIME, text, DimensionType.TIME))
+    if volume:
+        raise NotImplementedError("volume is not implemented yet")
+
     if not any(
         [
             amount_of_money,
