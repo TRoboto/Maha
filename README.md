@@ -18,6 +18,8 @@
 
 Maha is a text processing library specially developed to deal with Arabic text. The beta version can be used to clean and parse text, files, and folders with or without streaming capability.
 
+If you need help or want to discuss topics related to Maha, feel free to reach out to our [Discord](https://discord.gg/WdNCU6yG) server. If you would like to submit a bug report or feature request, please open an issue.
+
 ## Table of Content
 
 - [Installation](#installation)
@@ -276,7 +278,7 @@ We can use the sample data that comes with Maha.
 
 ```
 
-> Additional step is required for stream processors. You need to call `~.process_and_save` function after calling at least one clean function
+Additional step is required for stream processors. You need to call `~.process_and_save` function after calling at least one clean function
 
 ```py
 ...
