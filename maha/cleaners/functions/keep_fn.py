@@ -110,7 +110,7 @@ def keep(
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
         >>> keep(text, arabic_letters=True)
@@ -166,7 +166,7 @@ def keep_arabic_letters(text: str) -> str:
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = " 1 يا أحلى mathematicians في العالم"
         >>> keep_arabic_letters(text)
@@ -191,7 +191,7 @@ def keep_arabic_characters(text: str) -> str:
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "أَلمَانِيَا (بالألمانية: Deutschland) رسمِيّاً جُمهُورِيَّة أَلمَانِيَا الاِتِّحَاديَّة"
         >>> keep_arabic_characters(text)
@@ -217,7 +217,7 @@ def keep_arabic_with_english_numbers(text: str) -> str:
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "تتكون من 16 ولاية تُغطي مساحة 357,021 كيلومتر Deutschland"
         >>> keep_arabic_with_english_numbers(text)
@@ -243,7 +243,7 @@ def keep_arabic_letters_with_harakat(text: str) -> str:
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "إنّ في التّركِ قوة…"
         >>> keep_arabic_letters_with_harakat(text)
@@ -290,7 +290,7 @@ def keep_strings(
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "لا حول ولا قوة إلا بالله"
         >>> keep_strings(text, "الله")

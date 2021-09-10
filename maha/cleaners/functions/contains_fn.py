@@ -188,13 +188,13 @@ def contains(
     Examples
     --------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "مقاييس أداء النماذج في التعلم الآلي Machine Learning ... 🌺"
         >>> contains(text, english=True, emails=True, emojis=True)
         {'english': True, 'emails': False, 'emojis': True}
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "قال رسول اللهﷺ إن خير أيامكم يوم الجمعة فأكثروا عليَّ من الصلاة فيه"
         >>> contains(text, english=True)
@@ -271,7 +271,7 @@ def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "كانت اللعبة حللللللللوة جداً"
         >>> contains_repeated_substring(text)
@@ -314,7 +314,7 @@ def contains_single_letter_word(
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "cu later my friend, ك"
         >>> contains_single_letter_word(text, arabic_letters=True, english_letters=True)
@@ -362,7 +362,7 @@ def contains_expressions(
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "علم الهندسة (Engineering)"
         >>> contains_expressions(text, r"\([A-Za-z]+\)")
@@ -404,7 +404,7 @@ def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
     Example
     -------
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "الله أكبر، الحمد لله رب العالمين"
         >>> contain_strings(text, "الله")

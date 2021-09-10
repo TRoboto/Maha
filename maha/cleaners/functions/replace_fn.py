@@ -105,13 +105,13 @@ def arabic_numbers_to_english(text: str):
 
     Examples
     --------
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "٣"
         >>> arabic_numbers_to_english(text)
         '3'
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "١٠"
         >>> arabic_numbers_to_english(text)
@@ -144,13 +144,13 @@ def replace_expression(
 
     Examples
     --------
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "ولقد حصلت على ١٠ من ١٠ "
         >>> replace_expression(text, "١٠", "عشرة")
         'ولقد حصلت على عشرة من عشرة '
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "ذهبت الفتاه إلى المدرسه"
         >>> replace_expression(text, "ه( |$)", "ة ").strip()
@@ -184,13 +184,13 @@ def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
 
     Examples
     --------
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "حصل الولد على معدل 50%"
         >>> replace(text, "%", " بالمئة")
         'حصل الولد على معدل 50 بالمئة'
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "ولقد كلف هذا المنتج 100 $"
         >>> replace(text, "$", "دولار")
@@ -225,7 +225,7 @@ def replace_except(text: str, strings: Union[List[str], str], with_value: str) -
 
     Example
     -------
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم"
         >>> replace_except(text, ARABIC_LETTERS + [SPACE], EMPTY)

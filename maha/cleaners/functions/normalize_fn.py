@@ -82,19 +82,19 @@ def normalize(
 
     Examples
     --------
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "عن أبي هريرة"
         >>> normalize(text, alef=True, teh_marbuta=True)
         'عن ابي هريره'
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "قال رسول الله ﷺ"
         >>> normalize(text, ligatures=True)
         'قال رسول الله صلى الله عليه وسلم'
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "قال مؤمن: ﷽ قل هو ﷲ أحد"
         ... # For space
@@ -149,13 +149,13 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
 
     Examples
     --------
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "السﻻم عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَﻷلأ وَجْهُه"
         >>> normalize_lam_alef(text)
         'السلام عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَلألأ وَجْهُه'
 
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "اﻵن يا أصحابي"
         >>> normalize_lam_alef(text, keep_hamza=False)
@@ -195,7 +195,7 @@ def normalize_small_alef(
 
     Example
     -------
-    .. code-block:: pycon
+    .. code:: pycon
 
         >>> text = "وَٱلصَّٰٓفَّٰتِ صَفّٗا"
         >>> normalize_small_alef(text)
