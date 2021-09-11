@@ -185,12 +185,14 @@ def remove(
     --------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove
         >>> text = "ويندوز 11 سيدعم تطبيقات نظام أندرويد. #Windows11"
         >>> remove(text, hashtags=True)
         'ويندوز 11 سيدعم تطبيقات نظام أندرويد.'
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove
         >>> text = "قَالَ رَبِّ اشْرَحْ لِي صَدْرِي.."
         >>> remove(text, all_harakat=True, punctuations=True)
         'قال رب اشرح لي صدري'
@@ -290,14 +292,16 @@ def reduce_repeated_substring(
     Examples
     --------
 
-    ..code-block:: pycon
+    ..code:: pycon
 
+        >>> from maha.cleaners.functions import reduce_repeated_substring
         >>> text = "ههههههههههههههه"
         >>> reduce_repeated_substring(text)
         'هه'
 
-    ..code-block:: pycon
+    ..code:: pycon
 
+        >>> from maha.cleaners.functions import reduce_repeated_substring
         >>> text = "ويييييييييين راححححححححححححوا"
         >>> reduce_repeated_substring(text, reduce_to=1)
         'وين راحوا'
@@ -331,6 +335,7 @@ def remove_hash_keep_tag(text: str):
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_hash_keep_tag
         >>> text = "We love #Jordan very much"
         >>> remove_hash_keep_tag(text)
         'We love Jordan very much'
@@ -366,6 +371,7 @@ def remove_tatweel(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_tatweel
         >>> text = "الحمــــــــد لله رب العــــــــــــالمـــــــيـــــن"
         >>> remove_tatweel(text)
         'الحمد لله رب العالمين'
@@ -391,6 +397,7 @@ def remove_emails(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_emails
         >>> text = "يمكن استخدام الإيميل الشخصي، كمثال user1998@gmail.com"
         >>> remove_emails(text)
         'يمكن استخدام الإيميل الشخصي، كمثال'
@@ -417,6 +424,7 @@ def remove_hashtags(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_hashtags
         >>> text = "ويمكن القول أن مكة المكرمة من أجمل المناطق على وجه الأرض #السعودية"
         >>> remove_hashtags(text)
         'ويمكن القول أن مكة المكرمة من أجمل المناطق على وجه الأرض'
@@ -442,6 +450,7 @@ def remove_links(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_links
         >>> text = "لمشاهدة آخر التطورات يرجى زيارة الموقع التالي: https://github.com/TRoboto/Maha"
         >>> remove_links(text)
         'لمشاهدة آخر التطورات يرجى زيارة الموقع التالي:'
@@ -468,6 +477,7 @@ def remove_mentions(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_mentions
         >>> text = "@test لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة"
         >>> remove_mentions(text)
         'لو سمحت صديقنا تزورنا على المعرض لاستلام الجائزة'
@@ -493,6 +503,7 @@ def remove_punctuations(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_punctuations
         >>> text = "مثال على الرموز الخاصة كالتالي $ ^ & * ( ) ! @"
         >>> remove_punctuations(text)
         'مثال على الرموز الخاصة كالتالي'
@@ -518,6 +529,7 @@ def remove_english(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_english
         >>> text = "ومن أفضل الجامعات هي جامعة إكسفورد (Oxford University)"
         >>> remove_english(text)
         'ومن أفضل الجامعات هي جامعة إكسفورد'
@@ -543,6 +555,7 @@ def remove_all_harakat(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_all_harakat
         >>> text = "وَٱلصَّٰٓفَّٰتِ صَفّٗا (1) فَٱلزَّٰجِرَٰتِ زَجۡرٗا"
         >>> remove_all_harakat(text)
         'وٱلصفت صفا (1) فٱلزجرت زجرا'
@@ -568,6 +581,7 @@ def remove_harakat(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_harakat
         >>> text = "ألا تَرَى: كلَّ مَنْ تَرجو وتَأمَلُهُ مِنَ البَرِيَّةِ (مسكينُ بْنُ مسكينِ)"
         >>> remove_harakat(text)
         'ألا ترى: كل من ترجو وتأمله من البرية (مسكين بن مسكين)'
@@ -593,6 +607,7 @@ def remove_numbers(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_numbers
         >>> text = "ورقم أبو تريكة في نادي الأهلي هو إثنين وعشرين (22)"
         >>> remove_numbers(text)
         'ورقم أبو تريكة في نادي الأهلي هو إثنين وعشرين ( )'
@@ -630,6 +645,7 @@ def remove_expressions(
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_expressions
         >>> text = "الأميرُ الغازي أرطُغرُل، أو اختصارًا أرطغرل (بالتركية: Ertuğrul)"
         >>> remove_expressions(text, r"\(.*\)")
         'الأميرُ الغازي أرطُغرُل، أو اختصارًا أرطغرل'
@@ -683,6 +699,7 @@ def remove_strings(
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_strings
         >>> text = "ومن الكلمات المحظورة السلاح"
         >>> remove_strings(text, "السلاح")
         'ومن الكلمات المحظورة'
@@ -726,6 +743,7 @@ def remove_extra_spaces(text: str, max_spaces: int = 1) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_extra_spaces
         >>> text = "وكان صديقنا    العزيز   محمد من أفضل   الأشخاص الذين قابلتهم"
         >>> remove_extra_spaces(text)
         'وكان صديقنا العزيز محمد من أفضل الأشخاص الذين قابلتهم'
@@ -757,6 +775,7 @@ def remove_arabic_letter_dots(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import remove_arabic_letter_dots
         >>> text = "الحَمدُ للهِ الَّذي بنِعمتِه تَتمُّ الصَّالحاتُ"
         >>> remove_arabic_letter_dots(text)
         'الحَمدُ للهِ الَّدى ٮٮِعمٮِه ٮَٮمُّ الصَّالحاٮُ'

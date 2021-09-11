@@ -306,7 +306,7 @@ class BaseProcessor(ABC):
             Use ``operator='and'`` to drop lines that contain all selected strings
             or patterns.
 
-        See :func:`~.contain` for arguments description"""
+        See :func:`~.contains` for arguments description"""
 
         if operator is None:
             raise ValueError("operator cannot be None")
@@ -431,7 +431,7 @@ class BaseProcessor(ABC):
             Use ``operator='and'`` to drop lines that contain all selected strings
             or patterns.
 
-        See :func:`~.contain` for arguments description"""
+        See :func:`~.contains` for arguments description"""
 
         if operator is None:
             raise ValueError("operator cannot be None")

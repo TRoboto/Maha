@@ -84,18 +84,21 @@ def normalize(
     --------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import normalize
         >>> text = "عن أبي هريرة"
         >>> normalize(text, alef=True, teh_marbuta=True)
         'عن ابي هريره'
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import normalize
         >>> text = "قال رسول الله ﷺ"
         >>> normalize(text, ligatures=True)
         'قال رسول الله صلى الله عليه وسلم'
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import normalize
         >>> text = "قال مؤمن: ﷽ قل هو ﷲ أحد"
         ... # For space
         >>> normalize(text, all=True, waw=False)
@@ -151,12 +154,14 @@ def normalize_lam_alef(text: str, keep_hamza: bool = True) -> str:
     --------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import normalize_lam_alef
         >>> text = "السﻻم عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَﻷلأ وَجْهُه"
         >>> normalize_lam_alef(text)
         'السلام عليكم أحبتي، قالوا في صِفَةِ رَسُولِ الله يتَلألأ وَجْهُه'
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import normalize_lam_alef
         >>> text = "اﻵن يا أصحابي"
         >>> normalize_lam_alef(text, keep_hamza=False)
         'الان يا أصحابي'
@@ -197,6 +202,7 @@ def normalize_small_alef(
     -------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import normalize_small_alef
         >>> text = "وَٱلصَّٰٓفَّٰتِ صَفّٗا"
         >>> normalize_small_alef(text)
         'وَٱلصَّآفَّاتِ صَفّٗا'

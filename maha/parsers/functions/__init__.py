@@ -1,2 +1,2 @@
-from .parse import *
 from .parse_dimensions import *
+from .parse_fn import *

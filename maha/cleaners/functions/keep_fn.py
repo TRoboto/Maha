@@ -112,6 +112,7 @@ def keep(
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import keep
         >>> text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ"
         >>> keep(text, arabic_letters=True)
         'بسم الله الرحمن الرحيم'
@@ -168,6 +169,7 @@ def keep_arabic_letters(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import keep_arabic_letters
         >>> text = " 1 يا أحلى mathematicians في العالم"
         >>> keep_arabic_letters(text)
         'يا أحلى في العالم'
@@ -193,6 +195,7 @@ def keep_arabic_characters(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import keep_arabic_characters
         >>> text = "أَلمَانِيَا (بالألمانية: Deutschland) رسمِيّاً جُمهُورِيَّة أَلمَانِيَا الاِتِّحَاديَّة"
         >>> keep_arabic_characters(text)
         'أَلمَانِيَا بالألمانية رسمِيّاً جُمهُورِيَّة أَلمَانِيَا الاِتِّحَاديَّة'
@@ -219,6 +222,7 @@ def keep_arabic_with_english_numbers(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import keep_arabic_with_english_numbers
         >>> text = "تتكون من 16 ولاية تُغطي مساحة 357,021 كيلومتر Deutschland"
         >>> keep_arabic_with_english_numbers(text)
         'تتكون من 16 ولاية تُغطي مساحة 357 021 كيلومتر'
@@ -245,6 +249,7 @@ def keep_arabic_letters_with_harakat(text: str) -> str:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import keep_arabic_letters_with_harakat
         >>> text = "إنّ في التّركِ قوة…"
         >>> keep_arabic_letters_with_harakat(text)
         'إنّ في التّركِ قوة'
@@ -292,6 +297,7 @@ def keep_strings(
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import keep_strings
         >>> text = "لا حول ولا قوة إلا بالله"
         >>> keep_strings(text, "الله")
         'الله'

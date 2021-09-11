@@ -75,6 +75,9 @@ def parse(
     To add a new parameter, make sure that its name is the same as the corresponding
     constant. For the patterns, only remove the prefix EXPRESSION_ from the parameter name
 
+    .. todo::
+        Add the ability to combine all expressions before parsing.
+
     Parameters
     ----------
     text : str
@@ -211,11 +214,11 @@ def parse_expression(
     ----------
     text : str
         Text to check
-    expressions : Union[:class:`~ExpressionGroup`, :class:`~Expression`]
+    expressions : Union[:class:`~.ExpressionGroup`, :class:`~.Expression`]
         Expression(s) to use
     dimension_type : DimensionType
         Dimension type of the input ``expressions``,
-        by default :attribute:`~.DimensionType.GENERAL`
+        by default :attr:`.DimensionType.GENERAL`
 
     Returns
     -------

@@ -107,12 +107,14 @@ def arabic_numbers_to_english(text: str):
     --------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import arabic_numbers_to_english
         >>> text = "٣"
         >>> arabic_numbers_to_english(text)
         '3'
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import arabic_numbers_to_english
         >>> text = "١٠"
         >>> arabic_numbers_to_english(text)
         '10'
@@ -146,12 +148,14 @@ def replace_expression(
     --------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import replace_expression
         >>> text = "ولقد حصلت على ١٠ من ١٠ "
         >>> replace_expression(text, "١٠", "عشرة")
         'ولقد حصلت على عشرة من عشرة '
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import replace_expression
         >>> text = "ذهبت الفتاه إلى المدرسه"
         >>> replace_expression(text, "ه( |$)", "ة ").strip()
         'ذهبت الفتاة إلى المدرسة'
@@ -186,12 +190,14 @@ def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
     --------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import replace
         >>> text = "حصل الولد على معدل 50%"
         >>> replace(text, "%", " بالمئة")
         'حصل الولد على معدل 50 بالمئة'
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import replace
         >>> text = "ولقد كلف هذا المنتج 100 $"
         >>> replace(text, "$", "دولار")
         'ولقد كلف هذا المنتج 100 دولار'
@@ -227,6 +233,8 @@ def replace_except(text: str, strings: Union[List[str], str], with_value: str) -
     -------
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import replace_except
+        >>> from maha.constants import ARABIC_LETTERS, SPACE, EMPTY
         >>> text = "لَيتَ الذينَ تُحبُّ العيّنَ رؤيَتهم"
         >>> replace_except(text, ARABIC_LETTERS + [SPACE], EMPTY)
         'ليت الذين تحب العين رؤيتهم'
@@ -271,8 +279,9 @@ def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
 
     Example
     -------
-    ..  code-block:: python
+    ..  code:: pycon
 
+        >>> from maha.cleaners.functions import replace_pairs
         >>> text = 'شلونك يا محمد؟'
         >>> replace_pairs(text, ['شلونك'] , ['كيف حالك'])
         'كيف حالك يا محمد؟'

@@ -69,7 +69,7 @@ def parse_dimension(
     if duration:
         output.extend(_get_dimensions(RULE_DURATION, text, DimensionType.DURATION))
     if distance:
-        raise NotImplementedError("raise is not implemented yet")
+        raise NotImplementedError("distance is not implemented yet")
     if numeral:
         output.extend(_get_dimensions(RULE_NUMERAL, text, DimensionType.NUMERAL))
     if ordinal:

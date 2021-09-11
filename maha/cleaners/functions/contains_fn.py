@@ -190,12 +190,14 @@ def contains(
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import contains
         >>> text = "مقاييس أداء النماذج في التعلم الآلي Machine Learning ... 🌺"
         >>> contains(text, english=True, emails=True, emojis=True)
         {'english': True, 'emails': False, 'emojis': True}
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import contains
         >>> text = "قال رسول اللهﷺ إن خير أيامكم يوم الجمعة فأكثروا عليَّ من الصلاة فيه"
         >>> contains(text, english=True)
         False
@@ -273,6 +275,7 @@ def contains_repeated_substring(text: str, min_repeated: int = 3) -> bool:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import contains_repeated_substring
         >>> text = "كانت اللعبة حللللللللوة جداً"
         >>> contains_repeated_substring(text)
         True
@@ -316,6 +319,7 @@ def contains_single_letter_word(
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import contains_single_letter_word
         >>> text = "cu later my friend, ك"
         >>> contains_single_letter_word(text, arabic_letters=True, english_letters=True)
         True
@@ -364,6 +368,7 @@ def contains_expressions(
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import contains_expressions
         >>> text = "علم الهندسة (Engineering)"
         >>> contains_expressions(text, r"\([A-Za-z]+\)")
         True
@@ -406,6 +411,7 @@ def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
 
     .. code:: pycon
 
+        >>> from maha.cleaners.functions import contain_strings
         >>> text = "الله أكبر، الحمد لله رب العالمين"
         >>> contain_strings(text, "الله")
         True
