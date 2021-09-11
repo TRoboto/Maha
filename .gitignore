@@ -128,9 +128,7 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# ignore virtualenvwrapper
-.project
-
-# disable docs for now
-docs/*
+# doc directories
+_build/
+autoapi/
 

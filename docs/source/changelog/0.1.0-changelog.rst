@@ -1,0 +1,7 @@
+******
+v0.1.0
+******
+
+:Date: September 18, 2021
+
+This is the first release of Maha.
