@@ -31,8 +31,8 @@ jobs:
       - name: Install dependencies
         run: poetry install
 
-      - name: Run module doctests
-        run: poetry run pytest --cov-append --doctest-modules maha
+      - name: Run doctests in rst files
+        run: cd docs && poetry run make doctest
 
       - name: Run tests
         run: poetry run pytest --cov=maha tests/ --cov-report=xml
