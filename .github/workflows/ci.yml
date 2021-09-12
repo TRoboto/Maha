@@ -32,7 +32,7 @@ jobs:
         run: poetry install
 
       - name: Run doctests in rst files
-        run: cd docs && poetry run make doctest
+        run: cd docs && poetry run make doctest && poetry run pytest --doctest-glob="*.rst"
 
       - name: Run tests
         run: poetry run pytest --cov=maha tests/ --cov-report=xml
