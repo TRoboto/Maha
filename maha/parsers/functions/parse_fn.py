@@ -75,7 +75,8 @@ def parse(
     To add a new parameter, make sure that its name is the same as the corresponding
     constant. For the patterns, only remove the prefix ``EXPRESSION_`` from the parameter name
 
-    .. todo::
+    .. admonition:: TO DO
+
         Add the ability to combine all expressions before parsing.
 
     Parameters
