@@ -13,6 +13,5 @@
     "**/__pycache__": true,
     "**/*.pyc": true
   },
-  "restructuredtext.confPath": "${workspaceFolder}/docs/source",
   "python.analysis.typeCheckingMode": "basic"
 }
