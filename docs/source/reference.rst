@@ -3,7 +3,7 @@ Reference Manual
 
 This reference manual details modules, functions, and variables included in
 Maha, describing what they are and what they do. For learning how to use
-Maha, see :doc:`examples <examples>`.
+Maha, see :doc:`overview <overview>`.
 
 
 .. toctree::
