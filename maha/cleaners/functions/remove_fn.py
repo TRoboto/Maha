@@ -98,7 +98,7 @@ def remove(
     """Removes certain characters from the given text.
 
     To add a new parameter, make sure that its name is the same as the corresponding
-    constant. For the patterns, only remove the prefix EXPRESSION_ from the parameter name
+    constant. For the patterns, only remove the prefix ``EXPRESSION_`` from the parameter name
 
     Parameters
     ----------
