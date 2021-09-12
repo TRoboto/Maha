@@ -128,7 +128,3 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# doc directories
-_build/
-autoapi/
-
