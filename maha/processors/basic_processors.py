@@ -60,7 +60,7 @@ class TextProcessor(BaseProcessor):
         return "\n".join(self.lines)
 
     @classmethod
-    def from_string(cls, text: str, sep: str = None):
+    def from_text(cls, text: str, sep: str = None):
         """Creates a new processor from the given text. Separate the text by the input
         ``sep`` argument if provided.
 

@@ -9,7 +9,7 @@ class TestTextProcessor(TestBaseProcessor):
 
     @pytest.fixture()
     def processor(self, multiple_tweets: str):
-        return TextProcessor.from_string(multiple_tweets, "\n")
+        return TextProcessor.from_text(multiple_tweets, "\n")
 
     def get_processed_lines(self, proc):
         return proc.lines
@@ -28,13 +28,13 @@ class TestTextProcessor(TestBaseProcessor):
         assert len(processor.lines) == 1
         assert processor.text == text
 
-    def test_from_string(self, multiple_tweets):
-        processor = TextProcessor.from_string(multiple_tweets)
+    def test_from_text(self, multiple_tweets):
+        processor = TextProcessor.from_text(multiple_tweets)
         assert isinstance(processor, TextProcessor)
         assert len(processor.lines) == 1
 
-    def test_from_string_with_sep(self, multiple_tweets):
-        processor = TextProcessor.from_string(multiple_tweets, "\n")
+    def test_from_text_with_sep(self, multiple_tweets):
+        processor = TextProcessor.from_text(multiple_tweets, "\n")
         assert isinstance(processor, TextProcessor)
         assert len(processor.lines) == 9
 
