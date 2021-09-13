@@ -130,3 +130,6 @@ dmypy.json
 
 # Autoapi generated files
 autoapi
+
+# _build directory
+_build/
