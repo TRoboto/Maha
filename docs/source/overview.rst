@@ -270,5 +270,71 @@ to extract values from text. Dimension parsers use very sophisticated regular ex
 which we call Rules. Rules are defined in :mod:`maha.parsers.rules`. All rules are
 optimized, compiled and cached to ensure best performance possible.
 
-Rules can be easily extended, check :doc:`contribution guidelines<contributing>`.
+Rules can be easily extended, check :doc:`custom dimension<custom dimension>`.
 
+
+Processors
+----------
+
+This module extends the functionality of cleaners to work on files and folders. It
+provides a way to process files in a streaming fashion, which is useful for large
+files. Processors are developed to extend any future classes that can work on files
+and folders.
+
+The available processors are:
+
+* :class:`~.TextProcessor`: Processes simple texts.
+* :class:`~.FileProcessor`: Processes small files.
+* :class:`~.StreamTextProcessor`: Processes stream of texts.
+* :class:`~.StreamFileProcessor`: Processes files in a streaming fashion.
+
+
+Examples
+********
+
+* To process a simple text, you can do the following:
+
+.. code:: pycon
+
+    >>> from maha.processors import TextProcessor
+    >>> sample_text = """
+    ...  بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ
+    ... الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ
+    ... الرَّحْمَنِ الرَّحِيمِ
+    ... مَالِكِ يَوْمِ الدِّينِ
+    ... إِيَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ
+    ... اهدِنَا الصِّرَاطَ الْمُسْتَقِيمَ
+    ... صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلاَ الضَّالِّينَ
+    ... """
+    >>> processor = TextProcessor.from_text(sample_text, sep="\n")
+    >>> cleaned_text = (
+    ...     processor.normalize(alef=True).keep(arabic_letters=True).drop_empty_lines().text
+    ... )
+    >>> print(cleaned_text)
+    بسم الله الرحمن الرحيم
+    الحمد لله رب العالمين
+    الرحمن الرحيم
+    مالك يوم الدين
+    اياك نعبد واياك نستعين
+    اهدنا الصراط المستقيم
+    صراط الذين انعمت عليهم غير المغضوب عليهم ولا الضالين
+    >>> # To print the unique characters
+    >>> unique_char = processor.get(unique_characters=True)
+    >>> unique_char.sort()
+    >>> unique_char
+    [' ', 'ا', 'ب', 'ت', 'ح', 'د', 'ذ', 'ر', 'س', 'ص', 'ض', 'ط', 'ع', 'غ', 'ق', 'ك', 'ل', 'م', 'ن', 'ه', 'و', 'ي']
+
+* To streamly process a file, you can do the following:
+
+.. code:: pycon
+
+    >>> from pathlib import Path
+    >>> import maha
+    >>> # This is a sample file that comes with Maha.
+    >>> resource_path = Path(maha.__file__).parents[1] / "sample_data/surah_al-ala.txt"
+    >>> from maha.processors import StreamFileProcessor
+    >>> proc = StreamFileProcessor(resource_path)
+    >>> proc = proc.normalize(all=True).keep(arabic_letters=True).drop_empty_lines()
+    >>> # To start processing the file, run the following commented code.
+    >>> # proc.process_and_save(Path("output.txt"))
+    ```
