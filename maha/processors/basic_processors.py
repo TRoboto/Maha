@@ -107,7 +107,7 @@ class FileProcessor(TextProcessor):
     """For processing file input.
 
     .. note::
-        For large files (>100 MB), use :class:`~StreamFileProcessor`.
+        For large files (>100 MB), use :class:`~.StreamFileProcessor`.
 
     Parameters
     ----------
