@@ -25,7 +25,7 @@ class ExpressionGroup:
         smart: bool = False,
     ):
 
-        self.expressions = self.merge_expressions(expressions)
+        self.expressions = self._merge_expressions(expressions)
         self._parsed_ranges: Set[Tuple[int, int]] = set()
         self.smart = smart
 
@@ -33,7 +33,7 @@ class ExpressionGroup:
         for expression in self.expressions:
             expression.compile()
 
-    def merge_expressions(
+    def _merge_expressions(
         self, expressions: Iterable[Union["rx.Expression", "ExpressionGroup"]]
     ) -> List["rx.Expression"]:
         result = []
@@ -45,15 +45,38 @@ class ExpressionGroup:
         return result
 
     def add(self, *expression: "rx.Expression") -> None:
-        """Add an expression to the group."""
+        """Add an expression to the group.
+
+        Parameters
+        ----------
+        *expression :
+            Expressions to add.
+        """
         self.expressions.extend(expression)
 
     def join(self) -> str:
-        """Returns non capturing group of the expressions."""
+        """Returns non capturing group of the expressions.
+
+        Returns
+        -------
+        str
+            Non capturing group of the patterns.
+        """
         return rx.non_capturing_group(*list(map(str, self.expressions)))
 
     def get_matched_expression(self, text: str) -> Optional["rx.Expression"]:
-        """Returns the expression that matches the text."""
+        """Returns the expression that fully matches the text.
+
+        Parameters
+        ----------
+        text : str
+            Text to match.
+
+        Returns
+        -------
+        :class:`~.Expression`
+            Expression that fully matches the text.
+        """
         for expression in self.expressions:
             if expression.fullmatch(text):
                 return expression
@@ -70,7 +93,7 @@ class ExpressionGroup:
 
         Yields
         -------
-        :class:`rx.ExpressionResult`
+        :class:`~.ExpressionResult`
             Extracted value.
         """
         # TODO: Maybe provide a way to clean the text before parsing?
@@ -80,11 +103,20 @@ class ExpressionGroup:
         else:
             yield from self.normal_parse(text)
 
-        self.clear_parsed()
+        self._clear_parsed()
 
     def normal_parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
-        """
-        Parse the input ``text`` and return the extracted values.
+        """Parse the input ``text`` and return the extracted values.
+
+        Parameters
+        ----------
+        text : str
+            Text to parse.
+
+        Yields
+        -------
+        :class:`~.ExpressionResult`
+            Extracted value.
         """
         for expression in self.expressions:
             yield from expression.parse(text)
@@ -93,7 +125,17 @@ class ExpressionGroup:
         """
         Parses the text. If a value matches two or more expressions, only the first
         expression parses the value, no value is matched more than once. This means
-        high-priority expressions should be passed first.
+        high-priority expressions should be added to the group first.
+
+        Parameters
+        ----------
+        text : str
+            Text to parse.
+
+        Yields
+        -------
+        :class:`~.ExpressionResult`
+            Extracted value.
         """
 
         for result in self.normal_parse(text):
@@ -109,7 +151,7 @@ class ExpressionGroup:
 
         return False
 
-    def clear_parsed(self):
+    def _clear_parsed(self):
         self._parsed_ranges = set()
 
     def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":

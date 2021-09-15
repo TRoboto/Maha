@@ -137,7 +137,7 @@ class Expression:
 
         Yields
         -------
-        :class:`ExpressionResult`
+        :class:`~.ExpressionResult`
             Extracted value.
         """
         yield from self.parse(text)
@@ -153,7 +153,7 @@ class Expression:
 
         Yields
         -------
-        :class:`ExpressionResult`
+        :class:`~.ExpressionResult`
             Extracted value.
         """
         self.compile()
@@ -181,7 +181,7 @@ class Expression:
 
         Yields
         -------
-        :class:`ExpressionResult`
+        :class:`~.ExpressionResult`
             Extracted value.
 
         Raises

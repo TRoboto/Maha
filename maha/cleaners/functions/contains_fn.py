@@ -172,12 +172,12 @@ def contains(
     -------
     Union[Dict[str, bool], bool]
         * If one argument is set to True, a boolean value is returned. True if the text
-        contains it, False otherwise.
+          contains it, False otherwise.
         * If ``operator`` is set and more than one argument is set to True, a boolean
-        value that combines the result with the "and/or" operator is returned.
+          value that combines the result with the "and/or" operator is returned.
         * If more than one argument is set to True, a dictionary is returned where
-        keys are the True passed arguments and the corresponding values are
-        booleans. True if the text contains the argument, False otherwise.
+          keys are the True passed arguments and the corresponding values are
+          booleans. True if the text contains the argument, False otherwise.
 
 
     Raises
@@ -349,7 +349,7 @@ def contains_expressions(
     ----------
     text : str
         Text to check
-    expressions : Union[:class:`ExpressionGroup`, :class:`Expression`, str]
+    expressions : Union[:class:`~.ExpressionGroup`, :class:`~.Expression`, str]
         Expression(s) to use
 
     Returns
@@ -360,7 +360,7 @@ def contains_expressions(
     Raises
     ------
     ValueError
-        If ``expressions`` are not of type :class:`Expression`, :class:`ExpressionGroup`
+        If ``expressions`` are not of type :class:`~.Expression`, :class:`~.ExpressionGroup`
         or str
 
     Example

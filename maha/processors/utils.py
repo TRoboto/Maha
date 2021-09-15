@@ -5,7 +5,7 @@ from typing import Any, Callable
 
 @dataclass
 class ObjectGet:
-    """Used with get function in :class:`BaseProcessor`"""
+    """Used with get function in :class:`~.BaseProcessor`"""
 
     # function to use
     func: Callable
