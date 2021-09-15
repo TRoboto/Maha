@@ -134,7 +134,7 @@ The module provides the following simple interfaces to parse text.
 
 * The :func:`~.parse_dimension` function is used to parse any of the available dimensions.
   The available dimensions are ``duration``,  ``time``, ``numeral`` and ``ordinal``. To
-  create your own dimension, check out :doc:`custom dimension<custom dimension>`.
+  create your own dimension, check out :doc:`custom dimension<development/custom_dimension>`.
   If you would like to contribute your custom dimension to the project, check
   :doc:`contribution guidelines<contributing>`.
 
@@ -270,7 +270,7 @@ to extract values from text. Dimension parsers use very sophisticated regular ex
 which we call Rules. Rules are defined in :mod:`maha.parsers.rules`. All rules are
 optimized, compiled and cached to ensure best performance possible.
 
-Rules can be easily extended, check :doc:`custom dimension<custom dimension>`.
+Rules can be easily extended, check :doc:`custom dimension<development/custom_dimension>`.
 
 
 Processors

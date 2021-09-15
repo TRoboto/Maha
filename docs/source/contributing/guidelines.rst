@@ -128,8 +128,7 @@ Develop your contribution
 #. Add new or update existing tests.
 
    Depending on your changes, you may need to update or add new tests. For new
-   features, it is required that you include tests with your PR. Details of
-   our testing system are explained in the :doc:`testing guide <testing>`.
+   features, it is required that you include tests with your PR.
 
 
 #. Update docstrings and documentation:
@@ -255,6 +254,6 @@ Further useful guidelines
 
 
 You can find examples for the ``docs`` in several places:
-the :doc:`Examples <../examples>`, and :doc:`Reference Manual <../reference>`.
+the :doc:`Overview <../overview>`, and :doc:`Reference Manual <../reference>`.
 
 **Thank you for contributing!**

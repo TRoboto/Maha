@@ -23,7 +23,7 @@ Maha is a Python library, and can be simply installed via
     please open an issue `directly on GitHub <https://github.com/TRoboto/Maha/issues>`_.
 
 Once Maha is installed, you can check proceed to our
-:doc:`examples <examples>` which contain few use cases.
+:doc:`Overview <overview>` which contain few use cases.
 
 For developers
 **************

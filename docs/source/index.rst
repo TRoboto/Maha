@@ -14,12 +14,14 @@ files, and folders with or without streaming capability.
 
    All content of the docs is licensed under the BSD 3-Clause license.
 
+Contents:
+
 .. toctree::
    :maxdepth: 2
 
    installation
    overview
-   .. development
+   development
    changelog
    contributing
    reference
