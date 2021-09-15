@@ -140,12 +140,28 @@ class Expression:
         :class:`ExpressionResult`
             Extracted value.
         """
+        yield from self.parse(text)
+
+    def parse(self, text: str) -> Iterable["ExpressionResult"]:
+        """
+        Extract values from the input ``text``.
+
+        Parameters
+        ----------
+        text : str
+            Text to extract the value from.
+
+        Yields
+        -------
+        :class:`ExpressionResult`
+            Extracted value.
+        """
         self.compile()
 
         for m in re.finditer(self._compiled_pattern, text):
-            yield self.parse(m, text)
+            yield self._parse(m, text)
 
-    def parse(self, match: regex.Match, text: str) -> "ExpressionResult":
+    def _parse(self, match: regex.Match, text: str) -> "ExpressionResult":
         """Extract the value from the input ``text`` and return it.
 
         .. note::

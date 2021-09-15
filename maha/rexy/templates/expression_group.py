@@ -87,7 +87,7 @@ class ExpressionGroup:
         Parse the input ``text`` and return the extracted values.
         """
         for expression in self.expressions:
-            yield from expression(text)
+            yield from expression.parse(text)
 
     def smart_parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
         """

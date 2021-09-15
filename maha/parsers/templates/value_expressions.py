@@ -17,7 +17,7 @@ class Value(Expression):
         self.value = value
         super().__init__(pattern, pickle)
 
-    def parse(self, match: Match, _: str) -> "ExpressionResult":
+    def _parse(self, match: Match, _: str) -> "ExpressionResult":
         return ExpressionResult(match.start(), match.end(), self.value, self)
 
 
@@ -42,7 +42,7 @@ class MatchedValue(Value):
     def __init__(self, expressions: ExpressionGroup, pattern: str):
         super().__init__(expressions, pattern)
 
-    def parse(self, match: Match, _: str) -> "ExpressionResult":
+    def _parse(self, match: Match, _: str) -> "ExpressionResult":
         matched_text = match.group(0)
         value = self.value.get_matched_expression(matched_text).value
         return ExpressionResult(match.start(), match.end(), value, self)
@@ -68,6 +68,6 @@ class FunctionValue(Value):
     def __init__(self, function: Callable[..., Any], pattern: str, pickle: bool = True):
         super().__init__(function, pattern, pickle)
 
-    def parse(self, match: Match, _: str) -> "ExpressionResult":
+    def _parse(self, match: Match, _: str) -> "ExpressionResult":
         value = self.value(match)
         return ExpressionResult(match.start(), match.end(), value, self)
