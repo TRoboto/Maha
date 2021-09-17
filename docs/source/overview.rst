@@ -7,9 +7,6 @@ What is Maha?
 Maha is a Python library that provides simple, yet powerful, functions for dealing with Arabic text.
 It can be used to clean and parse text, files, and folders with or without streaming capability.
 
-.. hint::
-    Maha is named after my mother.
-
 .. important::
     Maha is currently in beta.
 
