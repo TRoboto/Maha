@@ -45,7 +45,7 @@ Simply run the following to install Maha:
 pip install mahad # pronounced maha d
 ```
 
-For source installation, check the [documentation](#).
+For source installation, check the [documentation](https://maha.readthedocs.io/en/latest/contributing/guidelines.html).
 
 ## Quick start
 
@@ -53,7 +53,7 @@ As of now, Maha supports three main modules: cleaners, parsers and processors.
 
 ### Cleaners
 
-Cleaners, from its name, contain a set of functions for cleaning texts. They can be used to [keep](), [remove](), or [replace]() specific characters as well as [normalize]() characters and check if the text [contains]() specific characters.
+Cleaners, from its name, contain a set of functions for cleaning texts. They can be used to keep, remove, or replace specific characters as well as normalize characters and check if the text contains specific characters.
 
 **Examples**
 
@@ -107,7 +107,7 @@ True
 
 ### Parsers
 
-Parsers include a set of rules for extracting values from text. All rules can be accessed and utilized by two main functions, [parse]() and [parse_dimension]().
+Parsers include a set of rules for extracting values from text. All rules can be accessed and utilized by two main functions, parse and parse_dimension.
 
 **Examples**
 
@@ -215,7 +215,7 @@ Parse ordinal.
 
 ### Processors
 
-Processors are wrappers for cleaners to clean text files and folders. There are two types of processors, the simple [TextProcessor]() and [FileProcessor]() processors, and the [StreamTextProcessor]() and [StreamFileProcessor]() processors.
+Processors are wrappers for cleaners to clean text files and folders. There are two types of processors, the simple TextProcessor and FileProcessor processors, and the StreamTextProcessor and StreamFileProcessor processors.
 
 **Examples**
 
@@ -304,7 +304,7 @@ Documentation are hosted at [ReadTheDocs](https://maha.readthedocs.io).
 
 ## Contributing
 
-Maha welcomes and encourages everyone to contribute. Contributions are always appreciated. Feel free to take a look at our contribution guidelines in the [documentation](#).
+Maha welcomes and encourages everyone to contribute. Contributions are always appreciated. Feel free to take a look at our contribution guidelines in the [documentation](https://maha.readthedocs.io/en/latest/contributing.html).
 
 ## License
 
