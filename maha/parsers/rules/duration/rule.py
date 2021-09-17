@@ -9,6 +9,7 @@ __all__ = [
     "RULE_DURATION_MONTHS",
     "RULE_DURATION_YEARS",
     "RULE_DURATION",
+    "parse_duration",
 ]
 
 from typing import List

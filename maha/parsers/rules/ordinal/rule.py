@@ -7,6 +7,7 @@ __all__ = [
     "RULE_ORDINAL_BILLIONS",
     "RULE_ORDINAL_TRILLIONS",
     "RULE_ORDINAL",
+    "parse_ordinal",
 ]
 
 from typing import List, Union

@@ -9,6 +9,7 @@ __all__ = [
     "RULE_NUMERAL_INTEGERS",
     "RULE_NUMERAL_DECIMALS",
     "RULE_NUMERAL",
+    "parse_numeral",
 ]
 
 import itertools as it

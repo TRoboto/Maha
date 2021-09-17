@@ -8,6 +8,7 @@ __all__ = [
     "RULE_TIME_AM_PM",
     "RULE_TIME_NOW",
     "RULE_TIME",
+    "parse_time",
 ]
 
 from ..common import combine_patterns
