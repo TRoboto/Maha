@@ -14,7 +14,7 @@ body:
     attributes:
       label: Examples (if relevant)
       description: List examples of how to use this feature.
-   - type: textarea
+  - type: textarea
     id: definition-of-done
     attributes:
       label: Definition of Done
