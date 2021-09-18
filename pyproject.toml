@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mahad"
-version = "0.1.1"
+version = "0.1.2"
 description = "An Arabic text processing library intended for use in NLP applications."
 authors = ["Mohammad Al-Fetyani <m4bh@hotmail.com>"]
 license = "BSD-3-Clause"
@@ -30,6 +30,7 @@ packages = [
 python = "^3.7.1"
 tqdm = "^4.61.1"
 python-dateutil = "^2.8.2"
+regex = "^2021.8.28"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.13.0"
