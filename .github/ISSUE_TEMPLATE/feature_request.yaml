@@ -1,0 +1,21 @@
+name: Feature request
+description: Suggest an idea for improving Maha
+labels: ["type:enhancement"]
+body:
+  - type: textarea
+    id: current-state
+    attributes:
+      label: What problem are you trying to solve?
+      description: Short overview of the current situation. Why is this feature needed?
+    validations:
+      required: true
+  - type: textarea
+    id: examples
+    attributes:
+      label: Examples (if relevant)
+      description: List examples of how to use this feature.
+   - type: textarea
+    id: definition-of-done
+    attributes:
+      label: Definition of Done
+      description: What needs to be done to consider this feature as complete?
