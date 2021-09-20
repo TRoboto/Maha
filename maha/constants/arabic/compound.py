@@ -157,8 +157,8 @@ ARABIC_LIGATURES: List[str] = [
 """ Arabic word ligatures. """
 
 ARABIC_LIGATURES_NORMALIZED: List[str] = [
-    LIGATURE_SALLA_KORANIC,  # TODO: Find the normalized version for this
-    LIGATURE_QALA,  # TODO: Find the normalized version for this
+    "صلى",
+    "قلى",
     "الله",
     "اكبر",
     "محمد",
