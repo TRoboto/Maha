@@ -193,7 +193,7 @@ def test_parse_with_mentions(multiple_tweets):
 
 def test_parse_with_emojis(multiple_tweets):
     result = parse(multiple_tweets, emojis=True)
-    assert len(result) == 5
+    assert len(result) == 4
 
 
 def test_parse_with_custom_expressions(multiple_tweets):
