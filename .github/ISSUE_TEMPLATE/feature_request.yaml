@@ -1,6 +1,6 @@
 name: Feature request
 description: Suggest an idea for improving Maha
-labels: ["type:enhancement"]
+labels: ["new feature"]
 body:
   - type: textarea
     id: current-state
