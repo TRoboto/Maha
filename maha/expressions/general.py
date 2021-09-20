@@ -105,7 +105,6 @@ EXPRESSION_EMAILS = Expression(r"([a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+
 
 # Adopted from https://gist.github.com/slowkow/7a7f61f495e3dbb7e3d767f97bd7304b
 # TODO: Validate that all of these are valid emojis
-# TODO: Remove Arabic Ligatures from the list
 EXPRESSION_EMOJIS = Expression(
     "["
     "\U0001F600-\U0001F64F"  # emoticons
@@ -115,7 +114,8 @@ EXPRESSION_EMOJIS = Expression(
     "\U00002500-\U00002BEF"  # chinese char
     "\U00002702-\U000027B0"
     "\U00002702-\U000027B0"
-    "\U000024C2-\U0001F251"
+    "\U000024C2-\U0000FDEF"
+    "\U0000FDFE-\U0001F251"
     "\U0001f926-\U0001f937"
     "\U00010000-\U0010ffff"
     "\u2640-\u2642"
