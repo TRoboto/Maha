@@ -251,7 +251,6 @@ def main(token, prior, tag, additional, outfile):
                     num = PR.number
                     url = PR.html_url
                     title = PR.title
-                    label = PR.labels
                     f.write(f"* `#{num} <{url}>`__: {title}\n")
                     f.write("\n\n")
 
