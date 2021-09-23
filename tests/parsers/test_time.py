@@ -727,6 +727,20 @@ def test_time(expected, input):
 
 
 @pytest.mark.parametrize(
+    "expected,input",
+    [
+        (NOW.replace(day=30), "آخر خميس من شهر 9"),
+        (NOW.replace(day=29), "آخر اربعاء من شهر 9"),
+        (NOW.replace(day=22, month=2), "آخر اثنين من شهر شباط"),
+        (NOW.replace(day=28, month=2), "آخر احد من شهر شباط"),
+    ],
+)
+def test_last_specific_day_of_specific_month(expected, input):
+    output = parse_dimension(input, time=True)
+    assert_expression_output(output, expected)
+
+
+@pytest.mark.parametrize(
     "input",
     [
         ("11"),
