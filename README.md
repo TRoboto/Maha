@@ -10,6 +10,7 @@
     </a>
     <a href="https://codecov.io/gh/TRoboto/Maha"><img src="https://codecov.io/gh/TRoboto/Maha/branch/main/graph/badge.svg?token=9CBWXT8URA", alt="codecov"></a>
     <a href="https://discord.gg/6W2tRFE7k4"><img src="https://img.shields.io/discord/863503708385312769.svg?label=discord&logo=discord" alt="Discord"></a>
+    <a href="https://pepy.tech/project/mahad"><img src="https://pepy.tech/badge/mahad/month" alt="Downloads"></a>
     <a href="https://opensource.org/licenses/BSD-3-Clause"><img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" alt="License"></a>
     <a href="https://pypi.org/project/mahad/"><img src="https://badge.fury.io/py/mahad.svg" alt="PyPI version" height="18"></a>
     <a href="https://github.com/psf/black"><img src="https://img.shields.io/badge/code%20style-black-000000.svg" alt="Code style: black"></a>
