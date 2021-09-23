@@ -55,7 +55,7 @@ PR_LABELS = {
     "bugfix": "Fixed bugs",
     "documentation": "Documentation-related changes",
     "testing": "Changes concerning the testing system",
-    "infrastructure": "Changes to our development infrastructure",
+    "development": "Changes to our development infrastructure",
     "maintenance": "Code quality improvements and similar refactors",
     "revert": "Changes that needed to be reverted again",
     "unlabeled": "Unclassified changes",
