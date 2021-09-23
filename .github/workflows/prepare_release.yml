@@ -1,0 +1,49 @@
+name: Prepare release
+on:
+  push:
+    tags:
+      - "v*.*.*"
+
+jobs:
+  prepare_release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set env.RELEASE_VERSION
+        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+      - name: Prepare release
+
+      - name: Setup Python 3.8
+        uses: actions/setup-python@v2
+        with: python-version:3.8
+
+      - name: Python Poetry Action
+        uses: abatilo/actions-poetry@v2.1.0
+
+      - name: Install dependencies
+        run: poetry install
+
+      - name: Get current version
+        run: echo "CURRENT_VERSION=$(poetry version | awk '{print $2}')" >> $GITHUB_ENV
+
+      - name: Generate changelog
+        run: |
+          python tools/gen_changelog.py ${{ secrets.GITHUB_TOKEN }} v$CURRENT_VERSION v$RELEASE_VERSION
+
+      - name: Bump version
+        run: poetry version $RELEASE_VERSION
+
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        with:
+          commit-message: prepare release
+          title: Prepare release v$RELEASE_VERSION
+          body: |
+            This is an auto-generated PR to prepare for the next release of Maha. The following changes were automatically made:
+
+            - Generated changelogs for release v$RELEASE_VERSION.
+            - Bumped pypi version to v$RELEASE_VERSION.
+            - Updated the citation information.
+
+          branch: prepare-release
+          base: main
