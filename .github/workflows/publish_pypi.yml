@@ -10,16 +10,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v2
+      - name: Build and publish to pypi
+        uses: JRubics/poetry-publish@v1.8
         with:
-          python-version: 3.8
-
-      - name: Python Poetry Action
-        uses: abatilo/actions-poetry@v2.1.0
-
-      - name: Configure pypi credentials
-        run: poetry config pypi-token.pypi secrets.PYPI_API_TOKEN
-
-      - name: Publish release to pypi
-        run: poetry publish --build
+          pypi_token: ${{ secrets.PYPI_API_TOKEN }}
