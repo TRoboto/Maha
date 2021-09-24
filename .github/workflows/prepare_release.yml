@@ -28,7 +28,7 @@ jobs:
 
       - name: Generate changelog
         run: |
-          python tools/gen_changelog.py ${{ secrets.GITHUB_TOKEN }} v$CURRENT_VERSION v$RELEASE_VERSION
+          poetry run tools/gen_changelog.py ${{ secrets.GITHUB_TOKEN }} v$CURRENT_VERSION v$RELEASE_VERSION
 
       - name: Bump version
         run: poetry version $RELEASE_VERSION
