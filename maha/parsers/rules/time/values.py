@@ -729,13 +729,9 @@ _start_of_last_day = (
 LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "month": _months.get_matched_expression(match.group("month")).value.month  # type: ignore
-            + 1
-            if _months.get_matched_expression(match.group("month")).value.month  # type: ignore
-            + 1
-            <= 12
-            else 1,
+            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
             "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
+            "day": 31,
         }
     ),
     spaced_patterns(_start_of_last_day, named_group("month", _months.join())),
