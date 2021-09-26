@@ -104,7 +104,7 @@ def deprecated_param(
         raise ValueError("from_v, to_v and depr_param cannot be None")
 
     def decorator(func):
-        from inspect import signature, Parameter
+        from inspect import Parameter, signature
 
         sig = signature(func)
         params = sig.parameters
@@ -131,7 +131,7 @@ def deprecated_default(
     depr_param,
     alt_value=None,
 ):
-    """Decorator to mark a parameter as deprecated.
+    """Decorator to mark a parameter default value as deprecated.
 
     Parameters
     ----------
@@ -142,7 +142,7 @@ def deprecated_default(
     depr_param: str
         Parameter to deprecate its default value
     alt_value: str
-        Value of the parameter to use instead
+        New default value that will used instead
 
     Returns
     -------
@@ -154,7 +154,7 @@ def deprecated_default(
         raise ValueError("from_v, to_v and depr_param cannot be None")
 
     def decorator(func):
-        from inspect import signature, Parameter
+        from inspect import Parameter, signature
 
         sig = signature(func)
         params = sig.parameters
