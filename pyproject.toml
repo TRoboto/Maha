@@ -46,6 +46,8 @@ mypy = "^0.910"
 tox = "^3.24.3"
 types-python-dateutil = "^2.8.0"
 sphinx-autoapi = "^1.8.4"
+GitPython = "^3.1.24"
+PyGithub = "^1.55"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/TRoboto/Maha/issues"
