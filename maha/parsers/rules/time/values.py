@@ -66,7 +66,7 @@ def parse_value(value: dict) -> TimeValue:
     return TimeValue(**value)
 
 
-THIS = non_capturing_group("ها?[دذ][ياه]", "ه[اذ]ي")
+THIS = non_capturing_group("ها?[دذ][ياه]", "ه[اذ]ي", "هاد")
 AFTER = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد"
 BEFORE = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
 PREVIOUS = (
