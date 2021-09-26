@@ -66,7 +66,7 @@ def parse_value(value: dict) -> TimeValue:
     return TimeValue(**value)
 
 
-THIS = non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي")
+THIS = non_capturing_group("ها?[دذ][ياه]", "ه[اذ]ي")
 AFTER = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد"
 BEFORE = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
 PREVIOUS = (
@@ -105,7 +105,7 @@ AT_THE_MOMENT = Value(
     non_capturing_group(
         "ال[أآا]ن",
         spaced_patterns(THIS, non_capturing_group("الوقت", "اللح[زضظ][ةه]")),
-        "هس[ةه]",
+        "هس[اةه]",
         "في الحال",
         "حالا",
     ),
