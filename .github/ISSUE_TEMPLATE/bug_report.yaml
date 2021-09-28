@@ -41,10 +41,10 @@ body:
     attributes:
       label: Code to reproduce the issue
       description: Code that led to the error. This will be automatically formatted into code, so no need for backticks.
-      render: shell
+      render: python
   - type: textarea
     id: logs
     attributes:
       label: Relevant log output
       description: Please copy and paste any relevant log output including errors and stacktraces. This will be automatically formatted into code, so no need for backticks.
-      render: shell
+      render: python
