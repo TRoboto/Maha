@@ -205,12 +205,12 @@ RULE_TIME_NOW = FunctionValue(parse_time, combine_patterns(now_group))
 RULE_TIME = FunctionValue(
     parse_time,
     combine_patterns(
-        month_day_group,
         year_month_day_group,
+        year_month_group,
+        month_day_group,
         hour_minute_second_group,
         hour_minute_group,
         hour_am_pm_group,
-        year_month_group,
         now_group,
         years_group,
         months_group,

@@ -747,6 +747,28 @@ def test_last_specific_day_of_specific_month(expected, input):
 
 
 @pytest.mark.parametrize(
+    "expected,input",
+    [
+        (
+            DATE.replace(day=11, month=10, hour=1),
+            "يوم الاثنين 11-10-2021 الساعه الواحدة ظهرا",
+        ),
+        (
+            DATE.replace(day=21, month=11, year=2010),
+            "يوم الأحد 21-11-2010 ",
+        ),
+        (
+            DATE.replace(day=28, month=11, year=2010),
+            "يوم الأحد 25-11-2010 ",
+        ),
+    ],
+)
+def test_full_date_with_specific_day(expected, input):
+    output = parse_dimension(input, time=True)
+    assert_expression_output(output, expected)
+
+
+@pytest.mark.parametrize(
     "input",
     [
         ("11"),
