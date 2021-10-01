@@ -1,5 +1,3 @@
-from datetime import datetime
-
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE
 
 import maha.parsers.rules.numeral.values as numvalues
@@ -413,45 +411,44 @@ BEFORE_N_MONTHS = FunctionValue(
 )
 
 
-def specific_month(match, next_month=False, years=0):
-    month = _months.get_matched_expression(match.group("value")).value.month  # type: ignore
-    current_month = datetime.now().month
-    if next_month:
-        years += 1 if month <= current_month else 0
-    else:
-        years += 0 if month <= current_month else -1
-    return parse_value(
-        {
-            "month": month,
-            "years": years,
-        }
-    )
-
-
 SPECIFIC_MONTH = MatchedValue(_months, _months.join())
 NEXT_SPECIFIC_MONTH = FunctionValue(
-    lambda match: specific_month(match, next_month=True),
+    lambda match: parse_value(
+        {"next_month": _months.get_matched_expression(match.group("value")).value.month}  # type: ignore
+    ),
     non_capturing_group(
         spaced_patterns(ONE_MONTH, value_group(_months.join()), NEXT),
         spaced_patterns(value_group(_months.join()), NEXT),
     ),
 )
 PREVIOUS_SPECIFIC_MONTH = FunctionValue(
-    lambda match: specific_month(match, next_month=False),
+    lambda match: parse_value(
+        {"prev_month": _months.get_matched_expression(match.group("value")).value.month}  # type: ignore
+    ),
     non_capturing_group(
         spaced_patterns(ONE_MONTH, value_group(_months.join()), PREVIOUS),
         spaced_patterns(value_group(_months.join()), PREVIOUS),
     ),
 )
 AFTER_SPECIFIC_NEXT_MONTH = FunctionValue(
-    lambda match: specific_month(match, next_month=True, years=1),
+    lambda match: parse_value(
+        {
+            "next_month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
+            "years": 1,
+        }
+    ),
     non_capturing_group(
         spaced_patterns(ONE_MONTH, value_group(_months.join()), AFTER_NEXT),
         spaced_patterns(value_group(_months.join()), AFTER_NEXT),
     ),
 )
 BEFORE_SPECIFIC_PREVIOUS_MONTH = FunctionValue(
-    lambda match: specific_month(match, years=-1),
+    lambda match: parse_value(
+        {
+            "prev_month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
+            "years": -1,
+        }
+    ),
     non_capturing_group(
         spaced_patterns(ONE_MONTH, value_group(_months.join()), BEFORE_PREVIOUS),
         spaced_patterns(value_group(_months.join()), BEFORE_PREVIOUS),
