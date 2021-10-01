@@ -229,7 +229,6 @@ def test_specific_month(expected_month, input):
 def test_next_specific_month_same_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
     assert_expression_date_output(output, datetime(2021, expected_month, 1))
-    assert output[0].value == TimeValue(years=0, month=expected_month)
 
 
 @pytest.mark.parametrize(
@@ -246,7 +245,6 @@ def test_next_specific_month_same_year(expected_month, input):
 def test_next_specific_month_next_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
     assert_expression_date_output(output, datetime(2022, expected_month, 1))
-    assert output[0].value == TimeValue(years=1, month=expected_month)
 
 
 @pytest.mark.parametrize(
@@ -266,7 +264,6 @@ def test_next_specific_month_next_year(expected_month, input):
 def test_previous_specific_month_previous_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
     assert_expression_date_output(output, datetime(2020, expected_month, 1))
-    assert output[0].value == TimeValue(years=-1, month=expected_month)
 
 
 @pytest.mark.parametrize(
@@ -279,7 +276,6 @@ def test_previous_specific_month_previous_year(expected_month, input):
 def test_previous_specific_month_same_year(expected_month, input):
     output = list(RULE_TIME_MONTHS(input))
     assert_expression_date_output(output, datetime(2021, expected_month, 1))
-    assert output[0].value == TimeValue(years=0, month=expected_month)
 
 
 @pytest.mark.parametrize(
