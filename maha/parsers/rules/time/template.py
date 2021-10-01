@@ -1,5 +1,7 @@
 __all__ = ["TimeValue"]
 
+from datetime import datetime
+
 from dateutil.relativedelta import relativedelta
 
 
@@ -28,6 +30,8 @@ class TimeValue(relativedelta):
         second=None,
         microsecond=None,
         am_pm=None,
+        next_month=None,
+        prev_month=None,
     ):
         self._years = years
         self._months = months
@@ -39,6 +43,8 @@ class TimeValue(relativedelta):
         self._seconds = seconds
         self._microseconds = microseconds
         self._am_pm = am_pm
+        self.next_month = next_month
+        self.prev_month = prev_month
 
         # handle hour am pm
         if am_pm == "PM" and hour is not None and hour < 12:
@@ -128,7 +134,27 @@ class TimeValue(relativedelta):
                     else self.microsecond
                 ),
                 am_pm=other._am_pm or self._am_pm,
+                next_month=(
+                    other.next_month
+                    if other.next_month is not None
+                    else self.next_month
+                ),
+                prev_month=(
+                    other.prev_month
+                    if other.prev_month is not None
+                    else self.prev_month
+                ),
             )
+        # Handle next/prev month
+        if isinstance(other, datetime):
+            current_month = other.month
+            if self.next_month:
+                self.years += 1 if self.next_month <= current_month else 0
+                self.month = self.next_month
+            elif self.prev_month:
+                self.years += 0 if self.prev_month <= current_month else -1
+                self.month = self.prev_month
+
         return super().__add__(other)
 
     def __repr__(self):
