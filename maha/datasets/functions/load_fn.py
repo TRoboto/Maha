@@ -2,10 +2,7 @@ __all__ = ["load_dataset"]
 
 from typing import Union, overload
 
-try:
-    from typing import Literal
-except ImportError:
-    from typing_extensions import Literal
+from typing_extensions import Literal
 
 from ..templates import Dataset, IterableDataset
 from ..utils import DATASETS_MAP, get_dataset_path

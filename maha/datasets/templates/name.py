@@ -8,12 +8,22 @@ from maha.cleaners.functions import keep, normalize
 
 @dataclass
 class Name:
+    """Template for the names dataset.
+
+    Parameters
+    ----------
+    name : str
+        Name of person.
+    description : str
+        Description or meaning of the name. Can contain multiple descriptions separated
+        by "||".
+    origin : str
+        Origin of the name.
+    """
+
     name: str
-    """ The name """
     description: List[str]
-    """ The meaning of the name """
     origin: str
-    """ The origin of the name """
 
     def __init__(self, name: str, description: str, origin: str):
         self.name = name
@@ -22,4 +32,5 @@ class Name:
 
     @property
     def cleaned_name(self):
+        """Cleaned and normalized name."""
         return keep(normalize(self.name, all=True), arabic_letters=True)

@@ -1,9 +1,22 @@
 __all__ = ["Dataset", "IterableDataset"]
+
 from pathlib import Path
 from typing import Type, Union
 
 
 class Dataset:
+    """Base class for all datasets.
+
+    Parameters
+    ----------
+    path : Union[str, Path]
+        Path to the dataset.
+    template : Type
+        Template class for the dataset.
+    sep : str, optional
+        Separator for the dataset. The default is "\t".
+    """
+
     def __init__(self, path: Union[str, Path], template: Type, sep: str = "\t"):
         if isinstance(path, str):
             path = Path(path)
@@ -28,6 +41,18 @@ class Dataset:
 
 
 class IterableDataset:
+    """Base class for all datasets that need to be streamed.
+
+    Parameters
+    ----------
+    path : Union[str, Path]
+        Path to the dataset.
+    template : Type
+        Template class for the dataset.
+    sep : str, optional
+        Separator for the dataset. The default is "\t".
+    """
+
     def __init__(self, path: Union[str, Path], template: Type, sep: str = "\t"):
         if isinstance(path, str):
             path = Path(path)
