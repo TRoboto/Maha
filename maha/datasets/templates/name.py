@@ -17,7 +17,7 @@ class Name:
 
     def __init__(self, name: str, description: str, origin: str):
         self.name = name
-        self.description = eval(description)
+        self.description = description.split("||")
         self.origin = origin
 
     @property
