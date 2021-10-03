@@ -1,2 +1,2 @@
 from .dataset import *
-from .name import *
+from .dataset_templates import *

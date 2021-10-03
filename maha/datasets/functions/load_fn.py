@@ -4,17 +4,21 @@ from typing import Union, overload
 
 from typing_extensions import Literal
 
-from ..templates import Dataset, IterableDataset
+from ..templates import Dataset, IterableDataset, Name
 from ..utils import DATASETS_MAP, get_dataset_path
 
 
 @overload
-def load_dataset(name, streaming: Literal[False] = False) -> Dataset:
+def load_dataset(
+    name: Literal["names"], streaming: Literal[False] = False
+) -> Dataset[Name]:
     ...
 
 
 @overload
-def load_dataset(name, streaming: Literal[True]) -> IterableDataset:
+def load_dataset(
+    name: Literal["names"], streaming: Literal[True]
+) -> IterableDataset[Name]:
     ...
 
 

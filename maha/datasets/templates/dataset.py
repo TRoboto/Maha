@@ -1,10 +1,14 @@
 __all__ = ["Dataset", "IterableDataset"]
 
 from pathlib import Path
-from typing import Type, Union
+from typing import Generic, Type, TypeVar, Union
+
+from .dataset_templates import *
+
+T = TypeVar("T", Name, Name)
 
 
-class Dataset:
+class Dataset(Generic[T]):
     """Base class for all datasets.
 
     Parameters
@@ -17,17 +21,17 @@ class Dataset:
         Separator for the dataset. The default is "\t".
     """
 
-    def __init__(self, path: Union[str, Path], template: Type, sep: str = "\t"):
+    def __init__(self, path: Union[str, Path], template: Type[T], sep: str = "\t"):
         if isinstance(path, str):
             path = Path(path)
         self.path = path
-        self._data = path.open("r", encoding="utf-8").read().splitlines()[1:]
-        self.template = template
+        self._data_str = path.open("r", encoding="utf-8").read().splitlines()[1:]
         self.sep = sep
-        self.map_template()
+        self.template = template
+        self._map_template()
 
-    def map_template(self):
-        self._data = [self.template(*line.split(self.sep)) for line in self._data]
+    def _map_template(self):
+        self._data = [self.template(*line.split(self.sep)) for line in self._data_str]
 
     @property
     def data(self):
@@ -40,7 +44,7 @@ class Dataset:
         return self.data[index]
 
 
-class IterableDataset:
+class IterableDataset(Generic[T]):
     """Base class for all datasets that need to be streamed.
 
     Parameters
@@ -53,7 +57,7 @@ class IterableDataset:
         Separator for the dataset. The default is "\t".
     """
 
-    def __init__(self, path: Union[str, Path], template: Type, sep: str = "\t"):
+    def __init__(self, path: Union[str, Path], template: Type[T], sep: str = "\t"):
         if isinstance(path, str):
             path = Path(path)
         self.path = path
