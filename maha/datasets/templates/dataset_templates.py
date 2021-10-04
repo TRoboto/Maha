@@ -30,7 +30,13 @@ class Name:
         self.description = description.split("||")
         self.origin = origin
 
+        self._cleaned_name = None
+
     @property
     def cleaned_name(self):
         """Cleaned and normalized name."""
-        return keep(normalize(self.name, all=True), arabic_letters=True)
+        if not self._cleaned_name:
+            self._cleaned_name = keep(
+                normalize(self.name, all=True), arabic_letters=True
+            )
+        return self._cleaned_name
