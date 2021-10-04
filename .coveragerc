@@ -5,4 +5,4 @@ source=maha
 exclude_lines =
     \braise NotImplementedError\b
     \bpass\b
-    def get_unicode
+    @overload
