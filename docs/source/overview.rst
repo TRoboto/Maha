@@ -39,7 +39,7 @@ Datasets can be loaded using the :func:`~.datasets.load_dataset` function as fol
 .. code:: pycon
 
     >>> from maha.datasets import load_dataset
-    >>> names = load_dataset('names')
+    >>> names = load_dataset("names")
     >>> len(names)
     44161
     >>> names[0]
@@ -52,7 +52,7 @@ It is also possible to stream a dataset:
 .. code:: pycon
 
     >>> from maha.datasets import load_dataset
-    >>> names = load_dataset('names', streaming=True)
+    >>> names = load_dataset("names", streaming=True)
     >>> next(iter(names))
     Name(name='آبوت', description=['اسم علم مذكر إنكليزي: ABOT، معناه الخوري'], origin='انجليزي')
 
