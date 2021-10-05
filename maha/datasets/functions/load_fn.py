@@ -35,7 +35,7 @@ def load_dataset(name: str, streaming: bool = False) -> Union[Dataset, IterableD
 
     Returns
     -------
-    Union[:data:`~.Dataset`, :data:`~.IterableDataset`]
+    Union[:class:`~.Dataset`, :class:`~.IterableDataset`]
         The loaded dataset.
 
     Raises
