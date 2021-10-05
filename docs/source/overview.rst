@@ -16,17 +16,23 @@ available datasets.
 Datasets
 --------
 
+.. note::
+    All datasets are licensed under the `Creative Commons Attribution 4.0 International License <https://creativecommons.org/licenses/by/4.0/>`_.
+
 This module provides a number of datasets that can be used with any NLP task. The available
 datasets are listed below with their descriptions.
 
-+---------+-----------+-------------------------------------------------------------+
-| Dataset | Records   |                        Description                          |
-+=========+===========+=============================================================+
-| names   | 44161     | List of Arabic names with meaning and origin of most names. |
-+---------+-----------+-------------------------------------------------------------+
+.. list-table::
+   :header-rows: 1
+   :widths: 15 10 75
 
-.. note::
-    All datasets are licensed under the `Creative Commons Attribution 4.0 International <https://creativecommons.org/licenses/by/4.0/>`_ License.
+   * - Dataset
+     - Records
+     - Description
+   * - names
+     - 44161
+     - List of Arabic names with meaning and origin of most names
+
 
 Datasets can be loaded using the :func:`~.datasets.load_dataset` function as follows:
 
