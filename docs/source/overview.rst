@@ -45,7 +45,7 @@ Datasets can be loaded using the :func:`~.datasets.load_dataset` function as fol
     >>> names[0]
     Name(name='آبوت', description=['اسم علم مذكر إنكليزي: ABOT، معناه الخوري'], origin='انجليزي')
     >>> names[0].cleaned_name
-    ابوت
+    'ابوت'
 
 It is also possible to stream a dataset:
 
