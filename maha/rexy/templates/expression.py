@@ -13,6 +13,8 @@ from maha import LIBRARY_PATH
 
 from .expression_result import ExpressionResult
 
+CACHE_PATH = Path(LIBRARY_PATH) / "rexy" / "cache"
+
 
 @dataclass
 class Expression:
@@ -51,7 +53,7 @@ class Expression:
 
     def _load_compiled_pattern(self):
         # crp: compiled regex pattern
-        path = Path(LIBRARY_PATH) / f"rexy/cache/{hash(self)}.crp"
+        path = CACHE_PATH / f"{hash(self)}.crp"
         if path.exists():
             with path.open("rb") as f:
                 self._compiled_pattern = pickle.load(f)
@@ -59,6 +61,28 @@ class Expression:
             self._compiled_pattern = re.compile(self.pattern, re.MULTILINE)
             with path.open("wb") as f:
                 pickle.dump(self._compiled_pattern, f)
+
+    @classmethod
+    def from_cache(cls, cache: str) -> "Expression":
+        """Load an expression from cache.
+
+        Parameters
+        ----------
+        cache : str
+            Name of the cache file.
+
+        Returns
+        -------
+        :class:`~.Expression`
+            Expression.
+        """
+        try:
+            expression = cls("names")
+            with open(CACHE_PATH / f"{cache}.crp", "rb") as f:
+                expression._compiled_pattern = pickle.load(f)
+            return expression
+        except FileNotFoundError:
+            raise ValueError(f"Cache file {cache} not found")
 
     def search(self, text: str):
         """Search for the pattern in the input ``text``.

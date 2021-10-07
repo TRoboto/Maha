@@ -6,6 +6,7 @@ __all__ = [
     "positive_lookbehind",
     "positive_lookahead",
     "named_group",
+    "capture_group",
 ]
 
 
@@ -39,6 +40,6 @@ def named_group(name: str, pattern: Union[Expression, str]):
     return f"(?P<{name}>{pattern})"
 
 
-def capture_group(pattern: Union[Expression, str]):
+def capture_group(*patterns: Union[Expression, str]):
     """Returns a capturing group pattern"""
-    return f"({pattern})"
+    return "({})".format("|".join(str(p) for p in patterns))

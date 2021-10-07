@@ -1,5 +1,6 @@
 from .common import *
 from .duration import *
+from .names import *
 from .numeral import *
 from .ordinal import *
 from .time import *

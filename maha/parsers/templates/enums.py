@@ -6,6 +6,7 @@ class DimensionType(Enum):
 
     GENERAL = auto()
     AMOUNT_OF_MONEY = auto()
+    NAME = auto()
     DISTANCE = auto()
     DURATION = auto()
     ORDINAL = auto()
