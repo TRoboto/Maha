@@ -31,6 +31,7 @@ python = "^3.7.1"
 tqdm = "^4.61.1"
 python-dateutil = "^2.8.2"
 regex = "^2021.8.28"
+typing-extensions = "^3.10.0"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "^2.13.0"

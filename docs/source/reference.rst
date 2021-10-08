@@ -10,6 +10,7 @@ Maha, see :doc:`overview <overview>`.
    :maxdepth: 3
 
    autoapi/maha/constants/index
+   autoapi/maha/datasets/index
    autoapi/maha/cleaners/index
    autoapi/maha/expressions/index
    autoapi/maha/parsers/index

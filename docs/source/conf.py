@@ -75,7 +75,7 @@ copybutton_prompt_text = ">>> "
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_static_path = ["_static"]
+html_static_path = []
 
 html_theme = "furo"
 
