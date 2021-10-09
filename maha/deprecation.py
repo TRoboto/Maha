@@ -1,9 +1,7 @@
-def deprecated_fn(
-    from_v,
-    to_v,
-    alt_fn,
-    message="",
-):
+from inspect import getargspec
+
+
+def deprecated_fn(from_v, to_v, alt_fn, message=""):
     """Decorator to mark a function as deprecated.
 
     Parameters
@@ -91,7 +89,9 @@ def deprecated_param(
             msg = f"{msg} {message}"
 
         def wrapper(*args, **kwargs):
-            if depr_param in kwargs:
+            # the first condition checks if it's passed as a keyword argument
+            # the second condition checks if it's passed as a positional argument
+            if depr_param in kwargs or depr_param in getargspec(func).args:
                 deprecation_warning(msg)
             return func(*args, **kwargs)
 
