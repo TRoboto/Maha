@@ -1,7 +1,9 @@
+from typing import Any
+from functools import wraps
 from inspect import getargspec
 
 
-def deprecated_fn(from_v, to_v, alt_fn, message=""):
+def deprecated_fn(from_v: str, to_v: str, alt_fn: str, message: str = ""):
     """Decorator to mark a function as deprecated.
 
     Parameters
@@ -32,6 +34,7 @@ def deprecated_fn(from_v, to_v, alt_fn, message=""):
         if message:
             msg = f"{msg} {message}"
 
+        @wraps(func)
         def wrapper(*args, **kwargs):
             deprecation_warning(msg)
             return func(*args, **kwargs)
@@ -42,11 +45,11 @@ def deprecated_fn(from_v, to_v, alt_fn, message=""):
 
 
 def deprecated_param(
-    from_v,
-    to_v,
-    depr_param,
-    alt_param,
-    message="",
+    from_v: str,
+    to_v: str,
+    depr_param: str,
+    alt_param: str = None,
+    message: str = "",
 ):
     """Decorator to mark a parameter as deprecated.
 
@@ -88,11 +91,14 @@ def deprecated_param(
         if message:
             msg = f"{msg} {message}"
 
+        @wraps(func)
         def wrapper(*args, **kwargs):
             # the first condition checks if it's passed as a keyword argument
             # the second condition checks if it's passed as a positional argument
-            if depr_param in kwargs or depr_param in getargspec(func).args:
+            positionals = [k for k, v in params.items() if v.default is Parameter.empty]
+            if depr_param in kwargs or depr_param in positionals:
                 deprecation_warning(msg)
+                
             return func(*args, **kwargs)
 
         return wrapper
@@ -101,11 +107,11 @@ def deprecated_param(
 
 
 def deprecated_default(
-    from_v,
-    to_v,
-    depr_param,
-    alt_value=None,
-    message="",
+    from_v: str,
+    to_v: str,
+    depr_param: str,
+    alt_value: Any = None,
+    message: str = "",
 ):
     """Decorator to mark a parameter default value as deprecated.
 
@@ -154,6 +160,7 @@ def deprecated_default(
         if message:
             msg = f"{msg} {message}"
 
+        @wraps(func)
         def wrapper(*args, **kwargs):
             deprecation_warning(msg)
             return func(*args, **kwargs)
@@ -163,7 +170,7 @@ def deprecated_default(
     return decorator
 
 
-def deprecation_warning(msg):
+def deprecation_warning(msg: str):
     """Prints a deprecation warning.
 
     Parameters
