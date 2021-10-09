@@ -91,7 +91,8 @@ def deprecated_param(
             msg = f"{msg} {message}"
 
         def wrapper(*args, **kwargs):
-            deprecation_warning(msg)
+            if depr_param in kwargs:
+                deprecation_warning(msg)
             return func(*args, **kwargs)
 
         return wrapper
