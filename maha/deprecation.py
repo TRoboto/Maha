@@ -30,7 +30,7 @@ def deprecated_fn(
         msg = f"{func.__name__} is deprecated since version {from_v} and will be removed in version {to_v}."
         if alt_fn is not None:
             msg += f" Use {alt_fn} instead."
-        
+
         if message:
             msg = f"{msg} {message}"
 
@@ -86,7 +86,7 @@ def deprecated_param(
         msg = f"{depr_param} is deprecated since version {from_v} and will be removed in version {to_v}."
         if alt_param is not None:
             msg += f" Use {alt_param} instead."
-        
+
         if message:
             msg = f"{msg} {message}"
 
@@ -121,7 +121,7 @@ def deprecated_default(
         New default value that will used instead
     message : str
         Message to display when the function is called
-        
+
     Returns
     -------
     function
