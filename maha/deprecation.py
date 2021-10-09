@@ -1,5 +1,4 @@
 from functools import wraps
-from inspect import getargspec
 from typing import Any
 
 
