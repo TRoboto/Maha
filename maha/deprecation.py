@@ -1,6 +1,6 @@
-from typing import Any
 from functools import wraps
 from inspect import getargspec
+from typing import Any
 
 
 def deprecated_fn(from_v: str, to_v: str, alt_fn: str, message: str = ""):
@@ -98,7 +98,7 @@ def deprecated_param(
             positionals = [k for k, v in params.items() if v.default is Parameter.empty]
             if depr_param in kwargs or depr_param in positionals:
                 deprecation_warning(msg)
-                
+
             return func(*args, **kwargs)
 
         return wrapper
