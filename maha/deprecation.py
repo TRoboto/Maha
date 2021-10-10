@@ -1,3 +1,5 @@
+__all__ = ["deprecated_fn", "deprecated_param", "deprecated_default"]
+
 from functools import wraps
 from typing import Any
 
@@ -83,6 +85,9 @@ def deprecated_param(
         if depr_param not in params:
             raise ValueError(f"{depr_param} is not a parameter of {func.__name__}")
 
+        if alt_param is not None and alt_param not in params:
+            raise ValueError(f"{alt_param} is not a parameter of {func.__name__}")
+
         msg = f"{depr_param} is deprecated since version {from_v} and will be removed in version {to_v}."
         if alt_param is not None:
             msg += f" Use {alt_param} instead."
@@ -94,10 +99,17 @@ def deprecated_param(
         def wrapper(*args, **kwargs):
             # the first condition checks if it's passed as a keyword argument
             # the second condition checks if it's passed as a positional argument
-            positionals = [k for k, v in params.items() if v.default is Parameter.empty]
-            if depr_param in kwargs or depr_param in positionals:
+            # the third condition handles the case where the optional parameter is
+            # passed as a positional argument
+            positionales = [
+                k for k, v in params.items() if v.default is Parameter.empty
+            ]
+            if (
+                depr_param in kwargs
+                or depr_param in positionales
+                or list(params.keys()).index(depr_param) <= len(args) - 1
+            ):
                 deprecation_warning(msg)
-
             return func(*args, **kwargs)
 
         return wrapper
@@ -150,17 +162,22 @@ def deprecated_default(
 
         depr_param_default = params[depr_param].default
 
-        msg = f"{depr_param}={depr_param_default} is deprecated since version {from_v}"
+        msg = f"The default value of {depr_param} is deprecated since version {from_v}"
         if alt_value is None:
-            msg += f" and it will not have a default value in version {to_v}."
+            msg += f" and will be removed in version {to_v}."
         else:
-            msg += f" and it will become {depr_param}={alt_value} instead."
+            msg += f" and will become {depr_param}={alt_value} in version {to_v}."
 
         if message:
             msg = f"{msg} {message}"
 
         @wraps(func)
         def wrapper(*args, **kwargs):
+            # if the parameter isn't passed as a keyword argument
+            if depr_param not in kwargs:
+                nonlocal msg
+                msg += f" Use {depr_param}={depr_param_default} to preserve the current behavior."
+
             deprecation_warning(msg)
             return func(*args, **kwargs)
 
