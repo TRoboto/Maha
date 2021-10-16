@@ -8,7 +8,7 @@ from maha.datasets.utils import get_dataset_path
 
 def test_cleaned_name():
     name = Name("أحمدُ", "Description", "Origin")
-    assert name.cleaned_name == "احمد"
+    assert name.cleaned_name == "أحمد"
 
 
 def test_load_names_streaming():

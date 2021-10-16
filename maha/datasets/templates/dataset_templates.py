@@ -3,7 +3,7 @@ __all__ = ["Name"]
 from dataclasses import dataclass
 from typing import List
 
-from maha.cleaners.functions import keep, normalize
+from maha.cleaners.functions import keep
 
 
 @dataclass
@@ -34,9 +34,7 @@ class Name:
 
     @property
     def cleaned_name(self):
-        """Cleaned and normalized name."""
+        """Cleaned name."""
         if not self._cleaned_name:
-            self._cleaned_name = keep(
-                normalize(self.name, all=True), arabic_letters=True
-            )
+            self._cleaned_name = keep(self.name, arabic_letters=True)
         return self._cleaned_name

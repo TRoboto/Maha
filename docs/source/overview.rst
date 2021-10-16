@@ -45,7 +45,7 @@ Datasets can be loaded using the :func:`~.datasets.load_dataset` function as fol
     >>> names[0]
     Name(name='آبوت', description=['اسم علم مذكر إنكليزي: ABOT، معناه الخوري'], origin='انجليزي')
     >>> names[0].cleaned_name
-    'ابوت'
+    'آبوت'
 
 It is also possible to stream a dataset:
 
@@ -175,8 +175,8 @@ The module provides the following simple interfaces to parse text.
   possible to use custom constants/expressions.
 
 * The :func:`~.parse_dimension` function is used to parse any of the available dimensions.
-  The available dimensions are ``duration``,  ``time``, ``numeral`` and ``ordinal``. To
-  create your own dimension, check out :doc:`custom dimension<development/custom_dimension>`.
+  The available dimensions are ``duration``,  ``time``, ``numeral``, ``ordinal`` and ``names``.
+  To create your own dimension, check out :doc:`custom dimension<development/custom_dimension>`.
   If you would like to contribute your custom dimension to the project, check
   :doc:`contribution guidelines<contributing>`.
 
@@ -301,6 +301,24 @@ Examples
     >>> output = parse_dimension("الشهر القادم", time=True)[0].value
     >>> output.is_months_set()
     True
+
+* To extract names, you can do the following:
+
+.. code:: pycon
+
+    >>> from maha.parsers.functions import parse_dimension
+    >>> parse_dimension("محمد", names=True)
+    [Dimension(body=محمد, value=محمد, start=0, end=4, dimension_type=DimensionType.NAME)]
+    >>> parse_dimension("مريم", names=True)
+    [Dimension(body=مريم, value=مريم, start=0, end=4, dimension_type=DimensionType.NAME)]
+    >>> parse_dimension("اسمي فاطمة", names=True)
+    [Dimension(body=فاطمة, value=فاطمة, start=5, end=10, dimension_type=DimensionType.NAME)]
+    >>> parse_dimension("انا آنا", names=True)
+    [Dimension(body=آنا, value=آنا, start=4, end=7, dimension_type=DimensionType.NAME)]
+    >>> parse_dimension("ادهم في المكتبة", names=True)
+    [Dimension(body=ادهم, value=ادهم, start=0, end=4, dimension_type=DimensionType.NAME)]
+    >>> parse_dimension("جاك", names=True)
+    [Dimension(body=جاك, value=جاك, start=0, end=3, dimension_type=DimensionType.NAME)]
 
 Check `README <https://github.com/TRoboto/Maha/blob/main/README.md>`_ for more examples.
 
