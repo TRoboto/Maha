@@ -685,6 +685,7 @@ def test_month_and_year(input):
         (NOW.replace(month=3, day=10), "10 اذار"),
         (NOW.replace(month=8, day=25), "الأربعا الأسبوع الماضي"),
         (DATE.replace(day=4, hour=1, minute=30), "السبت هذا الأسبوع الساعة 1 ونص"),
+        (DATE.replace(hour=4, minute=30), "الساعة اربعة ونص"),
         (NOW.replace(day=31, month=10), "آخر يوم بالشهر الجاي"),
         (NOW.replace(day=30), "آخر يوم من  الشهر الحالي"),
         (NOW.replace(day=28), "آخر ثلاثا"),
