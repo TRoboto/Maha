@@ -1104,10 +1104,11 @@ DAY_MONTH_YEAR_FORM = FunctionValue(
 # HOURS AND MINUTES
 # ----------------------------------------------------
 def parse_time_fraction(match, expression, am_pm=None):
-    fraction = list(FRACTIONS.parse(match.group("value")))[0].value
-    ella = ELLA.search(match.group("value"))
+    hour_text, fraction_text = match.group("value").split(" ", 1)
+    fraction = list(FRACTIONS.parse(fraction_text))[0].value
+    ella = ELLA.search(fraction_text)
     minute = int(60 * fraction)
-    hour = list(expression.parse(match.group("value")))[0].value
+    hour = list(expression.parse(hour_text))[0].value
     if ella:
         hour = hour - 1 if hour > 0 else 23
     time = {"microsecond": 0, "second": 0, "minute": minute, "hour": hour}
