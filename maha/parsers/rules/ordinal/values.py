@@ -12,7 +12,11 @@ ALEF_LAM = non_capturing_group("ال")
 ALEF_LAM_OPTIONAL = ALEF_LAM + "?"
 
 
-one_prefix = "واحد"
+one_prefix = non_capturing_group(
+    "واحد",
+    f"{ALL_ALEF}?حد[اى]?",
+    "حاد[يى][ةه]?",
+)
 two_prefix = non_capturing_group("[تث]ان[يى]", "[إا]?[ثت]نت؟[يى]")
 three_prefix = "[تث]ال[ثت]"
 four_prefix = "رابع"
