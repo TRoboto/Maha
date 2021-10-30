@@ -267,16 +267,16 @@ Examples
     >>> from maha.parsers.functions import parse_dimension
     >>> parse_dimension("الأول", ordinal=True)
     [Dimension(body=الأول, value=1, start=0, end=5, dimension_type=DimensionType.ORDINAL)]
-    >>> parse_dimension("الثالث والسبعين", ordinal=True)[0].value
-    73
+    >>> parse_dimension("الثالث والرابع", ordinal=True)
+    [Dimension(body=الثالث, value=3, start=0, end=6, dimension_type=DimensionType.ORDINAL), Dimension(body=الرابع, value=4, start=8, end=14, dimension_type=DimensionType.ORDINAL)]
     >>> parse_dimension("الخمسين", ordinal=True)[0].value
     50
-    >>> parse_dimension("الثاني والمئة", ordinal=True)[0].value
-    102
-    >>> parse_dimension("المليون والعشرين", ordinal=True)[0].value
-    1000020
-    >>> parse_dimension("الألف والمئتين", ordinal=True)[0].value
-    1200
+    >>> parse_dimension("الثاني والمئة", ordinal=True)
+    [Dimension(body=الثاني, value=2, start=0, end=6, dimension_type=DimensionType.ORDINAL), Dimension(body=المئة, value=100, start=8, end=13, dimension_type=DimensionType.ORDINAL)]
+    >>> parse_dimension("المليون والعشرين", ordinal=True)
+    [Dimension(body=المليون, value=1000000, start=0, end=7, dimension_type=DimensionType.ORDINAL), Dimension(body=العشرين, value=20, start=9, end=16, dimension_type=DimensionType.ORDINAL)]
+    >>> parse_dimension("الألف والمئتين", ordinal=True)
+    [Dimension(body=الألف, value=1000, start=0, end=5, dimension_type=DimensionType.ORDINAL), Dimension(body=المئتين, value=200, start=7, end=14, dimension_type=DimensionType.ORDINAL)]
 
 * To extract time, you can do the following:
 
