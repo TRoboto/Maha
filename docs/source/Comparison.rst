@@ -12,14 +12,14 @@ This comparison considers the following points:
 * Time taken to get the results.
 
 Ease of use and integration
-***************************
+---------------------------
 
-The installtion of Maha library is easier than the install of duckling.
+The installation of Maha library is easier than the installation of duckling.
 
-* Maha library is more user friendly and you don't need much experience to use and install. In comaprison, duckling is much defacult and needs experience to build and install.
-* Maha don't have build in comaprison with duckling which has many build steps to run and use.
-* Duckling needs haskell for building process.
-* The instalation of Maha is stright forward but duckling needs many steps to install.
+* Maha library is more user-friendly and you don't need much experience to use and install. In comparison, duckling is much difficult and it needs experience to build and install.
+* Maha doesn't have build steps in comparison with duckling which has many build steps to run and use.
+* Duckling needs a haskell for the building process.
+* The installation of Maha is straight forward but duckling needs many steps to install.
 * The integration of Maha is much easier in python projects in comparison with duckling.
 * The contribution in Maha for Arabic language is easier than the contribution for Arabic langage in duckling.
 
@@ -27,9 +27,9 @@ The installtion of Maha library is easier than the install of duckling.
     Currently, the comaprison contains 4 dimensions which are: ordinal, time, duration and numeral.
 
 Parsing results
-***************
+---------------
 
-Here, the results of comaprison will consider short and long examples to assists the performance of maha and duckling.
+Here, the results of comaprison will consider short and long examples to assessing the performance of maha and duckling.
 
 
 For Maha, you need to import it as the following:
@@ -45,19 +45,19 @@ For duckling, you need to run the server as the following:
 
   >>> stack exec duckling-example-exe
 
-* Short examples:
 
+Short examples
+--------------
+
+The following examples show the performance of maha and duckling for short text, for example chatbot applications to parse the useful information.
 
 Ordinal Dimension
-=================
+-----------------
 
 Ordinal dimension for Maha and duckling.
 
-Short examples
-==============
-
 Example 1
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -72,7 +72,7 @@ Example 1
 
 
 Example 2
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -88,7 +88,7 @@ Example 2
 
 
 Example 3
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -104,7 +104,7 @@ Example 3
 
 
 Example 4
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -120,11 +120,13 @@ Example 4
 
 
 Time Dimension
-==============
+--------------
+
+Time dimension for Maha and duckling.
 
 
 Example 1
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -140,7 +142,7 @@ Example 1
 
 
 Example 2
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -156,7 +158,7 @@ Example 2
 
 
 Example 3
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -172,8 +174,7 @@ Example 3
 
 
 Example 4
-*********
-
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -190,11 +191,13 @@ Example 4
 
 
 Duration Dimension
-==================
+------------------
+
+Duration dimension for Maha and duckling.
 
 
 Example 1
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -209,7 +212,7 @@ Example 1
 
 
 Example 2
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -225,7 +228,7 @@ Example 2
 
 
 Example 3
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -241,7 +244,7 @@ Example 3
 
 
 Example 4
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -253,11 +256,12 @@ Example 4
 
 
 Numeral Dimension
-==================
+-----------------
 
+Numeral dimension for Maha and duckling.
 
 Example 1
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -272,7 +276,7 @@ Example 1
 
 
 Example 2
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -286,9 +290,8 @@ Example 2
   '[{"body":"الف","start":0,"value":{"value":1000,"type":"value"},"end":3,"dim":"number","latent":false},{"body":"الف","start":0,"value":{"values":[{"value":"1000-01-01T00:00:00.000-07:53","grain":"year","type":"value"}],"value":"1000-01-01T00:00:00.000-07:53","grain":"year","type":"value"},"end":3,"dim":"time","latent":false},{"body":"خمسمية","start":5,"value":{"value":500,"type":"value"},"end":11,"dim":"number","latent":false}]'
 
 
-
 Example 3
-*********
+^^^^^^^^^
 
 .. code:: pycon
 
@@ -302,9 +305,8 @@ Example 3
   '[{"body":"16 ألف","start":0,"value":{"value":16000,"type":"value"},"end":6,"dim":"number","latent":false},{"body":"10","start":8,"value":{"value":10,"type":"value"},"end":10,"dim":"number","latent":false}]'
 
 
-
 Example 4
-*********
+^^^^^^^^^
 
 
 .. code:: pycon
@@ -316,6 +318,54 @@ Example 4
   ...     "http://0.0.0.0:8000/parse",
   ...     data={"text": Example_4, "locale": "ar_jo", "dims": '["numeral"]'},
   ... ).text
-  '[{"body":"16 ألف","start":0,"value":{"value":16000,"type":"value"},"end":6,"dim":"number","latent":false},{"body":"10","start":8,"value":{"value":10,"type":"value"},"end":10,"dim":"number","latent":false}]'
+  '[{"body":"ألف","start":8,"value":{"value":1000,"type":"value"},"end":11,"dim":"number","latent":false},{"body":"خمسمية واربعة فاصلة أربعة وخمسين","start":13,"value":{"value":504.54,"type":"value"},"end":45,"dim":"number","latent":false},{"body":"خمسمية واربعة فاصلة أربعة وخمسين","start":13,"value":{"value":554.4,"type":"value"},"end":45,"dim":"number","latent":false}]'
 
 
+The following table describes the time of parsing for Maha in comparison of duckling.
+
+.. csv-table:: Maha vs Duckling
+   :file: /home/pain/Desktop/comparsion/Time_Values.csv
+   :widths: auto
+   :header-rows: 1
+
+
+Notes
+*****
+1. The parsing time in Maha is longer that the parsing time duckling in duration dimension, and the reason of this that Maha parse more complex patterns than duckling.
+2. The time format is calculated by this criteria: (mean ± std. dev. of 5 runs, 1000 loops each).
+3. As we see from the results and the previous table, we can conculde that Maha is better than duckling in parsing for Arabic language.
+
+
+
+Long examples
+-------------
+
+The following is a describtin of the file that used for the comparison.
+
+* File size: 2.8 MB (2,838,878 bytes)
+
+* File encoding: UTF-8 Unicode text, with very long lines
+
+* Lines counts: 10364
+
+* Words counts: 292074
+
+* Characters counts: 1565476
+
+
+The time is calculated for Maha and duckling for each dimension separetly and for all available dimensions at the same time.
+
+.. csv-table:: Maha vs Duckling
+   :file: /home/pain/Desktop/comparsion/Long_Example.csv
+   :widths: auto
+   :header-rows: 1
+
+
+Notes:
+
+We have reduced the file size to about 2.8 MB since duckling doesn't deal with size more than this. On the hand, maha works with original fiel smoothly
+without any problem.
+
+We have tried to increase the timeout but it have not worked
+
+The file is pre-processed with keeping Arabic letters only.
