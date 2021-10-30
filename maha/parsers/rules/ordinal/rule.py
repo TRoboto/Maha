@@ -15,7 +15,7 @@ from typing import List, Union
 from maha.parsers.templates import FunctionValue
 from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
 
-from ..common import WAW_CONNECTOR, combine_patterns, spaced_patterns
+from ..common import WAW_CONNECTOR, combine_patterns, spaced_patterns, wrap_pattern
 from .values import *
 
 
@@ -199,16 +199,18 @@ RULE_ORDINAL_TRILLIONS = FunctionValue(
         ones_group,
     ),
 )
+
 RULE_ORDINAL = FunctionValue(
     parse_ordinal,
-    combine_patterns(
-        trillions_group,
-        billions_group,
-        millions_group,
-        thousands_group,
-        hundreds_group,
-        tens_group,
-        ones_group,
-        combine_all=True,
+    wrap_pattern(
+        non_capturing_group(
+            trillions_group,
+            billions_group,
+            millions_group,
+            thousands_group,
+            hundreds_group,
+            tens_group,
+            ones_group,
+        ),
     ),
 )
