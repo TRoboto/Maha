@@ -17,6 +17,7 @@ __all__ = [
 ]
 
 from dataclasses import dataclass
+from typing import Union
 
 from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
@@ -163,7 +164,7 @@ def spaced_patterns(*patterns) -> str:
 
 
 def combine_patterns(
-    *patterns: str, seperator: Expression = None, combine_all=False
+    *patterns: Union[str, Expression], seperator: Expression = None, combine_all=False
 ) -> str:
     """
     Intelligently combine following input patterns.
