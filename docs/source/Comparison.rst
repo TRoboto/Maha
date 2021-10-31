@@ -323,10 +323,67 @@ Example 4
 
 The following table describes the time of parsing for Maha in comparison of duckling.
 
-.. csv-table:: Maha vs Duckling
-   :file: /home/pain/Desktop/comparsion/Time_Values.csv
-   :widths: auto
+
+.. list-table::
    :header-rows: 1
+   :widths: 15 10 75 75
+
+   * - Dimension
+     - Example #
+     - Time
+     - Time
+   * - _
+     - _
+     - Maha
+     - Duckling
+   * - Ordinal
+     - 1
+     - 166 µs ± 27.9 µs
+     - 4.26 ms ± 706 µs
+   * - _
+     - 2
+     - 141 µs ± 11.3 µs
+     - 3.96 ms ± 61.2 µs
+   * - _
+     - 3
+     - 3.76 ms ± 158 µs
+     - 5.76 ms ± 285 µs
+   * - _
+     - 4
+     - 2.99 ms ± 127 µs
+     - 5.34 ms ± 301 µs
+   * - Duration
+     - 1
+     - 10.8 ms ± 877 µs
+     - 4.53 ms ± 462 µs
+   * - _
+     - 2
+     - 12.9 ms ± 836 µs
+     - 5.06 ms ± 435 µs
+   * - _
+     - 3
+     - 2.95 ms ± 81.6 µs
+     - 3.53 ms ± 107 µs
+   * - _
+     - 4
+     - 9.02 ms ± 1.05 ms
+     - 4.1 ms ± 456 µs
+   * - Numeral
+     - 1
+     - 245 µs ± 40.8 µs
+     - 5.57 ms ± 127 µs
+   * - _
+     - 2
+     - 206 µs ± 17.2 µs
+     - 5.01 ms ± 470 µs
+   * - _
+     - 3
+     - 815 µs ± 37.8 µs
+     - 5.76 ms ± 477 µs
+   * - _
+     - 4
+     - 256 µs ± 16.7 µs
+     - 5.62 ms ± 208 µs
 
 
 Notes
@@ -355,10 +412,29 @@ The following is a describtin of the file that used for the comparison.
 
 The time is calculated for Maha and duckling for each dimension separetly and for all available dimensions at the same time.
 
-.. csv-table:: Maha vs Duckling
-   :file: /home/pain/Desktop/comparsion/Long_Example.csv
-   :widths: auto
+.. list-table::
    :header-rows: 1
+   :widths: 10 10 10
+
+   * - Dimension
+     - Maha
+     - Duckling
+   * - Ordinal
+     - 266 ms ± 6.43 ms
+     - 1.06 s ± 35 ms
+   * - Time
+     - 32.4 s ± 67.7 ms
+     - 28.3 s ± 84.5 ms
+   * - Duration
+     - 33.9 s ± 4.88 s
+     - 1.77 s ± 24.9 ms
+   * - Numeral
+     - 756 ms ± 13.2 ms
+     - 1.08 s ± 55.6 ms
+   * - All
+     - 1min 3s ± 26.5 ms
+     - 32.3 s ± 640 ms
+
 
 
 Notes:
