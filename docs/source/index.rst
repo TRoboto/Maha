@@ -21,7 +21,7 @@ Contents:
 
    installation
    overview
-   Comparison
+   comparison
    development
    changelog
    contributing
