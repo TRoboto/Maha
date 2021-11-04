@@ -39,7 +39,7 @@ To run the parser Maha, you need to import it as the following:
 
 To run the parser for duckling, you need to run the server ( after install and build the project) as the following:
 
-.. code:: bash
+.. code:: shell
 
   >>> stack exec duckling-example-exe
 
@@ -440,7 +440,7 @@ The time is calculated for Maha and duckling for each dimension separetly and fo
 
 
 Notes
-^^^^^
+*****
 
 * We have reduced the file size to about 2.8 MB since duckling doesn't deal with size more than this ( Based on this file before processing). On the hand, maha works with original fiel smoothly without any problem.
 
