@@ -442,12 +442,10 @@ The time is calculated for Maha and duckling for each dimension separetly and fo
 Notes
 ^^^^^
 
-* We have reduced the file size to about 2.8 MB since duckling doesn't deal with size more than this ( Based on this file before processing). On the hand, maha works with original fiel smoothly
-without any problem.
+* We have reduced the file size to about 2.8 MB since duckling doesn't deal with size more than this ( Based on this file before processing). On the hand, maha works with original fiel smoothly without any problem.
 
 * We have tried to increase the timeout but it have not worked for duckling.
 
 * The file is pre-processed with keeping Arabic letters only.
-
 
 * These are the links for `output file <https://drive.google.com/drive/folders/1ZCRDEuWtQlk9IMYRC3_h4JA2oEvQ7pPv?usp=sharing>`_ and `notebook <https://colab.research.google.com/drive/1eLQulwfr67AC_F1aMQ5B1BNjU_WVCDCF?usp=sharing>`_ that used for comparison.
