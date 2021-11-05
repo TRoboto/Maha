@@ -422,20 +422,20 @@ The time is calculated for Maha and duckling for each dimension separetly and fo
      - Maha
      - Duckling
    * - Ordinal
-     - 266 ms ± 6.43 ms
-     - 1.06 s ± 35 ms
+     - 246 ms ± 3.34 ms
+     - 872 ms ± 7.85 ms
    * - Time
-     - 32.4 s ± 67.7 ms
-     - 28.3 s ± 84.5 ms
+     - 28.9 s ± 66.5 ms
+     - 28 s ± 13.6 ms
    * - Duration
-     - 33.9 s ± 4.88 s
-     - 1.77 s ± 24.9 ms
+     - 1.77 s ± 4.58 ms
+     - 1.7 s ± 6.36 ms
    * - Numeral
-     - 756 ms ± 13.2 ms
-     - 1.08 s ± 55.6 ms
+     - 767 ms ± 3.52 ms
+     - 914 ms ± 3.52 ms
    * - All
-     - 1min 3s ± 26.5 ms
-     - 32.3 s ± 640 ms
+     - 32.8 s ± 2.28 s
+     - 32.6 s ± 263 ms
 
 
 
