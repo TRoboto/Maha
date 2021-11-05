@@ -208,7 +208,7 @@ RULE_ORDINAL = FunctionValue(
             billions_group,
             millions_group,
             thousands_group,
-            hundreds_group,
+            combine_patterns(hundreds_group, tens_group, ones_group),
             tens_group,
             ones_group,
         ),

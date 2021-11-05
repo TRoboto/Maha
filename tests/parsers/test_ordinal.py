@@ -194,22 +194,20 @@ def test_perfect_hundreds(input, expected):
 @pytest.mark.parametrize(
     "input, expected",
     chain(
-        get_value([100, 91], ["المية والواحد والتسعين"]),
-        get_value([100, 24], ["المائة والرابع والعشرين"]),
-        get_value([200, 15], ["المئتين والخامس عشر"]),
-        get_value([300, 6], ["الثلاثمية والسادس"]),
-        get_value([400, 10], ["الاربعمية والعاشر"]),
-        get_value([500, 20], ["الخمس مائة والعشرين"]),
-        get_value([600, 6], ["الستمية والسادس"]),
-        get_value([700, 80], ["السبعة مائة والثمانون"]),
-        get_value([800, 77], ["الثمنمية والسابع والسبعين"]),
-        get_value([900, 90, 9], ["التسع مية والتسعين والتاسع"]),
+        get_value(191, ["المية والواحد والتسعين"]),
+        get_value(124, ["المائة والرابع والعشرين"]),
+        get_value(215, ["المئتين والخامس عشر"]),
+        get_value(306, ["الثلاثمية والسادس"]),
+        get_value(410, ["الاربعمية والعاشر"]),
+        get_value(520, ["الخمس مائة والعشرين"]),
+        get_value(606, ["الستمية والسادس"]),
+        get_value(780, ["السبعة مائة والثمانون"]),
+        get_value(877, ["الثمنمية والسابع والسبعين"]),
+        get_value(999, ["التسع مية والتاسع والتسعين"]),
     ),
 )
 def test_hundreds(input, expected):
-    assert_combined_expression_one_output(
-        parse_dimension(input, ordinal=True), expected
-    )
+    assert_expression_output(parse_dimension(input, ordinal=True), expected)
 
 
 @pytest.mark.parametrize(
@@ -220,7 +218,7 @@ def test_hundreds(input, expected):
         get_value([1000000000], ["البليون", "المليار"]),
         get_value([1000000000000], ["التريليون", "الترليون"]),
         get_value([1000, 100], ["الألف والمئة"]),
-        get_value([1000, 200, 16], ["الألف والمئتين والسادس عشر"]),
+        get_value([1000, 216], ["الألف والمئتين والسادس عشر"]),
         get_value([1000000, 300], ["المليون والثلاثمئة"]),
         get_value([1000000, 18], ["المليون والثامن عشر"]),
         get_value([1000000000, 20], ["البليون والعشرين", "المليار والعشرون"]),
