@@ -64,7 +64,7 @@ Whereas long texts are compared in terms of time taken to obtain results only.
 For the short texts, four examples for each dimension are compared. The results are
 presented in the following table:
 
-.. flat-table:: table title
+.. flat-table::
    :header-rows: 2
    :stub-columns: 0
    :widths: 1 2 2 3 1 1
