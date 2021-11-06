@@ -230,6 +230,17 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "fspath"
+version = "20190323"
+description = "semantic path names and more"
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+six = "*"
+
+[[package]]
 name = "furo"
 version = "2021.8.31"
 description = "A clean customisable Sphinx documentation theme."
@@ -355,6 +366,17 @@ description = "A fast and thorough lazy object proxy."
 category = "dev"
 optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
+
+[[package]]
+name = "linuxdoc"
+version = "20210324"
+description = "Sphinx-doc extensions & tools to extract documentation from C/C++ source file comments."
+category = "dev"
+optional = false
+python-versions = "*"
+
+[package.dependencies]
+fspath = "*"
 
 [[package]]
 name = "markupsafe"
@@ -942,7 +964,7 @@ testing = ["pytest (>=4.6)", "pytest-checkdocs (>=2.4)", "pytest-flake8", "pytes
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.7.1"
-content-hash = "0bf65a98f8dde6cf34ed4079ac5122a572c91c57afbbefc5782b589e1326efda"
+content-hash = "31cb4fee17a8c1ae041bb0db3a649465ea3c2b25aa0d8be5448f7410446913b4"
 
 [metadata.files]
 alabaster = [
@@ -1118,6 +1140,10 @@ filelock = [
     {file = "filelock-3.0.12-py3-none-any.whl", hash = "sha256:929b7d63ec5b7d6b71b0fa5ac14e030b3f70b75747cef1b10da9b879fef15836"},
     {file = "filelock-3.0.12.tar.gz", hash = "sha256:18d82244ee114f543149c66a6e0c14e9c4f8a1044b5cdaadd0f82159d6a6ff59"},
 ]
+fspath = [
+    {file = "fspath-20190323-py2.py3-none-any.whl", hash = "sha256:4e7e28df6f27b3cbf41361ce45e9ecbf6c566bdc13834318cf1166c3eede7c6f"},
+    {file = "fspath-20190323.tar.gz", hash = "sha256:96cbccd374709fcbc64d3fd5eafb2072b728ce59a1b75c9b4661c82f7acbd970"},
+]
 furo = [
     {file = "furo-2021.8.31-py3-none-any.whl", hash = "sha256:15f659b328f206093151d86210a49a4ce4185a5945bc3d19b1202e45d55fb54e"},
     {file = "furo-2021.8.31.tar.gz", hash = "sha256:1dd84b7594d8798e6d7e7e9fb502f5407943060047e87a9c75964afeea113b4e"},
@@ -1181,6 +1207,10 @@ lazy-object-proxy = [
     {file = "lazy_object_proxy-1.6.0-cp39-cp39-manylinux2014_aarch64.whl", hash = "sha256:9698110e36e2df951c7c36b6729e96429c9c32b3331989ef19976592c5f3c77a"},
     {file = "lazy_object_proxy-1.6.0-cp39-cp39-win32.whl", hash = "sha256:1fee665d2638491f4d6e55bd483e15ef21f6c8c2095f235fef72601021e64f61"},
     {file = "lazy_object_proxy-1.6.0-cp39-cp39-win_amd64.whl", hash = "sha256:f5144c75445ae3ca2057faac03fda5a902eff196702b0a24daf1d6ce0650514b"},
+]
+linuxdoc = [
+    {file = "linuxdoc-20210324-py2.py3-none-any.whl", hash = "sha256:bb96d5caf99f1403b9d91b72d575383ceefba12ad116ce7c2b0c32b50a6fa40c"},
+    {file = "linuxdoc-20210324.tar.gz", hash = "sha256:d3e728d5e4d6ab2b0ae222af0cda765d6ba82f2494c1bddb4c5e9aff28356996"},
 ]
 markupsafe = [
     {file = "MarkupSafe-2.0.1-cp36-cp36m-macosx_10_9_x86_64.whl", hash = "sha256:f9081981fe268bd86831e5c75f7de206ef275defcb82bc70740ae6dc507aee51"},

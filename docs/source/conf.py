@@ -36,6 +36,7 @@ extensions = [
     "sphinx.ext.autosummary",
     "sphinx.ext.doctest",
     "autoapi.extension",
+    "linuxdoc.rstFlatTable",
 ]
 
 autoapi_type = "python"
