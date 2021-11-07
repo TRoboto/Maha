@@ -45,17 +45,18 @@ The following table provides a summary of the comparison.
 Conditions
 -----------
 
-* CPU: Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz, 4 cores
-* Memory: 12GiB SODIMM DDR3 Synchronous 1600 MHz (0.6 ns)
-* OS: Ubuntu 20.04.3 LTS, 64-bit
-
-
 The following points are considered for the comparison:
 
 * Both libraries are used in a **Python** environment.
 * For a fair comparison, duckling server is run locally.
 * Only ``time``, ``numeral``, ``ordinal`` and ``duration`` dimensions are compared.
 * Long and short texts are compared.
+
+The hardware specifications of the computer used for the comparison are as follows:
+
+* CPU: Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz, 4 cores
+* Memory: 12GiB SODIMM DDR3 Synchronous 1600 MHz (0.6 ns)
+* OS: Ubuntu 20.04.3 LTS, 64-bit
 
 Speed and results
 -----------------
@@ -122,7 +123,7 @@ presented in the following table:
         * 30000000 (ثلاثين مليون)
         * 21000 (واحد وعشرين الف)
         * 5 (خمسة)
-     - 0.190
+     - 0.19
      - 3.55
 
    * - الف وخمسمية واربعطاشر
@@ -130,7 +131,7 @@ presented in the following table:
      -
         * 1000 (الف)
         * 500 (خمسمية)
-     - 0.185
+     - 0.18
      - 4.15
 
    * - 16 ألف و10
@@ -138,7 +139,7 @@ presented in the following table:
      -
         * 16000 (16 الف)
         * 10 (10)
-     - 0.175
+     - 0.17
      - 3.40
 
    * - سبعطاشر ألف وخمسمية واربعة فاصلة أربعة وخمسين
@@ -147,20 +148,20 @@ presented in the following table:
         * 1000 (ألف)
         * 504.54 (خمسمية واربعة فاصلة أربعة وخمسين)
         * 504.4 (خمسية واربعة فاصلة أربعة وخمسين)
-     - 0.241
+     - 0.24
      - 4.64
 
    * - :rspan:`3` Ordinal
      - المئة والخامس والسبعون من العصر الحجري
      - 175
      - 75 (الخامس والسبعون)
-     - 0.294
+     - 0.29
      - 4.44
 
    * - الذكرى الرابعة لتخرج والدي
      - 4
      - 4 (الرابعة)
-     - 0.202
+     - 0.20
      - 4.21
 
    * - كنتُ في الثامنة والعشرين وكان والدي في الخامسة والستين عند تخرجي من الجامعة
@@ -173,13 +174,13 @@ presented in the following table:
         * 5 (الخامسة)
         * 60 (الستين)
 
-     - 0.368
+     - 0.36
      - 4.02
 
    * - تعدت ثروته المليون
      - 1000000
      - None
-     - 0.138
+     - 0.13
      - 3.75
 
    * - :rspan:`3` Duration
@@ -202,19 +203,19 @@ presented in the following table:
    * - لقد قضيت فيه هذا البلد ما مدته خمسة عشرة سنة
      - 15 Years
      - 15 Years (خمسة عشر سنة)
-     - 0.634
+     - 0.63
      - 3.58
 
    * - مئة وخمسة واربعين سنة
      - 145
      - None
-     - 0.306
+     - 0.30
      - 5.16
 
    * - بقينا في الجامعة لمدة عامين
      - 2 Years
      - 2 Years
-     - 0.511
+     - 0.51
      - 3.47
 
 Speed is measured in jupyter notebook using the magic command ``%%timeit -n 1000 -r 5``. The notebook used for the comparison is available
