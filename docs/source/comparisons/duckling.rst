@@ -52,7 +52,7 @@ The following points are considered for the comparison:
 * Only ``time``, ``numeral``, ``ordinal`` and ``duration`` dimensions are compared.
 * Long and short texts are compared.
 
-The hardware specifications of the computer used for the comparison are as follows:
+The hardware specifications used to run both libraries are as follows:
 
 * CPU: Intel(R) Core(TM) i5-6200U CPU @ 2.30GHz, 4 cores
 * Memory: 12GiB SODIMM DDR3 Synchronous 1600 MHz (0.6 ns)
@@ -64,11 +64,11 @@ Speed and results
 Short texts
 ***********
 
-Short texts are compared in terms of time taken to obtain results and the results.
-Whereas long texts are compared in terms of time taken to obtain results only.
+Short texts are compared in terms of the results obtained and the time taken to get them.
+Whereas the long text is only compared in terms of the time taken to obtain the results.
 
-For the short texts, four examples for each dimension are compared. The results are
-presented in the following table:
+For each dimension, 4 examples are considered for comparison. The results
+are summarized in the following table:
 
 .. flat-table::
    :header-rows: 2
@@ -218,7 +218,8 @@ presented in the following table:
      - 0.51
      - 3.47
 
-Speed is measured in jupyter notebook using the magic command ``%%timeit -n 1000 -r 5``. The notebook used for the comparison is available
+Speed is measured in a jupyter notebook using the magic command ``%%timeit -n 1000 -r 5``.
+The notebook used for the comparison is available
 `here <https://colab.research.google.com/drive/1hGINXWidFrfjO3gpj1wcu_yTAewd1Bqb?usp=sharing>`_.
 
 For the time dimension, date ``06/11/2021`` is taken as reference.
@@ -226,7 +227,7 @@ For the time dimension, date ``06/11/2021`` is taken as reference.
 Long text
 *********
 
-The text is taken from `here <https://surahquran.com/tafsir-mokhtasar/altafsir.html>`_.
+The long text is taken from `here <https://surahquran.com/tafsir-mokhtasar/altafsir.html>`_.
 
 The text file is cleaned with :func:`~.keep_arabic_letters` and is available `here <https://drive.google.com/drive/folders/1ZCRDEuWtQlk9IMYRC3_h4JA2oEvQ7pPv?usp=sharing>`_.
 The following are details of the cleaned text file:
