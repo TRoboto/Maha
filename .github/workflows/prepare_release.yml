@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set RELEASE_VERSION
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=$(git describe --tags | awk -F - '{print substr($1,2)}')" >> $GITHUB_ENV
 
       - name: Setup Python 3.8
         uses: actions/setup-python@v2
@@ -39,17 +41,23 @@ jobs:
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: prepare release
-          title: Prepare for the next release of Maha (v$RELEASE_VERSION)
+          title: Prepare for the next release of Maha (v${{ env.RELEASE_VERSION }})
           branch: prepare-release
           base: main
+          token: ${{ secrets.PR_TOKEN  }}
 
-      - uses: tzkhan/pr-update-action@v2
+      - name: Update Pull Request
+        uses: gr2m/create-or-update-pull-request-action@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.PR_TOKEN  }}
         with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          head-branch-regex: "prepare-release"
-          body-template: |
+          commit-message: update
+          title: Prepare for the next release of Maha (v${{ env.RELEASE_VERSION }})
+          author: "Mohammad Al-Fetyani <m4bh@hotmail.com>"
+          branch: prepare-release
+          body: |
             This is an auto-generated PR to prepare for the next release of Maha. The following changes were automatically made:
 
-            - Generated changelogs for release v$RELEASE_VERSION. See [changelog](https://maha--${{ steps.cpr.outputs.pull-request-number }}.org.readthedocs.build/en/${{ steps.cpr.outputs.pull-request-number }}/changelog/$RELEASE_VERSION-changelog.html)
-            - Bumped pypi version to v$RELEASE_VERSION.
+            - Generated changelogs for release v${{ env.RELEASE_VERSION }}. See [changelog](https://maha--${{ steps.cpr.outputs.pull-request-number }}.org.readthedocs.build/en/${{ steps.cpr.outputs.pull-request-number }}/changelog/${{ env.RELEASE_VERSION }}-changelog.html).
+            - Bumped pypi version to v${{ env.RELEASE_VERSION }}.
             - Updated the citation information.
