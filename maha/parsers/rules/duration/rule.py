@@ -17,7 +17,7 @@ from dataclasses import dataclass
 from typing import Dict, List
 
 from maha.parsers.rules.numeral.rule import RULE_NUMERAL, parse_numeral
-from maha.parsers.templates import FunctionValue
+from maha.parsers.templates import FunctionValue, Unit
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
 from ..common import (
@@ -43,7 +43,7 @@ def get_pattern(singular_frac_group, singular, dual, all_units):
 
 def merge_same_units(values: List[ValueUnit]) -> List[ValueUnit]:
     """Merge values with same units from the input ``values``."""
-    newvalues = {}
+    newvalues: Dict[Unit, ValueUnit] = {}
     for value in values:
         unit = value.unit
         if unit in newvalues:

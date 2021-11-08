@@ -207,8 +207,8 @@ Parse ordinal.
 10
 >>> parse_dimension('التاسع والخمسين', ordinal=True)[0].value
 59
->>> parse_dimension('المئة والثالث والثلاثون', ordinal=True)[0].value
-133
+>>> parse_dimension('الأول والثاني والمئة', ordinal=True)
+[Dimension(body=الأول, value=1, start=0, end=5, dimension_type=DimensionType.ORDINAL), Dimension(body=الثاني, value=2, start=7, end=13, dimension_type=DimensionType.ORDINAL), Dimension(body=المئة, value=100, start=15, end=20, dimension_type=DimensionType.ORDINAL)]
 >>> parse_dimension('المليون', ordinal=True)[0].value
 1000000
 

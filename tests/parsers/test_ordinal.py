@@ -1,6 +1,6 @@
 import random
 from itertools import chain
-from typing import List
+from typing import List, Union
 
 import pytest
 
@@ -21,6 +21,15 @@ def assert_expression_output(output: List[Dimension], expected):
     assert pytest.approx(dim.value, 0.0001) == expected
 
 
+def assert_combined_expression_one_output(
+    output: List[Dimension], expected: List[float]
+):
+
+    for i, item in enumerate(output):
+        assert isinstance(item.value, (float, int))
+        assert pytest.approx(item.value, 0.001) == expected[i]
+
+
 def get_value_positions(*text: str):
     positions = [
         ("${}."),
@@ -37,7 +46,7 @@ def get_value_positions(*text: str):
         yield random.choice(positions).format(t)
 
 
-def get_value(exprected: int, values: List[str]):
+def get_value(exprected: Union[int, List[int]], values: List[str]):
     for v in get_value_positions(*values):
         yield v, exprected
 
@@ -204,35 +213,36 @@ def test_hundreds(input, expected):
 @pytest.mark.parametrize(
     "input, expected",
     chain(
-        get_value(1000, ["الألف"]),
-        get_value(1000000, ["المليون"]),
-        get_value(1000000000, ["البليون", "المليار"]),
-        get_value(1000000000000, ["التريليون", "الترليون"]),
-        get_value(1100, ["الألف والمئة"]),
-        get_value(1216, ["الألف والمئتين والسادس عشر"]),
-        get_value(1000300, ["المليون والثلاثمئة"]),
-        get_value(1000018, ["المليون والثامن عشر"]),
-        get_value(1000000020, ["البليون والعشرين", "المليار والعشرون"]),
+        get_value([1000], ["الألف"]),
+        get_value([1000000], ["المليون"]),
+        get_value([1000000000], ["البليون", "المليار"]),
+        get_value([1000000000000], ["التريليون", "الترليون"]),
+        get_value([1000, 100], ["الألف والمئة"]),
+        get_value([1000, 216], ["الألف والمئتين والسادس عشر"]),
+        get_value([1000000, 300], ["المليون والثلاثمئة"]),
+        get_value([1000000, 18], ["المليون والثامن عشر"]),
+        get_value([1000000000, 20], ["البليون والعشرين", "المليار والعشرون"]),
     ),
 )
 def test_perfect_millions(input, expected):
-    assert_expression_output(parse_dimension(input, ordinal=True), expected)
+    assert_combined_expression_one_output(
+        parse_dimension(input, ordinal=True), expected
+    )
 
 
-# TODO:
-# This behaviour might be changed in the future.
 @pytest.mark.parametrize(
     "expected, input",
     [
-        (141, "الأول والأربعين والمئة"),
-        (16, "الثاني والرابع عشر"),
-        (1000101, "الواحد والمئة والمليون"),
-        # Is this alright?
-        (6, "الأول والثاني والثالث"),
+        ([1, 40, 100], "الأول والأربعين والمئة"),
+        ([2, 14], "الثاني والرابع عشر"),
+        ([1, 100, 1000000], "الأول والمئة والمليون"),
+        ([1, 2, 3], "الأول والثاني والثالث"),
     ],
 )
 def test_combinations(input, expected):
-    assert_expression_output(parse_dimension(input, ordinal=True), expected)
+    assert_combined_expression_one_output(
+        parse_dimension(input, ordinal=True), expected
+    )
 
 
 @pytest.mark.parametrize(
