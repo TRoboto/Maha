@@ -206,7 +206,7 @@ def main(token, prior, tag, additional, outfile):
         f.write(
             dedent(
                 f"""\
-                A total of {len(set(a.strip(" +") for a in authors).union(set(reviewers)))} people contributed to this
+                A total of {len(set(authors).union(set(reviewers)))} people contributed to this
                 release. People with a '+' by their names authored a patch for the first
                 time.\n
                 """,
