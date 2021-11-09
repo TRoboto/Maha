@@ -1,0 +1,99 @@
+******
+v0.2.0
+******
+
+:Date: November 09, 2021
+
+Contributors
+============
+
+A total of 3 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Mohammad Al-Fetyani
+* Pain
+* Saed SayedAhmed +
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+* Mohammad Al-Fetyani
+* Pain
+* Saed SayedAhmed
+
+Pull requests merged
+====================
+
+A total of 17 pull requests were merged for this release.
+
+Highlights
+----------
+
+* `#41 <https://github.com/TRoboto/Maha/pull/41>`__: Add the ability to parse names from text
+
+
+* `#40 <https://github.com/TRoboto/Maha/pull/40>`__: Introduce :mod:`~.datasets` module and the first dataset, `names`, with over 40,000 unique names
+
+
+New features
+------------
+
+* `#51 <https://github.com/TRoboto/Maha/pull/51>`__: Ordinal: Add support for `الحادي/ة` and `الاحدى` in ordinal tens parsing
+
+
+Enhancements
+------------
+
+* `#53 <https://github.com/TRoboto/Maha/pull/53>`__: Ordinal: Changed the behavior of ordinal parsing so that the results are no longer concatenated
+
+
+* `#52 <https://github.com/TRoboto/Maha/pull/52>`__: Duration: Improved the performance of duration parsing
+
+
+* `#34 <https://github.com/TRoboto/Maha/pull/34>`__: Time: Add `هسا` to :data:`~.AT_THE_MOMENT` value and `هاد` to :data:`~.THIS` value
+
+
+Fixed bugs
+----------
+
+* `#50 <https://github.com/TRoboto/Maha/pull/50>`__: Time: Fix incorrect fraction of time parsing
+
+
+* `#39 <https://github.com/TRoboto/Maha/pull/39>`__: Time: Made next/previous specific month time parsing independent of current time
+
+
+* `#38 <https://github.com/TRoboto/Maha/pull/38>`__: Time: Fixed incorrect parsing for combined full date and specific day
+
+
+* `#30 <https://github.com/TRoboto/Maha/pull/30>`__: Fix incorrect time parsing with :data:`~.LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH`
+
+
+* `#13 <https://github.com/TRoboto/Maha/pull/13>`__: Add the normalized text of :data:`~.LIGATURE_SALLA_KORANIC` and  :data:`~.LIGATURE_QALA`
+
+
+* `#14 <https://github.com/TRoboto/Maha/pull/14>`__: Exclude :data:`~.ARABIC_LIGATURES` from :data:`~.EXPRESSION_EMOJIS`
+
+
+Documentation-related changes
+-----------------------------
+
+* `#55 <https://github.com/TRoboto/Maha/pull/55>`__: Comparison: Maha and facebook/Duckling
+
+
+Changes to our development infrastructure
+-----------------------------------------
+
+* `#35 <https://github.com/TRoboto/Maha/pull/35>`__: Add a deprecation system
+
+
+* `#31 <https://github.com/TRoboto/Maha/pull/31>`__: Added workflow to automatically prepare for a new release
+
+
+* `#29 <https://github.com/TRoboto/Maha/pull/29>`__: Fix publish to pypi GitHub workflow
+
+
+* `#28 <https://github.com/TRoboto/Maha/pull/28>`__: Add script to automatically generate changelogs and update citation
+
+
