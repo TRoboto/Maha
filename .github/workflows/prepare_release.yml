@@ -9,9 +9,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       - name: Set RELEASE_VERSION
-        run: echo "RELEASE_VERSION=${GITHUB_REF#refs/*/}" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=$(git describe --tags | awk -F - '{print substr($1,2)}')" >> $GITHUB_ENV
 
       - name: Setup Python 3.8
         uses: actions/setup-python@v2
@@ -32,24 +34,27 @@ jobs:
           chmod +x tools/gen_changelog.py
           poetry run tools/gen_changelog.py ${{ secrets.GITHUB_TOKEN }} v$CURRENT_VERSION v$RELEASE_VERSION
 
-      - name: Bump version
+      - name: Bump pypi version
         run: poetry version $RELEASE_VERSION
 
       - name: Create Pull Request
+        id: cpr
         uses: peter-evans/create-pull-request@v3
         with:
           commit-message: prepare release
-          title: Prepare for the next release of Maha (v$RELEASE_VERSION)
+          title: Prepare for the next release of Maha (v${{ env.RELEASE_VERSION }})
           branch: prepare-release
           base: main
-
-      - uses: tzkhan/pr-update-action@v2
-        with:
-          repo-token: "${{ secrets.GITHUB_TOKEN }}"
-          head-branch-regex: "prepare-release"
-          body-template: |
+          token: ${{ secrets.GITHUB_TOKEN }}
+          body: |
             This is an auto-generated PR to prepare for the next release of Maha. The following changes were automatically made:
 
-            - Generated changelogs for release v$RELEASE_VERSION. See [changelog](https://maha--${{ steps.cpr.outputs.pull-request-number }}.org.readthedocs.build/en/${{ steps.cpr.outputs.pull-request-number }}/changelog/$RELEASE_VERSION-changelog.html)
-            - Bumped pypi version to v$RELEASE_VERSION.
+            - Generated changelogs for release v${{ env.RELEASE_VERSION }}.
+            - Bumped pypi version to v${{ env.RELEASE_VERSION }}.
             - Updated the citation information.
+
+      - name: Create update comment
+        uses: peter-evans/create-or-update-comment@v1
+        with:
+          issue-number: ${{ steps.cpr.outputs.pull-request-number }}
+          body: See [changelog](https://maha--${{ steps.cpr.outputs.pull-request-number }}.org.readthedocs.build/en/${{ steps.cpr.outputs.pull-request-number }}/changelog/${{ env.RELEASE_VERSION }}-changelog.html).
