@@ -5,6 +5,6 @@ authors:
   given-names: "Mohammad"
   orcid: "https://orcid.org/0000-0002-7360-2403"
 title: "Maha Processing Library"
-version: 0.1.1
-date-released: 2021-09-18
+version: v0.2.0
+date-released: 2021-11-09
 url: "https://github.com/TRoboto/Maha"
