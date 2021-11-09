@@ -7,7 +7,7 @@ v0.2.0
 Contributors
 ============
 
-A total of 4 people contributed to this
+A total of 3 people contributed to this
 release. People with a '+' by their names authored a patch for the first
 time.
 
