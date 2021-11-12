@@ -40,7 +40,7 @@ Highlights
 New features
 ------------
 
-* `#51 <https://github.com/TRoboto/Maha/pull/51>`__: Ordinal: Add support for `الحادي/ة` and `الاحدى` in ordinal tens parsing 
+* `#51 <https://github.com/TRoboto/Maha/pull/51>`__: Ordinal: Add support for `الحادي/ة` and `الاحدى` in ordinal tens parsing
 
 
 Enhancements
