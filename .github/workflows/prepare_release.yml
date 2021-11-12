@@ -2,7 +2,7 @@ name: Prepare release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*pre"
 
 jobs:
   prepare_release:
@@ -13,7 +13,7 @@ jobs:
           fetch-depth: 0
 
       - name: Set RELEASE_VERSION
-        run: echo "RELEASE_VERSION=$(git describe --tags | awk -F - '{print substr($1,2)}')" >> $GITHUB_ENV
+        run: echo "RELEASE_VERSION=$(git describe --tags | awk -F pre '{print substr($1,2)}')" >> $GITHUB_ENV
 
       - name: Setup Python 3.8
         uses: actions/setup-python@v2
