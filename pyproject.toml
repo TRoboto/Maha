@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "mahad"
-version = "0.1.2"
+version = "0.2.0pre"
 description = "An Arabic text processing library intended for use in NLP applications."
 authors = ["Mohammad Al-Fetyani <m4bh@hotmail.com>"]
 license = "BSD-3-Clause"
