@@ -397,4 +397,3 @@ Examples
     >>> proc = proc.normalize(all=True).keep(arabic_letters=True).drop_empty_lines()
     >>> # To start processing the file, run the following commented code.
     >>> # proc.process_and_save(Path("output.txt"))
-    ```
