@@ -75,7 +75,16 @@ def update_citation(version, date):
         b.write(contents)
 
 
-def process_pullrequests(lst, cur, github_repo, pr_nums):
+def update_changelog_tree(path: Path):
+    with open(path.parents[1] / "changelog.rst", "r") as f:
+        newtext = f.read().replace(
+            ".. next-changelog", f"changelog/{path.stem}\n{' '*4}.. next-changelog"
+        )
+    with open(path.parents[1] / "changelog.rst", "w") as f:
+        f.write(newtext)
+
+
+def process_pullrequests(lst, github_repo, pr_nums):
     lst_commit = github_repo.get_commit(sha=this_repo.git.rev_list("-1", lst))
     lst_date = lst_commit.commit.author.date
 
@@ -84,6 +93,8 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     pr_by_labels = defaultdict(list)
     for num in tqdm(pr_nums, desc="Processing PRs"):
         pr = github_repo.get_pull(num)
+        if "github-actions" in pr.user.login:
+            continue
         authors.add(pr.user)
         reviewers = reviewers.union(rev.user for rev in pr.get_reviews())
         pr_labels = [label.name for label in pr.labels]
@@ -115,12 +126,12 @@ def process_pullrequests(lst, cur, github_repo, pr_nums):
     }
 
 
-def get_pr_nums(lst, cur):
+def get_pr_nums(lst):
     print("Getting PR Numbers:")
     prnums = []
 
     # From regular merges
-    merges = this_repo.git.log("--oneline", "--merges", f"{lst}..{cur}")
+    merges = this_repo.git.log("--oneline", "--merges", f"{lst}..@")
     issues = re.findall(r".*\(\#(\d+)\)", merges)
     prnums.extend(int(s) for s in issues)
 
@@ -129,7 +140,7 @@ def get_pr_nums(lst, cur):
         "--oneline",
         "--no-merges",
         "--first-parent",
-        f"{lst}..{cur}",
+        f"{lst}..@",
     )
     split_commits = list(
         filter(lambda x: "pre-commit autoupdate" not in str(x), commits.split("\n")),
@@ -171,13 +182,13 @@ def main(token, prior, tag, additional, outfile):
     github = Github(token)
     github_repo = github.get_repo("TRoboto/Maha")
 
-    pr_nums = get_pr_nums(lst_release, cur_release)
+    pr_nums = get_pr_nums(lst_release)
     if additional:
         print(f"Adding {additional} to the mix!")
         pr_nums = pr_nums + list(additional)
 
     # document authors
-    contributions = process_pullrequests(lst_release, cur_release, github_repo, pr_nums)
+    contributions = process_pullrequests(lst_release, github_repo, pr_nums)
     authors = contributions["authors"]
     reviewers = contributions["reviewers"]
 
@@ -186,12 +197,12 @@ def main(token, prior, tag, additional, outfile):
     update_citation(tag, str(today))
 
     if not outfile:
-        outfile = (
-            Path(__file__).resolve().parent.parent / "docs" / "source" / "changelog"
-        )
+        outfile = Path(__file__).resolve().parents[1] / "docs" / "source" / "changelog"
         outfile = outfile / f"{tag[1:] if tag.startswith('v') else tag}-changelog.rst"
     else:
         outfile = Path(outfile).resolve()
+
+    update_changelog_tree(outfile)
 
     with outfile.open("w", encoding="utf8") as f:
         f.write("*" * len(tag) + "\n")
@@ -206,7 +217,7 @@ def main(token, prior, tag, additional, outfile):
         f.write(
             dedent(
                 f"""\
-                A total of {len(set(authors).union(set(reviewers)))} people contributed to this
+                A total of {len(set(a.split(" +")[0] for a in authors).union(set(reviewers)))} people contributed to this
                 release. People with a '+' by their names authored a patch for the first
                 time.\n
                 """,

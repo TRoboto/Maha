@@ -2,7 +2,7 @@ name: Prepare release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v*.*.*pre"
 
 jobs:
   prepare_release:
