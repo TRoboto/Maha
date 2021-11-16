@@ -320,8 +320,6 @@ Examples
     >>> parse_dimension("جاك", names=True)
     [Dimension(body=جاك, value=جاك, start=0, end=3, dimension_type=DimensionType.NAME)]
 
-Check `README <https://github.com/TRoboto/Maha/blob/main/README.md>`_ for more examples.
-
 How parsers work
 *****************
 
