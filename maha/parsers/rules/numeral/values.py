@@ -22,7 +22,7 @@ ten_prefix = "عشر"
 
 ZERO = Value(0, "صفر")
 ONE = Value(1, "وا?حد" + TEH_OPTIONAL_SUFFIX)
-TWO = Value(2, "[إا][ثت]نت?[اي]ن")
+TWO = Value(2, "[إا]?[ثت]نت?[اي]ن")
 THREE = Value(3, three_prefix + TEH_OPTIONAL_SUFFIX)
 FOUR = Value(4, four_prefix + TEH_OPTIONAL_SUFFIX)
 FIVE = Value(5, five_prefix + TEH_OPTIONAL_SUFFIX)
