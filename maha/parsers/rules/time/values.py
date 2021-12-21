@@ -68,7 +68,6 @@ lam_lam_group = named_group("to_time", LAM + LAM)
 ALEF_LAM_OR_DOUBLE_LAM = non_capturing_group(ALEF_LAM, lam_lam_group)
 ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL = optional_non_capturing_group(ALEF_LAM_OR_DOUBLE_LAM)
 
-THIS = non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي", "هاد")
 AFTER = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد"
 BEFORE = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
 PREVIOUS = (
@@ -94,7 +93,11 @@ TO = Expression(
         "لل?",
     )
 )
-THIS = optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE) + THIS
+THIS = optional_non_capturing_group(
+    IN_FROM_AT + EXPRESSION_SPACE
+) + non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي", "هاد")
+
+CURRENT = ALEF_LAM + non_capturing_group("حالي?", "حالي[ةه]?")
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
 
 TIME_WORD_SEPARATOR = Expression(
@@ -120,6 +123,7 @@ AT_THE_MOMENT = Value(
         "هس[اةه]",
         "في الحال",
         "حالا",
+        spaced_patterns(non_capturing_group("الوقت", "اللح[زضظ][ةه]"), CURRENT),
     ),
 )
 # endregion
@@ -153,7 +157,8 @@ THIS_YEAR = Value(
     TimeValue(years=0),
     optional_non_capturing_group(THIS + EXPRESSION_SPACE)
     + ALEF_LAM_OR_DOUBLE_LAM
-    + ONE_YEAR,
+    + ONE_YEAR
+    + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
 LAST_YEAR = Value(
     TimeValue(years=-1),
@@ -373,10 +378,10 @@ _months = ExpressionGroup(
 
 THIS_MONTH = Value(
     TimeValue(months=0),
-    non_capturing_group(
-        ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH,
-        spaced_patterns(THIS, ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH),
-    ),
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE)
+    + ALEF_LAM_OR_DOUBLE_LAM
+    + ONE_MONTH
+    + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
 LAST_MONTH = Value(
     TimeValue(months=-1),
@@ -481,10 +486,10 @@ BEFORE_SPECIFIC_PREVIOUS_MONTH = FunctionValue(
 
 THIS_WEEK = Value(
     TimeValue(weeks=0),
-    non_capturing_group(
-        ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK,
-        spaced_patterns(THIS, ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK),
-    ),
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE)
+    + ALEF_LAM_OR_DOUBLE_LAM
+    + ONE_WEEK
+    + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
 LAST_WEEK = Value(
     TimeValue(weeks=-1),
@@ -563,10 +568,10 @@ WEEKDAY = FunctionValue(
 )
 THIS_DAY = Value(
     TimeValue(days=0),
-    non_capturing_group(
-        ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY,
-        spaced_patterns(THIS, ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY),
-    ),
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE)
+    + ALEF_LAM_OR_DOUBLE_LAM
+    + ONE_DAY
+    + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
 YESTERDAY = Value(
     TimeValue(days=-1),
@@ -800,7 +805,8 @@ THIS_HOUR = Value(
     TimeValue(hours=0),
     optional_non_capturing_group(THIS + EXPRESSION_SPACE)
     + ALEF_LAM_OR_DOUBLE_LAM
-    + ONE_HOUR,
+    + ONE_HOUR
+    + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
 LAST_HOUR = Value(
     TimeValue(hours=-1),
@@ -901,7 +907,8 @@ THIS_MINUTE = Value(
     TimeValue(minutes=0),
     optional_non_capturing_group(THIS + EXPRESSION_SPACE)
     + ALEF_LAM_OR_DOUBLE_LAM
-    + ONE_MINUTE,
+    + ONE_MINUTE
+    + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
 LAST_MINUTE = Value(
     TimeValue(minutes=-1),
