@@ -1,6 +1,8 @@
 __all__ = ["TimeValue"]
 
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 
@@ -216,3 +218,9 @@ class TimeValue(relativedelta):
             and self.second == other.second
             and self.microsecond == other.microsecond
         )
+
+
+@dataclass
+class TimeInterval:
+    from_time: Optional[TimeValue] = None
+    to_time: Optional[TimeValue] = None

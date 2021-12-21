@@ -1,7 +1,7 @@
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE
 
 import maha.parsers.rules.numeral.values as numvalues
-from maha.constants import ARABIC_COMMA, COMMA, arabic, english
+from maha.constants import ARABIC_COMMA, COMMA, LAM, WAW, arabic, english
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
@@ -35,7 +35,7 @@ from maha.parsers.rules.ordinal.rule import (
     RULE_ORDINAL_TENS,
     RULE_ORDINAL_THOUSANDS,
 )
-from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL, ONE_PREFIX
+from maha.parsers.rules.ordinal.values import ALEF_LAM, ONE_PREFIX
 from maha.parsers.templates import FunctionValue, Value
 from maha.parsers.templates.value_expressions import MatchedValue
 from maha.rexy import (
@@ -64,6 +64,10 @@ def parse_value(value: dict) -> TimeValue:
     return TimeValue(**value)
 
 
+lam_lam_group = named_group("to_time", LAM + LAM)
+ALEF_LAM_OR_DOUBLE_LAM = non_capturing_group(ALEF_LAM, lam_lam_group)
+ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL = optional_non_capturing_group(ALEF_LAM_OR_DOUBLE_LAM)
+
 THIS = non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي", "هاد")
 AFTER = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد"
 BEFORE = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
@@ -80,13 +84,23 @@ BEFORE_PREVIOUS = spaced_patterns(BEFORE, PREVIOUS)
 IN_FROM_AT = non_capturing_group(
     "في", "من", "خلال", "الموافق", "عند", "قراب[ةه]", "على"
 )
+FROM = Expression(non_capturing_group("من"))
+TO = Expression(
+    optional_non_capturing_group(WAW)
+    + EXPRESSION_SPACE_OR_NONE
+    + non_capturing_group(
+        "[اإ]لى",
+        "حتى",
+        "لل?",
+    )
+)
 THIS = optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE) + THIS
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
 
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
         f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
-        EXPRESSION_SPACE + "ب?ل?و?ع?",
+        EXPRESSION_SPACE + "ب?و?ع?",
         EXPRESSION_SPACE + IN_FROM_AT + EXPRESSION_SPACE,
     )
     + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
@@ -121,7 +135,7 @@ NUMERAL_YEAR = FunctionValue(
         {"year": list(numeral_thousands.parse(match.group("value")))[0].value}
     ),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_YEAR,
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_YEAR,
         value_group(numeral_thousands.join()),
     ),
 )
@@ -130,39 +144,42 @@ ORDINAL_YEAR = FunctionValue(
         {"year": list(ordinal_thousands.parse(match.group("value")))[0].value}
     ),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_YEAR, value_group(ordinal_thousands.join())
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_YEAR,
+        value_group(ordinal_thousands.join()),
     ),
 )
 
 THIS_YEAR = Value(
     TimeValue(years=0),
-    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_YEAR,
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE)
+    + ALEF_LAM_OR_DOUBLE_LAM
+    + ONE_YEAR,
 )
 LAST_YEAR = Value(
     TimeValue(years=-1),
     non_capturing_group(
         spaced_patterns(BEFORE, ONE_YEAR),
-        spaced_patterns(ALEF_LAM + ONE_YEAR, PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, PREVIOUS),
     ),
 )
 LAST_TWO_YEARS = Value(
     TimeValue(years=-2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_YEAR, BEFORE_PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, TWO_YEARS),
     ),
 )
 NEXT_YEAR = Value(
     TimeValue(years=1),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_YEAR, NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, NEXT),
         spaced_patterns(AFTER, ONE_YEAR),
     ),
 )
 NEXT_TWO_YEARS = Value(
     TimeValue(years=2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_YEAR, AFTER_NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, AFTER_NEXT),
         spaced_patterns(AFTER, TWO_YEARS),
     ),
 )
@@ -357,34 +374,35 @@ _months = ExpressionGroup(
 THIS_MONTH = Value(
     TimeValue(months=0),
     non_capturing_group(
-        ALEF_LAM + ONE_MONTH, spaced_patterns(THIS, ALEF_LAM + ONE_MONTH)
+        ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH,
+        spaced_patterns(THIS, ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH),
     ),
 )
 LAST_MONTH = Value(
     TimeValue(months=-1),
     non_capturing_group(
         spaced_patterns(BEFORE, ONE_MONTH),
-        spaced_patterns(ALEF_LAM + ONE_MONTH, PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH, PREVIOUS),
     ),
 )
 LAST_TWO_MONTHS = Value(
     TimeValue(months=-2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MONTH, BEFORE_PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH, BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, TWO_MONTHS),
     ),
 )
 NEXT_MONTH = Value(
     TimeValue(months=1),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MONTH, NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH, NEXT),
         spaced_patterns(AFTER, ONE_MONTH),
     ),
 )
 NEXT_TWO_MONTHS = Value(
     TimeValue(months=2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MONTH, AFTER_NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MONTH, AFTER_NEXT),
         spaced_patterns(AFTER, TWO_MONTHS),
     ),
 )
@@ -464,34 +482,35 @@ BEFORE_SPECIFIC_PREVIOUS_MONTH = FunctionValue(
 THIS_WEEK = Value(
     TimeValue(weeks=0),
     non_capturing_group(
-        ALEF_LAM + ONE_WEEK, spaced_patterns(THIS, ALEF_LAM + ONE_WEEK)
+        ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK,
+        spaced_patterns(THIS, ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK),
     ),
 )
 LAST_WEEK = Value(
     TimeValue(weeks=-1),
     non_capturing_group(
         spaced_patterns(BEFORE, ONE_WEEK),
-        spaced_patterns(ALEF_LAM + ONE_WEEK, PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK, PREVIOUS),
     ),
 )
 LAST_TWO_WEEKS = Value(
     TimeValue(weeks=-2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_WEEK, BEFORE_PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK, BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, TWO_WEEKS),
     ),
 )
 NEXT_WEEK = Value(
     TimeValue(weeks=1),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_WEEK, NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK, NEXT),
         spaced_patterns(AFTER, ONE_WEEK),
     ),
 )
 NEXT_TWO_WEEKS = Value(
     TimeValue(weeks=2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_WEEK, AFTER_NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_WEEK, AFTER_NEXT),
         spaced_patterns(AFTER, TWO_WEEKS),
     ),
 )
@@ -523,13 +542,13 @@ BEFORE_N_WEEKS = FunctionValue(
 # ----------------------------------------------------
 # DAYS
 # ----------------------------------------------------
-SUNDAY = Value(SU, ALEF_LAM_OPTIONAL + "[أا]حد")
-MONDAY = Value(MO, ALEF_LAM_OPTIONAL + "[إا][تث]نين")
-TUESDAY = Value(TU, ALEF_LAM_OPTIONAL + "[ثت]لا[ثت]اء?")
-WEDNESDAY = Value(WE, ALEF_LAM_OPTIONAL + "[أا]ربعاء?")
-THURSDAY = Value(TH, ALEF_LAM_OPTIONAL + "خميس")
-FRIDAY = Value(FR, ALEF_LAM_OPTIONAL + "جمع[ةه]")
-SATURDAY = Value(SA, ALEF_LAM_OPTIONAL + "سبت")
+SUNDAY = Value(SU, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "[أا]حد")
+MONDAY = Value(MO, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "[إا][تث]نين")
+TUESDAY = Value(TU, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "[ثت]لا[ثت]اء?")
+WEDNESDAY = Value(WE, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "[أا]ربعاء?")
+THURSDAY = Value(TH, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "خميس")
+FRIDAY = Value(FR, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "جمع[ةه]")
+SATURDAY = Value(SA, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "سبت")
 _days = ExpressionGroup(SUNDAY, MONDAY, TUESDAY, WEDNESDAY, THURSDAY, FRIDAY, SATURDAY)
 
 WEEKDAY = FunctionValue(
@@ -538,44 +557,48 @@ WEEKDAY = FunctionValue(
     ),
     optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
     + non_capturing_group(
-        ALEF_LAM + value_group(_days[:2].join()), value_group(_days[2:].join())
+        ALEF_LAM_OR_DOUBLE_LAM + value_group(_days[:2].join()),
+        value_group(_days[2:].join()),
     ),
 )
 THIS_DAY = Value(
     TimeValue(days=0),
-    non_capturing_group(ALEF_LAM + ONE_DAY, spaced_patterns(THIS, ALEF_LAM + ONE_DAY)),
+    non_capturing_group(
+        ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY,
+        spaced_patterns(THIS, ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY),
+    ),
 )
 YESTERDAY = Value(
     TimeValue(days=-1),
     non_capturing_group(
         "[اإ]?مبارح",
-        ALEF_LAM + "بارح[ةه]",
-        ALEF_LAM_OPTIONAL + "[أا]مس",
+        ALEF_LAM_OR_DOUBLE_LAM + "بارح[ةه]",
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "[أا]مس",
         spaced_patterns(BEFORE, ONE_DAY),
-        spaced_patterns(ALEF_LAM + ONE_DAY, PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY, PREVIOUS),
     ),
 )
 BEFORE_YESTERDAY = Value(
     TimeValue(days=-2),
     non_capturing_group(
         spaced_patterns(non_capturing_group("[أا]ول", str(BEFORE)), YESTERDAY),
-        spaced_patterns(ALEF_LAM + ONE_DAY, BEFORE_PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY, BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, TWO_DAYS),
     ),
 )
 TOMORROW = Value(
     TimeValue(days=1),
     non_capturing_group(
-        ALEF_LAM_OPTIONAL + "غدا?",
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "غدا?",
         "بكر[ةه]",
-        spaced_patterns(ALEF_LAM + ONE_DAY, NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY, NEXT),
         spaced_patterns(AFTER, ONE_DAY),
     ),
 )
 AFTER_TOMORROW = Value(
     TimeValue(days=2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_DAY, AFTER_NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY, AFTER_NEXT),
         spaced_patterns(AFTER, TOMORROW),
         spaced_patterns(AFTER, TWO_DAYS),
     ),
@@ -653,7 +676,7 @@ LAST_DAY = FunctionValue(
     lambda _: parse_value({"day": 31}),
     non_capturing_group(
         spaced_patterns(LAST, ONE_DAY),
-        spaced_patterns(ALEF_LAM_OPTIONAL + ONE_DAY, LAST),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_DAY, LAST),
     ),
 )
 LAST_SPECIFIC_DAY = FunctionValue(
@@ -668,7 +691,7 @@ LAST_SPECIFIC_DAY = FunctionValue(
         + EXPRESSION_SPACE
         + optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
         + named_group("day", _days.join()),
-        optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY)
+        optional_non_capturing_group(ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_DAY)
         + EXPRESSION_SPACE
         + named_group("day", _days.join())
         + LAST,
@@ -686,11 +709,15 @@ ORDINAL_SPECIFIC_DAY = FunctionValue(
     non_capturing_group(
         spaced_patterns(
             named_group("ordinal", ordinal_ones_tens.join()),
-            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
+            optional_non_capturing_group(
+                ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE
+            )
             + named_group("day", _days.join()),
         ),
         spaced_patterns(
-            optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE)
+            optional_non_capturing_group(
+                ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE
+            )
             + named_group("day", _days.join()),
             named_group("ordinal", ordinal_ones_tens.join()),
         ),
@@ -703,7 +730,7 @@ ORDINAL_SPECIFIC_DAY = FunctionValue(
 # LAST DAY OF MONTH
 # ----------------------------------------------------
 _optional_month_start = optional_non_capturing_group(
-    EXPRESSION_SPACE + ALEF_LAM_OPTIONAL + ONE_MONTH
+    EXPRESSION_SPACE + ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_MONTH
 )
 _start_of_last_day = (
     non_capturing_group(
@@ -749,7 +776,8 @@ NUMERAL_HOUR = FunctionValue(
         }
     ),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_HOUR, value_group(numeral_ones_tens.join())
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
+        value_group(numeral_ones_tens.join()),
     ),
 )
 
@@ -763,39 +791,42 @@ ORDINAL_HOUR = FunctionValue(
         }
     ),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_HOUR, value_group(ordinal_ones_tens.join())
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
+        value_group(ordinal_ones_tens.join()),
     ),
 )
 
 THIS_HOUR = Value(
     TimeValue(hours=0),
-    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_HOUR,
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE)
+    + ALEF_LAM_OR_DOUBLE_LAM
+    + ONE_HOUR,
 )
 LAST_HOUR = Value(
     TimeValue(hours=-1),
     non_capturing_group(
         spaced_patterns(BEFORE, ONE_HOUR),
-        spaced_patterns(ALEF_LAM + ONE_HOUR, PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_HOUR, PREVIOUS),
     ),
 )
 LAST_TWO_HOURS = Value(
     TimeValue(hours=-2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_HOUR, BEFORE_PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_HOUR, BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, TWO_HOURS),
     ),
 )
 NEXT_HOUR = Value(
     TimeValue(hours=1),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_HOUR, NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_HOUR, NEXT),
         spaced_patterns(AFTER, ONE_HOUR),
     ),
 )
 NEXT_TWO_HOURS = Value(
     TimeValue(hours=2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_HOUR, AFTER_NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_HOUR, AFTER_NEXT),
         spaced_patterns(AFTER, TWO_HOURS),
     ),
 )
@@ -836,7 +867,8 @@ NUMERAL_MINUTE = FunctionValue(
     ),
     non_capturing_group(
         spaced_patterns(
-            ALEF_LAM_OPTIONAL + ONE_MINUTE, value_group(numeral_ones_tens.join())
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_MINUTE,
+            value_group(numeral_ones_tens.join()),
         ),
         spaced_patterns(
             value_group(numeral_ones_tens.join()),
@@ -855,7 +887,8 @@ ORDINAL_MINUTE = FunctionValue(
     ),
     non_capturing_group(
         spaced_patterns(
-            ALEF_LAM_OPTIONAL + ONE_MINUTE, value_group(ordinal_ones_tens.join())
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_MINUTE,
+            value_group(ordinal_ones_tens.join()),
         ),
         spaced_patterns(
             value_group(ordinal_ones_tens.join()),
@@ -866,33 +899,35 @@ ORDINAL_MINUTE = FunctionValue(
 
 THIS_MINUTE = Value(
     TimeValue(minutes=0),
-    optional_non_capturing_group(THIS + EXPRESSION_SPACE) + ALEF_LAM + ONE_MINUTE,
+    optional_non_capturing_group(THIS + EXPRESSION_SPACE)
+    + ALEF_LAM_OR_DOUBLE_LAM
+    + ONE_MINUTE,
 )
 LAST_MINUTE = Value(
     TimeValue(minutes=-1),
     non_capturing_group(
         spaced_patterns(BEFORE, ONE_MINUTE),
-        spaced_patterns(ALEF_LAM + ONE_MINUTE, PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MINUTE, PREVIOUS),
     ),
 )
 LAST_TWO_MINUTES = Value(
     TimeValue(minutes=-2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MINUTE, BEFORE_PREVIOUS),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MINUTE, BEFORE_PREVIOUS),
         spaced_patterns(BEFORE, TWO_MINUTES),
     ),
 )
 NEXT_MINUTE = Value(
     TimeValue(minutes=1),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MINUTE, NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MINUTE, NEXT),
         spaced_patterns(AFTER, ONE_MINUTE),
     ),
 )
 NEXT_TWO_MINUTES = Value(
     TimeValue(minutes=2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM + ONE_MINUTE, AFTER_NEXT),
+        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_MINUTE, AFTER_NEXT),
         spaced_patterns(AFTER, TWO_MINUTES),
     ),
 )
@@ -928,22 +963,22 @@ PM = FunctionValue(
     non_capturing_group(
         optional_non_capturing_group(AFTER + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
         + non_capturing_group(
-            ALEF_LAM_OPTIONAL + "مساء?ا?",
-            ALEF_LAM_OPTIONAL + "مغرب",
-            ALEF_LAM_OPTIONAL + "عشاء?ا?",
-            ALEF_LAM_OPTIONAL + "عصرا?",
-            ALEF_LAM_OPTIONAL + "ليل[اةه]?",
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "مساء?ا?",
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "مغرب",
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "عشاء?ا?",
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "عصرا?",
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "ليل[اةه]?",
         ),
-        spaced_patterns(AFTER, ALEF_LAM_OPTIONAL + "ظهرا?"),
+        spaced_patterns(AFTER, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "ظهرا?"),
     ),
 )
 AM = FunctionValue(
     lambda _: TimeValue(am_pm="AM"),
     optional_non_capturing_group(BEFORE + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
     + non_capturing_group(
-        ALEF_LAM_OPTIONAL + "صبا?حا?",
-        ALEF_LAM_OPTIONAL + "فجرا?",
-        ALEF_LAM_OPTIONAL + "ظهرا?",
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "صبا?حا?",
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "فجرا?",
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "ظهرا?",
     ),
 )
 
@@ -991,7 +1026,7 @@ _optional_middle = optional_non_capturing_group(
 
 _optional_start = (
     optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
-    + optional_non_capturing_group(ALEF_LAM + ONE_DAY + EXPRESSION_SPACE)
+    + optional_non_capturing_group(ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY + EXPRESSION_SPACE)
     + optional_non_capturing_group(_days.join() + EXPRESSION_SPACE)
     + optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE)
 )
@@ -1120,14 +1155,14 @@ def parse_time_fraction(match, expression, am_pm=None):
 NUMERAL_FRACTION_HOUR_MINUTE = FunctionValue(
     lambda match: parse_time_fraction(match, numeral_ones_tens),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_HOUR,
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
         value_group(get_fractions_of_pattern(numeral_ones_tens.join())),
     ),
 )
 ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
     lambda match: parse_time_fraction(match, ordinal_ones_tens),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL + ONE_HOUR,
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
         value_group(get_fractions_of_pattern(ordinal_ones_tens.join())),
     ),
 )
@@ -1140,7 +1175,9 @@ HOUR_MINUTE_FORM = FunctionValue(
             "minute": int(match.group("minute")),
         }
     ),
-    optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE)
+    optional_non_capturing_group(
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE
+    )
     + named_group("hour", r"\d{1,2}")
     + ":"
     + named_group("minute", r"\d{1,2}"),
@@ -1160,7 +1197,9 @@ HOUR_MINUTE_SECOND_FORM = FunctionValue(
             "microsecond": 0,
         }
     ),
-    optional_non_capturing_group(ALEF_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE)
+    optional_non_capturing_group(
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE
+    )
     + named_group("hour", r"\d{1,2}")
     + ":"
     + named_group("minute", r"\d{1,2}")
@@ -1183,7 +1222,9 @@ NUMERAL_HOUR_PM = FunctionValue(
             "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
         }
     ),
-    spaced_patterns(ALEF_LAM_OPTIONAL + value_group(numeral_ones_tens.join()), PM),
+    spaced_patterns(
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_ones_tens.join()), PM
+    ),
 )
 NUMERAL_HOUR_AM = FunctionValue(
     lambda match: parse_value(
@@ -1195,12 +1236,14 @@ NUMERAL_HOUR_AM = FunctionValue(
             "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
         }
     ),
-    spaced_patterns(ALEF_LAM_OPTIONAL + value_group(numeral_ones_tens.join()), AM),
+    spaced_patterns(
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_ones_tens.join()), AM
+    ),
 )
 NUMERAL_FRACTION_HOUR_AM = FunctionValue(
     lambda match: parse_time_fraction(match, numeral_ones_tens, "AM"),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
         + value_group(get_fractions_of_pattern(numeral_ones_tens.join())),
         AM,
     ),
@@ -1208,7 +1251,7 @@ NUMERAL_FRACTION_HOUR_AM = FunctionValue(
 NUMERAL_FRACTION_HOUR_PM = FunctionValue(
     lambda match: parse_time_fraction(match, numeral_ones_tens, "PM"),
     spaced_patterns(
-        ALEF_LAM_OPTIONAL
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
         + value_group(get_fractions_of_pattern(numeral_ones_tens.join())),
         PM,
     ),

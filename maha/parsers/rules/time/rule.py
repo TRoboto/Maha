@@ -11,6 +11,8 @@ __all__ = [
     "parse_time",
 ]
 
+from maha.parsers.rules.time.template import TimeInterval
+
 from ..common import combine_patterns
 from .values import *
 
@@ -25,53 +27,44 @@ def get_combined_value(groups, expression: ExpressionGroup):
 
 def parse_time(match):
     groups = match.capturesdict()
+    groups_keys = list(groups)
+    text = match.group(0)
 
-    _year = groups.get("years")
-    _months = groups.get("months")
-    _weeks = groups.get("weeks")
-    _days = groups.get("days")
-    _hours = groups.get("hours")
-    _minutes = groups.get("minutes")
-    _am_pm = groups.get("am_pm")
-    _now = groups.get("now")
-    _month_day = groups.get("month_day")
-    _year_month = groups.get("year_month")
-    _year_month_day = groups.get("year_month_day")
-    _hour_minute = groups.get("hour_minute")
-    _hour_minute_second = groups.get("h_m_s")
-    _hour_am_pm = groups.get("hour_am_pm")
+    def contains_to_time():
+        return "to_time" in groups_keys
+
+    # time interval
+    if contains_to_time() and not TO.match(text) and groups["to_time"]:
+        to_time_start = match.starts(groups_keys.index("to_time") + 1)[0]
+        start_time = TimeValue()
+        end_time = TimeValue()
+        for group, exp_group in EXPERSSION_TIME_MAP.items():
+            g_start = match.starts(groups_keys.index(group) + 1)
+            if group not in groups_keys or not g_start:
+                continue
+            for m_start, m_group in zip(g_start, groups[group]):
+                if m_start < to_time_start:
+                    start_time += get_combined_value([m_group], exp_group)
+                else:
+                    end_time += get_combined_value([m_group], exp_group)
+        return TimeInterval(start_time, end_time)
 
     value = TimeValue()
+    for group, exp_group in EXPERSSION_TIME_MAP.items():
+        if group in groups_keys and groups[group]:
+            value += get_combined_value(groups[group], exp_group)
 
-    if _month_day:
-        value += get_combined_value(_month_day, month_day_expressions)
-    if _year_month:
-        value += get_combined_value(_year_month, year_month_expressions)
-    if _year_month_day:
-        value += get_combined_value(_year_month_day, year_month_day_expressions)
-    if _hour_minute:
-        value += get_combined_value(_hour_minute, hour_minute_expressions)
-    if _hour_am_pm:
-        value += get_combined_value(_hour_am_pm, hour_am_pm_expressions)
-    if _hour_minute_second:
-        value += get_combined_value(_hour_minute_second, hour_minute_second_expressions)
-    if _year:
-        value += get_combined_value(_year, years_expressions)
-    if _weeks:
-        value += get_combined_value(_weeks, weeks_expressions)
-    if _days:
-        value += get_combined_value(_days, days_expressions)
-    if _months:
-        value += get_combined_value(_months, months_expressions)
-    if _hours:
-        value += get_combined_value(_hours, hours_expressions)
-    if _minutes:
-        value += get_combined_value(_minutes, minutes_expressions)
-    if _am_pm:
-        value += get_combined_value(_am_pm, am_pm_expressions)
-    if _now:
-        value += get_combined_value(_now, now_expressions)
+    # to time only
+    if contains_to_time() and TO.match(text):
+        return TimeInterval(to_time=value)
 
+    # from time only
+    elif FROM.match(text) and (
+        not contains_to_time() or contains_to_time() and not groups["to_time"]
+    ):
+        return TimeInterval(from_time=value)
+
+    # time only
     return value
 
 
@@ -178,6 +171,7 @@ hour_am_pm_expressions = ExpressionGroup(
     ORDINAL_HOUR_PM,
 )
 
+
 now_group = named_group("now", now_expressions.join())
 years_group = named_group("years", years_expressions.join())
 months_group = named_group("months", months_expressions.join())
@@ -192,7 +186,6 @@ year_month_day_group = named_group("year_month_day", year_month_day_expressions.
 hour_minute_group = named_group("hour_minute", hour_minute_expressions.join())
 hour_minute_second_group = named_group("h_m_s", hour_minute_second_expressions.join())
 hour_am_pm_group = named_group("hour_am_pm", hour_am_pm_expressions.join())
-
 RULE_TIME_YEARS = FunctionValue(parse_time, combine_patterns(years_group))
 RULE_TIME_MONTHS = FunctionValue(parse_time, combine_patterns(months_group))
 RULE_TIME_WEEKS = FunctionValue(parse_time, combine_patterns(weeks_group))
@@ -202,24 +195,60 @@ RULE_TIME_MINUTES = FunctionValue(parse_time, combine_patterns(minutes_group))
 RULE_TIME_AM_PM = FunctionValue(parse_time, combine_patterns(am_pm_group))
 RULE_TIME_NOW = FunctionValue(parse_time, combine_patterns(now_group))
 
+
+_all_time_expressions_pattern = combine_patterns(
+    year_month_day_group,
+    year_month_group,
+    month_day_group,
+    hour_minute_second_group,
+    hour_minute_group,
+    hour_am_pm_group,
+    now_group,
+    years_group,
+    months_group,
+    weeks_group,
+    days_group,
+    hours_group,
+    minutes_group,
+    am_pm_group,
+    seperator=TIME_WORD_SEPARATOR,
+    combine_all=True,
+)
+from_time_group = named_group(
+    "from_time", spaced_patterns(FROM, _all_time_expressions_pattern)
+)
+to_time_group = named_group(
+    "to_time", TO + EXPRESSION_SPACE_OR_NONE + _all_time_expressions_pattern
+)
+from_time_to_time_group = named_group(
+    "from_time_to_time", spaced_patterns(from_time_group, to_time_group)
+)
+
+RULE_TIME_FROM = FunctionValue(parse_time, from_time_group)
+RULE_TIME_TO = FunctionValue(parse_time, to_time_group)
+RULE_TIME_FROM_TO = FunctionValue(parse_time, from_time_to_time_group)
+
 RULE_TIME = FunctionValue(
     parse_time,
-    combine_patterns(
-        year_month_day_group,
-        year_month_group,
-        month_day_group,
-        hour_minute_second_group,
-        hour_minute_group,
-        hour_am_pm_group,
-        now_group,
-        years_group,
-        months_group,
-        weeks_group,
-        days_group,
-        hours_group,
-        minutes_group,
-        am_pm_group,
-        seperator=TIME_WORD_SEPARATOR,
-        combine_all=True,
-    ),
+    optional_non_capturing_group(FROM + EXPRESSION_SPACE, TO + EXPRESSION_SPACE_OR_NONE)
+    + _all_time_expressions_pattern
+    + optional_non_capturing_group(EXPRESSION_SPACE + to_time_group),
 )
+
+
+EXPERSSION_TIME_MAP = {
+    "month_day": month_day_expressions,
+    "year_month": year_month_expressions,
+    "year_month_day": year_month_day_expressions,
+    "hour_minute": hour_minute_expressions,
+    "hour_am_pm": hour_am_pm_expressions,
+    "h_m_s": hour_minute_second_expressions,
+    "years": years_expressions,
+    "months": months_expressions,
+    "weeks": weeks_expressions,
+    "days": days_expressions,
+    "hours": hours_expressions,
+    "minutes": minutes_expressions,
+    "am_pm": am_pm_expressions,
+    "now": now_expressions,
+}
