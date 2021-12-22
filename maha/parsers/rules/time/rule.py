@@ -11,6 +11,8 @@ __all__ = [
     "parse_time",
 ]
 
+from datetime import datetime
+
 from maha.parsers.rules.time.template import TimeInterval
 
 from ..common import combine_patterns
@@ -23,6 +25,49 @@ def get_combined_value(groups, expression: ExpressionGroup):
         exp = expression.get_matched_expression(group)
         value += next(iter(exp(group))).value  # type: ignore
     return value
+
+
+def process_time_interval(start_time: TimeValue, end_time: TimeValue):
+    """Ensures that the end time is greater than the start time."""
+
+    def set_start_if_none(value: str):
+        if getattr(start_time, value) and not getattr(end_time, value):
+            setattr(end_time, value, getattr(start_time, value))
+
+    def set_end_if_none(value: str):
+        if getattr(end_time, value) and not getattr(start_time, value):
+            setattr(start_time, value, getattr(end_time, value))
+
+    now = datetime.now()
+    for prop in [
+        "_microseconds",
+        "microsecond",
+        "_seconds",
+        "second",
+        "_minutes",
+        "minute",
+        "_hours",
+        "hour",
+        "_days",
+        "day",
+        "weekday",
+        "_leapdays",
+        "_weeks",
+        "_months",
+        "month",
+        "_years",
+        "year",
+    ]:
+        from_time = start_time + now
+        to_time = end_time + now
+        if from_time < to_time:
+            break
+        set_start_if_none(prop)
+
+    # always set am/pm to both if one is set
+    set_start_if_none("am_pm")
+    set_end_if_none("am_pm")
+    return TimeInterval(start_time, end_time)
 
 
 def parse_time(match):
@@ -47,7 +92,7 @@ def parse_time(match):
                     start_time += get_combined_value([m_group], exp_group)
                 else:
                     end_time += get_combined_value([m_group], exp_group)
-        return TimeInterval(start_time, end_time)
+        return process_time_interval(start_time, end_time)
 
     value = TimeValue()
     for group, exp_group in EXPERSSION_TIME_MAP.items():
@@ -186,6 +231,7 @@ year_month_day_group = named_group("year_month_day", year_month_day_expressions.
 hour_minute_group = named_group("hour_minute", hour_minute_expressions.join())
 hour_minute_second_group = named_group("h_m_s", hour_minute_second_expressions.join())
 hour_am_pm_group = named_group("hour_am_pm", hour_am_pm_expressions.join())
+
 RULE_TIME_YEARS = FunctionValue(parse_time, combine_patterns(years_group))
 RULE_TIME_MONTHS = FunctionValue(parse_time, combine_patterns(months_group))
 RULE_TIME_WEEKS = FunctionValue(parse_time, combine_patterns(weeks_group))

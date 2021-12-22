@@ -28,6 +28,9 @@ from maha.parsers.rules.numeral.rule import (
     RULE_NUMERAL_ONES,
     RULE_NUMERAL_TENS,
     RULE_NUMERAL_THOUSANDS,
+    TEN,
+    eleven_to_nineteen,
+    parse_numeral,
 )
 from maha.parsers.rules.numeral.values import TEH_OPTIONAL_SUFFIX
 from maha.parsers.rules.ordinal.rule import (
@@ -113,6 +116,14 @@ ordinal_ones_tens = ExpressionGroup(RULE_ORDINAL_TENS, RULE_ORDINAL_ONES, ONE_PR
 numeral_ones_tens = ExpressionGroup(
     RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
 )
+numeral_hours = ExpressionGroup(
+    FunctionValue(
+        parse_numeral,
+        named_group("tens", non_capturing_group(eleven_to_nineteen.join(), TEN)),
+    ),
+    RULE_NUMERAL_ONES,
+    RULE_NUMERAL_INTEGERS,
+)
 
 # region NOW
 AT_THE_MOMENT = Value(
@@ -132,7 +143,10 @@ AT_THE_MOMENT = Value(
 # ----------------------------------------------------
 # YEARS
 # ----------------------------------------------------
-numeral_thousands = ExpressionGroup(RULE_NUMERAL_THOUSANDS, RULE_NUMERAL_INTEGERS)
+numeral_thousands = ExpressionGroup(
+    RULE_NUMERAL_THOUSANDS,
+    FunctionValue(lambda match: int(match.group(0)), named_group("integers", r"\d{4}")),
+)
 ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
 NUMERAL_YEAR = FunctionValue(
     lambda match: parse_value(
@@ -594,7 +608,9 @@ BEFORE_YESTERDAY = Value(
 TOMORROW = Value(
     TimeValue(days=1),
     non_capturing_group(
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "غدا?",
+        optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
+        + ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
+        + "غدا?",
         "بكر[ةه]",
         spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY, NEXT),
         spaced_patterns(AFTER, ONE_DAY),
@@ -777,12 +793,12 @@ NUMERAL_HOUR = FunctionValue(
             "microsecond": 0,
             "second": 0,
             "minute": 0,
-            "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+            "hour": list(numeral_hours.parse(match.group("value")))[0].value,
         }
     ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
-        value_group(numeral_ones_tens.join()),
+        value_group(numeral_hours.join()),
     ),
 )
 
@@ -839,21 +855,21 @@ NEXT_TWO_HOURS = Value(
 
 AFTER_N_HOURS = FunctionValue(
     lambda match: parse_value(
-        {"hours": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {"hours": list(numeral_hours.parse(match.group("value")))[0].value}
     ),
     spaced_patterns(
         AFTER,
-        value_group(numeral_ones_tens.join()),
+        value_group(numeral_hours.join()),
         non_capturing_group(ONE_HOUR, SEVERAL_HOURS),
     ),
 )
 BEFORE_N_HOURS = FunctionValue(
     lambda match: parse_value(
-        {"hours": -1 * list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {"hours": -1 * list(numeral_hours.parse(match.group("value")))[0].value}
     ),
     spaced_patterns(
         BEFORE,
-        value_group(numeral_ones_tens.join()),
+        value_group(numeral_hours.join()),
         non_capturing_group(ONE_HOUR, SEVERAL_HOURS),
     ),
 )
@@ -1032,8 +1048,9 @@ _optional_middle = optional_non_capturing_group(
 ) + optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
 
 _optional_start = (
-    optional_non_capturing_group(ONE_DAY + EXPRESSION_SPACE)
-    + optional_non_capturing_group(ALEF_LAM_OR_DOUBLE_LAM + ONE_DAY + EXPRESSION_SPACE)
+    optional_non_capturing_group(
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_DAY + EXPRESSION_SPACE
+    )
     + optional_non_capturing_group(_days.join() + EXPRESSION_SPACE)
     + optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE)
 )
@@ -1059,7 +1076,10 @@ ORDINAL_AND_SPECIFIC_MONTH = FunctionValue(
 ORDINAL_AND_THIS_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "months": 0,
+            "months": 0 if not match.groupdict().get("value") else None,
+            "month": _months.get_matched_expression(match.group("value")).value.month  # type: ignore
+            if match.groupdict().get("value")
+            else None,
             "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
         }
     ),
@@ -1073,6 +1093,10 @@ ORDINAL_AND_THIS_MONTH = FunctionValue(
             ONE_DAY,
             _optional_middle + THIS_MONTH,
         ),
+        spaced_patterns(
+            _optional_middle + value_group(_months.join()),
+            named_group("ordinal", ordinal_ones_tens.join()),
+        ),
     ),
 )
 NUMERAL_AND_SPECIFIC_MONTH = FunctionValue(
@@ -1082,9 +1106,15 @@ NUMERAL_AND_SPECIFIC_MONTH = FunctionValue(
             "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
         }
     ),
-    spaced_patterns(
-        _optional_start + named_group("numeral", numeral_ones_tens.join()),
-        _optional_middle + value_group(_months.join()),
+    non_capturing_group(
+        spaced_patterns(
+            _optional_start + named_group("numeral", numeral_ones_tens.join()),
+            _optional_middle + value_group(_months.join()),
+        ),
+        spaced_patterns(
+            _optional_middle + value_group(_months.join()),
+            named_group("numeral", numeral_ones_tens.join()),
+        ),
     ),
 )
 NUMERAL_AND_THIS_MONTH = FunctionValue(
@@ -1146,9 +1176,13 @@ DAY_MONTH_YEAR_FORM = FunctionValue(
 # HOURS AND MINUTES
 # ----------------------------------------------------
 def parse_time_fraction(match, expression, am_pm=None):
-    hour_text, fraction_text = match.group("value").split(" ", 1)
+    ella = ELLA.search(match.group("value"))
+    splits = match.group("value").split(" ")
+    if ella:
+        hour_text, fraction_text = " ".join(splits[:-2]), " ".join(splits[-2:])
+    else:
+        hour_text, fraction_text = " ".join(splits[:-1]), splits[-1]
     fraction = list(FRACTIONS.parse(fraction_text))[0].value
-    ella = ELLA.search(fraction_text)
     minute = int(60 * fraction)
     hour = list(expression.parse(hour_text))[0].value
     if ella:
@@ -1226,11 +1260,12 @@ NUMERAL_HOUR_PM = FunctionValue(
             "second": 0,
             "minute": 0,
             "am_pm": "PM",
-            "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+            "hour": list(numeral_hours.parse(match.group("value")))[0].value,
         }
     ),
     spaced_patterns(
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_ones_tens.join()), PM
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_hours.join()),
+        PM,
     ),
 )
 NUMERAL_HOUR_AM = FunctionValue(
@@ -1240,26 +1275,27 @@ NUMERAL_HOUR_AM = FunctionValue(
             "second": 0,
             "minute": 0,
             "am_pm": "AM",
-            "hour": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+            "hour": list(numeral_hours.parse(match.group("value")))[0].value,
         }
     ),
     spaced_patterns(
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_ones_tens.join()), AM
+        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_hours.join()),
+        AM,
     ),
 )
 NUMERAL_FRACTION_HOUR_AM = FunctionValue(
-    lambda match: parse_time_fraction(match, numeral_ones_tens, "AM"),
+    lambda match: parse_time_fraction(match, numeral_hours, "AM"),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
-        + value_group(get_fractions_of_pattern(numeral_ones_tens.join())),
+        + value_group(get_fractions_of_pattern(numeral_hours.join())),
         AM,
     ),
 )
 NUMERAL_FRACTION_HOUR_PM = FunctionValue(
-    lambda match: parse_time_fraction(match, numeral_ones_tens, "PM"),
+    lambda match: parse_time_fraction(match, numeral_hours, "PM"),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
-        + value_group(get_fractions_of_pattern(numeral_ones_tens.join())),
+        + value_group(get_fractions_of_pattern(numeral_hours.join())),
         PM,
     ),
 )
