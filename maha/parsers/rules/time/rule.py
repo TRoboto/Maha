@@ -31,42 +31,43 @@ def process_time_interval(start_time: TimeValue, end_time: TimeValue):
     """Ensures that the end time is greater than the start time."""
 
     def set_start_if_none(value: str):
-        if getattr(start_time, value) and not getattr(end_time, value):
-            setattr(end_time, value, getattr(start_time, value))
-
-    def set_end_if_none(value: str):
         if getattr(end_time, value) and not getattr(start_time, value):
             setattr(start_time, value, getattr(end_time, value))
 
+    def set_end_if_none(value: str):
+        if getattr(start_time, value) and not getattr(end_time, value):
+            setattr(end_time, value, getattr(start_time, value))
+
     now = datetime.now()
+    # always set am/pm to both if one is set
+    set_start_if_none("am_pm")
+    set_end_if_none("am_pm")
+
     for prop in [
-        "_microseconds",
-        "microsecond",
-        "_seconds",
-        "second",
-        "_minutes",
-        "minute",
-        "_hours",
-        "hour",
-        "_days",
+        "days",
         "day",
+        "leapdays",
         "weekday",
-        "_leapdays",
-        "_weeks",
-        "_months",
+        "weeks",
+        "months",
         "month",
-        "_years",
+        "years",
         "year",
+        "hours",
+        "hour",
+        "minutes",
+        "minute",
+        "seconds",
+        "second",
+        "microseconds",
+        "microsecond",
     ]:
         from_time = start_time + now
         to_time = end_time + now
         if from_time < to_time:
             break
-        set_start_if_none(prop)
+        set_end_if_none(prop)
 
-    # always set am/pm to both if one is set
-    set_start_if_none("am_pm")
-    set_end_if_none("am_pm")
     return TimeInterval(start_time, end_time)
 
 
