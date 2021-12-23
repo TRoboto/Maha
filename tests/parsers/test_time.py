@@ -840,6 +840,21 @@ def assert_interval_output(output, start_time, end_time):
             "من الآن لآخر يوم بشهر 10",
         ),
         (
+            NOW.replace(day=13, month=2),
+            NOW.replace(day=15, month=7),
+            "من شباط 13 الى 15 تموز",
+        ),
+        (
+            NOW.replace(month=3),
+            NOW.replace(day=15, month=3, year=2022),
+            "من شهر ثلاث السنة الحالية الى 15 آذار السنة القادمة",
+        ),
+        (
+            NOW.replace(hour=11),
+            NOW.replace(hour=15, minute=30, second=0),
+            "من بعد ساعة الى الساعة 3 ونصف مساء",
+        ),
+        (
             None,
             NOW.replace(year=2025),
             "الى سنة 2025",
