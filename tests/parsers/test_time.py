@@ -838,6 +838,11 @@ def assert_interval_output(output, start_time, end_time):
             "من السابعة مساء الى الخامسة والثلث صباحا يوم غد",
         ),
         (
+            NOW.replace(day=2, hour=14, minute=45, second=0),
+            NOW.replace(day=2, hour=17, minute=0, second=0),
+            "غدا من الساعة الثالثة الا ربع الى الخامسة مساء",
+        ),
+        (
             NOW,
             NOW.replace(day=31, month=10),
             "من الآن لآخر يوم بشهر 10",
