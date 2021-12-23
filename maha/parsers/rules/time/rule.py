@@ -124,20 +124,6 @@ years_expressions = ExpressionGroup(
     ORDINAL_YEAR,
     THIS_YEAR,
 )
-months_expressions = ExpressionGroup(
-    AFTER_N_MONTHS,
-    BEFORE_N_MONTHS,
-    AFTER_SPECIFIC_NEXT_MONTH,
-    LAST_TWO_MONTHS,
-    NEXT_TWO_MONTHS,
-    LAST_MONTH,
-    NEXT_MONTH,
-    NEXT_SPECIFIC_MONTH,
-    PREVIOUS_SPECIFIC_MONTH,
-    BEFORE_SPECIFIC_PREVIOUS_MONTH,
-    THIS_MONTH,
-    SPECIFIC_MONTH,
-)
 weeks_expressions = ExpressionGroup(
     AFTER_N_WEEKS,
     BEFORE_N_WEEKS,
@@ -192,10 +178,8 @@ month_day_expressions = ExpressionGroup(
     DAY_MONTH_FORM,
     ORDINAL_SPECIFIC_DAY,
     LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH,
-    ORDINAL_AND_SPECIFIC_MONTH,
-    ORDINAL_AND_THIS_MONTH,
-    NUMERAL_AND_SPECIFIC_MONTH,
-    NUMERAL_AND_THIS_MONTH,
+    ORDINAL_AND_MONTH,
+    NUMERAL_AND_MONTH,
 )
 year_month_day_expressions = ExpressionGroup(
     DAY_MONTH_YEAR_FORM,

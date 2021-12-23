@@ -1054,44 +1054,36 @@ _optional_start = (
     + optional_non_capturing_group(_days.join() + EXPRESSION_SPACE)
     + optional_non_capturing_group(IN_FROM_AT + EXPRESSION_SPACE)
 )
-ORDINAL_AND_SPECIFIC_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
-            "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
-        }
-    ),
-    non_capturing_group(
-        spaced_patterns(
-            _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
-            _optional_middle + value_group(_months.join()),
-        ),
-        spaced_patterns(
-            named_group("ordinal", ordinal_ones_tens.join()),
-            ONE_DAY,
-            _optional_middle + value_group(_months.join()),
-        ),
-    ),
+months_expressions = ExpressionGroup(
+    AFTER_N_MONTHS,
+    BEFORE_N_MONTHS,
+    AFTER_SPECIFIC_NEXT_MONTH,
+    LAST_TWO_MONTHS,
+    NEXT_TWO_MONTHS,
+    LAST_MONTH,
+    NEXT_MONTH,
+    NEXT_SPECIFIC_MONTH,
+    PREVIOUS_SPECIFIC_MONTH,
+    BEFORE_SPECIFIC_PREVIOUS_MONTH,
+    THIS_MONTH,
+    SPECIFIC_MONTH,
 )
-ORDINAL_AND_THIS_MONTH = FunctionValue(
+ORDINAL_AND_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "months": 0 if not match.groupdict().get("value") else None,
-            "month": _months.get_matched_expression(match.group("value")).value.month  # type: ignore
-            if match.groupdict().get("value")
-            else None,
             "day": (list(ordinal_ones_tens.parse(match.group("ordinal")))[0].value),
         }
-    ),
+    )
+    + list(months_expressions.parse(match.group("value")))[0].value,
     non_capturing_group(
         spaced_patterns(
             _optional_start + named_group("ordinal", ordinal_ones_tens.join()),
-            _optional_middle + THIS_MONTH,
+            _optional_middle + value_group(months_expressions.join()),
         ),
         spaced_patterns(
             named_group("ordinal", ordinal_ones_tens.join()),
             ONE_DAY,
-            _optional_middle + THIS_MONTH,
+            _optional_middle + value_group(months_expressions.join()),
         ),
         spaced_patterns(
             _optional_middle + value_group(_months.join()),
@@ -1099,34 +1091,22 @@ ORDINAL_AND_THIS_MONTH = FunctionValue(
         ),
     ),
 )
-NUMERAL_AND_SPECIFIC_MONTH = FunctionValue(
+NUMERAL_AND_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
             "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
         }
-    ),
+    )
+    + list(months_expressions.parse(match.group("value")))[0].value,
     non_capturing_group(
         spaced_patterns(
             _optional_start + named_group("numeral", numeral_ones_tens.join()),
-            _optional_middle + value_group(_months.join()),
+            _optional_middle + value_group(months_expressions.join()),
         ),
         spaced_patterns(
-            _optional_middle + value_group(_months.join()),
+            _optional_middle + value_group(months_expressions.join()),
             named_group("numeral", numeral_ones_tens.join()),
         ),
-    ),
-)
-NUMERAL_AND_THIS_MONTH = FunctionValue(
-    lambda match: parse_value(
-        {
-            "months": 0,
-            "day": (list(numeral_ones_tens.parse(match.group("numeral")))[0].value),
-        }
-    ),
-    spaced_patterns(
-        _optional_start + named_group("numeral", numeral_ones_tens.join()),
-        _optional_middle + THIS_MONTH,
     ),
 )
 
