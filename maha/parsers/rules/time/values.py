@@ -1025,10 +1025,6 @@ YEAR_WITH_MONTH = FunctionValue(
 MONTH_YEAR_FORM = FunctionValue(
     lambda match: parse_value(
         {
-            "microsecond": 0,
-            "second": 0,
-            "minute": 0,
-            "hour": 0,
             "month": int(match.group("month")),
             "year": int(match.group("year")),
         }
@@ -1113,10 +1109,6 @@ NUMERAL_AND_MONTH = FunctionValue(
 DAY_MONTH_FORM = FunctionValue(
     lambda match: parse_value(
         {
-            "microsecond": 0,
-            "second": 0,
-            "minute": 0,
-            "hour": 0,
             "day": int(match.group("day")),
             "month": int(match.group("month")),
         }
@@ -1134,10 +1126,6 @@ DAY_MONTH_FORM = FunctionValue(
 DAY_MONTH_YEAR_FORM = FunctionValue(
     lambda match: parse_value(
         {
-            "microsecond": 0,
-            "second": 0,
-            "minute": 0,
-            "hour": 0,
             "day": int(match.group("day")),
             "month": int(match.group("month")),
             "year": int(match.group("year")),

@@ -677,7 +677,7 @@ def test_month_and_year(input):
         (NOW.replace(day=16), "الخميس بعد اسبوعين"),
         (NOW.replace(day=16, month=10), "الخميس الموافق السادس عشر من شهر 10"),
         (NOW.replace(day=4, month=11), "بعد شهرين يوم الخميس "),
-        (DATE.replace(day=6, month=8), "الجمعة 6/8"),
+        (NOW.replace(day=6, month=8), "الجمعة 6/8"),
         (NOW.replace(day=9, month=10), "السبت 9 اكتوبر"),
         (NOW.replace(day=13, month=2), "شباط 13"),
         (NOW.replace(day=14, month=2), "شباط الرابع عشر"),
@@ -718,7 +718,7 @@ def test_month_and_year(input):
             DATE.replace(hour=11, minute=2, second=40, month=8, day=30),
             "اول مبارح الساعة 11:2:40",
         ),
-        (DATE, "1/9/2021"),
+        (NOW, "1/9/2021"),
         (
             DATE.replace(day=11, month=10, hour=13, minute=15),
             "الاثنين 11/10 الساعة الواحدة والربع بعد الظهر",
@@ -756,11 +756,11 @@ def test_last_specific_day_of_specific_month(expected, input):
             "يوم الاثنين 11-10-2021 الساعه الواحدة ظهرا",
         ),
         (
-            DATE.replace(day=21, month=11, year=2010),
+            NOW.replace(day=21, month=11, year=2010),
             "يوم الأحد 21-11-2010 ",
         ),
         (
-            DATE.replace(day=28, month=11, year=2010),
+            NOW.replace(day=28, month=11, year=2010),
             "يوم الأحد 25-11-2010 ",
         ),
     ],

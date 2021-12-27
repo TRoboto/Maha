@@ -38,7 +38,7 @@ def process_time_interval(start_time: TimeValue, end_time: TimeValue):
         if getattr(start_time, value) and not getattr(end_time, value):
             setattr(end_time, value, getattr(start_time, value))
 
-    now = datetime.now()
+    now = datetime(2021, 9, 1)
     # always set am/pm to both if one is set
     set_start_if_none("am_pm")
     set_end_if_none("am_pm")
