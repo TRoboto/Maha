@@ -1,6 +1,8 @@
 __all__ = ["TimeValue"]
 
+from dataclasses import dataclass
 from datetime import datetime
+from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 
@@ -33,22 +35,6 @@ class TimeValue(relativedelta):
         next_month=None,
         prev_month=None,
     ):
-        self._years = years
-        self._months = months
-        self._days = days
-        self._leapdays = leapdays
-        self._weeks = weeks
-        self._hours = hours
-        self._minutes = minutes
-        self._seconds = seconds
-        self._microseconds = microseconds
-        self._am_pm = am_pm
-        self.next_month = next_month
-        self.prev_month = prev_month
-
-        # handle hour am pm
-        if am_pm == "PM" and hour is not None and hour < 12:
-            hour += 12
 
         super().__init__(
             dt1=dt1,
@@ -73,6 +59,29 @@ class TimeValue(relativedelta):
             second=second,
             microsecond=microsecond,
         )
+        self._years = years
+        self._months = months
+        self._days = days
+        self._leapdays = leapdays
+        self._weeks = weeks
+        self._hours = hours
+        self._minutes = minutes
+        self._seconds = seconds
+        self._microseconds = microseconds
+        self.next_month = next_month
+        self.prev_month = prev_month
+        self.am_pm = am_pm
+
+    @property
+    def am_pm(self):
+        return self._am_pm
+
+    @am_pm.setter
+    def am_pm(self, am_pm):
+        self._am_pm = am_pm
+        # handle hour am pm
+        if am_pm == "PM" and self.hour is not None and self.hour < 12:
+            self.hour += 12
 
     def is_years_set(self):
         return self._years is not None or self.year is not None
@@ -87,7 +96,7 @@ class TimeValue(relativedelta):
         return self._leapdays is not None
 
     def is_weeks_set(self):
-        return self._weeks is not None
+        return self._weeks is not None or self.weekday is not None
 
     def is_hours_set(self):
         return self._hours is not None or self.hour is not None
@@ -100,6 +109,9 @@ class TimeValue(relativedelta):
 
     def is_microseconds_set(self):
         return self._microseconds is not None or self.microsecond is not None
+
+    def is_am_pm_set(self):
+        return self.am_pm is not None
 
     def _add(self, value1, value2):
         if value1 is not None and value2 is not None:
@@ -133,7 +145,7 @@ class TimeValue(relativedelta):
                     if other.microsecond is not None
                     else self.microsecond
                 ),
-                am_pm=other._am_pm or self._am_pm,
+                am_pm=other.am_pm or self.am_pm,
                 next_month=(
                     other.next_month
                     if other.next_month is not None
@@ -216,3 +228,9 @@ class TimeValue(relativedelta):
             and self.second == other.second
             and self.microsecond == other.microsecond
         )
+
+
+@dataclass
+class TimeInterval:
+    from_time: Optional[TimeValue] = None
+    to_time: Optional[TimeValue] = None

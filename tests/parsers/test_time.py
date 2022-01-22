@@ -11,7 +11,7 @@ from maha.parsers.rules import (
     RULE_TIME_YEARS,
 )
 from maha.parsers.rules.time.rule import RULE_TIME_AM_PM, RULE_TIME_NOW, RULE_TIME_WEEKS
-from maha.parsers.rules.time.template import TimeValue
+from maha.parsers.rules.time.template import TimeInterval, TimeValue
 
 DATE = datetime(2021, 9, 1)
 NOW = DATE.replace(hour=10, minute=38, second=4)
@@ -677,11 +677,15 @@ def test_month_and_year(input):
         (NOW.replace(day=16), "الخميس بعد اسبوعين"),
         (NOW.replace(day=16, month=10), "الخميس الموافق السادس عشر من شهر 10"),
         (NOW.replace(day=4, month=11), "بعد شهرين يوم الخميس "),
-        (DATE.replace(day=6, month=8), "الجمعة 6/8"),
+        (NOW.replace(day=6, month=8), "الجمعة 6/8"),
         (NOW.replace(day=9, month=10), "السبت 9 اكتوبر"),
+        (NOW.replace(day=13, month=2), "شباط 13"),
+        (NOW.replace(day=14, month=2), "شباط الرابع عشر"),
         (NOW.replace(month=2, day=2), "الثاني من شباط"),
+        (NOW.replace(month=10, day=14), "14 الشهر الجاي"),
+        (NOW.replace(month=7, day=11), "الحادي عشر من الشهر قبل الماضي"),
+        (NOW.replace(year=2022, month=2, day=3), "3 شباط القادم"),
         (NOW.replace(month=2, day=10), "العاشر من شهر شباط"),
-        (NOW.replace(month=3, day=10), "10 اذار"),
         (NOW.replace(month=3, day=10), "10 اذار"),
         (NOW.replace(month=8, day=25), "الأربعا الأسبوع الماضي"),
         (DATE.replace(day=4, hour=1, minute=30), "السبت هذا الأسبوع الساعة 1 ونص"),
@@ -699,6 +703,7 @@ def test_month_and_year(input):
         (DATE.replace(hour=2, minute=45), "الساعة 3 الا ربع الفجر"),
         (DATE.replace(hour=12, minute=30), "12 ونص مساء"),
         (DATE.replace(hour=12, minute=49), "الساعة الثانية عشر وتسعة واربعون دقيقة"),
+        (DATE.replace(hour=5, minute=50), "الساعة خمسة وخمسين دقيقة"),
         (NOW.replace(year=1040), "في العام الف واربعين"),
         (
             DATE.replace(year=2061, day=21, month=11, hour=2),
@@ -713,14 +718,14 @@ def test_month_and_year(input):
             DATE.replace(hour=11, minute=2, second=40, month=8, day=30),
             "اول مبارح الساعة 11:2:40",
         ),
-        (DATE, "1/9/2021"),
+        (NOW, "1/9/2021"),
         (
             DATE.replace(day=11, month=10, hour=13, minute=15),
             "الاثنين 11/10 الساعة الواحدة والربع بعد الظهر",
         ),
         (
             DATE.replace(day=4, hour=13, minute=30),
-            "السبت هذا الأسبوع الساعة 1 ونص بعد الظهر",
+            "السبت الأسبوع الحالي الساعة 1 ونص بعد الظهر",
         ),
     ],
 )
@@ -751,11 +756,11 @@ def test_last_specific_day_of_specific_month(expected, input):
             "يوم الاثنين 11-10-2021 الساعه الواحدة ظهرا",
         ),
         (
-            DATE.replace(day=21, month=11, year=2010),
+            NOW.replace(day=21, month=11, year=2010),
             "يوم الأحد 21-11-2010 ",
         ),
         (
-            DATE.replace(day=28, month=11, year=2010),
+            NOW.replace(day=28, month=11, year=2010),
             "يوم الأحد 25-11-2010 ",
         ),
     ],
@@ -763,6 +768,120 @@ def test_last_specific_day_of_specific_month(expected, input):
 def test_full_date_with_specific_day(expected, input):
     output = parse_dimension(input, time=True)
     assert_expression_output(output, expected)
+
+
+def assert_interval_output(output, start_time, end_time):
+    assert len(output) == 1
+    output = output[0]
+
+    value = output.value
+    assert isinstance(value, TimeInterval)
+
+    if start_time is not None:
+        assert isinstance(value.from_time, TimeValue)
+        assert NOW + value.from_time == start_time
+    else:
+        assert value.from_time is None
+    if end_time is not None:
+        assert isinstance(value.to_time, TimeValue)
+        assert NOW + value.to_time == end_time
+    else:
+        assert value.to_time is None
+
+
+@pytest.mark.parametrize(
+    "start_time,end_time,input",
+    [
+        (
+            NOW,
+            NOW.replace(year=2022),
+            "من سنة 2021 الى سنة 2022",
+        ),
+        (
+            NOW.replace(hour=4, minute=30, second=0),
+            None,
+            "من الساعة 4 ونص",
+        ),
+        (
+            NOW.replace(hour=16, minute=50, second=0),
+            NOW.replace(hour=17, minute=50, second=0),
+            "من الساعة 4 وخمسين دقيقة مساء للساعة خمسة وخمسين دقيقة",
+        ),
+        (
+            NOW.replace(hour=16, minute=30, second=0),
+            NOW.replace(hour=17, minute=0, second=0),
+            "من الساعة 4 ونص  للخمسة بعد العصر",
+        ),
+        (
+            NOW.replace(day=5, hour=21, minute=0, second=0),
+            NOW.replace(day=5, hour=23, minute=0, second=0),
+            "الأحد من الساعة 9 الى 11 مساء",
+        ),
+        (
+            NOW.replace(hour=7, minute=45, second=0),
+            NOW.replace(hour=11, minute=15, second=0),
+            "من الساعة الثامنة الا ربع وحتى الساعة الحادية عشر وربع صباحا",
+        ),
+        (
+            NOW.replace(hour=8, minute=15, second=0),
+            NOW.replace(hour=23, minute=0, second=0),
+            "الساعة الثامنة والربع صباحا الى 11 مساء",
+        ),
+        (
+            None,
+            NOW.replace(hour=22, minute=45, second=0),
+            "حتى الساعة الحادية عشر الا ربع مساء",
+        ),
+        (
+            NOW.replace(hour=19, minute=0, second=0),
+            NOW.replace(day=2, hour=5, minute=20, second=0),
+            "من السابعة مساء الى الخامسة والثلث صباحا يوم غد",
+        ),
+        (
+            NOW.replace(day=2, hour=14, minute=45, second=0),
+            NOW.replace(day=2, hour=17, minute=0, second=0),
+            "غدا من الساعة الثالثة الا ربع الى الخامسة مساء",
+        ),
+        (
+            NOW,
+            NOW.replace(day=31, month=10),
+            "من الآن لآخر يوم بشهر 10",
+        ),
+        (
+            NOW.replace(day=13, month=2),
+            NOW.replace(day=15, month=7),
+            "من شباط 13 الى 15 تموز",
+        ),
+        (
+            NOW.replace(month=3),
+            NOW.replace(day=15, month=3, year=2022),
+            "من شهر ثلاث السنة الحالية الى 15 آذار السنة القادمة",
+        ),
+        (
+            NOW.replace(hour=11),
+            NOW.replace(hour=15, minute=30, second=0),
+            "من بعد ساعة الى الساعة 3 ونصف مساء",
+        ),
+        (
+            None,
+            NOW.replace(year=2025),
+            "الى سنة 2025",
+        ),
+        (
+            NOW.replace(year=2021),
+            NOW.replace(year=2023),
+            "من العام الحالي للعام بعد القادم",
+        ),
+        (
+            NOW.replace(year=2021, month=10),
+            NOW.replace(year=2022),
+            "من شهر 10 سنة 2021 الى سنة 2022",
+        ),
+    ],
+)
+def test_time_interval(start_time, end_time, input):
+    output = parse_dimension(input, time=True)
+    assert_interval_output(output, start_time, end_time)
 
 
 @pytest.mark.parametrize(
