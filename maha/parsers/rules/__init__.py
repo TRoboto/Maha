@@ -23,7 +23,6 @@ def compile_numeral_rules():
         RULE_NUMERAL_BILLIONS,
         RULE_NUMERAL_TRILLIONS,
         RULE_NUMERAL_INTEGERS,
-        RULE_NUMERAL_DECIMALS,
         RULE_NUMERAL,
     ]:
         rule.compile()

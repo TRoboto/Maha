@@ -7,18 +7,20 @@ __all__ = [
     "RULE_NUMERAL_BILLIONS",
     "RULE_NUMERAL_TRILLIONS",
     "RULE_NUMERAL_INTEGERS",
-    "RULE_NUMERAL_DECIMALS",
     "RULE_NUMERAL",
     "parse_numeral",
 ]
 
-import itertools as it
-from typing import Optional
 
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER
 from maha.parsers.templates import FunctionValue
 from maha.parsers.utils import convert_to_number_if_possible
-from maha.rexy import ExpressionGroup, named_group, non_capturing_group
+from maha.rexy import (
+    ExpressionGroup,
+    named_group,
+    non_capturing_group,
+    optional_non_capturing_group,
+)
 
 from ..common import (
     FRACTIONS,
@@ -79,34 +81,6 @@ def parse_tens(matched_text):
         return exp.value  # type: ignore
 
 
-def parse_fasila(matched_text: str) -> Optional[float]:
-    """
-    Handle fasila in the numeral expression
-
-    Parameters
-    ----------
-    matched_text : str
-        Numeral text with fasila.
-
-    Returns
-    -------
-    Optional[float]
-        Float number.
-    """
-    if isinstance(matched_text, list):
-        for group in matched_text:
-            return parse_fasila(group)
-
-    fasila = EXPRESSION_OF_FASILA.search(matched_text)
-    if not fasila:
-        return None
-    before, after = matched_text.split(fasila.group(0))
-    before = parse_combined(before)
-    after = parse_combined(after)
-    output = float(f"{before}.{after}")
-    return output
-
-
 def parse_combined(matched_text, singular=None, plural=None):
     value = 1
     if singular and plural:
@@ -133,8 +107,7 @@ def parse_combined(matched_text, singular=None, plural=None):
     return value
 
 
-def parse_numeral(match):
-    groups = match.capturesdict()
+def _parse_numeral_part(groups):
     _trillions = groups.get("trillions")
     _billions = groups.get("billions")
     _millions = groups.get("millions")
@@ -161,22 +134,42 @@ def parse_numeral(match):
     if _ones:
         value += get_combined_value(_ones)
     if _decimals:
-        v = parse_fasila(_decimals)
-        if v is not None:
-            value += v
-        else:
-            value += get_combined_value(_decimals)
+        value += get_combined_value(_decimals)
     if _integers:
         value += get_combined_value(_integers)
-
     return value
 
 
-def get_combinations(*patterns: str):
-    for (a, b) in it.combinations_with_replacement(patterns, 2):
-        yield a + str(EXPRESSION_OF_FASILA) + b
-        if a != b:
-            yield b + str(EXPRESSION_OF_FASILA) + a
+def parse_numeral(match):
+    groups = match.capturesdict()
+    groups_keys = list(groups)
+
+    if groups.get("decimal_part"):
+        decimal_start_index = match.starts(groups_keys.index("decimal_part") + 1)[0]
+        integer = 0
+        decimal = 0
+        for group in [
+            "trillions",
+            "billions",
+            "millions",
+            "thousands",
+            "hundreds",
+            "tens",
+            "ones",
+            "integers",
+            "decimals",
+        ]:
+            g_start = match.starts(groups_keys.index(group) + 1)
+            if group not in groups_keys or not g_start:
+                continue
+            for m_start, m_group in zip(g_start, groups[group]):
+                if m_start < decimal_start_index:
+                    integer += get_combined_value([m_group], group)
+                else:
+                    decimal += get_combined_value([m_group], group)
+        return integer + decimal / 10 ** len(str(decimal))
+
+    return _parse_numeral_part(groups)
 
 
 def get_patterns(one, two, several):
@@ -239,13 +232,7 @@ trillions_group = named_group(
 )
 
 integer_group = named_group("integers", str(EXPRESSION_INTEGER))
-decimal_group = named_group(
-    "decimals",
-    non_capturing_group(
-        str(EXPRESSION_DECIMAL),
-        *list(get_combinations(str(EXPRESSION_INTEGER), tens, ones.join())),
-    ),
-)
+decimal_group = named_group("decimals", str(EXPRESSION_DECIMAL))
 
 RULE_NUMERAL_ONES = FunctionValue(parse_numeral, ones_group)
 RULE_NUMERAL_TENS = FunctionValue(parse_numeral, tens_group)
@@ -286,20 +273,27 @@ RULE_NUMERAL_TRILLIONS = FunctionValue(
     ),
 )
 RULE_NUMERAL_INTEGERS = FunctionValue(parse_numeral, integer_group)
-RULE_NUMERAL_DECIMALS = FunctionValue(parse_numeral, decimal_group)
 
+_all_time_expressions_pattern = combine_patterns(
+    trillions_group,
+    billions_group,
+    millions_group,
+    thousands_group,
+    hundreds_group,
+    tens_group,
+    ones_group,
+    decimal_group,
+    integer_group,
+    combine_all=True,
+)
 RULE_NUMERAL = FunctionValue(
     parse_numeral,
-    combine_patterns(
-        trillions_group,
-        billions_group,
-        millions_group,
-        thousands_group,
-        hundreds_group,
-        decimal_group,
-        tens_group,
-        ones_group,
-        integer_group,
-        combine_all=True,
+    named_group("integer_part", _all_time_expressions_pattern)
+    + optional_non_capturing_group(
+        named_group(
+            "decimal_part",
+            EXPRESSION_SPACE
+            + spaced_patterns(EXPRESSION_OF_FASILA, _all_time_expressions_pattern),
+        ),
     ),
 )

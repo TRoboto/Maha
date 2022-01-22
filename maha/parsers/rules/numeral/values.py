@@ -6,9 +6,7 @@ from ..common import ALL_ALEF, SUM_SUFFIX, TWO_SUFFIX
 
 TEN_SUFFIX = f"{EXPRESSION_SPACE_OR_NONE}[تط]?[اع]?شر?[ةه]?"
 TEH_OPTIONAL_SUFFIX = "[ةه]?"
-EXPRESSION_OF_FASILA = Expression(
-    EXPRESSION_SPACE + "فاصل" + TEH_OPTIONAL_SUFFIX + EXPRESSION_SPACE
-)
+EXPRESSION_OF_FASILA = Expression("فاصل" + TEH_OPTIONAL_SUFFIX)
 
 
 three_prefix = "[ثت]لا[ثت]"
