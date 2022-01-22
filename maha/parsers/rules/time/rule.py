@@ -31,42 +31,46 @@ def process_time_interval(start_time: TimeValue, end_time: TimeValue):
     """Ensures that the end time is greater than the start time."""
 
     def set_start_if_none(value: str):
-        if getattr(end_time, value) and not getattr(start_time, value):
+        if getattr(end_time, value) is not None and getattr(start_time, value) is None:
             setattr(start_time, value, getattr(end_time, value))
 
-    def set_end_if_none(value: str):
-        if getattr(start_time, value) and not getattr(end_time, value):
-            setattr(end_time, value, getattr(start_time, value))
+    def get_end_if_none(value: str, none_value=None):
+        if (
+            getattr(start_time, value) is not none_value
+            and getattr(end_time, value) is none_value
+        ):
+            return TimeValue(**{value: getattr(start_time, value)})
+        return TimeValue()
 
     now = datetime(2021, 9, 1)
     # always set am/pm to both if one is set
     set_start_if_none("am_pm")
-    set_end_if_none("am_pm")
+    end_time += get_end_if_none("am_pm")
 
     for prop in [
-        "days",
-        "day",
-        "leapdays",
-        "weekday",
-        "weeks",
-        "months",
-        "month",
-        "years",
-        "year",
-        "hours",
-        "hour",
-        "minutes",
-        "minute",
-        "seconds",
-        "second",
-        "microseconds",
         "microsecond",
+        "second",
+        "minute",
+        "hour",
+        "day",
+        "weekday",
+        "month",
+        "year",
+        "years",
+        "months",
+        "weeks",
+        "days",
+        "leapdays",
+        "hours",
+        "minutes",
+        "seconds",
+        "microseconds",
     ]:
         from_time = start_time + now
         to_time = end_time + now
         if from_time < to_time:
             break
-        set_end_if_none(prop)
+        end_time += get_end_if_none(prop, 0 if prop[-1] == "s" else None)
 
     return TimeInterval(start_time, end_time)
 
