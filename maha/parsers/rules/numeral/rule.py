@@ -107,36 +107,27 @@ def parse_combined(matched_text, singular=None, plural=None):
     return value
 
 
-def _parse_numeral_part(groups):
-    _trillions = groups.get("trillions")
-    _billions = groups.get("billions")
-    _millions = groups.get("millions")
-    _thousands = groups.get("thousands")
-    _hundreds = groups.get("hundreds")
-    _tens = groups.get("tens")
-    _ones = groups.get("ones")
-    _decimals = groups.get("decimals")
-    _integers = groups.get("integers")
-    value = 0
+def get_groups():
+    return [
+        "trillions",
+        "billions",
+        "millions",
+        "thousands",
+        "hundreds",
+        "tens",
+        "ones",
+        "integers",
+        "decimals",
+    ]
 
-    if _trillions:
-        value += get_combined_value(_trillions, "trillions")
-    if _billions:
-        value += get_combined_value(_billions, "billions")
-    if _millions:
-        value += get_combined_value(_millions, "millions")
-    if _thousands:
-        value += get_combined_value(_thousands, "thousands")
-    if _hundreds:
-        value += get_combined_value(_hundreds, "hundreds")
-    if _tens:
-        value += get_combined_value(_tens)
-    if _ones:
-        value += get_combined_value(_ones)
-    if _decimals:
-        value += get_combined_value(_decimals)
-    if _integers:
-        value += get_combined_value(_integers)
+
+def _parse_numeral_part(groups):
+    value = 0
+    for group in get_groups():
+        values = groups.get(group)
+        if not values:
+            continue
+        value += get_combined_value(values, group)
     return value
 
 
@@ -148,17 +139,7 @@ def parse_numeral(match):
         decimal_start_index = match.starts(groups_keys.index("decimal_part") + 1)[0]
         integer = 0
         decimal = 0
-        for group in [
-            "trillions",
-            "billions",
-            "millions",
-            "thousands",
-            "hundreds",
-            "tens",
-            "ones",
-            "integers",
-            "decimals",
-        ]:
+        for group in get_groups():
             g_start = match.starts(groups_keys.index(group) + 1)
             if group not in groups_keys or not g_start:
                 continue
