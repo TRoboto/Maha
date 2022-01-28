@@ -179,15 +179,18 @@ class TimeValue(relativedelta):
 
         # Handle next/prev week
         if isinstance(other, datetime) and self.weeks:
-            self.days = self.days or 0
+            self.days = self._days or 0
             current_day = other.weekday()
-            start_of_week = (current_day + 7 - START_OF_WEEK) % 7
-            # next week(s)
-            if self.weeks > 0:
-                self.days += 7 - start_of_week + (self.weeks - 1) * 7
-            # prev week(s)
-            elif self.weeks < 0:
-                self.days -= start_of_week - 7 * self.weeks
+            if self._days is not None:
+                self.days += self.weeks * 7
+            else:
+                start_of_week = (current_day + 7 - START_OF_WEEK) % 7
+                # next week(s)
+                if self.weeks > 0:
+                    self.days += 7 - start_of_week + (self.weeks - 1) * 7
+                # prev week(s)
+                elif self.weeks < 0:
+                    self.days -= start_of_week - 7 * self.weeks
 
         return super().__add__(other)
 
