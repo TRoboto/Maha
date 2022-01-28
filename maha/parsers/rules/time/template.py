@@ -4,7 +4,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from dateutil.relativedelta import relativedelta
+from dateutil.relativedelta import SU, relativedelta
+
+START_OF_WEEK = SU.weekday
 
 
 class TimeValue(relativedelta):
@@ -43,7 +45,6 @@ class TimeValue(relativedelta):
             months=months if months is not None else 0,
             days=days if days is not None else 0,
             leapdays=leapdays if leapdays is not None else 0,
-            weeks=weeks if weeks is not None else 0,
             hours=hours if hours is not None else 0,
             minutes=minutes if minutes is not None else 0,
             seconds=seconds if seconds is not None else 0,
@@ -83,6 +84,14 @@ class TimeValue(relativedelta):
         if am_pm == "PM" and self.hour is not None and self.hour < 12:
             self.hour += 12
 
+    @property
+    def weeks(self):
+        return self._weeks
+
+    @weeks.setter
+    def weeks(self, value):
+        self._weeks = value
+
     def is_years_set(self):
         return self._years is not None or self.year is not None
 
@@ -96,7 +105,7 @@ class TimeValue(relativedelta):
         return self._leapdays is not None
 
     def is_weeks_set(self):
-        return self._weeks is not None or self.weekday is not None
+        return self.weeks is not None or self.weekday is not None
 
     def is_hours_set(self):
         return self._hours is not None or self.hour is not None
@@ -128,7 +137,7 @@ class TimeValue(relativedelta):
                 months=self._add(other._months, self._months),
                 days=self._add(other._days, self._days),
                 leapdays=self._add(other._leapdays, self._leapdays),
-                weeks=self._add(other._weeks, self._weeks),
+                weeks=self._add(other._weeks, self.weeks),
                 hours=self._add(other._hours, self._hours),
                 minutes=self._add(other._minutes, self._minutes),
                 seconds=self._add(other._seconds, self._seconds),
@@ -157,17 +166,43 @@ class TimeValue(relativedelta):
                     else self.prev_month
                 ),
             )
+
+        self._map_values()
+
         # Handle next/prev month
         if isinstance(other, datetime):
             current_month = other.month
+            years = self.years or 0
             if self.next_month:
-                self.years += 1 if self.next_month <= current_month else 0
+                self.years = years + 1 if self.next_month <= current_month else 0
                 self.month = self.next_month
             elif self.prev_month:
-                self.years += 0 if self.prev_month <= current_month else -1
+                self.years = years + 0 if self.prev_month <= current_month else -1
                 self.month = self.prev_month
 
+        # Handle next/prev week
+        if isinstance(other, datetime) and self.weeks:
+            self.days = self.days or 0
+            current_day = other.weekday()
+            start_of_week = (current_day + 7 - START_OF_WEEK) % 7
+            # next week(s)
+            if self.weeks > 0:
+                self.days += 7 - start_of_week + (self.weeks - 1) * 7
+            # prev week(s)
+            elif self.weeks < 0:
+                self.days -= start_of_week - 7 * self.weeks
+
         return super().__add__(other)
+
+    def _map_values(self):
+        self.years = self._years or 0
+        self.months = self._months or 0
+        self.days = self._days or 0
+        self.leapdays = self._leapdays or 0
+        self.hours = self._hours or 0
+        self.minutes = self._minutes or 0
+        self.seconds = self._seconds or 0
+        self.microseconds = self._microseconds or 0
 
     def __repr__(self):
         l = []
