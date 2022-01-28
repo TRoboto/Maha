@@ -693,8 +693,8 @@ BEFORE_PREVIOUS_WEEKDAY = FunctionValue(
         spaced_patterns(value_group(_days.join()), BEFORE_PREVIOUS),
     ),
 )
-LAST_DAY = FunctionValue(
-    lambda _: parse_value({"day": 31}),
+LAST_DAY = Value(
+    parse_value({"day": 31}),
     non_capturing_group(
         spaced_patterns(LAST, ONE_DAY),
         spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_DAY, LAST),
@@ -981,27 +981,39 @@ BEFORE_N_MINUTES = FunctionValue(
 # ----------------------------------------------------
 # AM PM
 # ----------------------------------------------------
-PM = FunctionValue(
-    lambda _: TimeValue(am_pm="PM"),
+PM = Value(
+    TimeValue(am_pm="PM"),
     non_capturing_group(
-        optional_non_capturing_group(AFTER + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
+        optional_non_capturing_group(
+            AFTER + EXPRESSION_SPACE,
+            THIS + EXPRESSION_SPACE,
+            BEFORE + EXPRESSION_SPACE,
+        )
+        + ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
         + non_capturing_group(
-            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "مساء?ا?",
-            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "مغرب",
-            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "عشاء?ا?",
-            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "عصرا?",
-            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "ليل[اةه]?",
+            "مساء?ا?",
+            "مغرب",
+            "عشاء?ا?",
+            "عصرا?",
+            "ليل[اةه]?",
         ),
         spaced_patterns(AFTER, ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "ظهرا?"),
     ),
 )
-AM = FunctionValue(
-    lambda _: TimeValue(am_pm="AM"),
-    optional_non_capturing_group(BEFORE + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
-    + non_capturing_group(
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "صبا?حا?",
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "فجرا?",
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + "ظهرا?",
+AM = Value(
+    TimeValue(am_pm="AM"),
+    non_capturing_group(
+        optional_non_capturing_group(
+            BEFORE + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE, AFTER + EXPRESSION_SPACE
+        )
+        + ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
+        + non_capturing_group(
+            "صبا?حا?",
+            "فجرا?",
+        ),
+        optional_non_capturing_group(BEFORE + EXPRESSION_SPACE, THIS + EXPRESSION_SPACE)
+        + ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
+        + "ظهرا?",
     ),
 )
 
