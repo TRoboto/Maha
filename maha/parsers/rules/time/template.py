@@ -1,12 +1,12 @@
-__all__ = ["TimeValue"]
+__all__ = ["TimeValue", "TimeInterval"]
 
 from dataclasses import dataclass
 from datetime import datetime
 from typing import Optional
 
-from dateutil.relativedelta import SU, relativedelta
+from dateutil.relativedelta import relativedelta
 
-START_OF_WEEK = SU.weekday
+from . import constants
 
 
 class TimeValue(relativedelta):
@@ -184,7 +184,7 @@ class TimeValue(relativedelta):
             if self._days is not None:
                 self.days += self.weeks * 7
             else:
-                start_of_week = (current_day + 7 - START_OF_WEEK) % 7
+                start_of_week = (current_day + 7 - constants.START_OF_WEEK) % 7
                 # next week(s)
                 if self.weeks > 0:
                     self.days += 7 - start_of_week + (self.weeks - 1) * 7
