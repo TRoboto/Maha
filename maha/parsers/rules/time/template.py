@@ -167,17 +167,14 @@ class TimeValue(relativedelta):
                 ),
             )
 
-        self._map_values()
-
         # Handle next/prev month
         if isinstance(other, datetime):
             current_month = other.month
-            years = self.years or 0
             if self.next_month:
-                self.years = years + 1 if self.next_month <= current_month else 0
+                self.years += 1 if self.next_month <= current_month else 0
                 self.month = self.next_month
             elif self.prev_month:
-                self.years = years + 0 if self.prev_month <= current_month else -1
+                self.years += 0 if self.prev_month <= current_month else -1
                 self.month = self.prev_month
 
         # Handle next/prev week
@@ -193,16 +190,6 @@ class TimeValue(relativedelta):
                 self.days -= start_of_week - 7 * self.weeks
 
         return super().__add__(other)
-
-    def _map_values(self):
-        self.years = self._years or 0
-        self.months = self._months or 0
-        self.days = self._days or 0
-        self.leapdays = self._leapdays or 0
-        self.hours = self._hours or 0
-        self.minutes = self._minutes or 0
-        self.seconds = self._seconds or 0
-        self.microseconds = self._microseconds or 0
 
     def __repr__(self):
         l = []

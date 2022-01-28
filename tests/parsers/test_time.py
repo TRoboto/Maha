@@ -294,37 +294,37 @@ def test_previous_this_month(input):
 
 
 @pytest.mark.parametrize(
-    "expected_week,input",
+    "expected_week,expected_date,input",
     [
-        (3, "بعد ثلاث اسابيع"),
-        (2, "بعد اسبوعين"),
-        (1, "بعد أسبوع"),
-        (1, "الأسبوع الجاي"),
-        (2, "الأسبوع بعد  القادم"),
-        (0, "هذا الأسبوع"),
-        (0, " الأسبوع"),
+        (3, DATE.replace(day=19), "بعد ثلاث اسابيع"),
+        (2, DATE.replace(day=12), "بعد اسبوعين"),
+        (1, DATE.replace(day=5), "بعد أسبوع"),
+        (1, DATE.replace(day=5), "الأسبوع الجاي"),
+        (2, DATE.replace(day=12), "الأسبوع بعد  القادم"),
+        (0, DATE.replace(day=1), "هذا الأسبوع"),
+        (0, DATE.replace(day=1), " الأسبوع"),
     ],
 )
-def test_next_weeks(expected_week, input):
+def test_next_weeks(expected_week, expected_date, input):
     output = list(RULE_TIME_WEEKS(input))
-    assert_expression_date_output(output, datetime(2021, 9, 1 + 7 * expected_week))
+    assert_expression_date_output(output, expected_date)
     assert output[0].value == TimeValue(weeks=expected_week)
 
 
 @pytest.mark.parametrize(
-    "expected_week,input",
+    "expected_week,expected_date,input",
     [
-        (-1, "قبل إسبوع"),
-        (-1, "الإسبوع الماضي"),
-        (-1, "الاسبوع السابق"),
-        (-2, "الأسبوع قبل الماضي"),
-        (-4, "قبل اربعة أسابيع"),
-        (-2, "قبل  أسبوعان"),
+        (-1, DATE.replace(month=8, day=22), "قبل إسبوع"),
+        (-1, DATE.replace(month=8, day=22), "الإسبوع الماضي"),
+        (-1, DATE.replace(month=8, day=22), "الاسبوع السابق"),
+        (-2, DATE.replace(month=8, day=15), "الأسبوع قبل الماضي"),
+        (-4, DATE.replace(month=8, day=1), "قبل اربعة أسابيع"),
+        (-2, DATE.replace(month=8, day=15), "قبل  أسبوعان"),
     ],
 )
-def test_previous_weeks(expected_week, input):
+def test_previous_weeks(expected_week, expected_date, input):
     output = list(RULE_TIME_WEEKS(input))
-    assert_expression_date_output(output, datetime(2021, 8, 32 + 7 * expected_week))
+    assert_expression_date_output(output, expected_date)
     assert output[0].value == TimeValue(weeks=expected_week)
 
 
