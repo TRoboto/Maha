@@ -7,55 +7,6 @@ What is Maha?
 Maha is a Python library that provides simple, yet powerful, functions for dealing with Arabic text.
 It can be used to clean and parse text, files, and folders with or without streaming capability.
 
-Maha also provides a :mod:`~.datasets` module that offers a simple interface for using the
-available datasets.
-
-.. important::
-    Maha is currently in beta.
-
-Datasets
---------
-
-.. note::
-    All datasets are licensed under the `Creative Commons Attribution 4.0 International License <https://creativecommons.org/licenses/by/4.0/>`_.
-
-This module provides a number of datasets that can be used with any NLP task. The available
-datasets are listed below with their descriptions.
-
-.. list-table::
-   :header-rows: 1
-   :widths: 15 10 75
-
-   * - Dataset
-     - Records
-     - Description
-   * - names
-     - 44161
-     - List of Arabic names with meaning and origin of most names
-
-
-Datasets can be loaded using the :func:`~.datasets.load_dataset` function as follows:
-
-.. code:: pycon
-
-    >>> from maha.datasets import load_dataset
-    >>> names = load_dataset("names")
-    >>> len(names)
-    44161
-    >>> names[0]
-    Name(name='آبوت', description=['اسم علم مذكر إنكليزي: ABOT، معناه الخوري'], origin='انجليزي')
-    >>> names[0].cleaned_name
-    'آبوت'
-
-It is also possible to stream a dataset:
-
-.. code:: pycon
-
-    >>> from maha.datasets import load_dataset
-    >>> names = load_dataset("names", streaming=True)
-    >>> next(iter(names))
-    Name(name='آبوت', description=['اسم علم مذكر إنكليزي: ABOT، معناه الخوري'], origin='انجليزي')
-
 Cleaners
 --------
 
