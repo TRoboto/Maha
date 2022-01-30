@@ -232,5 +232,5 @@ class TimeValue(relativedelta):
 
 @dataclass
 class TimeInterval:
-    from_time: Optional[TimeValue] = None
-    to_time: Optional[TimeValue] = None
+    start: Optional[TimeValue] = None
+    end: Optional[TimeValue] = None
