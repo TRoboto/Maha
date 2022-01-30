@@ -778,15 +778,15 @@ def assert_interval_output(output, start_time, end_time):
     assert isinstance(value, TimeInterval)
 
     if start_time is not None:
-        assert isinstance(value.from_time, TimeValue)
-        assert NOW + value.from_time == start_time
+        assert isinstance(value.start, TimeValue)
+        assert NOW + value.start == start_time
     else:
-        assert value.from_time is None
+        assert value.start is None
     if end_time is not None:
-        assert isinstance(value.to_time, TimeValue)
-        assert NOW + value.to_time == end_time
+        assert isinstance(value.end, TimeValue)
+        assert NOW + value.end == end_time
     else:
-        assert value.to_time is None
+        assert value.end is None
 
 
 @pytest.mark.parametrize(
