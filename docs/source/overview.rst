@@ -310,20 +310,20 @@ Examples
     >>> from datetime import datetime
     >>> now = datetime(2021, 9, 15)
     >>> parse_dimension("من الساعة 9 الى 11 صباحا", time=True)
-    [Dimension(body=من الساعة 9 الى 11 صباحا, value=TimeInterval(from_time=TimeValue(am_pm='AM', hour=9, minute=0, second=0, microsecond=0), to_time=TimeValue(am_pm='AM', hour=11, minute=0, second=0, microsecond=0)), start=0, end=24, dimension_type=DimensionType.TIME)]
+    [Dimension(body=من الساعة 9 الى 11 صباحا, value=TimeInterval(start=TimeValue(am_pm='AM', hour=9, minute=0, second=0, microsecond=0), end=TimeValue(am_pm='AM', hour=11, minute=0, second=0, microsecond=0)), start=0, end=24, dimension_type=DimensionType.TIME)]
     >>> interval = parse_dimension("من 13 هذا الشهر الى 20 الشهر القادم", time=True)[0].value
     >>> interval
-    TimeInterval(from_time=TimeValue(months=0, day=13), to_time=TimeValue(months=1, day=20))
-    >>> interval.from_time + now
+    TimeInterval(start=TimeValue(months=0, day=13), end=TimeValue(months=1, day=20))
+    >>> interval.start + now
     datetime.datetime(2021, 9, 13, 0, 0)
-    >>> interval.to_time + now
+    >>> interval.end + now
     datetime.datetime(2021, 10, 20, 0, 0)
     >>> parse_dimension("الساعة ثلاثة الا ثلث للساعة 4 ونص", time=True)[0].value
-    TimeInterval(from_time=TimeValue(hour=2, minute=40, second=0, microsecond=0), to_time=TimeValue(hour=4, minute=30, second=0, microsecond=0))
+    TimeInterval(start=TimeValue(hour=2, minute=40, second=0, microsecond=0), end=TimeValue(hour=4, minute=30, second=0, microsecond=0))
     >>> parse_dimension("من 6 اكتوبر", time=True)[0].value
-    TimeInterval(from_time=TimeValue(month=10, day=6), to_time=None)
+    TimeInterval(start=TimeValue(month=10, day=6), end=None)
     >>> parse_dimension("حتى الرابعة وربع بعد العصر", time=True)[0].value
-    TimeInterval(from_time=None, to_time=TimeValue(am_pm='PM', hour=16, minute=15, second=0, microsecond=0))
+    TimeInterval(start=None, end=TimeValue(am_pm='PM', hour=16, minute=15, second=0, microsecond=0))
 
 
 * To extract names, you can do the following:
