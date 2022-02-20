@@ -106,13 +106,13 @@ def parse_time(match):
 
     # to time only
     if contains_to_time() and TO.match(text):
-        return TimeInterval(to_time=value)
+        return TimeInterval(end=value)
 
     # from time only
     elif FROM.match(text) and (
         not contains_to_time() or contains_to_time() and not groups["to_time"]
     ):
-        return TimeInterval(from_time=value)
+        return TimeInterval(start=value)
 
     # time only
     return value
