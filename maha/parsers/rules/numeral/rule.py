@@ -35,6 +35,7 @@ from .values import *
 
 NUMERAL_VALUES_GROUP_NAME = "numeral_values"
 MULTIPLIERS_GROUP_NAME = "multipliers"
+DECIMAL_PART_GROUP_NAME = "decimal_part"
 
 
 def numeral_group(pattern):
@@ -75,7 +76,7 @@ def _construct_numeral(sorted_values) -> float:
 def _parse_numeral(sorted_values):
     decimal_part_index = 0
     for k, v in sorted_values.items():
-        if "decimal_part" == v["group"]:
+        if DECIMAL_PART_GROUP_NAME == v["group"]:
             decimal_part_index = k
     if decimal_part_index:
         integer = _construct_numeral(
@@ -341,7 +342,7 @@ RULE_NUMERAL = FunctionValue(
     _all_numeral_numeral_pattern
     + optional_non_capturing_group(
         named_group(
-            "decimal_part",
+            DECIMAL_PART_GROUP_NAME,
             EXPRESSION_SPACE
             + spaced_patterns(EXPRESSION_OF_FASILA, _all_numeral_numeral_pattern),
         )
@@ -353,5 +354,5 @@ EXPRESSION_NUMERAL_MAP = {
     "after_fraction": AFTER_FRACTION,
     NUMERAL_VALUES_GROUP_NAME: NUMERAL_VALUES,
     MULTIPLIERS_GROUP_NAME: MULTIPLIERS,
-    "decimal_part": None,
+    DECIMAL_PART_GROUP_NAME: ExpressionGroup(),
 }
