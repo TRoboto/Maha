@@ -422,6 +422,22 @@ def test_combinations(input, expected):
 
 
 @pytest.mark.parametrize(
+    "expected, input",
+    [
+        (100_000, "مئة الف"),
+        (100_000_000_000, "مئة الف مليون"),
+        (2_000_000, "عشرين مئة الف"),
+        (300_000, "ثلاثمئة الف"),
+        (200_500_000, "مئتين مليون وخمس مئة الف"),
+        (4_000_000_000_000, "اربع الاف مليار"),
+        (2_100_000.100_01, "واحد وعشرين مئة الف فاصلة مئة الف وعشرة"),
+    ],
+)
+def test_hierarchical_parsing(input, expected):
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
+
+
+@pytest.mark.parametrize(
     "input",
     [
         ("الواحد"),
