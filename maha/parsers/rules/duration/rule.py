@@ -145,7 +145,6 @@ def parse_duration(match):
     values = []
     for index, item in sorted_values.items():
         group = item["group"]
-        value = item["value"]
         if group not in duration_groups:
             temp_dict[index] = item
             continue

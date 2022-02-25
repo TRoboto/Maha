@@ -29,7 +29,6 @@ from ..common import (
     WAW_CONNECTOR,
     combine_patterns,
     spaced_patterns,
-    wrap_pattern,
 )
 from .values import *
 
