@@ -15,7 +15,7 @@ from datetime import datetime
 
 from maha.parsers.rules.time.template import TimeInterval
 
-from ..common import combine_patterns
+from ..common import FROM, TO, combine_patterns
 from .values import *
 
 

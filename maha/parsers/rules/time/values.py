@@ -1,7 +1,7 @@
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE
 
 import maha.parsers.rules.numeral.values as numvalues
-from maha.constants import ARABIC_COMMA, COMMA, LAM, WAW, arabic, english
+from maha.constants import ARABIC_COMMA, COMMA, LAM, arabic, english
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
     ONE_DAY,
@@ -32,7 +32,6 @@ from maha.parsers.rules.numeral.rule import (
     eleven_to_nineteen,
     parse_numeral,
 )
-from maha.parsers.rules.numeral.values import TEH_OPTIONAL_SUFFIX
 from maha.parsers.rules.ordinal.rule import (
     RULE_ORDINAL_ONES,
     RULE_ORDINAL_TENS,
@@ -50,9 +49,16 @@ from maha.rexy import (
 )
 
 from ..common import (
+    AFTER,
+    AFTER_NEXT,
     ALL_ALEF,
+    BEFORE,
+    BEFORE_PREVIOUS,
     ELLA,
     FRACTIONS,
+    IN_FROM_AT,
+    NEXT,
+    PREVIOUS,
     get_fractions_of_pattern,
     spaced_patterns,
 )
@@ -68,34 +74,10 @@ def parse_value(value: dict) -> TimeValue:
 
 
 lam_lam_group = named_group("to_time", LAM + LAM)
+
 ALEF_LAM_OR_DOUBLE_LAM = non_capturing_group(ALEF_LAM, lam_lam_group)
 ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL = optional_non_capturing_group(ALEF_LAM_OR_DOUBLE_LAM)
 
-AFTER = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد"
-BEFORE = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
-PREVIOUS = (
-    non_capturing_group("الماضي?", "السابق", "المنصرم", "الفا[يئ]ت")
-    + TEH_OPTIONAL_SUFFIX
-)
-NEXT = (
-    non_capturing_group("الجاي", "القادم", "التالي?", "ال[اآ]تي?", "المقبل")
-    + TEH_OPTIONAL_SUFFIX
-)
-AFTER_NEXT = spaced_patterns(AFTER, NEXT)
-BEFORE_PREVIOUS = spaced_patterns(BEFORE, PREVIOUS)
-IN_FROM_AT = non_capturing_group(
-    "في", "من", "خلال", "الموافق", "عند", "قراب[ةه]", "على"
-)
-FROM = Expression(non_capturing_group("من"))
-TO = Expression(
-    optional_non_capturing_group(WAW)
-    + EXPRESSION_SPACE_OR_NONE
-    + non_capturing_group(
-        "[اإ]لى",
-        "حتى",
-        "لل?",
-    )
-)
 THIS = optional_non_capturing_group(
     IN_FROM_AT + EXPRESSION_SPACE
 ) + non_capturing_group("ها?ذ[ياه]", "ه[اذ]ي", "هاد")
