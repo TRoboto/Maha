@@ -8,6 +8,7 @@
     <img src='https://readthedocs.org/projects/maha/badge/?version=latest' alt='Documentation Status' />
     </a>
     <a href="https://codecov.io/gh/TRoboto/Maha"><img src="https://codecov.io/gh/TRoboto/Maha/branch/main/graph/badge.svg?token=9CBWXT8URA", alt="codecov"></a>
+    <a href="https://lgtm.com/projects/g/TRoboto/Maha/context:python"><img alt="Language grade: Python" src="https://img.shields.io/lgtm/grade/python/g/TRoboto/Maha.svg?logo=lgtm&logoWidth=18"/></a>
     <a href="https://discord.gg/6W2tRFE7k4"><img src="https://img.shields.io/discord/863503708385312769.svg?label=discord&logo=discord" alt="Discord"></a>
     <a href="https://pepy.tech/project/mahad"><img src="https://pepy.tech/badge/mahad/month" alt="Downloads"></a>
     <a href="https://opensource.org/licenses/BSD-3-Clause"><img src="https://img.shields.io/badge/License-BSD%203--Clause-blue.svg" alt="License"></a>
@@ -39,7 +40,6 @@ For source installation, check the [documentation](https://maha.readthedocs.io/e
 ## Overview
 
 Check out the [overview](https://maha.readthedocs.io/en/stable/overview.html) section in the documentation to get started with Maha.
-
 
 ## Documentation
 
