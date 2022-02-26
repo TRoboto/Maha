@@ -5,6 +5,7 @@ from datetime import datetime
 from typing import Optional
 
 from dateutil.relativedelta import relativedelta
+from hijri_converter import Gregorian, Hijri
 
 from . import constants
 
@@ -36,6 +37,7 @@ class TimeValue(relativedelta):
         am_pm=None,
         next_month=None,
         prev_month=None,
+        hijri=False,
     ):
 
         super().__init__(
@@ -72,6 +74,7 @@ class TimeValue(relativedelta):
         self.next_month = next_month
         self.prev_month = prev_month
         self.am_pm = am_pm
+        self.hijri = hijri
 
     @property
     def am_pm(self):
@@ -165,7 +168,10 @@ class TimeValue(relativedelta):
                     if other.prev_month is not None
                     else self.prev_month
                 ),
+                hijri=other.hijri or self.hijri,
             )
+
+        old_values = self.__dict__.copy()
 
         # Handle next/prev month
         if isinstance(other, datetime):
@@ -192,7 +198,40 @@ class TimeValue(relativedelta):
                 elif self.weeks < 0:
                     self.days -= start_of_week - 7 * self.weeks
 
-        return super().__add__(other)
+        # Handle hijri date
+        if isinstance(other, datetime) and self.hijri:
+            current_hijri = Gregorian.fromdate(other.date()).to_hijri()
+            hijri_year = self.year or current_hijri.year
+            hijri_year += self.years
+            hijri_month = self.month or current_hijri.month
+            hijri_month += self.months
+            if hijri_month > 12:
+                hijri_year += self.months // 12
+                hijri_month += self.months % 12
+            hijri_day = self.day or current_hijri.day
+            if self.next_month:
+                hijri_year += 1 if self.next_month <= current_hijri.month else 0
+                hijri_month = self.next_month
+            elif self.prev_month:
+                hijri_year += 0 if self.prev_month <= current_hijri.month else -1
+                hijri_month = self.prev_month
+
+            month_length = Hijri(
+                hijri_year, hijri_month, hijri_day, validate=False
+            ).month_length()
+            new_date = Hijri(
+                hijri_year, hijri_month, min(month_length, hijri_day)
+            ).to_gregorian()
+            self.year = new_date.year
+            self.month = new_date.month
+            self.day = new_date.day
+            self.years = 0
+            self.months = 0
+            self.days = 0
+
+        output = super().__add__(other)
+        self.__dict__ = old_values
+        return output
 
     def __repr__(self):
         l = []
@@ -215,6 +254,7 @@ class TimeValue(relativedelta):
             "minute",
             "second",
             "microsecond",
+            "hijri",
         ]:
             value = getattr(self, attr)
             if value is not None:
@@ -252,6 +292,10 @@ class TimeValue(relativedelta):
             and self.minute == other.minute
             and self.second == other.second
             and self.microsecond == other.microsecond
+            and self.weekday == other.weekday
+            and self.am_pm == other.am_pm
+            and self.weeks == other.weeks
+            and self.hijri == other.hijri
         )
 
 
