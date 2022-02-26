@@ -173,16 +173,6 @@ class TimeValue(relativedelta):
 
         old_values = self.__dict__.copy()
 
-        # Handle next/prev month
-        if isinstance(other, datetime):
-            current_month = other.month
-            if self.next_month:
-                self.years += 1 if self.next_month <= current_month else 0
-                self.month = self.next_month
-            elif self.prev_month:
-                self.years += 0 if self.prev_month <= current_month else -1
-                self.month = self.prev_month
-
         # Handle next/prev week
         if isinstance(other, datetime) and self.weeks:
             self.days = self._days or 0
@@ -202,13 +192,23 @@ class TimeValue(relativedelta):
         if isinstance(other, datetime) and self.hijri:
             current_hijri = Gregorian.fromdate(other.date()).to_hijri()
             hijri_year = self.year or current_hijri.year
-            hijri_year += self.years
             hijri_month = self.month or current_hijri.month
-            hijri_month += self.months
-            if hijri_month > 12:
-                hijri_year += self.months // 12
-                hijri_month += self.months % 12
             hijri_day = self.day or current_hijri.day
+            month_lengths = [0] + [
+                Hijri(hijri_year, i, 1).month_length() for i in range(1, 13)
+            ]
+            hijri_day = min(hijri_day, month_lengths[hijri_month])
+            hijri_year += self.years
+            hijri_month += self.months
+            hijri_day += self.days
+
+            while hijri_day > month_lengths[hijri_month]:
+                if hijri_month > 12:
+                    hijri_year += self.months // 12
+                    hijri_month = self.months % 12
+                hijri_day -= month_lengths[hijri_month]
+                hijri_month += 1
+
             if self.next_month:
                 hijri_year += 1 if self.next_month <= current_hijri.month else 0
                 hijri_month = self.next_month
@@ -216,18 +216,21 @@ class TimeValue(relativedelta):
                 hijri_year += 0 if self.prev_month <= current_hijri.month else -1
                 hijri_month = self.prev_month
 
-            month_length = Hijri(
-                hijri_year, hijri_month, hijri_day, validate=False
-            ).month_length()
-            new_date = Hijri(
-                hijri_year, hijri_month, min(month_length, hijri_day)
-            ).to_gregorian()
+            new_date = Hijri(hijri_year, hijri_month, hijri_day).to_gregorian()
             self.year = new_date.year
             self.month = new_date.month
             self.day = new_date.day
             self.years = 0
             self.months = 0
             self.days = 0
+        elif isinstance(other, datetime):
+            current_month = other.month
+            if self.next_month:
+                self.years += 1 if self.next_month <= current_month else 0
+                self.month = self.next_month
+            elif self.prev_month:
+                self.years += 0 if self.prev_month <= current_month else -1
+                self.month = self.prev_month
 
         output = super().__add__(other)
         self.__dict__ = old_values
@@ -246,6 +249,8 @@ class TimeValue(relativedelta):
             "_seconds",
             "_microseconds",
             "_am_pm",
+            "next_month",
+            "prev_month",
             "year",
             "month",
             "day",
