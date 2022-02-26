@@ -374,6 +374,59 @@ DECEMBER = Value(
     ),
 )
 
+# -----------------------------------------------------------
+# HIJRI MONTHS
+# -----------------------------------------------------------
+MUHARRAM = Value(
+    TimeValue(month=1, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "محرم",
+)
+SAFAR = Value(
+    TimeValue(month=2, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "صفر",
+)
+RABI_AL_AWWAL = Value(
+    TimeValue(month=3, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ربيع ال[اآأ]ول",
+)
+RABI_AL_ATHANI = Value(
+    TimeValue(month=4, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ربيع ال[اآأ]خر[ةه]?",
+)
+JUMADA_AL_AWWAL = Value(
+    TimeValue(month=5, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + "جماد[ىي] ال[اآأ]ول[ىي]?",
+)
+JUMADA_AL_ATHANI = Value(
+    TimeValue(month=6, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + "جماد[ىي] ال[اآأ]خر[ةه]?",
+)
+RAJAB = Value(
+    TimeValue(month=7, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "رجب",
+)
+SHABAN = Value(
+    TimeValue(month=8, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "شعبان",
+)
+RAMADAN = Value(
+    TimeValue(month=9, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "رمضان",
+)
+SHAWWAL = Value(
+    TimeValue(month=10, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "شوال",
+)
+DHU_AL_QIDAH = Value(
+    TimeValue(month=11, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ذو القعد[ةه]",
+)
+DHU_AL_HIJJAH = Value(
+    TimeValue(month=12, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ذو الحج[ةه]",
+)
 
 _months = ExpressionGroup(
     OCTOBER,
@@ -388,6 +441,18 @@ _months = ExpressionGroup(
     JULY,
     AUGUST,
     SEPTEMBER,
+    MUHARRAM,
+    SAFAR,
+    RABI_AL_AWWAL,
+    RABI_AL_ATHANI,
+    JUMADA_AL_AWWAL,
+    JUMADA_AL_ATHANI,
+    RAJAB,
+    SHABAN,
+    RAMADAN,
+    SHAWWAL,
+    DHU_AL_QIDAH,
+    DHU_AL_HIJJAH,
 )
 
 THIS_MONTH = Value(
