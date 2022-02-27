@@ -103,6 +103,9 @@ THIS = optional_non_capturing_group(
 CURRENT = ALEF_LAM + non_capturing_group("حالي?", "حالي[ةه]?")
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
 
+HIJRIAH = Expression("هجري[ةه]?")
+HIJRIATAN = Expression("هجريت?[اي]ن")
+
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
         f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
@@ -150,79 +153,138 @@ numeral_thousands = ExpressionGroup(
     FunctionValue(lambda match: int(match.group(0)), named_group("integers", r"\d{4}")),
 )
 ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
+alhijri_group = named_group("hijri", ALEF_LAM + HIJRIAH)
+alhijri_optional_group = optional_non_capturing_group(alhijri_group + EXPRESSION_SPACE)
+hijri_group = named_group("hijri", HIJRIAH)
+hijriatan_group = named_group("hijri", HIJRIATAN)
+
 NUMERAL_YEAR = FunctionValue(
     lambda match: parse_value(
-        {"year": list(numeral_thousands.parse(match.group("value")))[0].value}
+        {
+            "year": list(numeral_thousands.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_YEAR,
-        value_group(numeral_thousands.join()),
+        value_group(numeral_thousands.join())
+        + optional_non_capturing_group(
+            EXPRESSION_SPACE
+            + non_capturing_group(hijriatan_group, hijri_group, alhijri_group)
+        ),
     ),
 )
 ORDINAL_YEAR = FunctionValue(
     lambda match: parse_value(
-        {"year": list(ordinal_thousands.parse(match.group("value")))[0].value}
+        {
+            "year": list(ordinal_thousands.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_YEAR,
-        value_group(ordinal_thousands.join()),
+        value_group(ordinal_thousands.join())
+        + optional_non_capturing_group(
+            EXPRESSION_SPACE
+            + non_capturing_group(hijriatan_group, hijri_group, alhijri_group)
+        ),
     ),
 )
 
-THIS_YEAR = Value(
-    TimeValue(years=0),
+
+def years_with_hijri(match, years):
+    return TimeValue(years=years, hijri=True if match.group("hijri") else None)
+
+
+THIS_YEAR = FunctionValue(
+    lambda match: years_with_hijri(match, 0),
     optional_non_capturing_group(THIS + EXPRESSION_SPACE)
     + ALEF_LAM_OR_DOUBLE_LAM
     + ONE_YEAR
+    + alhijri_optional_group
     + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
-LAST_YEAR = Value(
-    TimeValue(years=-1),
+LAST_YEAR = FunctionValue(
+    lambda match: years_with_hijri(match, -1),
     non_capturing_group(
-        spaced_patterns(BEFORE, ONE_YEAR),
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, PREVIOUS),
+        spaced_patterns(
+            BEFORE,
+            ONE_YEAR + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
+        ),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + PREVIOUS,
+        ),
     ),
 )
-LAST_TWO_YEARS = Value(
-    TimeValue(years=-2),
+LAST_TWO_YEARS = FunctionValue(
+    lambda match: years_with_hijri(match, -2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, BEFORE_PREVIOUS),
-        spaced_patterns(BEFORE, TWO_YEARS),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + BEFORE_PREVIOUS,
+        ),
+        spaced_patterns(
+            BEFORE,
+            TWO_YEARS
+            + optional_non_capturing_group(EXPRESSION_SPACE + hijriatan_group),
+        ),
     ),
 )
-NEXT_YEAR = Value(
-    TimeValue(years=1),
+NEXT_YEAR = FunctionValue(
+    lambda match: years_with_hijri(match, 1),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, NEXT),
-        spaced_patterns(AFTER, ONE_YEAR),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + NEXT,
+        ),
+        spaced_patterns(
+            AFTER,
+            ONE_YEAR + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
+        ),
     ),
 )
-NEXT_TWO_YEARS = Value(
-    TimeValue(years=2),
+NEXT_TWO_YEARS = FunctionValue(
+    lambda match: years_with_hijri(match, 2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, AFTER_NEXT),
-        spaced_patterns(AFTER, TWO_YEARS),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + AFTER_NEXT,
+        ),
+        spaced_patterns(
+            AFTER,
+            TWO_YEARS
+            + optional_non_capturing_group(EXPRESSION_SPACE + hijriatan_group),
+        ),
     ),
 )
 
 AFTER_N_YEARS = FunctionValue(
     lambda match: parse_value(
-        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "years": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         AFTER,
         value_group(numeral_ones_tens.join()),
         non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
-    ),
+    )
+    + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
 )
 BEFORE_N_YEARS = FunctionValue(
     lambda match: parse_value(
-        {"years": -1 * list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "years": -1 * list(numeral_ones_tens.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         BEFORE,
         value_group(numeral_ones_tens.join()),
-        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
+        non_capturing_group(ONE_YEAR, SEVERAL_YEARS)
+        + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
     ),
 )
 # endregion
