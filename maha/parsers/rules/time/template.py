@@ -37,7 +37,7 @@ class TimeValue(relativedelta):
         am_pm=None,
         next_month=None,
         prev_month=None,
-        hijri=False,
+        hijri=None,
     ):
 
         super().__init__(
