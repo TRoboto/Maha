@@ -797,6 +797,14 @@ def test_last_specific_day_of_specific_month(expected, input):
         (Hijri(1443, 9, 1), "بداية رمضان القادم"),
         (Hijri(HIJRI_DATE.year - 1, 9, 1), "بداية رمضان الماضي"),
         (
+            Hijri(HIJRI_DATE.year + 3, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد ثلاث سنوات هجرية",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 1, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد سنة هجرية",
+        ),
+        (
             Hijri(HIJRI_DATE.year + 1, HIJRI_DATE.month, HIJRI_DATE.day),
             "العام الهجري القادم",
         ),
@@ -807,6 +815,14 @@ def test_last_specific_day_of_specific_month(expected, input):
         (
             Hijri(HIJRI_DATE.year + 2, HIJRI_DATE.month, HIJRI_DATE.day),
             "السنة الهجرية بعد القادمة",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 2, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد عامين هجريين",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 2, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد سنتان هجريتان",
         ),
         (
             Hijri(HIJRI_DATE.year - 1, HIJRI_DATE.month, HIJRI_DATE.day),
