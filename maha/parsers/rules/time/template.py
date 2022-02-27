@@ -125,6 +125,9 @@ class TimeValue(relativedelta):
     def is_am_pm_set(self):
         return self.am_pm is not None
 
+    def is_hijri_set(self):
+        return self.hijri is not None
+
     def _add(self, value1, value2):
         if value1 is not None and value2 is not None:
             return value1 + value2
