@@ -1,4 +1,5 @@
 """Rules to extract duration."""
+from __future__ import annotations
 
 __all__ = [
     "RULE_DURATION_SECONDS",
@@ -12,9 +13,9 @@ __all__ = [
     "parse_duration",
 ]
 
+
 from collections import defaultdict
 from dataclasses import dataclass
-from typing import Dict, List
 
 from maha.parsers.rules.numeral.rule import RULE_NUMERAL, parse_numeral
 from maha.parsers.templates import FunctionValue, Unit
@@ -41,9 +42,9 @@ def get_pattern(singular_frac_group, singular, dual, all_units):
     )
 
 
-def merge_same_units(values: List[ValueUnit]) -> List[ValueUnit]:
+def merge_same_units(values: list[ValueUnit]) -> list[ValueUnit]:
     """Merge values with same units from the input ``values``."""
-    newvalues: Dict[Unit, ValueUnit] = {}
+    newvalues: dict[Unit, ValueUnit] = {}
     for value in values:
         unit = value.unit
         if unit in newvalues:
@@ -115,7 +116,7 @@ class DurationParsedValue:
     name: str
     text: str
     index: int
-    values: Dict[str, List]
+    values: dict[str, list]
 
     def __init__(self, name, text, index) -> None:
         self.name = name
@@ -129,7 +130,7 @@ class DurationParsedValue:
 
 class IndexPriorityList:
     def __init__(self):
-        self.items: List[DurationParsedValue] = []
+        self.items: list[DurationParsedValue] = []
 
     def add_item(self, name, text, index):
         self.items.append(DurationParsedValue(name, text, index))

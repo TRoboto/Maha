@@ -1,10 +1,10 @@
 """List of Persian constant definitions."""
 
-from typing import List
+from __future__ import annotations
 
 from .simple import *
 
-PERSIAN_NUMBERS: List[str] = [
+PERSIAN_NUMBERS: list[str] = [
     PERSIAN_ZERO,
     PERSIAN_ONE,
     PERSIAN_TWO,
@@ -21,7 +21,7 @@ List of Persian numerals.
 They have different unicodes from :data:`~.ARABIC_NUMBERS`
 """
 
-PERSIAN_UNIQUE_LETTERS: List[str] = [
+PERSIAN_UNIQUE_LETTERS: list[str] = [
     PERSIAN_PE,
     PERSIAN_CE,
     PERSIAN_ZE,
@@ -32,5 +32,5 @@ PERSIAN_UNIQUE_LETTERS: List[str] = [
 ]
 """ List of Persian unique letters """
 
-PERSIAN: List[str] = PERSIAN_NUMBERS + PERSIAN_UNIQUE_LETTERS
+PERSIAN: list[str] = PERSIAN_NUMBERS + PERSIAN_UNIQUE_LETTERS
 """ List of Persian unique characters """

@@ -1,13 +1,16 @@
+from __future__ import annotations
+
 __all__ = ["Expression"]
+
 
 import hashlib
 import pickle
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Iterable, Optional, Pattern, Union
+from typing import Callable, Iterable
 
 import regex as re
-from regex import regex
+from regex import Match, Pattern
 
 from maha import LIBRARY_PATH
 
@@ -41,7 +44,7 @@ class Expression:
     ):
         self.pattern = str(pattern)
         self.pickle = pickle
-        self._compiled_pattern: Pattern = None  # type: ignore
+        self._compiled_pattern: Pattern[str] = None  # type: ignore
 
     def compile(self):
         """Compile the regular expersion."""
@@ -63,7 +66,7 @@ class Expression:
                 pickle.dump(self._compiled_pattern, f)
 
     @classmethod
-    def from_cache(cls, cache: str) -> "Expression":
+    def from_cache(cls, cache: str) -> Expression:
         """Load an expression from cache.
 
         Parameters
@@ -100,7 +103,7 @@ class Expression:
         self.compile()
         return self._compiled_pattern.search(text)
 
-    def match(self, text: str) -> Optional[regex.Match]:
+    def match(self, text: str) -> Match[str] | None:
         """Match the pattern in the input ``text``.
 
         Parameters
@@ -110,13 +113,13 @@ class Expression:
 
         Returns
         -------
-        :class:`regex.Match`
+        :class:`Match[str]`
             Matched object.
         """
         self.compile()
         return self._compiled_pattern.match(text)
 
-    def fullmatch(self, text: str) -> Optional[regex.Match]:
+    def fullmatch(self, text: str) -> Match[str] | None:
         """Match the pattern in the input ``text``.
 
         Parameters
@@ -126,13 +129,13 @@ class Expression:
 
         Returns
         -------
-        :class:`regex.Match`
+        :class:`Match[str]`
             Matched object.
         """
         self.compile()
         return self._compiled_pattern.fullmatch(text)
 
-    def sub(self, repl: Union[Callable[..., str], str], text: str) -> str:
+    def sub(self, repl: Callable[..., str] | str, text: str) -> str:
         """Replace all occurrences of the pattern in the input ``text``.
 
         Parameters
@@ -150,7 +153,7 @@ class Expression:
         self.compile()
         return self._compiled_pattern.sub(repl, text)
 
-    def __call__(self, text: str) -> Iterable["ExpressionResult"]:
+    def __call__(self, text: str) -> Iterable[ExpressionResult]:
         """
         Extract values from the input ``text``.
 
@@ -166,7 +169,7 @@ class Expression:
         """
         yield from self.parse(text)
 
-    def parse(self, text: str) -> Iterable["ExpressionResult"]:
+    def parse(self, text: str) -> Iterable[ExpressionResult]:
         """
         Extract values from the input ``text``.
 
@@ -185,7 +188,7 @@ class Expression:
         for m in re.finditer(self._compiled_pattern, text):
             yield self._parse(m, text)
 
-    def _parse(self, match: regex.Match, text: str) -> "ExpressionResult":
+    def _parse(self, match: Match[str], _: str) -> ExpressionResult:
         """Extract the value from the input ``text`` and return it.
 
         .. note::
@@ -230,7 +233,7 @@ class Expression:
     def __str__(self) -> str:
         return self.pattern
 
-    def __add__(self, other: Union[str, "Expression"]) -> str:
+    def __add__(self, other: str | Expression) -> str:
         return str(self) + str(other)
 
     def __radd__(self, other):

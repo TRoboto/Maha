@@ -1,12 +1,14 @@
 """ The base for all processors """
+from __future__ import annotations
 
 __all__ = [
     "BaseProcessor",
 ]
 
+
 from abc import ABC, abstractmethod
 from functools import partial
-from typing import Callable, List, Union
+from typing import Callable
 
 from maha.cleaners.functions import (
     connect_single_letter_word,
@@ -167,7 +169,7 @@ class BaseProcessor(ABC):
         arabic_punctuations: bool = False,
         english_punctuations: bool = False,
         use_space: bool = True,
-        custom_strings: Union[List[str], str] = None,
+        custom_strings: list[str] | str | None = None,
     ):
         """Applies :func:`~.keep` to each line"""
         self.apply(partial(keep, **self._arguments_except_self(locals())))
@@ -175,14 +177,14 @@ class BaseProcessor(ABC):
 
     def normalize(
         self,
-        lam_alef: bool = None,
-        alef: bool = None,
-        waw: bool = None,
-        yeh: bool = None,
-        teh_marbuta: bool = None,
-        ligatures: bool = None,
-        spaces: bool = None,
-        all: bool = None,
+        lam_alef: bool | None = None,
+        alef: bool | None = None,
+        waw: bool | None = None,
+        yeh: bool | None = None,
+        teh_marbuta: bool | None = None,
+        ligatures: bool | None = None,
+        spaces: bool | None = None,
+        all: bool | None = None,
     ):
         """Applies :func:`~.normalize` to each line"""
         self.apply(partial(normalize, **self._arguments_except_self(locals())))
@@ -190,14 +192,14 @@ class BaseProcessor(ABC):
 
     def connect_single_letter_word(
         self,
-        waw: bool = None,
-        feh: bool = None,
-        beh: bool = None,
-        lam: bool = None,
-        kaf: bool = None,
-        teh: bool = None,
-        all: bool = None,
-        custom_strings: Union[List[str], str] = None,
+        waw: bool | None = None,
+        feh: bool | None = None,
+        beh: bool | None = None,
+        lam: bool | None = None,
+        kaf: bool | None = None,
+        teh: bool | None = None,
+        all: bool | None = None,
+        custom_strings: list[str] | str | None = None,
     ):
         """Applies :func:`~.connect_single_letter_word` to each line"""
         self.apply(
@@ -205,21 +207,21 @@ class BaseProcessor(ABC):
         )
         return self
 
-    def replace(self, strings: Union[List[str], str], with_value: str):
+    def replace(self, strings: list[str] | str, with_value: str):
         """Applies :func:`~.replace` to each line"""
         self.apply(partial(replace, **self._arguments_except_self(locals())))
         return self
 
     def replace_expression(
         self,
-        expression: Union[Expression, ExpressionGroup, str],
-        with_value: Union[Callable[..., str], str],
+        expression: Expression | ExpressionGroup | str,
+        with_value: Callable[..., str] | str,
     ):
         """Applies :func:`~.replace_expression` to each line"""
         self.apply(partial(replace_expression, **self._arguments_except_self(locals())))
         return self
 
-    def replace_pairs(self, keys: List[str], values: List[str]):
+    def replace_pairs(self, keys: list[str], values: list[str]):
         """Applies :func:`~.replace_pairs` to each line"""
         self.apply(partial(replace_pairs, **self._arguments_except_self(locals())))
         return self
@@ -259,8 +261,8 @@ class BaseProcessor(ABC):
         mentions: bool = False,
         emojis: bool = False,
         use_space: bool = True,
-        custom_strings: Union[List[str], str] = None,
-        custom_expressions: Union[List[str], str] = None,
+        custom_strings: list[str] | str | None = None,
+        custom_expressions: list[str] | str | None = None,
     ):
         """Applies :func:`~.remove` to each line"""
         self.apply(partial(remove, **self._arguments_except_self(locals())))
@@ -296,8 +298,8 @@ class BaseProcessor(ABC):
         links: bool = False,
         mentions: bool = False,
         emojis: bool = False,
-        custom_strings: Union[List[str], str] = None,
-        custom_expressions: Union[List[str], str] = None,
+        custom_strings: list[str] | str | None = None,
+        custom_expressions: list[str] | str | None = None,
         operator: str = "or",
     ):
         """Drop lines that contain any of the selected strings or patterns.
@@ -421,8 +423,8 @@ class BaseProcessor(ABC):
         links: bool = False,
         mentions: bool = False,
         emojis: bool = False,
-        custom_strings: Union[List[str], str] = None,
-        custom_expressions: Union[List[str], str] = None,
+        custom_strings: list[str] | str | None = None,
+        custom_expressions: list[str] | str | None = None,
         operator: str = "or",
     ):
         """Keep lines that contain any of the selected strings or patterns.

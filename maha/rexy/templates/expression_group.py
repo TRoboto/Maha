@@ -1,6 +1,9 @@
+from __future__ import annotations
+
 __all__ = ["ExpressionGroup"]
 
-from typing import Iterable, List, Optional, Set, Tuple, Union, overload
+
+from typing import Iterable, overload
 
 import maha.rexy as rx
 
@@ -21,12 +24,12 @@ class ExpressionGroup:
 
     def __init__(
         self,
-        *expressions: Union["rx.Expression", "ExpressionGroup"],
+        *expressions: rx.Expression | ExpressionGroup,
         smart: bool = False,
     ):
 
         self.expressions = self._merge_expressions(expressions)
-        self._parsed_ranges: Set[Tuple[int, int]] = set()
+        self._parsed_ranges: set[tuple[int, int]] = set()
         self.smart = smart
 
     def compile_expressions(self):
@@ -34,8 +37,8 @@ class ExpressionGroup:
             expression.compile()
 
     def _merge_expressions(
-        self, expressions: Iterable[Union["rx.Expression", "ExpressionGroup"]]
-    ) -> List["rx.Expression"]:
+        self, expressions: Iterable[rx.Expression | ExpressionGroup]
+    ) -> list[rx.Expression]:
         result = []
         for expression in expressions:
             if isinstance(expression, ExpressionGroup):
@@ -44,7 +47,7 @@ class ExpressionGroup:
                 result.append(expression)
         return result
 
-    def add(self, *expression: "rx.Expression") -> None:
+    def add(self, *expression: rx.Expression) -> None:
         """Add an expression to the group.
 
         Parameters
@@ -64,7 +67,7 @@ class ExpressionGroup:
         """
         return rx.non_capturing_group(*list(map(str, self.expressions)))
 
-    def get_matched_expression(self, text: str) -> Optional["rx.Expression"]:
+    def get_matched_expression(self, text: str) -> rx.Expression | None:
         """Returns the expression that fully matches the text.
 
         Parameters
@@ -82,7 +85,7 @@ class ExpressionGroup:
                 return expression
         return None
 
-    def parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
+    def parse(self, text: str) -> Iterable[rx.ExpressionResult]:
         """
         Parses the text.
 
@@ -105,7 +108,7 @@ class ExpressionGroup:
 
         self._clear_parsed()
 
-    def normal_parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
+    def normal_parse(self, text: str) -> Iterable[rx.ExpressionResult]:
         """Parse the input ``text`` and return the extracted values.
 
         Parameters
@@ -121,7 +124,7 @@ class ExpressionGroup:
         for expression in self.expressions:
             yield from expression.parse(text)
 
-    def smart_parse(self, text: str) -> Iterable["rx.ExpressionResult"]:
+    def smart_parse(self, text: str) -> Iterable[rx.ExpressionResult]:
         """
         Parses the text. If a value matches two or more expressions, only the first
         expression parses the value, no value is matched more than once. This means
@@ -144,7 +147,7 @@ class ExpressionGroup:
             self._parsed_ranges.add((result.start, result.end))
             yield result
 
-    def _is_parsed(self, result: "rx.ExpressionResult"):
+    def _is_parsed(self, result: rx.ExpressionResult):
         for start, end in self._parsed_ranges:
             if start <= result.start <= end and start <= result.end <= end:
                 return True
@@ -154,7 +157,7 @@ class ExpressionGroup:
     def _clear_parsed(self):
         self._parsed_ranges = set()
 
-    def __add__(self, other: "ExpressionGroup") -> "ExpressionGroup":
+    def __add__(self, other: ExpressionGroup) -> ExpressionGroup:
         self.expressions.extend(other.expressions)
         return self
 
@@ -162,16 +165,14 @@ class ExpressionGroup:
         return iter(self.expressions)
 
     @overload
-    def __getitem__(self, index: int) -> "rx.Expression":
+    def __getitem__(self, index: int) -> rx.Expression:
         ...
 
     @overload
-    def __getitem__(self, index: slice) -> "ExpressionGroup":
+    def __getitem__(self, index: slice) -> ExpressionGroup:
         ...
 
-    def __getitem__(
-        self, index: Union[int, slice]
-    ) -> Union["rx.Expression", "ExpressionGroup"]:
+    def __getitem__(self, index: int | slice) -> rx.Expression | ExpressionGroup:
         if isinstance(index, slice):
             return ExpressionGroup(*self.expressions[index])
 
