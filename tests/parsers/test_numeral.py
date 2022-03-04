@@ -355,6 +355,8 @@ def test_numbers(input, expected):
         (10.5, "10 فاصله 5"),
         (33.3, "ثلاثة وثلاثين فاصلة ثلاثة"),
         (100 / 3, "ثلث مية"),
+        (1025, "الف وربع مية"),
+        (2070, "الفين وعشرين ونص مية"),
     ],
 )
 def test_fasila_numbers(input, expected):
@@ -419,6 +421,23 @@ def test_millions(input, expected):
     ],
 )
 def test_combinations(input, expected):
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
+
+
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (100_000, "مئة الف"),
+        (100_000_000_000, "مئة الف مليون"),
+        (2_000_000, "عشرين مئة الف"),
+        (300_000, "ثلاثمئة الف"),
+        (200_500_000, "مئتين مليون وخمس مئة الف"),
+        (4_000_000_000_000, "اربع الاف مليار"),
+        (2_100_000.100_01, "واحد وعشرين مئة الف فاصلة مئة الف وعشرة"),
+        (3_300_000, "ثلاثة وثلاثين مئة الف"),
+    ],
+)
+def test_hierarchical_parsing(input, expected):
     assert_expression_output(parse_dimension(input, numeral=True), expected)
 
 

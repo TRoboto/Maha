@@ -14,10 +14,11 @@ __all__ = [
 ]
 
 
-from collections import defaultdict
-from dataclasses import dataclass
-
-from maha.parsers.rules.numeral.rule import RULE_NUMERAL, parse_numeral
+from maha.parsers.rules.numeral.rule import (
+    EXPRESSION_NUMERAL_MAP,
+    RULE_NUMERAL,
+    _parse_numeral,
+)
 from maha.parsers.templates import FunctionValue, Unit
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
@@ -111,70 +112,49 @@ def get_matched_value(matched_text) -> ValueUnit:
     return ValueUnit(value=exp_val.value, unit=exp_val.unit)
 
 
-@dataclass
-class DurationParsedValue:
-    name: str
-    text: str
-    index: int
-    values: dict[str, list]
-
-    def __init__(self, name, text, index) -> None:
-        self.name = name
-        self.text = text
-        self.index = index
-        self.values = defaultdict(list)
-
-    def capturesdict(self):
-        return self.values
-
-
-class IndexPriorityList:
-    def __init__(self):
-        self.items: list[DurationParsedValue] = []
-
-    def add_item(self, name, text, index):
-        self.items.append(DurationParsedValue(name, text, index))
-        self.items.sort(key=lambda i: i.index)
-
-    def add_value(self, name, value, index) -> None:
-        for item in self.items:
-            if index < item.index:
-                item.values[name].append(value)
-                break
+def get_groups():
+    return [
+        "seconds",
+        "minutes",
+        "hours",
+        "days",
+        "weeks",
+        "months",
+        "years",
+    ]
 
 
 def parse_duration(match):
     """Parse duration."""
     groups = match.capturesdict()
     groups_keys = list(groups)
-    collection = IndexPriorityList()
-    for key in ["seconds", "minutes", "hours", "days", "weeks", "months", "years"]:
-        if key not in groups:
+
+    duration_groups = get_groups()
+    sorted_values = {}
+    for group in list(EXPRESSION_NUMERAL_MAP) + duration_groups:
+        if group not in groups_keys:
             continue
-        for i, t in enumerate(match.starts(groups_keys.index(key) + 1)):
-            collection.add_item(key, groups[key][i], t)
+        for i, value in enumerate(groups.get(group)):
+            index = match.starts(groups_keys.index(group) + 1)[i]
+            sorted_values[index] = {"group": group, "value": value}
 
-    for key in [
-        "trillions",
-        "billions",
-        "millions",
-        "thousands",
-        "hundreds",
-        "decimals",
-        "tens",
-        "ones",
-        "integers",
-    ]:
-        for i, t in enumerate(match.starts(groups_keys.index(key) + 1)):
-            collection.add_value(key, groups[key][i], t)
+    sorted_values = dict(sorted(sorted_values.items()))
 
+    # holds numeral values before a unit
+    temp_dict = {}
     values = []
-    for item in collection.items:
-        numeral = parse_numeral(item)
-        valueunit = get_matched_value(item.text)
+    for index, item in sorted_values.items():
+        group = item["group"]
+        if group not in duration_groups:
+            temp_dict[index] = item
+            continue
+        numeral = _parse_numeral(temp_dict)
+        valueunit = get_matched_value(item["value"])
         if numeral:
             valueunit.value = numeral
         values.append(valueunit)
+        temp_dict = {}
+
     for item in groups.get("fractions", []):
         values.append(get_unit_fraction_value(item))
 
