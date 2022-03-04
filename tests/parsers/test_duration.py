@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import random
 from itertools import chain
-from typing import List
 
 import pytest
 
@@ -219,7 +220,7 @@ to_sec = {
 
 
 def assert_combined_expression_one_output(
-    output: List[Dimension], expected: List[float], units: List[DurationUnit]
+    output: list[Dimension], expected: list[float], units: list[DurationUnit]
 ):
     """
     Asserts that the output of a combined expression is the same as the expected one.
@@ -261,7 +262,7 @@ def assert_combined_expression_one_output(
         ([2, 0.25], "دقيقتان وربع ثانية"),
     ],
 )
-def test_parse_with_combined_minutes(input: str, expected: List[float]):
+def test_parse_with_combined_minutes(input: str, expected: list[float]):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(
         output, expected, [DurationUnit.MINUTES, DurationUnit.SECONDS]
@@ -287,7 +288,7 @@ def test_parse_with_combined_minutes(input: str, expected: List[float]):
     ],
 )
 def test_parse_with_combined_hours(
-    input: str, expected: List[float], units: List[DurationUnit]
+    input: str, expected: list[float], units: list[DurationUnit]
 ):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
@@ -311,7 +312,7 @@ def test_parse_with_combined_hours(
     ],
 )
 def test_parse_with_combined_days(
-    input: str, expected: List[float], units: List[DurationUnit]
+    input: str, expected: list[float], units: list[DurationUnit]
 ):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
@@ -340,7 +341,7 @@ def test_parse_with_combined_days(
     ],
 )
 def test_parse_with_combined_weeks(
-    input: str, expected: List[float], units: List[DurationUnit]
+    input: str, expected: list[float], units: list[DurationUnit]
 ):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
@@ -390,7 +391,7 @@ def test_parse_with_combined_weeks(
     ],
 )
 def test_parse_with_combined_months(
-    input: str, expected: List[float], units: List[DurationUnit]
+    input: str, expected: list[float], units: list[DurationUnit]
 ):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
@@ -426,7 +427,7 @@ def test_parse_with_combined_months(
     ],
 )
 def test_parse_with_combined_years(
-    input: str, expected: List[float], units: List[DurationUnit]
+    input: str, expected: list[float], units: list[DurationUnit]
 ):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)
@@ -443,7 +444,7 @@ def test_parse_with_combined_years(
     ],
 )
 def test_parse_combination(
-    input: str, expected: List[float], units: List[DurationUnit]
+    input: str, expected: list[float], units: list[DurationUnit]
 ):
     output = parse_dimension(input, duration=True)
     assert_combined_expression_one_output(output, expected, units)

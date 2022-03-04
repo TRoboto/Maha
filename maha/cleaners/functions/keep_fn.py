@@ -1,6 +1,7 @@
 """
 Functions that operate on a string and remove all but certain characters.
 """
+from __future__ import annotations
 
 __all__ = [
     "keep",
@@ -10,8 +11,6 @@ __all__ = [
     "keep_arabic_with_english_numbers",
     "keep_arabic_letters_with_harakat",
 ]
-
-from typing import List, Union
 
 import maha.cleaners.functions as functions
 from maha.constants import (
@@ -52,7 +51,7 @@ def keep(
     arabic_punctuations: bool = False,
     english_punctuations: bool = False,
     use_space: bool = True,
-    custom_strings: Union[List[str], str] = None,
+    custom_strings: list[str] | str | None = None,
 ):
     """Keeps only certain characters in the given text and removes everything else.
 
@@ -257,9 +256,7 @@ def keep_arabic_letters_with_harakat(text: str) -> str:
     return keep_strings(text, ARABIC_LETTERS + HARAKAT)
 
 
-def keep_strings(
-    text: str, strings: Union[List[str], str], use_space: bool = True
-) -> str:
+def keep_strings(text: str, strings: list[str] | str, use_space: bool = True) -> str:
 
     """Keeps only the input strings ``strings`` in the given text ``text``
 

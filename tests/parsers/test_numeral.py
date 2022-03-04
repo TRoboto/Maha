@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import random
 from itertools import chain
-from typing import List
 
 import pytest
 
@@ -11,7 +12,7 @@ from maha.parsers.templates import Dimension, DimensionType
 random.seed(0)
 
 
-def assert_expression_output(output: List[Dimension], expected):
+def assert_expression_output(output: list[Dimension], expected):
     assert len(output) == 1
     assert isinstance(output[0], Dimension)
     dim = output[0]
@@ -48,7 +49,7 @@ def get_integer_forms(number1: str, number2: str):
     ]
 
 
-def get_value_with_integer(ar_int: str, en_int: str, values: List[str]):
+def get_value_with_integer(ar_int: str, en_int: str, values: list[str]):
     for v in chain(get_value_positions(*values), get_integer_forms(ar_int, en_int)):
         yield v, int(en_int)
 
