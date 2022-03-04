@@ -30,7 +30,6 @@ from maha.parsers.rules.numeral.rule import (
     RULE_NUMERAL_THOUSANDS,
     TEN,
     eleven_to_nineteen,
-    parse_numeral,
 )
 from maha.parsers.rules.numeral.values import TEH_OPTIONAL_SUFFIX
 from maha.parsers.rules.ordinal.rule import (
@@ -117,10 +116,8 @@ numeral_ones_tens = ExpressionGroup(
     RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
 )
 numeral_hours = ExpressionGroup(
-    FunctionValue(
-        parse_numeral,
-        named_group("tens", non_capturing_group(eleven_to_nineteen.join(), TEN)),
-    ),
+    eleven_to_nineteen,
+    TEN,
     RULE_NUMERAL_ONES,
     RULE_NUMERAL_INTEGERS,
 )
@@ -145,7 +142,7 @@ AT_THE_MOMENT = Value(
 # ----------------------------------------------------
 numeral_thousands = ExpressionGroup(
     RULE_NUMERAL_THOUSANDS,
-    FunctionValue(lambda match: int(match.group(0)), named_group("integers", r"\d{4}")),
+    FunctionValue(lambda match: int(match.group()), r"\d{4}"),
 )
 ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
 NUMERAL_YEAR = FunctionValue(
