@@ -27,10 +27,6 @@ def assert_expression_date_output(output, expected):
     assert DATE + output.value == expected
 
 
-def set_start_of_week(day):
-    pytest.MonkeyPatch().setattr(constants, "START_OF_WEEK", day.weekday)
-
-
 @pytest.mark.parametrize(
     "input",
     [
@@ -785,8 +781,8 @@ def test_last_specific_day_of_specific_month(expected, input):
         (TU, NOW.replace(month=8, day=30), "الأسبوع الماضي يوم الاثنين"),
     ],
 )
-def test_different_start_of_week(sow, expected, input):
-    set_start_of_week(sow)
+def test_different_start_of_week(sow, expected, input, monkeypatch):
+    monkeypatch.setattr(constants, "START_OF_WEEK", sow.weekday)
     output = parse_dimension(input, time=True)
     assert_expression_output(output, expected)
 
