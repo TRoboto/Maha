@@ -1,6 +1,7 @@
 """
 Functions that operate on a string and check for values contained in it
 """
+from __future__ import annotations
 
 __all__ = [
     "contains",
@@ -9,7 +10,6 @@ __all__ = [
     "contains_repeated_substring",
     "contains_single_letter_word",
 ]
-from typing import Dict, List, Union
 
 import regex as re
 
@@ -81,10 +81,10 @@ def contains(
     links: bool = False,
     mentions: bool = False,
     emojis: bool = False,
-    custom_strings: Union[List[str], str] = None,
-    custom_expressions: Union[ExpressionGroup, Expression] = None,
-    operator: str = None,
-) -> Union[Dict[str, bool], bool]:
+    custom_strings: list[str] | str | None = None,
+    custom_expressions: ExpressionGroup | Expression | None = None,
+    operator: str | None = None,
+) -> dict[str, bool] | bool:
 
     """Check for certain characters, strings or patterns in the given text.
 
@@ -338,7 +338,7 @@ def contains_single_letter_word(
 
 
 def contains_expressions(
-    text: str, expressions: Union[ExpressionGroup, Expression, str]
+    text: str, expressions: ExpressionGroup | Expression | str
 ) -> bool:
     r"""Check for matched strings in the given ``text`` using the input ``expressions``
 
@@ -386,7 +386,7 @@ def contains_expressions(
     raise ValueError("'expressions' must be of type Expression, ExpressionGroup or str")
 
 
-def contain_strings(text: str, strings: Union[List[str], str]) -> bool:
+def contain_strings(text: str, strings: list[str] | str) -> bool:
     """Check for the input ``strings`` in the given ``text``
 
     Parameters

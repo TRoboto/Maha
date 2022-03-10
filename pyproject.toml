@@ -51,6 +51,7 @@ sphinx-autoapi = "^1.8.4"
 GitPython = "^3.1.24"
 PyGithub = "^1.55"
 linuxdoc = "^20210324"
+datasets = "^1.18.2"
 
 [tool.poetry.urls]
 "Bug Tracker" = "https://github.com/TRoboto/Maha/issues"

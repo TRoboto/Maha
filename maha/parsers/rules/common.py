@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = [
     "get_fractions_of_unit_pattern",
     "get_fractions_of_pattern",
@@ -16,8 +18,8 @@ __all__ = [
     "EXPRESSION_END",
 ]
 
+
 from dataclasses import dataclass
-from typing import Union
 
 from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
@@ -164,7 +166,7 @@ def spaced_patterns(*patterns) -> str:
 
 
 def combine_patterns(
-    *patterns: Union[str, Expression], seperator: Expression = None, combine_all=False
+    *patterns: str | Expression, seperator: Expression | None = None, combine_all=False
 ) -> str:
     """
     Intelligently combine following input patterns.

@@ -1,8 +1,10 @@
+from __future__ import annotations
+
 __all__ = ["TimeValue", "TimeInterval"]
+
 
 from dataclasses import dataclass
 from datetime import datetime
-from typing import Optional
 
 from dateutil.relativedelta import relativedelta
 from hijri_converter import Gregorian, Hijri
@@ -309,5 +311,5 @@ class TimeValue(relativedelta):
 
 @dataclass
 class TimeInterval:
-    start: Optional[TimeValue] = None
-    end: Optional[TimeValue] = None
+    start: TimeValue | None = None
+    end: TimeValue | None = None

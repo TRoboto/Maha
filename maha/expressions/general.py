@@ -139,7 +139,7 @@ Taken from: https://jkorpela.fi/chars/spaces.html
 """
 
 EXPRESSION_INTEGER = Expression(
-    r"[+-]?(?:[{0}](?:{1})?)+%?".format(
+    r"[+-]?(?:[{}](?:{})?)+%?".format(
         "".join(ARABIC_NUMBERS + ENGLISH_NUMBERS),
         "|".join([ARABIC_THOUSANDS_SEPARATOR, ARABIC_COMMA, COMMA, r"\s+\d"]),
     )

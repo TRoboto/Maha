@@ -1,4 +1,4 @@
-from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
+from maha.expressions import EXPRESSION_SPACE_OR_NONE
 from maha.parsers.templates import Value
 from maha.rexy import Expression, non_capturing_group
 

@@ -2,6 +2,7 @@
 Special functions that convert similar characters into one common character
 (Characters that roughly have the same shape)
 """
+from __future__ import annotations
 
 __all__ = ["normalize", "normalize_lam_alef", "normalize_small_alef"]
 
@@ -32,13 +33,13 @@ from maha.expressions import EXPRESSION_ALL_SPACES
 
 def normalize(
     text: str,
-    lam_alef: bool = None,
-    alef: bool = None,
-    waw: bool = None,
-    yeh: bool = None,
-    teh_marbuta: bool = None,
-    ligatures: bool = None,
-    spaces: bool = None,
+    lam_alef: bool | None = None,
+    alef: bool | None = None,
+    waw: bool | None = None,
+    yeh: bool | None = None,
+    teh_marbuta: bool | None = None,
+    ligatures: bool | None = None,
+    spaces: bool | None = None,
     all: bool = False,
 ) -> str:
     """Normalizes characters in the given text
@@ -214,7 +215,7 @@ def normalize_small_alef(
         )
     if not normalize_end:
         output = functions.replace_expression(
-            output, r"{}(?!\s|$)".format(ALEF_SUPERSCRIPT), ALEF
+            output, rf"{ALEF_SUPERSCRIPT}(?!\s|$)", ALEF
         )
     else:
         output = functions.replace(output, ALEF_SUPERSCRIPT, ALEF)

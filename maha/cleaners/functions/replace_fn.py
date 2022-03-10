@@ -1,6 +1,8 @@
 """
 Functions that operate on a string and replace specific characters with others.
 """
+from __future__ import annotations
+
 __all__ = [
     "replace",
     "replace_except",
@@ -10,7 +12,8 @@ __all__ = [
     "connect_single_letter_word",
 ]
 
-from typing import Callable, List, Union
+
+from typing import Callable
 
 # To enjoy infinite width lookbehind
 import regex as re
@@ -33,14 +36,14 @@ from maha.rexy import Expression, ExpressionGroup
 
 def connect_single_letter_word(
     text: str,
-    waw: bool = None,
-    feh: bool = None,
-    beh: bool = None,
-    lam: bool = None,
-    kaf: bool = None,
-    teh: bool = None,
-    all: bool = None,
-    custom_strings: Union[List[str], str] = None,
+    waw: bool | None = None,
+    feh: bool | None = None,
+    beh: bool | None = None,
+    lam: bool | None = None,
+    kaf: bool | None = None,
+    teh: bool | None = None,
+    all: bool | None = None,
+    custom_strings: list[str] | str | None = None,
 ):
     """Connects single-letter word with the letter following it.
 
@@ -85,7 +88,7 @@ def connect_single_letter_word(
         letters.extend(re.escape(s) for s in custom_strings)
 
     chars = "|".join(letters)
-    return replace_expression(text, r"(\b)({})(?:\s)(?=.)".format(chars), r"\1\2")
+    return replace_expression(text, rf"(\b)({chars})(?:\s)(?=.)", r"\1\2")
 
 
 def arabic_numbers_to_english(text: str):
@@ -124,8 +127,8 @@ def arabic_numbers_to_english(text: str):
 
 def replace_expression(
     text: str,
-    expression: Union[Expression, ExpressionGroup, str],
-    with_value: Union[Callable[..., str], str],
+    expression: Expression | ExpressionGroup | str,
+    with_value: Callable[..., str] | str,
 ) -> str:
     """Matches characters from the input text using the given ``expression``
     and replaces all matched characters with the given value.
@@ -169,7 +172,7 @@ def replace_expression(
     return expression.sub(with_value, text)
 
 
-def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
+def replace(text: str, strings: list[str] | str, with_value: str) -> str:
     """Replaces the input ``strings`` in the given text with the given value
 
     Parameters
@@ -211,7 +214,7 @@ def replace(text: str, strings: Union[List[str], str], with_value: str) -> str:
     return replace_expression(text, f"({strings})", with_value)
 
 
-def replace_except(text: str, strings: Union[List[str], str], with_value: str) -> str:
+def replace_except(text: str, strings: list[str] | str, with_value: str) -> str:
     """Replaces everything except the input ``strings`` in the given text
     with the given value
 
@@ -255,7 +258,7 @@ def replace_except(text: str, strings: Union[List[str], str], with_value: str) -
     )
 
 
-def replace_pairs(text: str, keys: List[str], values: List[str]) -> str:
+def replace_pairs(text: str, keys: list[str], values: list[str]) -> str:
     """Replaces each key with its corresponding value in the given text
 
     Parameters
