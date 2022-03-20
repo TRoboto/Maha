@@ -2,6 +2,7 @@ from datetime import datetime
 
 import pytest
 from dateutil.relativedelta import MO, SA, TU
+from hijri_converter import Gregorian, Hijri
 
 from maha.parsers.functions import parse_dimension
 from maha.parsers.rules.time import constants
@@ -9,6 +10,7 @@ from maha.parsers.rules.time.template import TimeInterval, TimeValue
 
 DATE = datetime(2021, 9, 1)
 NOW = DATE.replace(hour=10, minute=38, second=4)
+HIJRI_DATE = Gregorian.fromdate(DATE).to_hijri()
 
 
 def assert_expression_output(output, expected):
@@ -19,16 +21,21 @@ def assert_expression_output(output, expected):
     assert NOW + output.value == expected
 
 
+def assert_hijri_expression_output(output, expected: Hijri):
+    assert len(output) == 1
+    output = output[0]
+
+    assert isinstance(output.value, TimeValue)
+    result = DATE + output.value
+    assert Gregorian(result.year, result.month, result.day).to_hijri() == expected
+
+
 def assert_expression_date_output(output, expected):
     assert len(output) == 1
     output = output[0]
 
     assert isinstance(output.value, TimeValue)
     assert DATE + output.value == expected
-
-
-def set_start_of_week(day):
-    pytest.MonkeyPatch().setattr(constants, "START_OF_WEEK", day.weekday)
 
 
 @pytest.mark.parametrize(
@@ -772,6 +779,73 @@ def test_last_specific_day_of_specific_month(expected, input):
 
 
 @pytest.mark.parametrize(
+    "expected,input",
+    [
+        (Hijri(1443, 5, 2), "أول اثنين من شهر جمادى الأول من عام 1443"),
+        (Hijri(1443, 6, 29), "أخر يوم من شهر جمادى الآخرة من العام الحالي"),
+        (Hijri(1443, 4, HIJRI_DATE.day), "بعد ثلاث اشهر من شهر محرم"),
+        (Hijri(1443, 1, HIJRI_DATE.day), "شهر محرم"),
+        (Hijri(1444, 1, HIJRI_DATE.day), "شهر محرم القادم"),
+        (Hijri(1442, 1, HIJRI_DATE.day), "شهر محرم قبل الماضي"),
+        (Hijri(1400, 5, 10), "10 شهر جمادى الأول من عام 1400 "),
+        (Hijri(1400, HIJRI_DATE.month, HIJRI_DATE.day), "عام 1400 هجري"),
+        (Hijri(HIJRI_DATE.year, 8, 10), "بعد تسعة وثلاثين يوم من اول رجب"),
+        (Hijri(1443, 9, 1), "بداية رمضان القادم"),
+        (Hijri(HIJRI_DATE.year - 1, 9, 1), "بداية رمضان الماضي"),
+        (
+            Hijri(HIJRI_DATE.year + 3, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد ثلاث سنوات هجرية",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 1, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد سنة هجرية",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 1, HIJRI_DATE.month, HIJRI_DATE.day),
+            "العام الهجري القادم",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 1, HIJRI_DATE.month, HIJRI_DATE.day),
+            "السنة الهجرية القادمة",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 2, HIJRI_DATE.month, HIJRI_DATE.day),
+            "السنة الهجرية بعد القادمة",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 2, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد عامين هجريين",
+        ),
+        (
+            Hijri(HIJRI_DATE.year + 2, HIJRI_DATE.month, HIJRI_DATE.day),
+            "بعد سنتان هجريتان",
+        ),
+        (
+            Hijri(HIJRI_DATE.year - 1, HIJRI_DATE.month, HIJRI_DATE.day),
+            "السنة الهجرية السابقة",
+        ),
+        (
+            Hijri(HIJRI_DATE.year - 2, HIJRI_DATE.month, HIJRI_DATE.day),
+            "السنة الهجرية قبل الماضية",
+        ),
+        (
+            Hijri(HIJRI_DATE.year, 4, HIJRI_DATE.day + 3),
+            "بعد ثلاث ايام في شهر ربيع الثاني",
+        ),
+    ],
+)
+def test_hijri_date(expected, input):
+    output = parse_dimension(input, time=True)
+    assert_hijri_expression_output(output, expected)
+
+
+def test_class_retains_values():
+    out = parse_dimension("26 من شهر محرم من عام 1443", time=True)
+    assert_hijri_expression_output(out, Hijri(1443, 1, 26))
+    assert out == parse_dimension("26 من شهر محرم من عام 1443", time=True)
+
+
+@pytest.mark.parametrize(
     "sow,expected,input",
     [
         (MO, NOW.replace(day=12), "الأسبوع القادم يوم الأحد"),
@@ -785,8 +859,8 @@ def test_last_specific_day_of_specific_month(expected, input):
         (TU, NOW.replace(month=8, day=30), "الأسبوع الماضي يوم الاثنين"),
     ],
 )
-def test_different_start_of_week(sow, expected, input):
-    set_start_of_week(sow)
+def test_different_start_of_week(sow, expected, input, monkeypatch):
+    monkeypatch.setattr(constants, "START_OF_WEEK", sow.weekday)
     output = parse_dimension(input, time=True)
     assert_expression_output(output, expected)
 

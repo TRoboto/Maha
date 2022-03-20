@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = [
     "StreamTextProcessor",
     "StreamFileProcessor",
@@ -5,8 +7,8 @@ __all__ = [
 
 
 import pathlib
-from functools import partial, reduce
-from typing import Callable, Iterable, List, Union
+from functools import partial
+from typing import Callable, Iterable
 
 from tqdm import tqdm
 
@@ -25,7 +27,7 @@ class StreamTextProcessor(BaseProcessor):
     def __init__(self, lines: Iterable[str]) -> None:
 
         self.lines = lines
-        self.functions: List[Callable] = []
+        self.functions: list[Callable] = []
 
     def apply(self, fn: Callable[[str], str]):
         self.functions.append(partial(map, fn))
@@ -69,7 +71,7 @@ class StreamTextProcessor(BaseProcessor):
         for lines in self.get_lines(n_lines):
             yield self.apply_functions(lines)
 
-    def apply_functions(self, text: List[str]):
+    def apply_functions(self, text: list[str]):
         """Applies all functions in sequence to a given list of strings
 
         Parameters
@@ -99,7 +101,7 @@ class StreamFileProcessor(StreamTextProcessor):
         If the file doesn't exist.
     """
 
-    def __init__(self, path: Union[str, pathlib.Path], encoding: str = "utf8") -> None:
+    def __init__(self, path: str | pathlib.Path, encoding: str = "utf8") -> None:
 
         if isinstance(path, str):
             path = pathlib.Path(path)
@@ -136,7 +138,7 @@ class StreamFileProcessor(StreamTextProcessor):
             yield selected_lines
 
     def process_and_save(
-        self, path: Union[str, pathlib.Path], n_lines: int = 100, override: bool = False
+        self, path: str | pathlib.Path, n_lines: int = 100, override: bool = False
     ):
         """Process the input file and save the result in the given path
 

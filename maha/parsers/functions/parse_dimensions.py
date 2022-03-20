@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 __all__ = ["parse_dimension"]
 
-from typing import List
 
 from maha.parsers.rules import (
     RULE_DURATION,
@@ -15,17 +16,17 @@ from maha.rexy import Expression
 
 def parse_dimension(
     text: str,
-    amount_of_money: bool = None,
-    duration: bool = None,
-    distance: bool = None,
-    numeral: bool = None,
-    ordinal: bool = None,
-    quantity: bool = None,
-    temperature: bool = None,
-    time: bool = None,
-    volume: bool = None,
-    names: bool = None,
-) -> List[Dimension]:
+    amount_of_money: bool | None = None,
+    duration: bool | None = None,
+    distance: bool | None = None,
+    numeral: bool | None = None,
+    ordinal: bool | None = None,
+    quantity: bool | None = None,
+    temperature: bool | None = None,
+    time: bool | None = None,
+    volume: bool | None = None,
+    names: bool | None = None,
+) -> list[Dimension]:
     """Extract dimensions from a given text.
 
     Parameters
@@ -114,7 +115,7 @@ def parse_dimension(
 
 def _get_dimensions(
     rule: Expression, text: str, dimension_type: DimensionType
-) -> List[Dimension]:
+) -> list[Dimension]:
     output = []
     for result in rule(text):
         output.append(

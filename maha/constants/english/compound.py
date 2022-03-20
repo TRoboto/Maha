@@ -1,10 +1,10 @@
 """List of English constant definitions."""
 
-from typing import List
+from __future__ import annotations
 
 from .simple import *
 
-ENGLISH_SMALL_LETTERS: List[str] = [
+ENGLISH_SMALL_LETTERS: list[str] = [
     SMALL_A,
     SMALL_B,
     SMALL_C,
@@ -34,7 +34,7 @@ ENGLISH_SMALL_LETTERS: List[str] = [
 ]
 """ List of all small English letters"""
 
-ENGLISH_CAPITAL_LETTERS: List[str] = [
+ENGLISH_CAPITAL_LETTERS: list[str] = [
     A,
     B,
     C,
@@ -64,10 +64,10 @@ ENGLISH_CAPITAL_LETTERS: List[str] = [
 ]
 """ List of all capital English letters"""
 
-ENGLISH_LETTERS: List[str] = ENGLISH_CAPITAL_LETTERS + ENGLISH_SMALL_LETTERS
+ENGLISH_LETTERS: list[str] = ENGLISH_CAPITAL_LETTERS + ENGLISH_SMALL_LETTERS
 """ List of all English letters"""
 
-ENGLISH_NUMBERS: List[str] = [
+ENGLISH_NUMBERS: list[str] = [
     ZERO,
     ONE,
     TWO,
@@ -81,7 +81,7 @@ ENGLISH_NUMBERS: List[str] = [
 ]
 """ List of western Arabic numerals, a.k.a Arabic numerals"""
 
-ENGLISH_PUNCTUATIONS: List[str] = [
+ENGLISH_PUNCTUATIONS: list[str] = [
     EXCLAMATION_MARK,
     QUOTATION_MARK,
     NUMBER_SIGN,
@@ -117,5 +117,5 @@ ENGLISH_PUNCTUATIONS: List[str] = [
 ]
 """ List of English punctuations"""
 
-ENGLISH: List[str] = ENGLISH_LETTERS + ENGLISH_NUMBERS + ENGLISH_PUNCTUATIONS
+ENGLISH: list[str] = ENGLISH_LETTERS + ENGLISH_NUMBERS + ENGLISH_PUNCTUATIONS
 """ Common ENGLISH characters """

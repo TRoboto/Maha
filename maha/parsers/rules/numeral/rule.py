@@ -8,11 +8,9 @@ __all__ = [
     "RULE_NUMERAL_TRILLIONS",
     "RULE_NUMERAL_INTEGERS",
     "RULE_NUMERAL",
-    "parse_numeral",
 ]
 
-
-from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER
+from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
 from maha.parsers.templates import FunctionValue
 from maha.parsers.utils import convert_to_number_if_possible
 from maha.rexy import (
@@ -23,160 +21,113 @@ from maha.rexy import (
 )
 
 from ..common import (
-    FRACTIONS,
+    HALF,
+    QUARTER,
+    THIRD,
+    THREE_QUARTERS,
+    TWO_THIRDS,
     WAW_CONNECTOR,
     combine_patterns,
-    get_fractions_of_unit_pattern,
     spaced_patterns,
 )
 from .values import *
 
-
-def get_combined_value(groups, multiplier="") -> float:
-
-    singular = globals().get("ONE_" + multiplier[:-1].upper())
-    dual = globals().get("TWO_" + multiplier.upper())
-    plural = globals().get("SEVERAL_" + multiplier.upper())
-    value = 0
-    for group in groups:
-        mul = get_matched_value(group, singular, dual)
-        if mul:
-            value += mul
-        else:
-            value += parse_combined(group, singular, plural)
-    return value
+NUMERAL_VALUES_GROUP_NAME = "numeral_values"
+MULTIPLIERS_GROUP_NAME = "multipliers"
+DECIMAL_PART_GROUP_NAME = "decimal_part"
 
 
-def get_matched_value(matched_text, dual, singular):
-    if not (dual or singular):
-        return
-    if dual.fullmatch(matched_text):
-        return dual.value
-    if singular.fullmatch(matched_text):
-        return singular.value
+def numeral_group(pattern):
+    return named_group(NUMERAL_VALUES_GROUP_NAME, pattern)
 
 
-def parse_ones(text):
-    exp = ones.get_matched_expression(text)
-    if exp:
-        return exp.value  # type: ignore
+def _construct_numeral(sorted_values) -> float:
+    output = [0] * len(sorted_values)
+    last_numeral_index = 0
+    multiply = False
+    for i, (_, dict_value) in enumerate(sorted_values.items()):
+        group = dict_value["group"]
+        exp = EXPRESSION_NUMERAL_MAP[group].get_matched_expression(dict_value["value"])
+        assert exp is not None
+        value = next(iter(exp(dict_value["value"]))).value
+        if group == NUMERAL_VALUES_GROUP_NAME:
+            if multiply:
+                output[i] *= value
+                multiply = False
+            else:
+                output[i] += value
+            last_numeral_index = i
+        elif group == "before_fractions":
+            output[i + 1] = value
+            multiply = True
+        elif group == MULTIPLIERS_GROUP_NAME:
+            output[last_numeral_index] *= value
+        elif group == "after_fraction":
+            output[last_numeral_index] *= value
+
+    total = sum(output)
+    # to int if possible
+    if total == int(total):
+        total = int(total)
+    return total
 
 
-def parse_tens(matched_text):
-    waw = WAW_CONNECTOR.search(matched_text)
-    if waw:
-        _ones, _tens = matched_text.split(waw.group(0))
-        value = (
-            ones.get_matched_expression(_ones).value  # type: ignore
-            + perfect_tens.get_matched_expression(_tens).value  # type: ignore
+def _parse_numeral(sorted_values):
+    decimal_part_index = 0
+    for k, v in sorted_values.items():
+        if DECIMAL_PART_GROUP_NAME == v["group"]:
+            decimal_part_index = k
+    if decimal_part_index:
+        integer = _construct_numeral(
+            {k: v for k, v in sorted_values.items() if k < decimal_part_index}
         )
-        return value
-    exp = perfect_tens.get_matched_expression(matched_text)
-    if not exp:
-        exp = eleven_to_nineteen.get_matched_expression(matched_text)
-    if not exp and TEN.match(matched_text):
-        return TEN.value
+        decimal = _construct_numeral(
+            {k: v for k, v in sorted_values.items() if k > decimal_part_index}
+        )
+        return integer + decimal / 10 ** len(str(decimal))
 
-    if exp:
-        return exp.value  # type: ignore
-
-
-def parse_combined(matched_text, singular=None, plural=None):
-    value = 1
-    if singular and plural:
-        multiplier = plural.search(matched_text) or singular.search(matched_text)
-        matched_text = matched_text.replace(multiplier.group(0), "").strip()
-        value = singular.value
-
-    number = EXPRESSION_DECIMAL.fullmatch(matched_text) or EXPRESSION_INTEGER.fullmatch(
-        matched_text
-    )
-    if number is not None:
-        number = convert_to_number_if_possible(number.group())
-    tens = parse_tens(matched_text)
-    ones = parse_ones(matched_text)
-    fraction = FRACTIONS.get_matched_expression(matched_text)
-    if number is not None:
-        value *= number
-    elif tens is not None:
-        value *= tens
-    elif ones is not None:
-        value *= ones
-    elif fraction is not None:
-        value *= fraction.value  # type: ignore
-    return value
-
-
-def get_groups():
-    return [
-        "trillions",
-        "billions",
-        "millions",
-        "thousands",
-        "hundreds",
-        "tens",
-        "ones",
-        "integers",
-        "decimals",
-    ]
-
-
-def _parse_numeral_part(groups):
-    value = 0
-    for group in get_groups():
-        values = groups.get(group)
-        if not values:
-            continue
-        value += get_combined_value(values, group)
-    return value
+    return _construct_numeral(sorted_values)
 
 
 def parse_numeral(match):
     groups = match.capturesdict()
     groups_keys = list(groups)
 
-    if groups.get("decimal_part"):
-        decimal_start_index = match.starts(groups_keys.index("decimal_part") + 1)[0]
-        integer = 0
-        decimal = 0
-        for group in get_groups():
-            g_start = match.starts(groups_keys.index(group) + 1)
-            if group not in groups_keys or not g_start:
-                continue
-            for m_start, m_group in zip(g_start, groups[group]):
-                if m_start < decimal_start_index:
-                    integer += get_combined_value([m_group], group)
-                else:
-                    decimal += get_combined_value([m_group], group)
-        return integer + decimal / 10 ** len(str(decimal))
+    if not groups_keys:
+        return
 
-    return _parse_numeral_part(groups)
+    sorted_values = {}
+    for group in EXPRESSION_NUMERAL_MAP:
+        if group not in groups_keys:
+            continue
+        for i, value in enumerate(groups.get(group)):
+            index = match.starts(groups_keys.index(group) + 1)[i]
+            sorted_values[index] = {"group": group, "value": value}
+    # sort by index
+    sorted_values = dict(sorted(sorted_values.items()))
 
-
-def get_patterns(one, two, several):
-    return non_capturing_group(
-        spaced_patterns(EXPRESSION_DECIMAL, non_capturing_group(one, several)),
-        spaced_patterns(EXPRESSION_INTEGER, non_capturing_group(one, several)),
-        spaced_patterns(tens, non_capturing_group(one, several)),
-        spaced_patterns(ones.join(), non_capturing_group(one, several)),
-        get_fractions_of_unit_pattern(str(one)),
-        two,
-        one,
-    )
+    return _parse_numeral(sorted_values)
 
 
 ones = ExpressionGroup(ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE)
 perfect_tens = ExpressionGroup(
     TWENTY, THIRTY, FORTY, FIFTY, SIXTY, SEVENTY, EIGHTY, NINETY
 )
-combined_tens = ones.join() + WAW_CONNECTOR + perfect_tens.join()
 eleven_to_nineteen = ExpressionGroup(
     ELEVEN, TWELVE, THIRTEEN, FOURTEEN, FIFTEEN, SIXTEEN, SEVENTEEN, EIGHTEEN, NINETEEN
 )
-tens = non_capturing_group(
-    perfect_tens.join(),
-    combined_tens,
-    eleven_to_nineteen.join(),
+
+COMBINED_TENS = FunctionValue(
+    lambda match: ones.get_matched_expression(match.group("ones")).value  # type: ignore
+    + perfect_tens.get_matched_expression(match.group("tens")).value,  # type: ignore
+    named_group("ones", ones.join())
+    + WAW_CONNECTOR
+    + named_group("tens", perfect_tens.join()),
+)
+TENS = ExpressionGroup(
+    perfect_tens,
+    COMBINED_TENS,
+    eleven_to_nineteen,
     TEN,
 )
 perfect_hundreds = ExpressionGroup(
@@ -190,91 +141,217 @@ perfect_hundreds = ExpressionGroup(
     EIGHT_HUNDREDS,
     NINE_HUNDREDS,
 )
-ones_group = named_group("ones", ones.join())
-tens_group = named_group("tens", tens)
-hundreds_group = named_group(
-    "hundreds",
-    non_capturing_group(
-        perfect_hundreds[2:].join(),
-        get_patterns(ONE_HUNDRED, TWO_HUNDREDS, SEVERAL_HUNDREDS),
-    ),
+RULE_NUMERAL_INTEGERS = FunctionValue(
+    lambda match: convert_to_number_if_possible(str(match.group())),
+    str(EXPRESSION_INTEGER),
 )
-thousands_group = named_group(
-    "thousands", get_patterns(ONE_THOUSAND, TWO_THOUSANDS, SEVERAL_THOUSANDS)
+RULE_NUMERAL_DECIMALS = FunctionValue(
+    lambda match: convert_to_number_if_possible(str(match.group())),
+    str(EXPRESSION_DECIMAL),
 )
-millions_group = named_group(
-    "millions", get_patterns(ONE_MILLION, TWO_MILLIONS, SEVERAL_MILLIONS)
+MULTIPLIERS = ExpressionGroup(
+    ONE_HUNDRED,
+    ONE_THOUSAND,
+    ONE_MILLION,
+    ONE_BILLION,
+    ONE_TRILLION,
+    SEVERAL_HUNDREDS,
+    SEVERAL_THOUSANDS,
+    SEVERAL_MILLIONS,
+    SEVERAL_BILLIONS,
+    SEVERAL_TRILLIONS,
 )
-billions_group = named_group(
-    "billions", get_patterns(ONE_BILLION, TWO_BILLIONS, SEVERAL_BILLIONS)
+NUMERAL_COMMON_VALUES = ExpressionGroup(
+    COMBINED_TENS,
+    perfect_tens,
+    eleven_to_nineteen,
+    TEN,
+    ones,
+    RULE_NUMERAL_DECIMALS,
+    RULE_NUMERAL_INTEGERS,
 )
-trillions_group = named_group(
-    "trillions", get_patterns(ONE_TRILLION, TWO_TRILLIONS, SEVERAL_TRILLIONS)
+NUMERAL_VALUES = ExpressionGroup(
+    TWO_HUNDREDS,
+    TWO_THOUSANDS,
+    TWO_MILLIONS,
+    TWO_BILLIONS,
+    TWO_TRILLIONS,
+    perfect_hundreds,
+    # ONE_HUNDRED, Already defined in perfect_hundreds
+    ONE_THOUSAND,
+    ONE_MILLION,
+    ONE_BILLION,
+    ONE_TRILLION,
+    COMBINED_TENS,
+    perfect_tens,
+    eleven_to_nineteen,
+    TEN,
+    ones,
+    RULE_NUMERAL_DECIMALS,
+    RULE_NUMERAL_INTEGERS,
 )
+BEFORE_FRACTIONS = ExpressionGroup(HALF, THIRD, QUARTER)
+AFTER_FRACTION = ExpressionGroup(THREE_QUARTERS, TWO_THIRDS)
 
-integer_group = named_group("integers", str(EXPRESSION_INTEGER))
-decimal_group = named_group("decimals", str(EXPRESSION_DECIMAL))
+before_fractions_group = named_group("before_fractions", BEFORE_FRACTIONS.join())
+after_fraction_group = named_group("after_fraction", AFTER_FRACTION.join())
 
-RULE_NUMERAL_ONES = FunctionValue(parse_numeral, ones_group)
-RULE_NUMERAL_TENS = FunctionValue(parse_numeral, tens_group)
+
+def get_pattern(
+    numeral_exp_group: ExpressionGroup, multipliers_exp_group: ExpressionGroup
+) -> str:
+    pattern = non_capturing_group(
+        optional_non_capturing_group(before_fractions_group + EXPRESSION_SPACE)
+        + named_group(NUMERAL_VALUES_GROUP_NAME, numeral_exp_group.join())
+        + non_capturing_group(
+            WAW_CONNECTOR
+            + named_group(NUMERAL_VALUES_GROUP_NAME, numeral_exp_group.join())
+        )
+        + "*"
+        + optional_non_capturing_group(EXPRESSION_SPACE + after_fraction_group)
+        + non_capturing_group(
+            EXPRESSION_SPACE
+            + named_group(MULTIPLIERS_GROUP_NAME, multipliers_exp_group.join())
+        )
+        + "*"
+    )
+    return pattern
+
+
+RULE_NUMERAL_ONES = FunctionValue(
+    parse_numeral, named_group(NUMERAL_VALUES_GROUP_NAME, ones.join())
+)
+RULE_NUMERAL_TENS = FunctionValue(
+    parse_numeral, named_group(NUMERAL_VALUES_GROUP_NAME, TENS.join())
+)
 RULE_NUMERAL_HUNDREDS = FunctionValue(
-    parse_numeral, combine_patterns(hundreds_group, tens_group, ones_group)
+    parse_numeral,
+    combine_patterns(
+        get_pattern(
+            ExpressionGroup(TWO_HUNDREDS, perfect_hundreds),
+            ExpressionGroup(SEVERAL_HUNDREDS, ONE_HUNDRED),
+        ),
+        RULE_NUMERAL_TENS,
+        RULE_NUMERAL_ONES,
+    ),
 )
 RULE_NUMERAL_THOUSANDS = FunctionValue(
     parse_numeral,
-    combine_patterns(thousands_group, hundreds_group, tens_group, ones_group),
+    combine_patterns(
+        get_pattern(
+            ExpressionGroup(TWO_THOUSANDS, ONE_THOUSAND),
+            ExpressionGroup(SEVERAL_THOUSANDS, ONE_THOUSAND),
+        ),
+        get_pattern(
+            ExpressionGroup(TWO_HUNDREDS, perfect_hundreds),
+            ExpressionGroup(SEVERAL_HUNDREDS, ONE_HUNDRED),
+        ),
+        RULE_NUMERAL_TENS,
+        RULE_NUMERAL_ONES,
+    ),
 )
 RULE_NUMERAL_MILLIONS = FunctionValue(
     parse_numeral,
     combine_patterns(
-        millions_group, thousands_group, hundreds_group, tens_group, ones_group
+        get_pattern(
+            ExpressionGroup(TWO_MILLIONS, ONE_MILLION),
+            ExpressionGroup(SEVERAL_MILLIONS, ONE_MILLION),
+        ),
+        get_pattern(
+            ExpressionGroup(
+                TWO_HUNDREDS, perfect_hundreds, TWO_THOUSANDS, ONE_THOUSAND
+            ),
+            ExpressionGroup(
+                SEVERAL_HUNDREDS, ONE_HUNDRED, SEVERAL_THOUSANDS, ONE_THOUSAND
+            ),
+        ),
+        RULE_NUMERAL_TENS,
+        RULE_NUMERAL_ONES,
     ),
 )
 RULE_NUMERAL_BILLIONS = FunctionValue(
     parse_numeral,
     combine_patterns(
-        billions_group,
-        millions_group,
-        thousands_group,
-        hundreds_group,
-        tens_group,
-        ones_group,
+        get_pattern(
+            ExpressionGroup(TWO_BILLIONS, ONE_BILLION),
+            ExpressionGroup(SEVERAL_BILLIONS, ONE_BILLION),
+        ),
+        get_pattern(
+            ExpressionGroup(
+                TWO_HUNDREDS,
+                perfect_hundreds,
+                TWO_THOUSANDS,
+                ONE_THOUSAND,
+                TWO_MILLIONS,
+                ONE_MILLION,
+            ),
+            ExpressionGroup(
+                SEVERAL_HUNDREDS,
+                ONE_HUNDRED,
+                SEVERAL_THOUSANDS,
+                ONE_THOUSAND,
+                SEVERAL_MILLIONS,
+                ONE_MILLION,
+            ),
+        ),
+        RULE_NUMERAL_TENS,
+        RULE_NUMERAL_ONES,
     ),
 )
 RULE_NUMERAL_TRILLIONS = FunctionValue(
     parse_numeral,
     combine_patterns(
-        trillions_group,
-        billions_group,
-        millions_group,
-        thousands_group,
-        hundreds_group,
-        tens_group,
-        ones_group,
+        get_pattern(
+            ExpressionGroup(TWO_TRILLIONS, ONE_TRILLION),
+            ExpressionGroup(SEVERAL_TRILLIONS, ONE_TRILLION),
+        ),
+        get_pattern(
+            ExpressionGroup(
+                TWO_HUNDREDS,
+                perfect_hundreds,
+                TWO_THOUSANDS,
+                ONE_THOUSAND,
+                TWO_MILLIONS,
+                ONE_MILLION,
+                TWO_BILLIONS,
+                ONE_BILLION,
+            ),
+            ExpressionGroup(
+                SEVERAL_HUNDREDS,
+                ONE_HUNDRED,
+                SEVERAL_THOUSANDS,
+                ONE_THOUSAND,
+                SEVERAL_MILLIONS,
+                ONE_MILLION,
+                SEVERAL_BILLIONS,
+                ONE_BILLION,
+            ),
+        ),
+        RULE_NUMERAL_TENS,
+        RULE_NUMERAL_ONES,
     ),
 )
-RULE_NUMERAL_INTEGERS = FunctionValue(parse_numeral, integer_group)
 
-_all_time_expressions_pattern = combine_patterns(
-    trillions_group,
-    billions_group,
-    millions_group,
-    thousands_group,
-    hundreds_group,
-    tens_group,
-    ones_group,
-    decimal_group,
-    integer_group,
-    combine_all=True,
+_numeral_numeral_pattern = get_pattern(NUMERAL_VALUES, MULTIPLIERS)
+_all_numeral_numeral_pattern = combine_patterns(
+    _numeral_numeral_pattern, seperator=WAW_CONNECTOR
 )
 RULE_NUMERAL = FunctionValue(
     parse_numeral,
-    named_group("integer_part", _all_time_expressions_pattern)
+    _all_numeral_numeral_pattern
     + optional_non_capturing_group(
         named_group(
-            "decimal_part",
+            DECIMAL_PART_GROUP_NAME,
             EXPRESSION_SPACE
-            + spaced_patterns(EXPRESSION_OF_FASILA, _all_time_expressions_pattern),
-        ),
+            + spaced_patterns(EXPRESSION_OF_FASILA, _all_numeral_numeral_pattern),
+        )
     ),
 )
+
+EXPRESSION_NUMERAL_MAP = {
+    "before_fractions": BEFORE_FRACTIONS,
+    "after_fraction": AFTER_FRACTION,
+    NUMERAL_VALUES_GROUP_NAME: NUMERAL_VALUES,
+    MULTIPLIERS_GROUP_NAME: MULTIPLIERS,
+    DECIMAL_PART_GROUP_NAME: ExpressionGroup(),
+}

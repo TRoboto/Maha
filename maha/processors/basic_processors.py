@@ -1,5 +1,7 @@
 """ All basic processors """
 
+from __future__ import annotations
+
 __all__ = [
     "TextProcessor",
     "FileProcessor",
@@ -7,7 +9,7 @@ __all__ = [
 
 
 import pathlib
-from typing import Any, Callable, List, Union
+from typing import Callable
 
 from .base_processor import BaseProcessor
 
@@ -21,11 +23,11 @@ class TextProcessor(BaseProcessor):
         A text or list of strings to process
     """
 
-    def __init__(self, text: Union[List[str], str]) -> None:
+    def __init__(self, text: list[str] | str) -> None:
         self.set_lines(text)
 
     def apply(self, fn: Callable[[str], str]):
-        self.lines: List[str] = list(map(fn, self.lines))
+        self.lines: list[str] = list(map(fn, self.lines))
 
     def filter(self, fn: Callable[[str], bool]):
         self.lines = list(filter(fn, self.lines))
@@ -34,7 +36,7 @@ class TextProcessor(BaseProcessor):
         for i in range(0, len(self.lines), n_lines):
             yield self.lines[i : i + n_lines]
 
-    def set_lines(self, text: Union[List[str], str]):
+    def set_lines(self, text: list[str] | str):
         """Overrides text
 
         Parameters
@@ -60,7 +62,7 @@ class TextProcessor(BaseProcessor):
         return "\n".join(self.lines)
 
     @classmethod
-    def from_text(cls, text: str, sep: str = None):
+    def from_text(cls, text: str, sep: str | None = None):
         """Creates a new processor from the given text. Separate the text by the input
         ``sep`` argument if provided.
 
@@ -82,7 +84,7 @@ class TextProcessor(BaseProcessor):
         return TextProcessor(text)
 
     @classmethod
-    def from_list(cls, lines: List[str]):
+    def from_list(cls, lines: list[str]):
         """Creates a new processor from the given list of strings.
 
         Parameters
@@ -122,7 +124,7 @@ class FileProcessor(TextProcessor):
         If the file is empty.
     """
 
-    def __init__(self, path: Union[str, pathlib.Path]) -> None:
+    def __init__(self, path: str | pathlib.Path) -> None:
 
         if isinstance(path, str):
             path = pathlib.Path(path)

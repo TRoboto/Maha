@@ -7,55 +7,6 @@ What is Maha?
 Maha is a Python library that provides simple, yet powerful, functions for dealing with Arabic text.
 It can be used to clean and parse text, files, and folders with or without streaming capability.
 
-Maha also provides a :mod:`~.datasets` module that offers a simple interface for using the
-available datasets.
-
-.. important::
-    Maha is currently in beta.
-
-Datasets
---------
-
-.. note::
-    All datasets are licensed under the `Creative Commons Attribution 4.0 International License <https://creativecommons.org/licenses/by/4.0/>`_.
-
-This module provides a number of datasets that can be used with any NLP task. The available
-datasets are listed below with their descriptions.
-
-.. list-table::
-   :header-rows: 1
-   :widths: 15 10 75
-
-   * - Dataset
-     - Records
-     - Description
-   * - names
-     - 44161
-     - List of Arabic names with meaning and origin of most names
-
-
-Datasets can be loaded using the :func:`~.datasets.load_dataset` function as follows:
-
-.. code:: pycon
-
-    >>> from maha.datasets import load_dataset
-    >>> names = load_dataset("names")
-    >>> len(names)
-    44161
-    >>> names[0]
-    Name(name='آبوت', description=['اسم علم مذكر إنكليزي: ABOT، معناه الخوري'], origin='انجليزي')
-    >>> names[0].cleaned_name
-    'آبوت'
-
-It is also possible to stream a dataset:
-
-.. code:: pycon
-
-    >>> from maha.datasets import load_dataset
-    >>> names = load_dataset("names", streaming=True)
-    >>> next(iter(names))
-    Name(name='آبوت', description=['اسم علم مذكر إنكليزي: ABOT، معناه الخوري'], origin='انجليزي')
-
 Cleaners
 --------
 
@@ -300,6 +251,31 @@ Examples
     datetime.datetime(2021, 9, 11, 11, 30)
     >>> output = parse_dimension("الشهر القادم", time=True)[0].value
     >>> output.is_months_set()
+    True
+
+* Hijri date parsing is supported as well:
+
+.. code:: pycon
+
+    >>> from maha.parsers.functions import parse_dimension
+    >>> from datetime import datetime
+    >>> now = datetime(2021, 9, 15)
+    >>> output = parse_dimension("أول اثنين من شهر جمادى الأول من عام 1443", time=True)[0]
+    >>> output
+    Dimension(body=أول اثنين من شهر جمادى الأول من عام 1443, value=TimeValue(year=1443, month=5, day=1, weekday=MO(+1), hijri=True), start=0, end=40, dimension_type=DimensionType.TIME)
+    >>> output.value + now
+    datetime.datetime(2021, 12, 6, 0, 0)
+    >>> parse_dimension("بداية رمضان القادم", time=True)[0].value + now
+    datetime.datetime(2022, 4, 2, 0, 0)
+    >>> parse_dimension("عام الف واربعمئة وعشرين هجري", time=True)[0].value
+    TimeValue(year=1420, hijri=True)
+    >>> parse_dimension("العيد يبدأ اول شوال", time=True)[0].value + now
+    datetime.datetime(2022, 5, 2, 0, 0)
+    >>> output.value.is_months_set()
+    True
+    >>> output.value.is_days_set()
+    True
+    >>> output.value.is_hijri_set()
     True
 
 * It is also possible to extract time intervals as follows:

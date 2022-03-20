@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = [
     "RULE_ORDINAL_ONES",
     "RULE_ORDINAL_TENS",
@@ -10,7 +12,6 @@ __all__ = [
     "parse_ordinal",
 ]
 
-from typing import List, Union
 
 from maha.parsers.templates import FunctionValue
 from maha.rexy import (
@@ -63,7 +64,7 @@ def parse_ordinal(match):
     _after_value = groups.get("after_value")
     value = 0
 
-    def get_value(groups, expressions: List[Union[ExpressionGroup, Expression]]) -> int:
+    def get_value(groups, expressions: list[ExpressionGroup | Expression]) -> int:
         exp_group = ExpressionGroup(*expressions)
         value = 0
         for group in groups:

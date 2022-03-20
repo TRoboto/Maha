@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 import random
 from itertools import chain
-from typing import List, Union
 
 import pytest
 
@@ -11,7 +12,7 @@ from maha.parsers.templates import Dimension, DimensionType
 random.seed(0)
 
 
-def assert_expression_output(output: List[Dimension], expected):
+def assert_expression_output(output: list[Dimension], expected):
     assert len(output) == 1
     assert isinstance(output[0], Dimension)
     dim = output[0]
@@ -22,7 +23,7 @@ def assert_expression_output(output: List[Dimension], expected):
 
 
 def assert_combined_expression_one_output(
-    output: List[Dimension], expected: List[float]
+    output: list[Dimension], expected: list[float]
 ):
 
     for i, item in enumerate(output):
@@ -46,7 +47,7 @@ def get_value_positions(*text: str):
         yield random.choice(positions).format(t)
 
 
-def get_value(exprected: Union[int, List[int]], values: List[str]):
+def get_value(exprected: int | list[int], values: list[str]):
     for v in get_value_positions(*values):
         yield v, exprected
 

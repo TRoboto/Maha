@@ -1,8 +1,8 @@
 """Functions that extracts values from text"""
 
-__all__ = ["parse", "parse_expression"]
+from __future__ import annotations
 
-from typing import Dict, List, Optional, Union
+__all__ = ["parse", "parse_expression"]
 
 from maha.constants import (
     ALL_HARAKAT,
@@ -66,9 +66,9 @@ def parse(
     links: bool = False,
     mentions: bool = False,
     emojis: bool = False,
-    custom_expressions: Union[ExpressionGroup, Expression] = None,
+    custom_expressions: ExpressionGroup | Expression | None = None,
     include_space=False,
-) -> List[Dimension]:
+) -> list[Dimension]:
 
     """Extracts certain characters/patterns from the given text.
 
@@ -186,7 +186,7 @@ def parse(
             output.extend(parsed)
             continue
         # check for expression
-        expression: Optional[Expression] = constants.get("EXPRESSION_" + arg.upper())
+        expression: Expression | None = constants.get("EXPRESSION_" + arg.upper())
         if expression and value is True:
             any_argument_set = True
             text_exp = TextExpression(str(expression))
@@ -205,9 +205,9 @@ def parse(
 
 def parse_expression(
     text: str,
-    expressions: Union[ExpressionGroup, Expression],
+    expressions: ExpressionGroup | Expression,
     dimension_type: DimensionType = DimensionType.GENERAL,
-) -> List[Dimension]:
+) -> list[Dimension]:
     """
     Extract matched strings in the given ``text`` using the input ``patterns``
 

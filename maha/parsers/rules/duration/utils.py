@@ -1,12 +1,12 @@
-__all__ = ["convert_between_durations"]
+from __future__ import annotations
 
-from typing import Dict
+__all__ = ["convert_between_durations"]
 
 from maha.parsers.templates import DurationUnit
 
 from ..common import ValueUnit
 
-DURATION_CONVERSION_MAP: Dict[DurationUnit, Dict[DurationUnit, float]] = {
+DURATION_CONVERSION_MAP: dict[DurationUnit, dict[DurationUnit, float]] = {
     DurationUnit.SECONDS: {
         DurationUnit.SECONDS: 1,
         DurationUnit.MINUTES: 60,

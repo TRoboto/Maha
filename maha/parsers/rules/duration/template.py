@@ -1,8 +1,9 @@
+from __future__ import annotations
+
 __all__ = ["DurationValue"]
 
 
 from dataclasses import dataclass
-from typing import List
 
 from maha.parsers.templates import DurationUnit
 
@@ -14,10 +15,10 @@ from .utils import convert_between_durations
 class DurationValue:
     __slots__ = ("values", "normalized_unit")
 
-    values: List[ValueUnit]
+    values: list[ValueUnit]
     normalized_unit: DurationUnit
 
-    def __init__(self, values: List[ValueUnit], normalized_unit=DurationUnit.SECONDS):
+    def __init__(self, values: list[ValueUnit], normalized_unit=DurationUnit.SECONDS):
         self.values = values
         self.normalized_unit = normalized_unit
 
