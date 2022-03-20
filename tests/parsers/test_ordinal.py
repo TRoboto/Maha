@@ -214,6 +214,21 @@ def test_hundreds(input, expected):
 @pytest.mark.parametrize(
     "input, expected",
     chain(
+        get_value(102, ["الثاني بعد المئة"]),
+        get_value(121, ["الواحد والعشرين بعد المئة"]),
+        get_value(110, ["العاشر بعد المئة"]),
+        get_value(120, ["العشرون بعد المئة"]),
+        get_value(1010, ["العاشر بعد الألف"]),
+        get_value(1_000_001, ["الأول بعد المليون"]),
+    ),
+)
+def test_after_value(input, expected):
+    assert_expression_output(parse_dimension(input, ordinal=True), expected)
+
+
+@pytest.mark.parametrize(
+    "input, expected",
+    chain(
         get_value([1000], ["الألف"]),
         get_value([1000000], ["المليون"]),
         get_value([1000000000], ["البليون", "المليار"]),
