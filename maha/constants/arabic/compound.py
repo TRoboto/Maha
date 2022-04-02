@@ -1,10 +1,10 @@
 """List of Arabic constant definitions."""
 
-from typing import Dict, List
+from __future__ import annotations
 
 from .simple import *
 
-ARABIC_LETTERS: List[str] = [
+ARABIC_LETTERS: list[str] = [
     ALEF,
     BEH,
     TEH,
@@ -44,7 +44,7 @@ ARABIC_LETTERS: List[str] = [
 ]
 """ List of Arabic letters """
 
-SIMPLE_HARAKAT: List[str] = [
+SIMPLE_HARAKAT: list[str] = [
     FATHA,
     DAMMA,
     KASRA,
@@ -52,17 +52,17 @@ SIMPLE_HARAKAT: List[str] = [
 ]
 """ Harakat that can be written anywhere in a word"""
 
-TANWEN: List[str] = [
+TANWEN: list[str] = [
     FATHATAN,
     DAMMATAN,
     KASRATAN,
 ]
 """ Harakat that are written at the end of a word """
 
-HARAKAT: List[str] = [SHADDA] + SIMPLE_HARAKAT + TANWEN
+HARAKAT: list[str] = [SHADDA] + SIMPLE_HARAKAT + TANWEN
 """ Common Harakat """
 
-ALEF_VARIATIONS: List[str] = [
+ALEF_VARIATIONS: list[str] = [
     ALEF,
     ALEF_HAMZA_ABOVE,
     ALEF_HAMZA_BELOW,
@@ -73,7 +73,7 @@ ALEF_VARIATIONS: List[str] = [
 ]
 """ Variations of the letter ALEF """
 
-LAM_ALEF_VARIATIONS: List[str] = [
+LAM_ALEF_VARIATIONS: list[str] = [
     LAM_ALEF,
     LAM_ALEF_HAMZA_ABOVE,
     LAM_ALEF_HAMZA_BELOW,
@@ -81,7 +81,7 @@ LAM_ALEF_VARIATIONS: List[str] = [
 ]
 """ Variations of the one-letter LAM_ALEF """
 
-LAM_ALEF_VARIATIONS_NORMALIZED: List[str] = [
+LAM_ALEF_VARIATIONS_NORMALIZED: list[str] = [
     LAM + ALEF,
     LAM + ALEF_HAMZA_ABOVE,
     LAM + ALEF_HAMZA_BELOW,
@@ -89,14 +89,14 @@ LAM_ALEF_VARIATIONS_NORMALIZED: List[str] = [
 ]
 """ Normalized variations of the one-letter LAM_ALEF """
 
-WAW_VARIATIONS: List[str] = [
+WAW_VARIATIONS: list[str] = [
     WAW,
     SMALL_WAW,
     HAMZA_WAW,
 ]
 """ Variations of the letter WAW """
 
-YEH_VARIATIONS: List[str] = [
+YEH_VARIATIONS: list[str] = [
     YEH,
     ALEF_MAKSURA,
     HAMZA_YA,
@@ -104,7 +104,7 @@ YEH_VARIATIONS: List[str] = [
 ]
 """ Variations of the letter YEH """
 
-ARABIC_NUMBERS: List[str] = [
+ARABIC_NUMBERS: list[str] = [
     ARABIC_ZERO,
     ARABIC_ONE,
     ARABIC_TWO,
@@ -118,7 +118,7 @@ ARABIC_NUMBERS: List[str] = [
 ]
 """ List of eastern Arabic numerals, a.k.a Indic numerals  """
 
-ARABIC_PUNCTUATIONS: List[str] = [
+ARABIC_PUNCTUATIONS: list[str] = [
     ARABIC_COMMA,
     ARABIC_SEMICOLON,
     ARABIC_QUESTION_MARK,
@@ -138,7 +138,7 @@ ARABIC_PUNCTUATIONS: List[str] = [
 ]
 """ Arabic punctuations. """
 
-ARABIC_LIGATURES: List[str] = [
+ARABIC_LIGATURES: list[str] = [
     LIGATURE_SALLA_KORANIC,
     LIGATURE_QALA,
     LIGATURE_ALLAH,
@@ -156,7 +156,7 @@ ARABIC_LIGATURES: List[str] = [
 ]
 """ Arabic word ligatures. """
 
-ARABIC_LIGATURES_NORMALIZED: List[str] = [
+ARABIC_LIGATURES_NORMALIZED: list[str] = [
     "صلى",
     "قلى",
     "الله",
@@ -174,7 +174,7 @@ ARABIC_LIGATURES_NORMALIZED: List[str] = [
 ]
 """ Arabic normalized word ligatures. """
 
-SMALL_HARAKAT: List[str] = [
+SMALL_HARAKAT: list[str] = [
     SMALL_TAH,
     SMALL_LAM_ALEF_YEH,
     SMALL_ZAIN,
@@ -202,7 +202,7 @@ SMALL_HARAKAT: List[str] = [
 ]
 """ Small harakat """
 
-OTHER_HARAKAT: List[str] = [
+OTHER_HARAKAT: list[str] = [
     SAD_SIGN,
     AIN_SIGN,
     RAHMATULLAH_SIGN,
@@ -229,10 +229,10 @@ OTHER_HARAKAT: List[str] = [
 ALL_HARAKAT = HARAKAT + SMALL_HARAKAT + OTHER_HARAKAT
 """ All harakat from the unicode block 0600–06FF """
 
-ARABIC: List[str] = ARABIC_LETTERS + ALL_HARAKAT + ARABIC_NUMBERS + ARABIC_PUNCTUATIONS
+ARABIC: list[str] = ARABIC_LETTERS + ALL_HARAKAT + ARABIC_NUMBERS + ARABIC_PUNCTUATIONS
 """ Common Arabic characters """
 
-ARABIC_DOTLESS_MAP: Dict[str, str] = {
+ARABIC_DOTLESS_MAP: dict[str, str] = {
     BEH: DOTLESS_BEH,
     TEH: DOTLESS_TEH,
     THEH: DOTLESS_THEH,

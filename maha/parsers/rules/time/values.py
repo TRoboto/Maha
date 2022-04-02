@@ -31,7 +31,6 @@ from maha.parsers.rules.numeral.rule import (
     TEN,
     eleven_to_nineteen,
 )
-from maha.parsers.rules.numeral.values import TEH_OPTIONAL_SUFFIX
 from maha.parsers.rules.ordinal.rule import (
     RULE_ORDINAL_ONES,
     RULE_ORDINAL_TENS,
@@ -49,9 +48,16 @@ from maha.rexy import (
 )
 
 from ..common import (
+    AFTER,
+    AFTER_NEXT,
     ALL_ALEF,
+    BEFORE,
+    BEFORE_PREVIOUS,
     ELLA,
     FRACTIONS,
+    IN_FROM_AT,
+    NEXT,
+    PREVIOUS,
     get_fractions_of_pattern,
     spaced_patterns,
 )
@@ -67,18 +73,20 @@ def parse_value(value: dict) -> TimeValue:
 
 
 lam_lam_group = named_group("to_time", LAM + LAM)
+
 ALEF_LAM_OR_DOUBLE_LAM = non_capturing_group(ALEF_LAM, lam_lam_group)
 ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL = optional_non_capturing_group(ALEF_LAM_OR_DOUBLE_LAM)
 
+START_OF = Value(1, "بداي[ةه]")
 AFTER = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد"
 BEFORE = optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
 PREVIOUS = (
     non_capturing_group("الماضي?", "السابق", "المنصرم", "الفا[يئ]ت")
-    + TEH_OPTIONAL_SUFFIX
+    + numvalues.TEH_OPTIONAL_SUFFIX
 )
 NEXT = (
     non_capturing_group("الجاي", "القادم", "التالي?", "ال[اآ]تي?", "المقبل")
-    + TEH_OPTIONAL_SUFFIX
+    + numvalues.TEH_OPTIONAL_SUFFIX
 )
 AFTER_NEXT = spaced_patterns(AFTER, NEXT)
 BEFORE_PREVIOUS = spaced_patterns(BEFORE, PREVIOUS)
@@ -102,6 +110,9 @@ THIS = optional_non_capturing_group(
 CURRENT = ALEF_LAM + non_capturing_group("حالي?", "حالي[ةه]?")
 LAST = non_capturing_group("[آأا]خر", "ال[أا]خير")
 
+HIJRIAH = Expression("هجري[ةه]?")
+HIJRIATAN = Expression("هجريت?[اي]ن")
+
 TIME_WORD_SEPARATOR = Expression(
     non_capturing_group(
         f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}",
@@ -111,7 +122,9 @@ TIME_WORD_SEPARATOR = Expression(
     + non_capturing_group(r"\b", EXPRESSION_SPACE_OR_NONE)
 )
 
-ordinal_ones_tens = ExpressionGroup(RULE_ORDINAL_TENS, RULE_ORDINAL_ONES, ONE_PREFIX)
+ordinal_ones_tens = ExpressionGroup(
+    RULE_ORDINAL_TENS, RULE_ORDINAL_ONES, ONE_PREFIX, START_OF
+)
 numeral_ones_tens = ExpressionGroup(
     RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
 )
@@ -145,79 +158,138 @@ numeral_thousands = ExpressionGroup(
     FunctionValue(lambda match: int(match.group()), r"\d{4}"),
 )
 ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
+alhijri_group = named_group("hijri", ALEF_LAM + HIJRIAH)
+alhijri_optional_group = optional_non_capturing_group(alhijri_group + EXPRESSION_SPACE)
+hijri_group = named_group("hijri", HIJRIAH)
+hijriatan_group = named_group("hijri", HIJRIATAN)
+
 NUMERAL_YEAR = FunctionValue(
     lambda match: parse_value(
-        {"year": list(numeral_thousands.parse(match.group("value")))[0].value}
+        {
+            "year": list(numeral_thousands.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_YEAR,
-        value_group(numeral_thousands.join()),
+        value_group(numeral_thousands.join())
+        + optional_non_capturing_group(
+            EXPRESSION_SPACE
+            + non_capturing_group(hijriatan_group, hijri_group, alhijri_group)
+        ),
     ),
 )
 ORDINAL_YEAR = FunctionValue(
     lambda match: parse_value(
-        {"year": list(ordinal_thousands.parse(match.group("value")))[0].value}
+        {
+            "year": list(ordinal_thousands.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_YEAR,
-        value_group(ordinal_thousands.join()),
+        value_group(ordinal_thousands.join())
+        + optional_non_capturing_group(
+            EXPRESSION_SPACE
+            + non_capturing_group(hijriatan_group, hijri_group, alhijri_group)
+        ),
     ),
 )
 
-THIS_YEAR = Value(
-    TimeValue(years=0),
+
+def years_with_hijri(match, years):
+    return TimeValue(years=years, hijri=True if match.group("hijri") else None)
+
+
+THIS_YEAR = FunctionValue(
+    lambda match: years_with_hijri(match, 0),
     optional_non_capturing_group(THIS + EXPRESSION_SPACE)
     + ALEF_LAM_OR_DOUBLE_LAM
     + ONE_YEAR
+    + alhijri_optional_group
     + optional_non_capturing_group(EXPRESSION_SPACE + CURRENT),
 )
-LAST_YEAR = Value(
-    TimeValue(years=-1),
+LAST_YEAR = FunctionValue(
+    lambda match: years_with_hijri(match, -1),
     non_capturing_group(
-        spaced_patterns(BEFORE, ONE_YEAR),
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, PREVIOUS),
+        spaced_patterns(
+            BEFORE,
+            ONE_YEAR + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
+        ),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + PREVIOUS,
+        ),
     ),
 )
-LAST_TWO_YEARS = Value(
-    TimeValue(years=-2),
+LAST_TWO_YEARS = FunctionValue(
+    lambda match: years_with_hijri(match, -2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, BEFORE_PREVIOUS),
-        spaced_patterns(BEFORE, TWO_YEARS),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + BEFORE_PREVIOUS,
+        ),
+        spaced_patterns(
+            BEFORE,
+            TWO_YEARS
+            + optional_non_capturing_group(EXPRESSION_SPACE + hijriatan_group),
+        ),
     ),
 )
-NEXT_YEAR = Value(
-    TimeValue(years=1),
+NEXT_YEAR = FunctionValue(
+    lambda match: years_with_hijri(match, 1),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, NEXT),
-        spaced_patterns(AFTER, ONE_YEAR),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + NEXT,
+        ),
+        spaced_patterns(
+            AFTER,
+            ONE_YEAR + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
+        ),
     ),
 )
-NEXT_TWO_YEARS = Value(
-    TimeValue(years=2),
+NEXT_TWO_YEARS = FunctionValue(
+    lambda match: years_with_hijri(match, 2),
     non_capturing_group(
-        spaced_patterns(ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR, AFTER_NEXT),
-        spaced_patterns(AFTER, TWO_YEARS),
+        spaced_patterns(
+            ALEF_LAM_OR_DOUBLE_LAM + ONE_YEAR,
+            alhijri_optional_group + AFTER_NEXT,
+        ),
+        spaced_patterns(
+            AFTER,
+            TWO_YEARS
+            + optional_non_capturing_group(EXPRESSION_SPACE + hijriatan_group),
+        ),
     ),
 )
 
 AFTER_N_YEARS = FunctionValue(
     lambda match: parse_value(
-        {"years": list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "years": list(numeral_ones_tens.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         AFTER,
         value_group(numeral_ones_tens.join()),
         non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
-    ),
+    )
+    + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
 )
 BEFORE_N_YEARS = FunctionValue(
     lambda match: parse_value(
-        {"years": -1 * list(numeral_ones_tens.parse(match.group("value")))[0].value}
+        {
+            "years": -1 * list(numeral_ones_tens.parse(match.group("value")))[0].value,
+            "hijri": True if match.group("hijri") else None,
+        }
     ),
     spaced_patterns(
         BEFORE,
         value_group(numeral_ones_tens.join()),
-        non_capturing_group(ONE_YEAR, SEVERAL_YEARS),
+        non_capturing_group(ONE_YEAR, SEVERAL_YEARS)
+        + optional_non_capturing_group(EXPRESSION_SPACE + hijri_group),
     ),
 )
 # endregion
@@ -371,6 +443,64 @@ DECEMBER = Value(
     ),
 )
 
+# -----------------------------------------------------------
+# HIJRI MONTHS
+# -----------------------------------------------------------
+MUHARRAM = Value(
+    TimeValue(month=1, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "محرم",
+)
+SAFAR = Value(
+    TimeValue(month=2, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "صفر",
+)
+RABI_AL_AWWAL = Value(
+    TimeValue(month=3, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ربيع ال[اآأ]ول",
+)
+RABI_AL_ATHANI = Value(
+    TimeValue(month=4, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + "ربيع "
+    + non_capturing_group("ال[اآأ]خر", "الثاني")
+    + "[ةه]?",
+)
+JUMADA_AL_AWWAL = Value(
+    TimeValue(month=5, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + "جماد[ىي] ال[اآأ]ول[ىي]?",
+)
+JUMADA_AL_ATHANI = Value(
+    TimeValue(month=6, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE)
+    + "جماد[ىي] "
+    + non_capturing_group("ال[اآأ]خر", "الثاني")
+    + "[ةه]?",
+)
+RAJAB = Value(
+    TimeValue(month=7, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "رجب",
+)
+SHABAN = Value(
+    TimeValue(month=8, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "شعبان",
+)
+RAMADAN = Value(
+    TimeValue(month=9, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "رمضان",
+)
+SHAWWAL = Value(
+    TimeValue(month=10, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "شوال",
+)
+DHU_AL_QIDAH = Value(
+    TimeValue(month=11, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ذو القعد[ةه]",
+)
+DHU_AL_HIJJAH = Value(
+    TimeValue(month=12, hijri=True),
+    optional_non_capturing_group(ONE_MONTH + EXPRESSION_SPACE) + "ذو الحج[ةه]",
+)
 
 _months = ExpressionGroup(
     OCTOBER,
@@ -385,6 +515,18 @@ _months = ExpressionGroup(
     JULY,
     AUGUST,
     SEPTEMBER,
+    MUHARRAM,
+    SAFAR,
+    RABI_AL_AWWAL,
+    RABI_AL_ATHANI,
+    JUMADA_AL_AWWAL,
+    JUMADA_AL_ATHANI,
+    RAJAB,
+    SHABAN,
+    RAMADAN,
+    SHAWWAL,
+    DHU_AL_QIDAH,
+    DHU_AL_HIJJAH,
 )
 
 THIS_MONTH = Value(
@@ -445,10 +587,17 @@ BEFORE_N_MONTHS = FunctionValue(
 )
 
 
+def get_matched_month(text):
+    return _months.get_matched_expression(text).value  # type: ignore
+
+
 SPECIFIC_MONTH = MatchedValue(_months, _months.join())
 NEXT_SPECIFIC_MONTH = FunctionValue(
     lambda match: parse_value(
-        {"next_month": _months.get_matched_expression(match.group("value")).value.month}  # type: ignore
+        {
+            "next_month": get_matched_month(match.group("value")).month,
+            "hijri": get_matched_month(match.group("value")).hijri,
+        }
     ),
     non_capturing_group(
         spaced_patterns(ONE_MONTH, value_group(_months.join()), NEXT),
@@ -457,7 +606,10 @@ NEXT_SPECIFIC_MONTH = FunctionValue(
 )
 PREVIOUS_SPECIFIC_MONTH = FunctionValue(
     lambda match: parse_value(
-        {"prev_month": _months.get_matched_expression(match.group("value")).value.month}  # type: ignore
+        {
+            "prev_month": get_matched_month(match.group("value")).month,
+            "hijri": get_matched_month(match.group("value")).hijri,
+        }
     ),
     non_capturing_group(
         spaced_patterns(ONE_MONTH, value_group(_months.join()), PREVIOUS),
@@ -467,7 +619,8 @@ PREVIOUS_SPECIFIC_MONTH = FunctionValue(
 AFTER_SPECIFIC_NEXT_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "next_month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
+            "next_month": get_matched_month(match.group("value")).month,
+            "hijri": get_matched_month(match.group("value")).hijri,
             "years": 1,
         }
     ),
@@ -479,7 +632,8 @@ AFTER_SPECIFIC_NEXT_MONTH = FunctionValue(
 BEFORE_SPECIFIC_PREVIOUS_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "prev_month": _months.get_matched_expression(match.group("value")).value.month,  # type: ignore
+            "prev_month": get_matched_month(match.group("value")).month,
+            "hijri": get_matched_month(match.group("value")).hijri,
             "years": -1,
         }
     ),
@@ -771,11 +925,11 @@ _start_of_last_day = (
 LAST_SPECIFIC_DAY_OF_SPECIFIC_MONTH = FunctionValue(
     lambda match: parse_value(
         {
-            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
             "weekday": _days.get_matched_expression(match.group("day")).value(-1),  # type: ignore
             "day": 31,
         }
-    ),
+    )
+    + get_matched_month(match.group("month")),
     spaced_patterns(_start_of_last_day, named_group("month", _months.join())),
 )
 # endregion
@@ -1022,11 +1176,9 @@ AM = Value(
 # ----------------------------------------------------
 YEAR_WITH_MONTH = FunctionValue(
     lambda match: parse_value(
-        {
-            "month": _months.get_matched_expression(match.group("month")).value.month,  # type: ignore
-            "year": list(numeral_thousands.parse(match.group("value")))[0].value,
-        }
-    ),
+        {"year": list(numeral_thousands.parse(match.group("value")))[0].value}
+    )
+    + get_matched_month(match.group("month")),
     spaced_patterns(
         named_group("month", _months.join()), value_group(numeral_thousands.join())
     ),

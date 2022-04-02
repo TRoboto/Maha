@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = [
     "get_fractions_of_unit_pattern",
     "get_fractions_of_pattern",
@@ -14,10 +16,21 @@ __all__ = [
     "SUM_SUFFIX",
     "EXPRESSION_START",
     "EXPRESSION_END",
+    "FRACTIONS",
+    "TEH_OPTIONAL_SUFFIX",
+    "AFTER",
+    "BEFORE",
+    "PREVIOUS",
+    "NEXT",
+    "AFTER_NEXT",
+    "BEFORE_PREVIOUS",
+    "IN_FROM_AT",
+    "FROM",
+    "TO",
 ]
 
+
 from dataclasses import dataclass
-from typing import Union
 
 from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
@@ -30,48 +43,6 @@ from maha.rexy import (
     positive_lookahead,
     positive_lookbehind,
 )
-
-ELLA = Expression("[إا]لا")
-THIRD = Value(1 / 3, optional_non_capturing_group("ال") + "[ثت]ل[ثت]")
-""" Pattern that matches the pronunciation of third in Arabic """
-QUARTER = Value(1 / 4, optional_non_capturing_group("ال") + "ربع")
-""" Pattern that matches the pronunciation of quarter in Arabic """
-HALF = Value(1 / 2, optional_non_capturing_group("ال") + "نصف?")
-""" Pattern that matches the pronunciation of half in Arabic """
-THREE_QUARTERS = Value(3 / 4, ELLA + EXPRESSION_SPACE + QUARTER)
-""" Pattern that matches the pronunciation of three quarters in Arabic """
-TWO_THIRDS = Value(2 / 3, ELLA + EXPRESSION_SPACE + THIRD)
-""" Pattern that matches the pronunciation of two thirds in Arabic """
-WAW_CONNECTOR = Expression(EXPRESSION_SPACE + WAW + EXPRESSION_SPACE_OR_NONE)
-""" Pattern that matches WAW as a connector between two words """
-WORD_SEPARATOR = Expression(
-    non_capturing_group(
-        f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}"
-        f"(?:{EXPRESSION_SPACE}{WAW})?",
-        f"{EXPRESSION_SPACE}{WAW}",
-    )
-    + non_capturing_group(r"\b", str(EXPRESSION_SPACE_OR_NONE))
-)
-""" Pattern that matches the word separator between numerals in Arabic """
-
-ALL_ALEF = Expression(f'[{"".join(ALEF_VARIATIONS)}]')
-""" Pattern that matches all possible forms of the ALEF in Arabic """
-
-TWO_SUFFIX = Expression(non_capturing_group("ين", "ان"))
-""" Pattern that matches the two-suffix of words in Arabic """
-
-SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
-""" Pattern that matches the sum-suffix of words in Arabic """
-
-EXPRESSION_START = Expression(
-    positive_lookbehind("^", r"\W", r"\b", r"\b" + WAW, r"\b" + LAM)
-)
-""" Pattern that matches the start of a rule expression in Arabic """
-
-EXPRESSION_END = Expression(positive_lookahead("$", r"\W", r"\b"))
-""" Pattern that matches the end of a rule expression in Arabic """
-
-FRACTIONS = ExpressionGroup(THREE_QUARTERS, TWO_THIRDS, QUARTER, HALF, THIRD)
 
 
 @dataclass
@@ -164,7 +135,9 @@ def spaced_patterns(*patterns) -> str:
 
 
 def combine_patterns(
-    *patterns: Union[str, Expression], seperator: Expression = None, combine_all=False
+    *patterns: str | Expression,
+    seperator: Expression | None = None,
+    combine_all=False,
 ) -> str:
     """
     Intelligently combine following input patterns.
@@ -198,3 +171,79 @@ def combine_patterns(
     )
 
     return pattern
+
+
+# Fractions
+ELLA = Expression("[إا]لا")
+THIRD = Value(1 / 3, optional_non_capturing_group("ال") + "[ثت]ل[ثت]")
+""" Pattern that matches the pronunciation of third in Arabic """
+QUARTER = Value(1 / 4, optional_non_capturing_group("ال") + "ربع")
+""" Pattern that matches the pronunciation of quarter in Arabic """
+HALF = Value(1 / 2, optional_non_capturing_group("ال") + "نصف?")
+""" Pattern that matches the pronunciation of half in Arabic """
+THREE_QUARTERS = Value(3 / 4, ELLA + EXPRESSION_SPACE + QUARTER)
+""" Pattern that matches the pronunciation of three quarters in Arabic """
+TWO_THIRDS = Value(2 / 3, ELLA + EXPRESSION_SPACE + THIRD)
+""" Pattern that matches the pronunciation of two thirds in Arabic """
+
+# Connectors/Separators
+WAW_CONNECTOR = Expression(EXPRESSION_SPACE + WAW + EXPRESSION_SPACE_OR_NONE)
+""" Pattern that matches WAW as a connector between two words """
+WORD_SEPARATOR = Expression(
+    non_capturing_group(
+        f"{EXPRESSION_SPACE_OR_NONE}{non_capturing_group(COMMA, ARABIC_COMMA)}"
+        f"(?:{EXPRESSION_SPACE}{WAW})?",
+        f"{EXPRESSION_SPACE}{WAW}",
+    )
+    + non_capturing_group(r"\b", str(EXPRESSION_SPACE_OR_NONE))
+)
+""" Pattern that matches the word separator between numerals in Arabic """
+
+# Common expressions
+ALL_ALEF = Expression(f'[{"".join(ALEF_VARIATIONS)}]')
+""" Pattern that matches all possible forms of the ALEF in Arabic """
+
+TWO_SUFFIX = Expression(non_capturing_group("ين", "ان"))
+""" Pattern that matches the two-suffix of words in Arabic """
+
+SUM_SUFFIX = Expression(non_capturing_group("ين", "ون"))
+""" Pattern that matches the sum-suffix of words in Arabic """
+
+EXPRESSION_START = Expression(
+    positive_lookbehind("^", r"\W", r"\b", r"\b" + WAW, r"\b" + LAM)
+)
+""" Pattern that matches the start of a rule expression in Arabic """
+
+EXPRESSION_END = Expression(positive_lookahead("$", r"\W", r"\b"))
+""" Pattern that matches the end of a rule expression in Arabic """
+
+FRACTIONS = ExpressionGroup(THREE_QUARTERS, TWO_THIRDS, QUARTER, HALF, THIRD)
+
+TEH_OPTIONAL_SUFFIX = "[ةه]?"
+AFTER = Expression(optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "بعد")
+BEFORE = Expression(
+    optional_non_capturing_group("[إا]لل?ي" + EXPRESSION_SPACE) + "[أاق]بل"
+)
+PREVIOUS = Expression(
+    non_capturing_group("الماضي?", "السابق", "المنصرم", "الفا[يئ]ت")
+    + TEH_OPTIONAL_SUFFIX
+)
+NEXT = Expression(
+    non_capturing_group("الجاي", "القادم", "التالي?", "ال[اآ]تي?", "المقبل")
+    + TEH_OPTIONAL_SUFFIX
+)
+AFTER_NEXT = Expression(spaced_patterns(AFTER, NEXT))
+BEFORE_PREVIOUS = Expression(spaced_patterns(BEFORE, PREVIOUS))
+IN_FROM_AT = Expression(
+    non_capturing_group("في", "من", "خلال", "الموافق", "عند", "قراب[ةه]", "على")
+)
+FROM = Expression(non_capturing_group("من"))
+TO = Expression(
+    optional_non_capturing_group(WAW)
+    + EXPRESSION_SPACE_OR_NONE
+    + non_capturing_group(
+        "[اإ]لى",
+        "حتى",
+        "لل?",
+    )
+)

@@ -1,6 +1,7 @@
 """
 Functions that operate on a string and remove certain characters.
 """
+from __future__ import annotations
 
 __all__ = [
     "remove",
@@ -22,7 +23,6 @@ __all__ = [
     "remove_arabic_letter_dots",
 ]
 
-from typing import List, Union
 
 import maha.cleaners.functions as functions
 from maha.constants import (
@@ -91,8 +91,8 @@ def remove(
     mentions: bool = False,
     emojis: bool = False,
     use_space: bool = True,
-    custom_strings: Union[List[str], str] = None,
-    custom_expressions: Union[ExpressionGroup, Expression, str] = None,
+    custom_strings: list[str] | str | None = None,
+    custom_expressions: ExpressionGroup | Expression | str | None = None,
 ):
 
     """Removes certain characters from the given text.
@@ -617,7 +617,7 @@ def remove_numbers(text: str) -> str:
 
 def remove_expressions(
     text: str,
-    patterns: Union[Expression, ExpressionGroup, str],
+    patterns: Expression | ExpressionGroup | str,
     remove_spaces: bool = True,
 ) -> str:
     r"""Removes matched characters from the given text ``text`` using input
@@ -659,9 +659,7 @@ def remove_expressions(
     return output_text.strip()
 
 
-def remove_strings(
-    text: str, strings: Union[List[str], str], use_space: bool = True
-) -> str:
+def remove_strings(text: str, strings: list[str] | str, use_space: bool = True) -> str:
 
     """Removes the input strings ``strings`` in the given text ``text``
 

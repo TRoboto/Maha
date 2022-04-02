@@ -1,6 +1,7 @@
+from __future__ import annotations
+
 __all__ = ["convert_to_number_if_possible"]
 
-from typing import Optional, Union
 
 from maha.constants import (
     ARABIC_COMMA,
@@ -14,7 +15,7 @@ from maha.constants import (
 )
 
 
-def convert_to_number_if_possible(value: str) -> Optional[Union[int, float]]:
+def convert_to_number_if_possible(value: str) -> int | float | None:
     """
     Converts the given value to number if possible.
 

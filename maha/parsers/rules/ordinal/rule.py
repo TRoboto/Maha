@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = [
     "RULE_ORDINAL_ONES",
     "RULE_ORDINAL_TENS",
@@ -10,12 +12,23 @@ __all__ = [
     "parse_ordinal",
 ]
 
-from typing import List, Union
 
 from maha.parsers.templates import FunctionValue
-from maha.rexy import Expression, ExpressionGroup, named_group, non_capturing_group
+from maha.rexy import (
+    Expression,
+    ExpressionGroup,
+    named_group,
+    non_capturing_group,
+    optional_non_capturing_group,
+)
 
-from ..common import WAW_CONNECTOR, combine_patterns, spaced_patterns, wrap_pattern
+from ..common import (
+    AFTER,
+    WAW_CONNECTOR,
+    combine_patterns,
+    spaced_patterns,
+    wrap_pattern,
+)
 from .values import *
 
 
@@ -48,9 +61,10 @@ def parse_ordinal(match):
     _hundreds = groups.get("hundreds")
     _tens = groups.get("tens")
     _ones = groups.get("ones")
+    _after_value = groups.get("after_value")
     value = 0
 
-    def get_value(groups, expressions: List[Union[ExpressionGroup, Expression]]) -> int:
+    def get_value(groups, expressions: list[ExpressionGroup | Expression]) -> int:
         exp_group = ExpressionGroup(*expressions)
         value = 0
         for group in groups:
@@ -71,10 +85,19 @@ def parse_ordinal(match):
         value += parse_tens(_tens[0])
     if _ones:
         value += get_value(_ones, [ones])
+    if _after_value:
+        value += get_value(_after_value, [after_values])
 
     return value
 
 
+after_values = ExpressionGroup(
+    ONE_HUNDRED,
+    ONE_THOUSAND,
+    ONE_MILLION,
+    ONE_BILLION,
+    ONE_TRILLION,
+)
 ones = ExpressionGroup(ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN, EIGHT, NINE, TEN)
 ones_prefix = ExpressionGroup(
     ONE_PREFIX,
@@ -211,6 +234,13 @@ RULE_ORDINAL = FunctionValue(
             combine_patterns(hundreds_group, tens_group, ones_group),
             tens_group,
             ones_group,
+        )
+        + optional_non_capturing_group(
+            EXPRESSION_SPACE
+            + spaced_patterns(
+                AFTER,
+                named_group("after_value", after_values.join()),
+            ),
         ),
     ),
 )

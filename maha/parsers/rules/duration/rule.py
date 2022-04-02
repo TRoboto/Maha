@@ -1,4 +1,5 @@
 """Rules to extract duration."""
+from __future__ import annotations
 
 __all__ = [
     "RULE_DURATION_SECONDS",
@@ -12,7 +13,6 @@ __all__ = [
     "parse_duration",
 ]
 
-from typing import Dict, List
 
 from maha.parsers.rules.numeral.rule import (
     EXPRESSION_NUMERAL_MAP,
@@ -43,9 +43,9 @@ def get_pattern(singular_frac_group, singular, dual, all_units):
     )
 
 
-def merge_same_units(values: List[ValueUnit]) -> List[ValueUnit]:
+def merge_same_units(values: list[ValueUnit]) -> list[ValueUnit]:
     """Merge values with same units from the input ``values``."""
-    newvalues: Dict[Unit, ValueUnit] = {}
+    newvalues: dict[Unit, ValueUnit] = {}
     for value in values:
         unit = value.unit
         if unit in newvalues:
