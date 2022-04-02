@@ -11,6 +11,7 @@ __all__ = [
 ]
 
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
+from maha.parsers.rules.ordinal.values import ALEF_LAM
 from maha.parsers.templates import FunctionValue
 from maha.parsers.utils import convert_to_number_if_possible
 from maha.rexy import (
@@ -149,7 +150,15 @@ RULE_NUMERAL_DECIMALS = FunctionValue(
     lambda match: convert_to_number_if_possible(str(match.group())),
     str(EXPRESSION_DECIMAL),
 )
+SINGLE_MULTIPLIERS = ExpressionGroup(
+    ONE_HUNDRED,
+    ONE_THOUSAND,
+    ONE_MILLION,
+    ONE_BILLION,
+    ONE_TRILLION,
+)
 MULTIPLIERS = ExpressionGroup(
+    SINGLE_MULTIPLIERS,
     ONE_HUNDRED,
     ONE_THOUSAND,
     ONE_MILLION,
@@ -190,9 +199,16 @@ NUMERAL_VALUES = ExpressionGroup(
     RULE_NUMERAL_DECIMALS,
     RULE_NUMERAL_INTEGERS,
 )
+MULTIPLIERS_FRACTION = FunctionValue(
+    lambda match: (
+        1 / SINGLE_MULTIPLIERS.get_matched_expression(match.group("multiplier")).value  # type: ignore
+    ),
+    non_capturing_group("في" + EXPRESSION_SPACE, "ب")
+    + ALEF_LAM
+    + named_group("multiplier", SINGLE_MULTIPLIERS.join()),
+)
 BEFORE_FRACTIONS = ExpressionGroup(HALF, THIRD, QUARTER)
-AFTER_FRACTION = ExpressionGroup(THREE_QUARTERS, TWO_THIRDS)
-
+AFTER_FRACTION = ExpressionGroup(THREE_QUARTERS, TWO_THIRDS, MULTIPLIERS_FRACTION)
 before_fractions_group = named_group("before_fractions", BEFORE_FRACTIONS.join())
 after_fraction_group = named_group("after_fraction", AFTER_FRACTION.join())
 

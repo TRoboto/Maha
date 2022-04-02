@@ -442,6 +442,22 @@ def test_hierarchical_parsing(input, expected):
 
 
 @pytest.mark.parametrize(
+    "expected, input",
+    [
+        (0.001, "واحد في الألف"),
+        (0.001, "واحد بالالف"),
+        (0.05, "خمسة في المية"),
+        (0.00002, "عشرين في المليون"),
+        (0.1, "مئة بالألف"),
+        (0.01, "واحد في المئة"),
+        (0.33, "ثلاثة وثلاثين بالمية"),
+    ],
+)
+def test_multiplier_fraction_parsing(input, expected):
+    assert_expression_output(parse_dimension(input, numeral=True), expected)
+
+
+@pytest.mark.parametrize(
     "input",
     [
         ("الواحد"),
