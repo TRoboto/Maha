@@ -93,9 +93,7 @@ Check the following example:
     >>> remove(sample_text, punctuations=True)
     'بسم الله الرحمن الرحيم'
 
-Cleaners also support the first robust **numbers to text** conversion.
-The :func:`~.numbers_to_text` function is robust against most real case scenarios
-and can output clean text. Check below examples:
+Cleaners also support the first robust **numbers to text** conversion. Check below examples:
 
 .. code:: pycon
 
