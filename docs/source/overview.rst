@@ -18,6 +18,7 @@ summarized into the following categories:
 * :mod:`~.normalize_fn`: Functions that converts similar characters into one common character.
 * :mod:`~.replace_fn`: Functions that replace specific characters with other characters.
 * :mod:`~.contains_fn`: Functions that check if a text contains specific characters.
+* :mod:`~.num2text`: Contains the logic for converting numbers to text.
 
 These modules expose a simple interface that is used in conjunction with the defined
 :mod:`constants<maha.constants>` as well as the available :mod:`expressions <maha.expressions>`.
@@ -91,6 +92,56 @@ Check the following example:
     >>> sample_text = "#بسم_الله_الرحمن_الرحيم"
     >>> remove(sample_text, punctuations=True)
     'بسم الله الرحمن الرحيم'
+
+Cleaners also support the first robust **numbers to text** conversion.
+The :func:`~.numbers_to_text` function is robust against most real case scenarios
+and can output clean text. Check below examples:
+
+.. code:: pycon
+
+    >>> from maha.cleaners.functions import numbers_to_text
+    >>> numbers_to_text("في المكتبة 152 كتاب")
+    'في المكتبة مائة وإثنان وخمسون كتاب'
+    >>> numbers_to_text("في المكتبة 152 كتاب", accusative=True)
+    'في المكتبة مائة وإثنين وخمسين كتاب'
+    >>> numbers_to_text("يقدر عدد سكان العالم حوالي 7.9 مليار خلال عام 2022")
+    'يقدر عدد سكان العالم حوالي سبعة فاصلة تسعة مليار خلال عام ألفان وإثنان وعشرون'
+    >>> numbers_to_text("يقدر عدد سكان العالم حوالي 7.9 مليار خلال عام 2022", accusative=True)
+    'يقدر عدد سكان العالم حوالي سبعة فاصلة تسعة مليار خلال عام ألفين وإثنين وعشرين'
+    >>> numbers_to_text("1,111,111")
+    'مليون ومائة وأحد عشر ألف ومائة وأحد عشر'
+    >>> numbers_to_text("0.5")
+    'خمسة من عشرة'
+    >>> numbers_to_text("0.0033")
+    'ثلاثة وثلاثون من عشرة آلاف'
+    >>> numbers_to_text("101.00102")
+    'مائة وواحد فاصلة مائة وإثنان من مائة ألف'
+
+In addition, :func:`~.numbers_to_text` function is compatible with
+:func:`~.parse_dimension` numeral parsing. Check the following examples:
+
+.. code:: pycon
+
+    >>> from maha.cleaners.functions import numbers_to_text
+    >>> from maha.parsers.functions import parse_dimension
+    >>> parse_dimension(numbers_to_text("في المكتبة 152 كتاب"), numeral=True)[0].value
+    152
+    >>> parse_dimension(numbers_to_text("في المكتبة 152 كتاب", accusative=True), numeral=True)[
+    ...     0
+    ... ].value
+    152
+    >>> parse_dimension(
+    ...     numbers_to_text("يقدر عدد سكان العالم حوالي 7.9 مليار خلال عام 2022"), numeral=True
+    ... )[0].value
+    7900000000
+    >>> parse_dimension(numbers_to_text("1,111,111"), numeral=True)[0].value
+    1111111
+    >>> parse_dimension(numbers_to_text("0.5"), numeral=True)[0].value
+    0.5
+    >>> parse_dimension(numbers_to_text("0.0033"), numeral=True)[0].value
+    0.0033
+    >>> parse_dimension(numbers_to_text("101.00102"), numeral=True)[0].value
+    101.00102
 
 In general all cleaners provide the same interface.
 Check the full list of functions :mod:`here <maha.cleaners.functions>`
