@@ -1,3 +1,5 @@
+from __future__ import annotations
+
 __all__ = [
     "RULE_NUMERAL_ONES",
     "RULE_NUMERAL_TENS",
@@ -90,14 +92,31 @@ def _parse_numeral(sorted_values):
         integer = _construct_numeral(
             {k: v for k, v in sorted_values.items() if k < decimal_part_index}
         )
-        decimal = _construct_numeral(
-            {k: v for k, v in sorted_values.items() if k > decimal_part_index}
-        )
+
+        # check if decimal ends with a multiplier
+        decimal_values = {
+            k: v for k, v in sorted_values.items() if k > decimal_part_index
+        }
+        multipliers = [1, 1]
+        for k, v in reversed(list(decimal_values.items())):
+            if MULTIPLIERS_GROUP_NAME == v["group"]:
+                multipliers.append(
+                    MULTIPLIERS.get_matched_expression(v["value"]).value  # type: ignore
+                )
+                decimal_values.pop(k)
+            else:
+                break
+
+        decimal = _construct_numeral(decimal_values)
         # check if decimal is already a float
         if int(decimal) != decimal:
-            return integer + decimal
-        return integer + decimal / 10 ** len(str(decimal))
-
+            output = integer + decimal
+        else:
+            output = integer + decimal / 10 ** len(str(decimal))
+        output *= reduce(lambda x, y: x * y, multipliers)
+        if output.is_integer():
+            output = int(output)
+        return output
     return _construct_numeral(sorted_values)
 
 

@@ -1,3 +1,6 @@
+"""
+Logic for converting numbers to text
+"""
 __all__ = [
     "numbers_to_text",
 ]
