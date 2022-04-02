@@ -10,6 +10,8 @@ __all__ = [
     "RULE_NUMERAL",
 ]
 
+from functools import reduce
+
 from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
 from maha.parsers.rules.ordinal.values import ALEF_LAM
 from maha.parsers.templates import FunctionValue
@@ -46,18 +48,20 @@ def _construct_numeral(sorted_values) -> float:
     output = [0] * len(sorted_values)
     last_numeral_index = 0
     multiply = False
+    is_perfect_hundred = False
     for i, (_, dict_value) in enumerate(sorted_values.items()):
         group = dict_value["group"]
         exp = EXPRESSION_NUMERAL_MAP[group].get_matched_expression(dict_value["value"])
         assert exp is not None
         value = next(iter(exp(dict_value["value"]))).value
         if group == NUMERAL_VALUES_GROUP_NAME:
+            if not is_perfect_hundred:
+                last_numeral_index = i
             if multiply:
-                output[i] *= value
+                output[last_numeral_index] *= value
                 multiply = False
             else:
-                output[i] += value
-            last_numeral_index = i
+                output[last_numeral_index] += value
         elif group == "before_fractions":
             output[i + 1] = value
             multiply = True
@@ -65,6 +69,10 @@ def _construct_numeral(sorted_values) -> float:
             output[last_numeral_index] *= value
         elif group == "after_fraction":
             output[last_numeral_index] *= value
+
+        is_perfect_hundred = bool(
+            perfect_hundreds.get_matched_expression(dict_value["value"])
+        )
 
     total = sum(output)
     # to int if possible
@@ -85,6 +93,9 @@ def _parse_numeral(sorted_values):
         decimal = _construct_numeral(
             {k: v for k, v in sorted_values.items() if k > decimal_part_index}
         )
+        # check if decimal is already a float
+        if int(decimal) != decimal:
+            return integer + decimal
         return integer + decimal / 10 ** len(str(decimal))
 
     return _construct_numeral(sorted_values)
@@ -159,11 +170,6 @@ SINGLE_MULTIPLIERS = ExpressionGroup(
 )
 MULTIPLIERS = ExpressionGroup(
     SINGLE_MULTIPLIERS,
-    ONE_HUNDRED,
-    ONE_THOUSAND,
-    ONE_MILLION,
-    ONE_BILLION,
-    ONE_TRILLION,
     SEVERAL_HUNDREDS,
     SEVERAL_THOUSANDS,
     SEVERAL_MILLIONS,
@@ -199,13 +205,33 @@ NUMERAL_VALUES = ExpressionGroup(
     RULE_NUMERAL_DECIMALS,
     RULE_NUMERAL_INTEGERS,
 )
+multiplier_fraction_group = named_group(
+    "multiplier",
+    non_capturing_group(*MULTIPLIERS.expressions, TEN)
+    + non_capturing_group(
+        EXPRESSION_SPACE + non_capturing_group(*MULTIPLIERS.expressions, TEN)
+    )
+    + "*",
+)
 MULTIPLIERS_FRACTION = FunctionValue(
     lambda match: (
-        1 / SINGLE_MULTIPLIERS.get_matched_expression(match.group("multiplier")).value  # type: ignore
+        1
+        / reduce(
+            lambda a, b: a * b,
+            [
+                a.value
+                for a in ExpressionGroup(MULTIPLIERS, TEN).parse(
+                    match.group("multiplier")
+                )
+            ],
+        )
     ),
-    non_capturing_group("في" + EXPRESSION_SPACE, "ب")
-    + ALEF_LAM
-    + named_group("multiplier", SINGLE_MULTIPLIERS.join()),
+    non_capturing_group(
+        non_capturing_group("في" + EXPRESSION_SPACE, "ب")
+        + ALEF_LAM
+        + multiplier_fraction_group,
+        spaced_patterns("من", multiplier_fraction_group),
+    ),
 )
 BEFORE_FRACTIONS = ExpressionGroup(HALF, THIRD, QUARTER)
 AFTER_FRACTION = ExpressionGroup(THREE_QUARTERS, TWO_THIRDS, MULTIPLIERS_FRACTION)
