@@ -93,6 +93,9 @@ Check the following example:
     >>> remove(sample_text, punctuations=True)
     'بسم الله الرحمن الرحيم'
 
+Numbers to Text
+***************
+
 Cleaners also support the first robust **numbers to text** conversion. Check below examples:
 
 .. code:: pycon
