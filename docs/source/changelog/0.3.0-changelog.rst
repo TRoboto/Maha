@@ -32,7 +32,7 @@ Breaking changes
 Highlights
 ----------
 
-* `#92 <https://github.com/TRoboto/Maha/pull/92>`__: Add numbers to text functionality 
+* `#92 <https://github.com/TRoboto/Maha/pull/92>`__: Add numbers to text functionality
 
 
 * `#86 <https://github.com/TRoboto/Maha/pull/86>`__: Time: Add the ability to parse Hijri dates
