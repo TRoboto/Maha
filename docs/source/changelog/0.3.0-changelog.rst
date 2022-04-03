@@ -1,0 +1,85 @@
+******
+v0.3.0
+******
+
+:Date: April 03, 2022
+
+Contributors
+============
+
+A total of 1 people contributed to this
+release. People with a '+' by their names authored a patch for the first
+time.
+
+* Mohammad Al-Fetyani
+
+
+The patches included in this release have been reviewed by
+the following contributors.
+
+
+Pull requests merged
+====================
+
+A total of 13 pull requests were merged for this release.
+
+Breaking changes
+----------------
+
+* `#80 <https://github.com/TRoboto/Maha/pull/80>`__: Deprecate and remove `datasets` module and host datasets on Hugging Face instead
+
+
+Highlights
+----------
+
+* `#92 <https://github.com/TRoboto/Maha/pull/92>`__: Add numbers to text functionality 
+
+
+* `#86 <https://github.com/TRoboto/Maha/pull/86>`__: Time: Add the ability to parse Hijri dates
+
+
+* `#75 <https://github.com/TRoboto/Maha/pull/75>`__: Add the ability to parse time intervals
+
+
+New features
+------------
+
+* `#90 <https://github.com/TRoboto/Maha/pull/90>`__: Numeral: Add multiplier fraction patterns
+
+
+* `#85 <https://github.com/TRoboto/Maha/pull/85>`__: Ordinal: Add support to `بعد` in ordinal parsing
+
+
+* `#83 <https://github.com/TRoboto/Maha/pull/83>`__: Numeral: Add support for hierarchical parsing
+
+
+Enhancements
+------------
+
+* `#78 <https://github.com/TRoboto/Maha/pull/78>`__: Improved decimal parsing to cover all numeric values up to trillions
+
+
+* `#79 <https://github.com/TRoboto/Maha/pull/79>`__: Improve start of week parsing and make its value dynamic
+
+
+* `#81 <https://github.com/TRoboto/Maha/pull/81>`__: Simplify :class:`~.TimeInterval` to include `start`/`end` instead of `from_time`/`to_time`
+
+
+Fixed bugs
+----------
+
+* `#88 <https://github.com/TRoboto/Maha/pull/88>`__: Fix tests not passing when order changes due to monkeypatching
+
+
+Code quality improvements and similar refactors
+-----------------------------------------------
+
+* `#89 <https://github.com/TRoboto/Maha/pull/89>`__: Add pyupgrade to pre-commit and upgrade to future-style type annotations
+
+
+Unclassified changes
+--------------------
+
+* `#84 <https://github.com/TRoboto/Maha/pull/84>`__: Add LGTM code quality badge to README file
+
+
