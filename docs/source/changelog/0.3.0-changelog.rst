@@ -13,11 +13,6 @@ time.
 
 * Mohammad Al-Fetyani
 
-
-The patches included in this release have been reviewed by
-the following contributors.
-
-
 Pull requests merged
 ====================
 
