@@ -93,7 +93,8 @@ Check the following example:
     >>> remove(sample_text, punctuations=True)
     'بسم الله الرحمن الرحيم'
 
-Numbers to Text
+
+Numbers to text
 ***************
 
 Cleaners also support the first robust **numbers to text** conversion. Check below examples:
