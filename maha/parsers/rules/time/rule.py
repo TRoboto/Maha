@@ -210,7 +210,7 @@ hour_am_pm_expressions = ExpressionGroup(
     ORDINAL_HOUR_AM_PM,
 )
 interval_expressions = ExpressionGroup(
-    NUMERAL_INTERVAL_FRACTION_HOUR_MINUTE_AM_PM,
+    INTERVAL_FRACTION_HOUR_MINUTE_AM_PM,
 )
 
 now_group = named_group("now", now_expressions.join())

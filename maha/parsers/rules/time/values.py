@@ -1,6 +1,8 @@
 from dateutil.relativedelta import FR, MO, SA, SU, TH, TU, WE
 
+import maha.parsers.rules.numeral.rule as numeral
 import maha.parsers.rules.numeral.values as numvalues
+import maha.parsers.rules.ordinal.rule as ordinal
 from maha.constants import ARABIC_COMMA, COMMA, LAM, WAW, arabic, english
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.rules.duration.values import (
@@ -22,19 +24,6 @@ from maha.parsers.rules.duration.values import (
     TWO_MONTHS,
     TWO_WEEKS,
     TWO_YEARS,
-)
-from maha.parsers.rules.numeral.rule import (
-    RULE_NUMERAL_INTEGERS,
-    RULE_NUMERAL_ONES,
-    RULE_NUMERAL_TENS,
-    RULE_NUMERAL_THOUSANDS,
-    TEN,
-    eleven_to_nineteen,
-)
-from maha.parsers.rules.ordinal.rule import (
-    RULE_ORDINAL_ONES,
-    RULE_ORDINAL_TENS,
-    RULE_ORDINAL_THOUSANDS,
 )
 from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL, ONE_PREFIX
 from maha.parsers.templates import FunctionValue, Value
@@ -94,8 +83,7 @@ IN_FROM_AT = non_capturing_group(
 )
 FROM = Expression(non_capturing_group("من"))
 TO = Expression(
-    optional_non_capturing_group(WAW)
-    + EXPRESSION_SPACE_OR_NONE
+    optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
     + non_capturing_group(
         "[اإ]لى",
         "حتى",
@@ -122,17 +110,18 @@ TIME_WORD_SEPARATOR = Expression(
 )
 
 ordinal_ones_tens = ExpressionGroup(
-    RULE_ORDINAL_TENS, RULE_ORDINAL_ONES, ONE_PREFIX, START_OF
+    ordinal.RULE_ORDINAL_TENS, ordinal.RULE_ORDINAL_ONES, ONE_PREFIX, START_OF
 )
 numeral_ones_tens = ExpressionGroup(
-    RULE_NUMERAL_TENS, RULE_NUMERAL_ONES, RULE_NUMERAL_INTEGERS
+    numeral.RULE_NUMERAL_TENS, numeral.RULE_NUMERAL_ONES, numeral.RULE_NUMERAL_INTEGERS
 )
 numeral_hours = ExpressionGroup(
-    eleven_to_nineteen,
-    TEN,
-    RULE_NUMERAL_ONES,
-    RULE_NUMERAL_INTEGERS,
+    numeral.eleven_to_nineteen,
+    numeral.TEN,
+    numeral.RULE_NUMERAL_ONES,
+    numeral.RULE_NUMERAL_INTEGERS,
 )
+ordinal_hours = ExpressionGroup(ordinal.eleven_to_nineteen, ordinal.ones, ONE_PREFIX)
 
 # region NOW
 AT_THE_MOMENT = Value(
@@ -153,10 +142,10 @@ AT_THE_MOMENT = Value(
 # YEARS
 # ----------------------------------------------------
 numeral_thousands = ExpressionGroup(
-    RULE_NUMERAL_THOUSANDS,
+    numeral.RULE_NUMERAL_THOUSANDS,
     FunctionValue(lambda match: int(match.group()), r"\d{4}"),
 )
-ordinal_thousands = ExpressionGroup(RULE_ORDINAL_THOUSANDS)
+ordinal_thousands = ExpressionGroup(ordinal.RULE_ORDINAL_THOUSANDS)
 alhijri_group = named_group("hijri", ALEF_LAM + HIJRIAH)
 alhijri_optional_group = optional_non_capturing_group(alhijri_group + EXPRESSION_SPACE)
 hijri_group = named_group("hijri", HIJRIAH)
@@ -958,12 +947,12 @@ ORDINAL_HOUR = FunctionValue(
             "microsecond": 0,
             "second": 0,
             "minute": 0,
-            "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
+            "hour": list(ordinal_hours.parse(match.group("value")))[0].value,
         }
     ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
-        value_group(ordinal_ones_tens.join()),
+        value_group(ordinal_hours.join()),
     ),
 )
 
@@ -1464,27 +1453,38 @@ am_pm_group_1 = named_group("ampm1", AM_PM.join())
 am_pm_group_2 = named_group("ampm2", AM_PM.join())
 to_group = lambda value: named_group("to_time", value)
 
-NUMERAL_INTERVAL_FRACTION_HOUR_MINUTE_AM_PM = FunctionValue(
+ordinal_numeral_hour = ExpressionGroup(ordinal_hours, numeral_hours)
+ordinal_numeral_ones_tens = ExpressionGroup(ordinal_ones_tens, numeral_ones_tens)
+
+INTERVAL_FRACTION_HOUR_MINUTE_AM_PM = FunctionValue(
     lambda match: TimeInterval(
         start=parse_time_fraction(
             match.group("hour1"),
-            numeral_ones_tens,
+            ordinal_numeral_hour,
             match.group("fraction1") if "fraction1" in match.capturesdict() else "",
             match.group("ampm1") if "ampm1" in match.capturesdict() else "",
         )
         + parse_value(
-            {"minute": list(numeral_ones_tens.parse(match.group("minute1")))[0].value}
+            {
+                "minute": list(ordinal_numeral_ones_tens.parse(match.group("minute1")))[
+                    0
+                ].value
+            }
             if match.capturesdict().get("minute1")
             else {}
         ),
         end=parse_time_fraction(
             match.group("hour2"),
-            numeral_ones_tens,
+            ordinal_numeral_hour,
             match.group("fraction2") if "fraction2" in match.capturesdict() else "",
             match.group("ampm2") if "ampm2" in match.capturesdict() else "",
         )
         + parse_value(
-            {"minute": list(numeral_ones_tens.parse(match.group("minute2")))[0].value}
+            {
+                "minute": list(ordinal_numeral_ones_tens.parse(match.group("minute2")))[
+                    0
+                ].value
+            }
             if match.capturesdict().get("minute2")
             else {}
         ),
@@ -1493,33 +1493,33 @@ NUMERAL_INTERVAL_FRACTION_HOUR_MINUTE_AM_PM = FunctionValue(
     optional_non_capturing_group(
         ALEF_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE, ALEF_LAM
     )
-    + hour_group_1(numeral_ones_tens.join())
+    + hour_group_1(ordinal_numeral_hour.join())
     + optional_non_capturing_group(
         EXPRESSION_SPACE
         + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
         + fractions_group_1,
         EXPRESSION_SPACE
         + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
-        + minute_group_1(numeral_ones_tens.join())
+        + minute_group_1(ordinal_numeral_ones_tens.join())
         + EXPRESSION_SPACE_OR_NONE
         + non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
     )
     + optional_non_capturing_group(EXPRESSION_SPACE + am_pm_group_1)
     # TO
-    + to_group(
-        non_capturing_group(
-            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE,
-            TO + EXPRESSION_SPACE_OR_NONE,
-        )
+    + EXPRESSION_SPACE
+    + to_group(non_capturing_group(TO))
+    + optional_non_capturing_group(
+        ALEF_LAM_OR_DOUBLE_LAM + EXPRESSION_SPACE_OR_NONE + ONE_HOUR
     )
-    + hour_group_2(numeral_ones_tens.join())
+    + EXPRESSION_SPACE_OR_NONE
+    + hour_group_2(ordinal_numeral_hour.join())
     + optional_non_capturing_group(
         EXPRESSION_SPACE
         + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
         + fractions_group_2,
         EXPRESSION_SPACE
         + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
-        + minute_group_2(numeral_ones_tens.join())
+        + minute_group_2(ordinal_numeral_ones_tens.join())
         + EXPRESSION_SPACE_OR_NONE
         + non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
     )

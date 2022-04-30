@@ -184,8 +184,8 @@ trillions_group = named_group(
 )
 
 
-RULE_ORDINAL_ONES = FunctionValue(parse_ordinal, combine_patterns(ones_group))
-RULE_ORDINAL_TENS = FunctionValue(parse_ordinal, combine_patterns(tens_group))
+RULE_ORDINAL_ONES = FunctionValue(parse_ordinal, wrap_pattern(ones_group))
+RULE_ORDINAL_TENS = FunctionValue(parse_ordinal, wrap_pattern(tens_group))
 RULE_ORDINAL_HUNDREDS = FunctionValue(
     parse_ordinal, combine_patterns(hundreds_group, tens_group, ones_group)
 )
