@@ -91,7 +91,7 @@ class TimeValue(relativedelta):
 
     @property
     def weeks(self):
-        return self._weeks
+        return self._weeks or 0
 
     @weeks.setter
     def weeks(self, value):
