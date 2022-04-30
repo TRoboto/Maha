@@ -36,7 +36,7 @@ from maha.parsers.rules.ordinal.rule import (
     RULE_ORDINAL_TENS,
     RULE_ORDINAL_THOUSANDS,
 )
-from maha.parsers.rules.ordinal.values import ALEF_LAM, ONE_PREFIX
+from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL, ONE_PREFIX
 from maha.parsers.templates import FunctionValue, Value
 from maha.parsers.templates.value_expressions import MatchedValue
 from maha.rexy import (
@@ -58,10 +58,9 @@ from ..common import (
     IN_FROM_AT,
     NEXT,
     PREVIOUS,
-    get_fractions_of_pattern,
     spaced_patterns,
 )
-from .template import TimeValue
+from .template import TimeInterval, TimeValue
 
 
 def value_group(value):
@@ -1167,7 +1166,7 @@ AM = Value(
         + "ظهرا?",
     ),
 )
-
+AM_PM = ExpressionGroup(AM, PM)
 # endregion
 
 # region YEARS + MONTHS
@@ -1304,36 +1303,46 @@ DAY_MONTH_YEAR_FORM = FunctionValue(
 # ----------------------------------------------------
 # HOURS AND MINUTES
 # ----------------------------------------------------
-def parse_time_fraction(match, expression, am_pm=None):
-    ella = ELLA.search(match.group("value"))
-    splits = match.group("value").split(" ")
-    if ella:
-        hour_text, fraction_text = " ".join(splits[:-2]), " ".join(splits[-2:])
-    else:
-        hour_text, fraction_text = " ".join(splits[:-1]), splits[-1]
-    fraction = list(FRACTIONS.parse(fraction_text))[0].value
-    minute = int(60 * fraction)
+
+
+def parse_time_fraction(
+    hour_text, expression, fraction_text="", ampm_text=""
+) -> TimeValue:
+    minute = 0
+    minute = (
+        int(60 * list(FRACTIONS.parse(fraction_text))[0].value) if fraction_text else 0
+    )
     hour = list(expression.parse(hour_text))[0].value
-    if ella:
+    if fraction_text and ELLA.search(fraction_text):
         hour = hour - 1 if hour > 0 else 23
     time = {"microsecond": 0, "second": 0, "minute": minute, "hour": hour}
-    if am_pm:
-        time["am_pm"] = am_pm
-    return parse_value(time)
+    output = parse_value(time)
+    if ampm_text:
+        output += list(AM_PM.parse(ampm_text))[0].value
+    return output
 
+
+fractions_group = named_group("fraction", FRACTIONS.join())
+am_pm_group = named_group("ampm", AM_PM.join())
 
 NUMERAL_FRACTION_HOUR_MINUTE = FunctionValue(
-    lambda match: parse_time_fraction(match, numeral_ones_tens),
+    lambda match: parse_time_fraction(
+        match.group("value"), numeral_ones_tens, match.group("fraction")
+    ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
-        value_group(get_fractions_of_pattern(numeral_ones_tens.join())),
+        value_group(numeral_ones_tens.join()),
+        optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE) + fractions_group,
     ),
 )
 ORDINAL_FRACTION_HOUR_MINUTE = FunctionValue(
-    lambda match: parse_time_fraction(match, ordinal_ones_tens),
+    lambda match: parse_time_fraction(
+        match.group("value"), ordinal_ones_tens, match.group("fraction")
+    ),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR,
-        value_group(get_fractions_of_pattern(ordinal_ones_tens.join())),
+        value_group(ordinal_ones_tens.join()),
+        optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE) + fractions_group,
     ),
 )
 HOUR_MINUTE_FORM = FunctionValue(
@@ -1382,86 +1391,138 @@ HOUR_MINUTE_SECOND_FORM = FunctionValue(
 # ----------------------------------------------------
 # HOUR + AM/PM
 # ----------------------------------------------------
-NUMERAL_HOUR_PM = FunctionValue(
+NUMERAL_HOUR_AM_PM = FunctionValue(
     lambda match: parse_value(
         {
             "microsecond": 0,
             "second": 0,
             "minute": 0,
-            "am_pm": "PM",
             "hour": list(numeral_hours.parse(match.group("value")))[0].value,
         }
-    ),
+    )
+    + list(AM_PM.parse(match.group("ampm")))[0].value,
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_hours.join()),
-        PM,
+        am_pm_group,
     ),
 )
-NUMERAL_HOUR_AM = FunctionValue(
-    lambda match: parse_value(
-        {
-            "microsecond": 0,
-            "second": 0,
-            "minute": 0,
-            "am_pm": "AM",
-            "hour": list(numeral_hours.parse(match.group("value")))[0].value,
-        }
+NUMERAL_FRACTION_HOUR_AM_PM = FunctionValue(
+    lambda match: parse_time_fraction(
+        match.group("value"),
+        numeral_hours,
+        match.group("fraction"),
+        match.group("ampm"),
     ),
-    spaced_patterns(
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + value_group(numeral_hours.join()),
-        AM,
-    ),
-)
-NUMERAL_FRACTION_HOUR_AM = FunctionValue(
-    lambda match: parse_time_fraction(match, numeral_hours, "AM"),
     spaced_patterns(
         ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
-        + value_group(get_fractions_of_pattern(numeral_hours.join())),
-        AM,
+        + spaced_patterns(
+            value_group(numeral_hours.join()),
+            optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
+            + fractions_group,
+            am_pm_group,
+        )
     ),
 )
-NUMERAL_FRACTION_HOUR_PM = FunctionValue(
-    lambda match: parse_time_fraction(match, numeral_hours, "PM"),
-    spaced_patterns(
-        ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL
-        + value_group(get_fractions_of_pattern(numeral_hours.join())),
-        PM,
-    ),
-)
-ORDINAL_HOUR_PM = FunctionValue(
+ORDINAL_HOUR_AM_PM = FunctionValue(
     lambda match: parse_value(
         {
             "microsecond": 0,
             "second": 0,
             "minute": 0,
-            "am_pm": "PM",
             "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
         }
-    ),
-    spaced_patterns(value_group(ordinal_ones_tens.join()), PM),
+    )
+    + list(AM_PM.parse(match.group("ampm")))[0].value,
+    spaced_patterns(value_group(ordinal_ones_tens.join()), am_pm_group),
 )
-ORDINAL_HOUR_AM = FunctionValue(
-    lambda match: parse_value(
-        {
-            "microsecond": 0,
-            "second": 0,
-            "minute": 0,
-            "am_pm": "AM",
-            "hour": list(ordinal_ones_tens.parse(match.group("value")))[0].value,
-        }
+ORDINAL_FRACTION_HOUR_AM_PM = FunctionValue(
+    lambda match: parse_time_fraction(
+        match.group("value"),
+        ordinal_ones_tens,
+        match.group("fraction"),
+        match.group("ampm"),
     ),
-    spaced_patterns(value_group(ordinal_ones_tens.join()), AM),
-)
-ORDINAL_FRACTION_HOUR_AM = FunctionValue(
-    lambda match: parse_time_fraction(match, ordinal_ones_tens, "AM"),
     spaced_patterns(
-        value_group(get_fractions_of_pattern(ordinal_ones_tens.join())), AM
+        value_group(ordinal_ones_tens.join()),
+        optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE) + fractions_group,
+        am_pm_group,
     ),
 )
-ORDINAL_FRACTION_HOUR_PM = FunctionValue(
-    lambda match: parse_time_fraction(match, ordinal_ones_tens, "PM"),
-    spaced_patterns(
-        value_group(get_fractions_of_pattern(ordinal_ones_tens.join())), PM
+# endregion
+
+# region Time Interval: Hours
+# ----------------------------------------------------
+# Time Interval: Hours
+# ----------------------------------------------------
+hour_group_1 = lambda value: named_group("hour1", value)
+hour_group_2 = lambda value: named_group("hour2", value)
+minute_group_1 = lambda value: named_group("minute1", value)
+minute_group_2 = lambda value: named_group("minute2", value)
+fractions_group_1 = named_group("fraction1", FRACTIONS.join())
+fractions_group_2 = named_group("fraction2", FRACTIONS.join())
+am_pm_group_1 = named_group("ampm1", AM_PM.join())
+am_pm_group_2 = named_group("ampm2", AM_PM.join())
+to_group = lambda value: named_group("to_time", value)
+
+NUMERAL_INTERVAL_FRACTION_HOUR_MINUTE_AM_PM = FunctionValue(
+    lambda match: TimeInterval(
+        start=parse_time_fraction(
+            match.group("hour1"),
+            numeral_ones_tens,
+            match.group("fraction1") if "fraction1" in match.capturesdict() else "",
+            match.group("ampm1") if "ampm1" in match.capturesdict() else "",
+        )
+        + parse_value(
+            {"minute": list(numeral_ones_tens.parse(match.group("minute1")))[0].value}
+            if match.capturesdict().get("minute1")
+            else {}
+        ),
+        end=parse_time_fraction(
+            match.group("hour2"),
+            numeral_ones_tens,
+            match.group("fraction2") if "fraction2" in match.capturesdict() else "",
+            match.group("ampm2") if "ampm2" in match.capturesdict() else "",
+        )
+        + parse_value(
+            {"minute": list(numeral_ones_tens.parse(match.group("minute2")))[0].value}
+            if match.capturesdict().get("minute2")
+            else {}
+        ),
     ),
+    # FROM
+    optional_non_capturing_group(
+        ALEF_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE, ALEF_LAM
+    )
+    + hour_group_1(numeral_ones_tens.join())
+    + optional_non_capturing_group(
+        EXPRESSION_SPACE
+        + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
+        + fractions_group_1,
+        EXPRESSION_SPACE
+        + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
+        + minute_group_1(numeral_ones_tens.join())
+        + EXPRESSION_SPACE_OR_NONE
+        + optional_non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+    )
+    + optional_non_capturing_group(EXPRESSION_SPACE + am_pm_group_1)
+    # TO
+    + to_group(
+        optional_non_capturing_group(
+            ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE,
+            TO + EXPRESSION_SPACE_OR_NONE,
+        )
+    )
+    + hour_group_2(numeral_ones_tens.join())
+    + optional_non_capturing_group(
+        EXPRESSION_SPACE
+        + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
+        + fractions_group_2,
+        EXPRESSION_SPACE
+        + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
+        + minute_group_2(numeral_ones_tens.join())
+        + EXPRESSION_SPACE_OR_NONE
+        + optional_non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+    )
+    + optional_non_capturing_group(EXPRESSION_SPACE + am_pm_group_2),
 )
 # endregion
