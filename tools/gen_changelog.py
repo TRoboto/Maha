@@ -78,7 +78,7 @@ def update_citation(version, date):
 def update_changelog_tree(path: Path):
     with open(path.parents[1] / "changelog.rst") as f:
         newtext = f.read().replace(
-            ".. next-changelog", f"changelog/{path.stem}\n{' '*4}.. next-changelog"
+            ".. next-changelog", f".. next-changelog\n{' '*4}changelog/{path.stem}"
         )
     with open(path.parents[1] / "changelog.rst", "w") as f:
         f.write(newtext)
