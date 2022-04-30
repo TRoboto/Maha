@@ -1050,6 +1050,36 @@ def test_time_interval(start_time, end_time, input):
             NOW.replace(day=2, hour=17, minute=0, second=0),
             "من الاربعة العصر للخمسة بكرة",
         ),
+        (
+            NOW.replace(hour=16, minute=0, second=0),
+            NOW.replace(day=2, hour=17, minute=0, second=0),
+            "من الرابعة مساء للخمسة بكرة",
+        ),
+        (
+            NOW.replace(hour=6, minute=0, second=0),
+            NOW.replace(day=2, hour=5, minute=0, second=0),
+            "من السادسة للخامسة غدا",
+        ),
+        (
+            NOW.replace(hour=6, minute=0, second=0),
+            NOW.replace(hour=7, minute=0, second=0),
+            "من السادسة للسابعة",
+        ),
+        (
+            NOW.replace(hour=5, minute=0, second=0),
+            NOW.replace(hour=6, minute=0, second=0),
+            "من الخمسة للستة",
+        ),
+        (
+            NOW.replace(hour=16, minute=0, second=0),
+            NOW.replace(day=2, hour=17, minute=40, second=0),
+            "من الأربعة مساء حتى الخامسة وأربعين دقيقة غدا",
+        ),
+        (
+            NOW.replace(hour=17, minute=50, second=0),
+            NOW.replace(hour=19, minute=40, second=0),
+            "من الخمسة وخمسين دقيقة مساء للثامنة الا ثلث",
+        ),
     ],
 )
 def test_predefined_time_intervals(start_time, end_time, input):
