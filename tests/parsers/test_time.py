@@ -1036,6 +1036,11 @@ def test_time_interval(start_time, end_time, input):
             "من 9 وعشرين دقيقة لل عشرة الا ربع الصبح",
         ),
         (
+            NOW.replace(day=5, hour=6, minute=0, second=0),
+            NOW.replace(day=5, hour=7, minute=10, second=0),
+            "بداية الأسبوع الجاي من الستة للسبعة و10 دقائق",
+        ),
+        (
             NOW.replace(day=2, hour=16, minute=0, second=0),
             NOW.replace(day=2, hour=17, minute=0, second=0),
             "بكرة من الاربعة العصر للخمسة",
