@@ -1502,12 +1502,12 @@ NUMERAL_INTERVAL_FRACTION_HOUR_MINUTE_AM_PM = FunctionValue(
         + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
         + minute_group_1(numeral_ones_tens.join())
         + EXPRESSION_SPACE_OR_NONE
-        + optional_non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+        + non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
     )
     + optional_non_capturing_group(EXPRESSION_SPACE + am_pm_group_1)
     # TO
     + to_group(
-        optional_non_capturing_group(
+        non_capturing_group(
             ALEF_LAM_OR_DOUBLE_LAM_OPTIONAL + ONE_HOUR + EXPRESSION_SPACE,
             TO + EXPRESSION_SPACE_OR_NONE,
         )
@@ -1521,7 +1521,7 @@ NUMERAL_INTERVAL_FRACTION_HOUR_MINUTE_AM_PM = FunctionValue(
         + optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
         + minute_group_2(numeral_ones_tens.join())
         + EXPRESSION_SPACE_OR_NONE
-        + optional_non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
+        + non_capturing_group(ONE_MINUTE, SEVERAL_MINUTES),
     )
     + optional_non_capturing_group(EXPRESSION_SPACE + am_pm_group_2),
 )
