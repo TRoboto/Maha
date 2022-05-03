@@ -8,7 +8,7 @@ import pytest
 from maha.parsers.functions import parse_dimension
 from maha.parsers.rules.distance import *
 from maha.parsers.rules.distance.template import DistanceValue, ValueUnit
-from maha.parsers.templates import DistanceUnit
+from maha.parsers.templates import Dimension, DistanceUnit
 
 M = DistanceUnit.METERS
 KM = DistanceUnit.KILOMETERS
@@ -85,6 +85,14 @@ def assert_expression_output(output, expected, unit):
     assert isinstance(output.value[0], ValueUnit)
     assert pytest.approx(output.value[0].value, 0.0001) == expected
     assert output.value[0].unit == unit
+
+
+def assert_normalized_value(output: list[Dimension], expected: float):
+    assert len(output) == 1
+    result = output[0]
+
+    assert isinstance(result.value, DistanceValue)
+    assert pytest.approx(result.value.normalized_value.value, 0.01) == expected
 
 
 @pytest.mark.parametrize(
@@ -209,6 +217,27 @@ def test_inches_expression(expected, input):
 def test_fractions(input, expected):
     output = parse_dimension(input, distance=True)
     assert_expression_output(output, expected, KM)
+
+
+@pytest.mark.parametrize(
+    "expected, input",
+    [
+        (500, "نصف كيلو متر"),
+        (250, "ربع كيلو متر"),
+        (1000, "كيلو متر"),
+        (1, "متر"),
+        (0.5, "نصف متر"),
+        (0.25, "ربع متر"),
+        (91.44, "100 ياردة"),
+        (2.54, "100 انش"),
+        (30.48, "100 قدم"),
+        (160934, "100 ميل"),
+        (3218.69, "ميلين"),
+    ],
+)
+def test_normalized_value_in_meters(input, expected):
+    output = parse_dimension(input, distance=True)
+    assert_normalized_value(output, expected)
 
 
 @pytest.mark.parametrize(
