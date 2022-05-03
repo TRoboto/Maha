@@ -53,6 +53,18 @@ class ValueUnit:
     unit: Unit
 
 
+def merge_same_units(values: list[ValueUnit]) -> list[ValueUnit]:
+    """Merge values with same units from the input ``values``."""
+    newvalues: dict[Unit, ValueUnit] = {}
+    for value in values:
+        unit = value.unit
+        if unit in newvalues:
+            newvalues[unit].value += value.value
+        else:
+            newvalues[unit] = value
+    return list(newvalues.values())
+
+
 def get_fractions_of_unit_pattern(unit: str) -> str:
     """
     Returns the fractions of a unit pattern.

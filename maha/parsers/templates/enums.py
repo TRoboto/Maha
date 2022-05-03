@@ -108,8 +108,15 @@ class MoneyUnit(Unit):
 
 
 class DistanceUnit(Unit):
-    METER = auto()
-    MILE = auto()
+    METERS = auto()
+    KILOMETERS = auto()
+    DECIMETERS = auto()
+    CENTIMETERS = auto()
+    MILLIMETERS = auto()
+    MILES = auto()
+    YARDS = auto()
+    FEET = auto()
+    INCHES = auto()
 
 
 class DurationUnit(Unit):

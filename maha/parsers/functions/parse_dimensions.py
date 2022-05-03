@@ -4,6 +4,7 @@ __all__ = ["parse_dimension"]
 
 
 from maha.parsers.rules import (
+    RULE_DISTANCE,
     RULE_DURATION,
     RULE_NAME,
     RULE_NUMERAL,
@@ -78,7 +79,7 @@ def parse_dimension(
     if duration:
         output.extend(_get_dimensions(RULE_DURATION, text, DimensionType.DURATION))
     if distance:
-        raise NotImplementedError("distance is not implemented yet")
+        output.extend(_get_dimensions(RULE_DISTANCE, text, DimensionType.DISTANCE))
     if numeral:
         output.extend(_get_dimensions(RULE_NUMERAL, text, DimensionType.NUMERAL))
     if ordinal:

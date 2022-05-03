@@ -19,13 +19,14 @@ from maha.parsers.rules.numeral.rule import (
     RULE_NUMERAL,
     _parse_numeral,
 )
-from maha.parsers.templates import FunctionValue, Unit
+from maha.parsers.templates import FunctionValue
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
 from ..common import (
     FRACTIONS,
     combine_patterns,
     get_fractions_of_unit_pattern,
+    merge_same_units,
     spaced_patterns,
 )
 from .template import *
@@ -43,18 +44,6 @@ def get_pattern(singular_frac_group, singular, dual, all_units):
     )
 
 
-def merge_same_units(values: list[ValueUnit]) -> list[ValueUnit]:
-    """Merge values with same units from the input ``values``."""
-    newvalues: dict[Unit, ValueUnit] = {}
-    for value in values:
-        unit = value.unit
-        if unit in newvalues:
-            newvalues[unit].value += value.value
-        else:
-            newvalues[unit] = value
-    return list(newvalues.values())
-
-
 def get_unit_fraction_value(matched_text):
     val1, val2 = matched_text.split(" ", 1)
     fraction = FRACTIONS.get_matched_expression(val1)
@@ -64,21 +53,6 @@ def get_unit_fraction_value(matched_text):
     else:
         value = get_matched_value(val2)
     value.value = fraction.value  # type: ignore
-    return value
-
-
-def _parse(matched_text, singular=None, plural=None):
-    if singular and plural:
-        multiplier = plural.search(matched_text) or singular.search(matched_text)
-        matched_text = matched_text.replace(multiplier.group(0), "").strip()
-
-    fraction = FRACTIONS.get_matched_expression(matched_text)
-    value = ValueUnit(0, singular.value.unit)
-    if fraction is not None:
-        value.value = fraction.value  # type: ignore
-    else:
-        value.value = list(RULE_NUMERAL(matched_text))[0].value
-
     return value
 
 
