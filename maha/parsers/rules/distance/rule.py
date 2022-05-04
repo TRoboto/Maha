@@ -1,4 +1,4 @@
-"""Rules to extract duration."""
+"""Rules to extract distance."""
 from __future__ import annotations
 
 __all__ = [
@@ -26,7 +26,6 @@ from ..common import (
     FRACTIONS,
     combine_patterns,
     get_fractions_of_unit_pattern,
-    merge_same_units,
     spaced_patterns,
     wrap_pattern,
 )
@@ -35,7 +34,7 @@ from .values import *
 
 
 def get_pattern(singular_frac_group, singular, all_units, dual=None):
-    """Get regex pattern for duration."""
+    """Get regex pattern for distance."""
     if dual:
         return non_capturing_group(
             spaced_patterns(RULE_NUMERAL, all_units),
@@ -144,7 +143,6 @@ def parse_distance(match):
     for item in groups.get("fractions", []):
         values.append(get_unit_fraction_value(item))
 
-    values = merge_same_units(values)
     values.sort(key=lambda v: v.unit.value, reverse=True)
     return DistanceValue(values)
 
