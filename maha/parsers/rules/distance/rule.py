@@ -14,11 +14,7 @@ __all__ = [
     "RULE_DISTANCE",
 ]
 
-from maha.parsers.rules.numeral.rule import (
-    EXPRESSION_NUMERAL_MAP,
-    RULE_NUMERAL,
-    _parse_numeral,
-)
+from maha.parsers.rules.numeral.rule import RULE_NUMERAL, parse_numeral
 from maha.parsers.templates import FunctionValue
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
@@ -112,39 +108,20 @@ def get_groups():
 def parse_distance(match):
     """Parse distance."""
     groups = match.capturesdict()
-    groups_keys = list(groups)
 
     distance_groups = get_groups()
-    sorted_values = {}
-    for group in list(EXPRESSION_NUMERAL_MAP) + distance_groups:
-        if group not in groups_keys:
-            continue
-        for i, value in enumerate(groups.get(group)):
-            index = match.starts(groups_keys.index(group) + 1)[i]
-            sorted_values[index] = {"group": group, "value": value}
+    if groups.get("fractions"):
+        value = get_unit_fraction_value(groups.get("fractions")[0])
+        return DistanceValue(value)
 
-    sorted_values = dict(sorted(sorted_values.items()))
-
-    # holds numeral values before a unit
-    temp_dict = {}
-    values = []
-    for index, item in sorted_values.items():
-        group = item["group"]
-        if group not in distance_groups:
-            temp_dict[index] = item
-            continue
-        numeral = _parse_numeral(temp_dict)
-        valueunit = get_matched_value(item["value"])
-        if numeral:
-            valueunit.value = numeral
-        values.append(valueunit)
-        temp_dict = {}
-
-    for item in groups.get("fractions", []):
-        values.append(get_unit_fraction_value(item))
-
-    values.sort(key=lambda v: v.unit.value, reverse=True)
-    return DistanceValue(values)
+    matched_group = [
+        groups.get(group)[0] for group in distance_groups if groups.get(group)
+    ][0]
+    valueunit = get_matched_value(matched_group)
+    numeral = parse_numeral(match)
+    if numeral:
+        valueunit.value = numeral
+    return DistanceValue(valueunit)
 
 
 _meters = named_group(

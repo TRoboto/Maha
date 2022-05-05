@@ -81,10 +81,8 @@ def assert_expression_output(output, expected, unit):
     output = output[0]
 
     assert isinstance(output.value, DistanceValue)
-    assert len(output.value) == 1
-    assert isinstance(output.value[0], ValueUnit)
-    assert pytest.approx(output.value[0].value, 0.0001) == expected
-    assert output.value[0].unit == unit
+    assert pytest.approx(output.value.value, 0.0001) == expected
+    assert output.value.unit == unit
 
 
 def assert_normalized_value(output: list[Dimension], expected: float):
