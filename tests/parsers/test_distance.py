@@ -238,6 +238,15 @@ def test_normalized_value_in_meters(input, expected):
     assert_normalized_value(output, expected)
 
 
+def test_multiple_units():
+    output = parse_dimension("ثلاثين متر أو مئة قدم", distance=True)
+    assert len(output) == 2
+    assert output[0].value.value == 30
+    assert output[0].value.unit == M
+    assert output[1].value.value == 100
+    assert output[1].value.unit == FT
+
+
 @pytest.mark.parametrize(
     "input",
     [
