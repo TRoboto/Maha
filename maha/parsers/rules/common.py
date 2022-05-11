@@ -2,7 +2,6 @@ from __future__ import annotations
 
 __all__ = [
     "get_fractions_of_unit_pattern",
-    "get_fractions_of_pattern",
     "wrap_pattern",
     "spaced_patterns",
     "THIRD",
@@ -74,45 +73,6 @@ def get_fractions_of_unit_pattern(unit: str) -> str:
         spaced_patterns(HALF, unit),
         spaced_patterns(THIRD, unit),
         spaced_patterns(QUARTER, unit),
-    )
-
-
-def get_fractions_of_pattern(pattern: str) -> str:
-    """
-    Returns the fractions of a pattern.
-
-    Parameters
-    ----------
-    pattern: str
-        The pattern.
-
-    Returns
-    -------
-    str
-        Pattern for the fractions of the input pattern.
-    """
-
-    return non_capturing_group(
-        spaced_patterns(
-            pattern,
-            optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE)
-            + THREE_QUARTERS,
-        ),
-        spaced_patterns(
-            pattern,
-            optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE) + TWO_THIRDS,
-        ),
-        spaced_patterns(
-            pattern, optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE) + HALF
-        ),
-        spaced_patterns(
-            pattern,
-            optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE) + THIRD,
-        ),
-        spaced_patterns(
-            pattern,
-            optional_non_capturing_group(WAW + EXPRESSION_SPACE_OR_NONE) + QUARTER,
-        ),
     )
 
 

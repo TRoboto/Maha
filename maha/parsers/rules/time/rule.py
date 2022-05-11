@@ -84,10 +84,19 @@ def parse_time(match):
         return "to_time" in groups_keys
 
     # time interval
-    if contains_to_time() and not TO.match(text) and groups["to_time"]:
+    if (
+        groups.get("interval")
+        or contains_to_time()
+        and not TO.match(text)
+        and groups["to_time"]
+    ):
         to_time_start = match.starts(groups_keys.index("to_time") + 1)[0]
         start_time = TimeValue()
         end_time = TimeValue()
+        if groups.get("interval"):
+            value = list(interval_expressions.parse(match.group("interval")))[0].value
+            start_time += value.start
+            end_time += value.end
         for group, exp_group in EXPERSSION_TIME_MAP.items():
             g_start = match.starts(groups_keys.index(group) + 1)
             if group not in groups_keys or not g_start:
@@ -195,16 +204,14 @@ hour_minute_expressions = ExpressionGroup(
 )
 hour_minute_second_expressions = ExpressionGroup(HOUR_MINUTE_SECOND_FORM)
 hour_am_pm_expressions = ExpressionGroup(
-    NUMERAL_FRACTION_HOUR_AM,
-    ORDINAL_FRACTION_HOUR_AM,
-    NUMERAL_FRACTION_HOUR_PM,
-    ORDINAL_FRACTION_HOUR_PM,
-    NUMERAL_HOUR_AM,
-    NUMERAL_HOUR_PM,
-    ORDINAL_HOUR_AM,
-    ORDINAL_HOUR_PM,
+    NUMERAL_FRACTION_HOUR_AM_PM,
+    ORDINAL_FRACTION_HOUR_AM_PM,
+    NUMERAL_HOUR_AM_PM,
+    ORDINAL_HOUR_AM_PM,
 )
-
+interval_expressions = ExpressionGroup(
+    INTERVAL_FRACTION_HOUR_MINUTE_AM_PM,
+)
 
 now_group = named_group("now", now_expressions.join())
 years_group = named_group("years", years_expressions.join())
@@ -220,6 +227,7 @@ year_month_day_group = named_group("year_month_day", year_month_day_expressions.
 hour_minute_group = named_group("hour_minute", hour_minute_expressions.join())
 hour_minute_second_group = named_group("h_m_s", hour_minute_second_expressions.join())
 hour_am_pm_group = named_group("hour_am_pm", hour_am_pm_expressions.join())
+interval_expressions_group = named_group("interval", interval_expressions.join())
 
 RULE_TIME_YEARS = FunctionValue(parse_time, combine_patterns(years_group))
 RULE_TIME_MONTHS = FunctionValue(parse_time, combine_patterns(months_group))
@@ -230,8 +238,8 @@ RULE_TIME_MINUTES = FunctionValue(parse_time, combine_patterns(minutes_group))
 RULE_TIME_AM_PM = FunctionValue(parse_time, combine_patterns(am_pm_group))
 RULE_TIME_NOW = FunctionValue(parse_time, combine_patterns(now_group))
 
-
 _all_time_expressions_pattern = combine_patterns(
+    interval_expressions_group,
     year_month_day_group,
     year_month_group,
     month_day_group,
@@ -249,19 +257,10 @@ _all_time_expressions_pattern = combine_patterns(
     seperator=TIME_WORD_SEPARATOR,
     combine_all=True,
 )
-from_time_group = named_group(
-    "from_time", spaced_patterns(FROM, _all_time_expressions_pattern)
-)
 to_time_group = named_group(
     "to_time", TO + EXPRESSION_SPACE_OR_NONE + _all_time_expressions_pattern
 )
-from_time_to_time_group = named_group(
-    "from_time_to_time", spaced_patterns(from_time_group, to_time_group)
-)
 
-RULE_TIME_FROM = FunctionValue(parse_time, from_time_group)
-RULE_TIME_TO = FunctionValue(parse_time, to_time_group)
-RULE_TIME_FROM_TO = FunctionValue(parse_time, from_time_to_time_group)
 
 RULE_TIME = FunctionValue(
     parse_time,

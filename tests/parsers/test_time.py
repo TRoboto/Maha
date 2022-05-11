@@ -708,6 +708,7 @@ def test_month_and_year(input):
         (DATE.replace(hour=15, minute=20), "الساعة 3 وثلث مساءا"),
         (DATE.replace(hour=2, minute=45), "الساعة 3 الا ربع الفجر"),
         (DATE.replace(hour=12, minute=30), "12 ونص مساء"),
+        (DATE.replace(hour=12, minute=30), "الثانية عشرة والنصف مساء"),
         (DATE.replace(hour=12, minute=49), "الساعة الثانية عشر وتسعة واربعون دقيقة"),
         (DATE.replace(hour=5, minute=50), "الساعة خمسة وخمسين دقيقة"),
         (NOW.replace(year=1040), "في العام الف واربعين"),
@@ -1002,6 +1003,91 @@ def test_time_interval(start_time, end_time, input):
 
 
 @pytest.mark.parametrize(
+    "start_time,end_time,input",
+    [
+        (
+            NOW.replace(hour=16, minute=0, second=0),
+            NOW.replace(hour=17, minute=0, second=0),
+            "من الأربعة للخمسة بعد العصر",
+        ),
+        (
+            NOW.replace(hour=6, minute=0, second=0),
+            NOW.replace(hour=7, minute=0, second=0),
+            "من الستة للسبعة",
+        ),
+        (
+            NOW.replace(hour=4, minute=30, second=0),
+            NOW.replace(hour=5, minute=0, second=0),
+            "من الأربعة ونص للخمسة",
+        ),
+        (
+            NOW.replace(hour=4, minute=0, second=0),
+            NOW.replace(hour=5, minute=15, second=0),
+            "من الأربعة للخمسة وربع صباحا",
+        ),
+        (
+            NOW.replace(hour=10, minute=20, second=0),
+            NOW.replace(hour=11, minute=0, second=0),
+            "من العشرة وعشرين دقيقة لل11 الصبح",
+        ),
+        (
+            NOW.replace(hour=9, minute=20, second=0),
+            NOW.replace(hour=9, minute=45, second=0),
+            "من 9 وعشرين دقيقة لل عشرة الا ربع الصبح",
+        ),
+        (
+            NOW.replace(day=5, hour=6, minute=0, second=0),
+            NOW.replace(day=5, hour=7, minute=10, second=0),
+            "بداية الأسبوع الجاي من الستة للسبعة و10 دقائق",
+        ),
+        (
+            NOW.replace(day=2, hour=16, minute=0, second=0),
+            NOW.replace(day=2, hour=17, minute=0, second=0),
+            "بكرة من الاربعة العصر للخمسة",
+        ),
+        (
+            NOW.replace(hour=16, minute=0, second=0),
+            NOW.replace(day=2, hour=17, minute=0, second=0),
+            "من الاربعة العصر للخمسة بكرة",
+        ),
+        (
+            NOW.replace(hour=16, minute=0, second=0),
+            NOW.replace(day=2, hour=17, minute=0, second=0),
+            "من الرابعة مساء للخمسة بكرة",
+        ),
+        (
+            NOW.replace(hour=6, minute=0, second=0),
+            NOW.replace(day=2, hour=5, minute=0, second=0),
+            "من السادسة للخامسة غدا",
+        ),
+        (
+            NOW.replace(hour=6, minute=0, second=0),
+            NOW.replace(hour=7, minute=0, second=0),
+            "من السادسة للسابعة",
+        ),
+        (
+            NOW.replace(hour=5, minute=0, second=0),
+            NOW.replace(hour=6, minute=0, second=0),
+            "من الخمسة للستة",
+        ),
+        (
+            NOW.replace(hour=16, minute=0, second=0),
+            NOW.replace(day=2, hour=17, minute=40, second=0),
+            "من الأربعة مساء حتى الخامسة وأربعين دقيقة غدا",
+        ),
+        (
+            NOW.replace(hour=17, minute=50, second=0),
+            NOW.replace(hour=19, minute=40, second=0),
+            "من الخمسة وخمسين دقيقة مساء للثامنة الا ثلث",
+        ),
+    ],
+)
+def test_predefined_time_intervals(start_time, end_time, input):
+    output = parse_dimension(input, time=True)
+    assert_interval_output(output, start_time, end_time)
+
+
+@pytest.mark.parametrize(
     "input",
     [
         ("11"),
@@ -1013,6 +1099,8 @@ def test_time_interval(start_time, end_time, input):
         ("اربعة وخمسين ساعة"),
         ("جمع"),
         ("السبتت"),
+        ("الثانية عشر"),
+        ("الثانية والنصف"),
     ],
 )
 def test_negative_cases(input):

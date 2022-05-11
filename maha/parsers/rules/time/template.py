@@ -91,7 +91,7 @@ class TimeValue(relativedelta):
 
     @property
     def weeks(self):
-        return self._weeks
+        return self._weeks or 0
 
     @weeks.setter
     def weeks(self, value):
@@ -110,7 +110,7 @@ class TimeValue(relativedelta):
         return self._leapdays is not None
 
     def is_weeks_set(self):
-        return self.weeks is not None or self.weekday is not None
+        return self._weeks is not None or self.weekday is not None
 
     def is_hours_set(self):
         return self._hours is not None or self.hour is not None
@@ -145,7 +145,7 @@ class TimeValue(relativedelta):
                 months=self._add(other._months, self._months),
                 days=self._add(other._days, self._days),
                 leapdays=self._add(other._leapdays, self._leapdays),
-                weeks=self._add(other._weeks, self.weeks),
+                weeks=self._add(other._weeks, self._weeks),
                 hours=self._add(other._hours, self._hours),
                 minutes=self._add(other._minutes, self._minutes),
                 seconds=self._add(other._seconds, self._seconds),
@@ -289,6 +289,7 @@ class TimeValue(relativedelta):
         return (
             self._years == other._years
             and self._months == other._months
+            and self._weeks == other._weeks
             and self._days == other._days
             and self._hours == other._hours
             and self._minutes == other._minutes
@@ -304,7 +305,6 @@ class TimeValue(relativedelta):
             and self.microsecond == other.microsecond
             and self.weekday == other.weekday
             and self.am_pm == other.am_pm
-            and self.weeks == other.weeks
             and self.hijri == other.hijri
         )
 
