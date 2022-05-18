@@ -179,8 +179,9 @@ The module provides the following simple interfaces to parse text.
   possible to use custom constants/expressions.
 
 * The :func:`~.parse_dimension` function is used to parse any of the available dimensions.
-  The available dimensions are ``duration``,  ``time``, ``numeral``, ``ordinal`` and ``names``.
-  To create your own dimension, check out :doc:`custom dimension<development/custom_dimension>`.
+  The available dimensions are ``time``, ``duration``, ``distance``, ``numeral``, ``ordinal``
+  and ``names``. To create your own dimension, check out
+  :doc:`custom dimension<development/custom_dimension>`.
   If you would like to contribute your custom dimension to the project, check
   :doc:`contribution guidelines<contributing>`.
 
@@ -263,6 +264,26 @@ Examples
     ValueUnit(value=2400, unit=<DurationUnit.SECONDS: 1>)
     >>> parse_dimension("يومين و10 ساعات", duration=True)[0].value.values
     [ValueUnit(value=2, unit=<DurationUnit.DAYS: 4>), ValueUnit(value=10, unit=<DurationUnit.HOURS: 3>)]
+
+* To extract distance, you can do the following:
+
+.. code:: pycon
+
+    >>> from maha.parsers.functions import parse_dimension
+    >>> parse_dimension("قطعت ثلاثين كيلو مترا خلال سفري.", distance=True)
+    [Dimension(body=ثلاثين كيلو مترا, value=DistanceValue(value=30, unit=DistanceUnit.KILOMETERS), start=5, end=21, dimension_type=DimensionType.DISTANCE)]
+    >>> parse_dimension("مئة وعشرين ياردة", distance=True)[0].value
+    DistanceValue(value=120, unit=DistanceUnit.YARDS)
+    >>> parse_dimension("ثلاثة سم", distance=True)[0].value.normalized_value
+    ValueUnit(value=0.03, unit=<DistanceUnit.METERS: 1>)
+    >>> parse_dimension("نصف ميل", distance=True)[0].value
+    DistanceValue(value=0.5, unit=DistanceUnit.MILES)
+    >>> parse_dimension("مئة انش", distance=True)[0].value.normalized_value
+    ValueUnit(value=2.54, unit=<DistanceUnit.METERS: 1>)
+    >>> parse_dimension("44 فاصلة خمسة قدم", distance=True)[0].value
+    DistanceValue(value=44.5, unit=DistanceUnit.FEET)
+    >>> parse_dimension("20 كم", distance=True)[0].value
+    DistanceValue(value=20, unit=DistanceUnit.KILOMETERS)
 
 * To extract ordinal, you can do the following:
 
