@@ -43,7 +43,7 @@ Check out the [overview](https://maha.readthedocs.io/en/stable/overview.html) se
 
 ## Documentation
 
-Documentation are hosted at [ReadTheDocs](https://maha.readthedocs.io).
+Documentation is hosted at [ReadTheDocs](https://maha.readthedocs.io).
 
 ## Contributing
 
