@@ -260,11 +260,11 @@ def remove(
 
 
 def reduce_repeated_substring(
-    text: str, min_repeated: int = 3, reduce_to: int = 2
+    text: str, min_repeated: int = 4, reduce_to: int = 3
 ) -> str:
     """Reduces consecutive substrings that are repeated at least ``min_repeated`` times
     to ``reduce_to`` times. For example with the default arguments, 'hhhhhh' is
-    reduced to 'hh'
+    reduced to 'hhh'
 
     TODO: Maybe change the implemention for 50x speed
     https://stackoverflow.com/questions/29481088/how-can-i-tell-if-a-string-repeats-itself-in-python/29489919#29489919
@@ -274,9 +274,9 @@ def reduce_repeated_substring(
     text : str
         Text to process
     min_repeated : int, optional
-        Minimum number of consecutive repeated substring to consider, by default 3
+        Minimum number of consecutive repeated substring to consider, by default 4
     reduce_to : int, optional
-        Number of substring to keep, by default 2
+        Number of substring to keep, by default 3
 
     Returns
     -------
@@ -297,7 +297,7 @@ def reduce_repeated_substring(
         >>> from maha.cleaners.functions import reduce_repeated_substring
         >>> text = "ههههههههههههههه"
         >>> reduce_repeated_substring(text)
-        'هه'
+        'ههه'
 
     ..code:: pycon
 
