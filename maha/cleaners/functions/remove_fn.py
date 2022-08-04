@@ -169,7 +169,7 @@ def remove(
         for more information, by default True
     custom_strings:
         Include any other string(s), by default None
-    custom_expressions: Union[:class:`~.ExpressionGroup`, :class:`~.Expression`, str]
+    custom_expressions:
         Include any other regular expression expressions, by default None
 
     Returns
