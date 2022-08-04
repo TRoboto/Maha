@@ -2,6 +2,7 @@
 Functions that operate on a string and remove certain characters.
 """
 from __future__ import annotations
+from typing import Iterable
 
 __all__ = [
     "remove",
@@ -92,7 +93,7 @@ def remove(
     emojis: bool = False,
     use_space: bool = True,
     custom_strings: list[str] | str | None = None,
-    custom_expressions: ExpressionGroup | Expression | str | None = None,
+    custom_expressions: ExpressionGroup | Expression | list[str] | str | None = None,
 ):
 
     """Removes certain characters from the given text.
@@ -218,7 +219,12 @@ def remove(
 
     chars_to_remove.extend(custom_strings)
     # expressions to remove
-    expressions_to_remove = ExpressionGroup(custom_expressions)
+    if isinstance(custom_expressions, list):
+        expressions_to_remove = ExpressionGroup(
+            *[Expression(string) for string in custom_expressions]
+        )
+    else:
+        expressions_to_remove = ExpressionGroup(custom_expressions)
 
     # Since each argument has the same name as the corresponding constant
     # (But, expressions should be prefixed with "EXPRESSION_" to match the actual expression.)

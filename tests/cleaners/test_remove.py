@@ -823,3 +823,11 @@ def test_remove_arabic_letter_dots_with_edge_case(input: str, expected: str):
 def test_remove_arabic_letter_dots_general(input: str, expected: str):
 
     assert remove_arabic_letter_dots(input) == expected
+
+
+def test_remove_list_input(simple_text_input: str):
+    list_ = [r"ال", r"the"]
+    processed_text = remove(text=simple_text_input, custom_expressions = list_)
+    assert processed_text == "1. بِسْمِ،لَّهِ رَّحْمَٰنِ رَّحِيمِ In name of Allah,Most Gracious, Most Merciful."
+    assert list_not_in_string(list_, processed_text)
+    
