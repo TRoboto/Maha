@@ -3,7 +3,7 @@ Functions that operate on a string and remove certain characters.
 """
 from __future__ import annotations
 
-from maha.rexy.rexy import non_capturing_group
+from maha.rexy import non_capturing_group
 
 __all__ = [
     "remove",
@@ -94,11 +94,7 @@ def remove(
     emojis: bool = False,
     use_space: bool = True,
     custom_strings: list[str] | str | None = None,
-    custom_expressions: ExpressionGroup
-    | Expression
-    | list[str | Expression]
-    | str
-    | None = None,
+    custom_expressions: ExpressionGroup | Expression | list[str] | str | None = None,
 ):
 
     """Removes certain characters from the given text.
