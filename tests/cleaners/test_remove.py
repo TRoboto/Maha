@@ -70,6 +70,7 @@ from maha.constants import (
     ZAH,
     ZAIN,
 )
+from maha.rexy.templates.expression import Expression
 from tests.utils import list_not_in_string
 
 
@@ -826,8 +827,6 @@ def test_remove_arabic_letter_dots_general(input: str, expected: str):
 
 
 def test_remove_list_input(simple_text_input: str):
-    list_ = [r"ال", r"the"]
+    list_ = [r"بِسْمِ", r"the", Expression("In"), Expression("ال(?=ر)")]
     processed_text = remove(text=simple_text_input, custom_expressions = list_)
-    assert processed_text == "1. بِسْمِ،لَّهِ رَّحْمَٰنِ رَّحِيمِ In name of Allah,Most Gracious, Most Merciful."
-    assert list_not_in_string(list_, processed_text)
-    
+    assert processed_text == "1. ،اللَّهِ رَّحْمَٰنِ رَّحِيمِ name of Allah,Most Gracious, Most Merciful."

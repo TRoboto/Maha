@@ -2,7 +2,7 @@
 Functions that operate on a string and remove certain characters.
 """
 from __future__ import annotations
-from typing import Iterable
+from maha.rexy.rexy import non_capturing_group
 
 __all__ = [
     "remove",
@@ -93,7 +93,7 @@ def remove(
     emojis: bool = False,
     use_space: bool = True,
     custom_strings: list[str] | str | None = None,
-    custom_expressions: ExpressionGroup | Expression | list[str] | str | None = None,
+    custom_expressions: ExpressionGroup | Expression | list[str | Expression] | str | None = None,
 ):
 
     """Removes certain characters from the given text.
@@ -214,17 +214,16 @@ def remove(
     if isinstance(custom_strings, str):
         custom_strings = [custom_strings]
 
+    chars_to_remove.extend(custom_strings)
+
+    # expressions to remove
     if isinstance(custom_expressions, str):
         custom_expressions = Expression(custom_expressions)
 
-    chars_to_remove.extend(custom_strings)
-    # expressions to remove
-    if isinstance(custom_expressions, list):
-        expressions_to_remove = ExpressionGroup(
-            *[Expression(string) for string in custom_expressions]
-        )
-    else:
-        expressions_to_remove = ExpressionGroup(custom_expressions)
+    elif isinstance(custom_expressions, list):
+        custom_expressions = Expression(non_capturing_group(*custom_expressions))
+
+    expressions_to_remove = ExpressionGroup(custom_expressions)
 
     # Since each argument has the same name as the corresponding constant
     # (But, expressions should be prefixed with "EXPRESSION_" to match the actual expression.)
