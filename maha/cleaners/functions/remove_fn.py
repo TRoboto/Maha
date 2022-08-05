@@ -3,6 +3,8 @@ Functions that operate on a string and remove certain characters.
 """
 from __future__ import annotations
 
+from maha.rexy import non_capturing_group
+
 __all__ = [
     "remove",
     "remove_strings",
@@ -92,7 +94,7 @@ def remove(
     emojis: bool = False,
     use_space: bool = True,
     custom_strings: list[str] | str | None = None,
-    custom_expressions: ExpressionGroup | Expression | str | None = None,
+    custom_expressions: ExpressionGroup | Expression | list[str] | str | None = None,
 ):
 
     """Removes certain characters from the given text.
@@ -168,7 +170,7 @@ def remove(
         for more information, by default True
     custom_strings:
         Include any other string(s), by default None
-    custom_expressions: Union[:class:`~.ExpressionGroup`, :class:`~.Expression`, str]
+    custom_expressions:
         Include any other regular expression expressions, by default None
 
     Returns
@@ -213,11 +215,15 @@ def remove(
     if isinstance(custom_strings, str):
         custom_strings = [custom_strings]
 
+    chars_to_remove.extend(custom_strings)
+
+    # expressions to remove
     if isinstance(custom_expressions, str):
         custom_expressions = Expression(custom_expressions)
 
-    chars_to_remove.extend(custom_strings)
-    # expressions to remove
+    elif isinstance(custom_expressions, list):
+        custom_expressions = Expression(non_capturing_group(*custom_expressions))
+
     expressions_to_remove = ExpressionGroup(custom_expressions)
 
     # Since each argument has the same name as the corresponding constant
