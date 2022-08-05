@@ -828,5 +828,8 @@ def test_remove_arabic_letter_dots_general(input: str, expected: str):
 
 def test_remove_list_input(simple_text_input: str):
     list_ = [r"بِسْمِ", r"the", Expression("In"), Expression("ال(?=ر)")]
-    processed_text = remove(text=simple_text_input, custom_expressions = list_)
-    assert processed_text == "1. ،اللَّهِ رَّحْمَٰنِ رَّحِيمِ name of Allah,Most Gracious, Most Merciful."
+    processed_text = remove(text=simple_text_input, custom_expressions=list_)
+    assert (
+        processed_text
+        == "1. ،اللَّهِ رَّحْمَٰنِ رَّحِيمِ name of Allah,Most Gracious, Most Merciful."
+    )
