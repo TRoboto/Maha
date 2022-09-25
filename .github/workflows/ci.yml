@@ -25,8 +25,12 @@ jobs:
         with:
           python-version: ${{ matrix.python }}
 
-      - name: Python Poetry Action
-        uses: abatilo/actions-poetry@v2.1.0
+      - name: Python Install Poetry
+        uses: Gr1N/setup-poetry@v7
+      - uses: actions/cache@v2
+        with:
+          path: ~/.cache/pypoetry/virtualenvs
+          key: ${{ runner.os }}-poetry-${{ hashFiles('poetry.lock') }}
 
       - name: Install dependencies
         run: poetry install
