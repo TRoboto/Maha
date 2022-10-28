@@ -226,7 +226,7 @@ class BaseProcessor(ABC):
         self.apply(partial(replace_pairs, **self._arguments_except_self(locals())))
         return self
 
-    def reduce_repeated_substring(self, min_repeated: int = 3, reduce_to: int = 2):
+    def reduce_repeated_substring(self, min_repeated: int = 4, reduce_to: int = 3):
         """Applies :func:`~.reduce_repeated_substring` to each line"""
         self.apply(
             partial(reduce_repeated_substring, **self._arguments_except_self(locals()))
