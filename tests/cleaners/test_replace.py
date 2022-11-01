@@ -1,23 +1,12 @@
 import pytest
 
-from maha.cleaners.functions import (
-    arabic_numbers_to_english,
-    connect_single_letter_word,
-    replace,
-    replace_except,
-    replace_expression,
-    replace_pairs,
-)
-from maha.constants import (
-    ARABIC_FOUR,
-    ARABIC_NUMBERS,
-    ARABIC_ONE,
-    ARABIC_TWO,
-    EMPTY,
-    ENGLISH_CAPITAL_LETTERS,
-    ENGLISH_NUMBERS,
-    ENGLISH_SMALL_LETTERS,
-)
+from maha.cleaners.functions import (arabic_numbers_to_english,
+                                     connect_single_letter_word, replace,
+                                     replace_except, replace_expression,
+                                     replace_pairs)
+from maha.constants import (ARABIC_FOUR, ARABIC_NUMBERS, ARABIC_ONE,
+                            ARABIC_TWO, EMPTY, ENGLISH_CAPITAL_LETTERS,
+                            ENGLISH_NUMBERS, ENGLISH_SMALL_LETTERS)
 from tests.utils import list_not_in_string, list_only_in_string
 
 

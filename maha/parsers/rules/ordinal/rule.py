@@ -14,21 +14,11 @@ __all__ = [
 
 
 from maha.parsers.templates import FunctionValue
-from maha.rexy import (
-    Expression,
-    ExpressionGroup,
-    named_group,
-    non_capturing_group,
-    optional_non_capturing_group,
-)
+from maha.rexy import (Expression, ExpressionGroup, named_group,
+                       non_capturing_group, optional_non_capturing_group)
 
-from ..common import (
-    AFTER,
-    WAW_CONNECTOR,
-    combine_patterns,
-    spaced_patterns,
-    wrap_pattern,
-)
+from ..common import (AFTER, WAW_CONNECTOR, combine_patterns, spaced_patterns,
+                      wrap_pattern)
 from .values import *
 
 

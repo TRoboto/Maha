@@ -34,14 +34,9 @@ from dataclasses import dataclass
 from maha.constants import ALEF_VARIATIONS, ARABIC_COMMA, COMMA, LAM, WAW
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
 from maha.parsers.templates import Unit, Value
-from maha.rexy import (
-    Expression,
-    ExpressionGroup,
-    non_capturing_group,
-    optional_non_capturing_group,
-    positive_lookahead,
-    positive_lookbehind,
-)
+from maha.rexy import (Expression, ExpressionGroup, non_capturing_group,
+                       optional_non_capturing_group, positive_lookahead,
+                       positive_lookbehind)
 
 
 @dataclass

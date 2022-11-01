@@ -4,15 +4,8 @@ __all__ = ["EXPRESSION_ENGLISH_HASHTAGS", "EXPRESSION_ENGLISH_MENTIONS"]
 
 import re
 
-from maha.constants import (
-    AND_SIGN,
-    AT_SIGN,
-    ENGLISH_LETTERS,
-    ENGLISH_NUMBERS,
-    HASHTAG,
-    PUNCTUATIONS,
-    UNDERSCORE,
-)
+from maha.constants import (AND_SIGN, AT_SIGN, ENGLISH_LETTERS,
+                            ENGLISH_NUMBERS, HASHTAG, PUNCTUATIONS, UNDERSCORE)
 from maha.rexy import Expression
 
 EXPRESSION_ENGLISH_HASHTAGS = Expression(

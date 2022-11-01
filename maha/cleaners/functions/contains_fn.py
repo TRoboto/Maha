@@ -13,40 +13,19 @@ __all__ = [
 
 import regex as re
 
-from maha.constants import (
-    ALL_HARAKAT,
-    ARABIC,
-    ARABIC_LETTERS,
-    ARABIC_LIGATURES,
-    ARABIC_NUMBERS,
-    ARABIC_PUNCTUATIONS,
-    EMPTY,
-    ENGLISH,
-    ENGLISH_CAPITAL_LETTERS,
-    ENGLISH_LETTERS,
-    ENGLISH_NUMBERS,
-    ENGLISH_PUNCTUATIONS,
-    ENGLISH_SMALL_LETTERS,
-    HARAKAT,
-    LAM_ALEF,
-    LAM_ALEF_VARIATIONS,
-    NUMBERS,
-    PERSIAN,
-    PUNCTUATIONS,
-    SPACE,
-    TATWEEL,
-)
-from maha.expressions import (
-    EXPRESSION_ARABIC_HASHTAGS,
-    EXPRESSION_ARABIC_MENTIONS,
-    EXPRESSION_EMAILS,
-    EXPRESSION_EMOJIS,
-    EXPRESSION_ENGLISH_HASHTAGS,
-    EXPRESSION_ENGLISH_MENTIONS,
-    EXPRESSION_HASHTAGS,
-    EXPRESSION_LINKS,
-    EXPRESSION_MENTIONS,
-)
+from maha.constants import (ALL_HARAKAT, ARABIC, ARABIC_LETTERS,
+                            ARABIC_LIGATURES, ARABIC_NUMBERS,
+                            ARABIC_PUNCTUATIONS, EMPTY, ENGLISH,
+                            ENGLISH_CAPITAL_LETTERS, ENGLISH_LETTERS,
+                            ENGLISH_NUMBERS, ENGLISH_PUNCTUATIONS,
+                            ENGLISH_SMALL_LETTERS, HARAKAT, LAM_ALEF,
+                            LAM_ALEF_VARIATIONS, NUMBERS, PERSIAN,
+                            PUNCTUATIONS, SPACE, TATWEEL)
+from maha.expressions import (EXPRESSION_ARABIC_HASHTAGS,
+                              EXPRESSION_ARABIC_MENTIONS, EXPRESSION_EMAILS,
+                              EXPRESSION_EMOJIS, EXPRESSION_ENGLISH_HASHTAGS,
+                              EXPRESSION_ENGLISH_MENTIONS, EXPRESSION_HASHTAGS,
+                              EXPRESSION_LINKS, EXPRESSION_MENTIONS)
 from maha.rexy import Expression, ExpressionGroup
 from maha.utils import check_positive_integer
 

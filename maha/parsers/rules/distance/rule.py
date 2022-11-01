@@ -18,13 +18,9 @@ from maha.parsers.rules.numeral.rule import RULE_NUMERAL, parse_numeral
 from maha.parsers.templates import FunctionValue
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
-from ..common import (
-    FRACTIONS,
-    combine_patterns,
-    get_fractions_of_unit_pattern,
-    spaced_patterns,
-    wrap_pattern,
-)
+from ..common import (FRACTIONS, combine_patterns,
+                      get_fractions_of_unit_pattern, spaced_patterns,
+                      wrap_pattern)
 from .template import DistanceValue
 from .values import *
 

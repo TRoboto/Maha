@@ -13,25 +13,12 @@ __all__ = [
 ]
 
 import maha.cleaners.functions as functions
-from maha.constants import (
-    ALL_HARAKAT,
-    ARABIC,
-    ARABIC_LETTERS,
-    ARABIC_NUMBERS,
-    ARABIC_PUNCTUATIONS,
-    EMPTY,
-    ENGLISH,
-    ENGLISH_CAPITAL_LETTERS,
-    ENGLISH_LETTERS,
-    ENGLISH_NUMBERS,
-    ENGLISH_PUNCTUATIONS,
-    ENGLISH_SMALL_LETTERS,
-    HARAKAT,
-    NUMBERS,
-    PUNCTUATIONS,
-    SPACE,
-    TATWEEL,
-)
+from maha.constants import (ALL_HARAKAT, ARABIC, ARABIC_LETTERS,
+                            ARABIC_NUMBERS, ARABIC_PUNCTUATIONS, EMPTY,
+                            ENGLISH, ENGLISH_CAPITAL_LETTERS, ENGLISH_LETTERS,
+                            ENGLISH_NUMBERS, ENGLISH_PUNCTUATIONS,
+                            ENGLISH_SMALL_LETTERS, HARAKAT, NUMBERS,
+                            PUNCTUATIONS, SPACE, TATWEEL)
 
 
 def keep(

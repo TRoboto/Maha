@@ -1,12 +1,9 @@
 import pytest
 
-from maha.cleaners.functions import (
-    contain_strings,
-    contains,
-    contains_expressions,
-    contains_repeated_substring,
-    contains_single_letter_word,
-)
+from maha.cleaners.functions import (contain_strings, contains,
+                                     contains_expressions,
+                                     contains_repeated_substring,
+                                     contains_single_letter_word)
 from maha.constants import EMPTY
 from maha.expressions import EXPRESSION_EMAILS
 from maha.rexy import Expression, ExpressionGroup

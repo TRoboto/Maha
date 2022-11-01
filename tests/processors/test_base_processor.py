@@ -2,13 +2,8 @@ from typing import Generator, Type
 
 import pytest
 
-from maha.constants import (
-    ALEF_VARIATIONS,
-    ARABIC_LETTERS,
-    ARABIC_LIGATURES,
-    ENGLISH_LETTERS,
-    TEH_MARBUTA,
-)
+from maha.constants import (ALEF_VARIATIONS, ARABIC_LETTERS, ARABIC_LIGATURES,
+                            ENGLISH_LETTERS, TEH_MARBUTA)
 from maha.expressions import EXPRESSION_HASHTAGS
 from maha.processors import BaseProcessor
 from tests.utils import list_not_in_string, list_only_in_string

@@ -1,6 +1,7 @@
 import pytest
 
-from maha.cleaners.functions import normalize, normalize_lam_alef, normalize_small_alef
+from maha.cleaners.functions import (normalize, normalize_lam_alef,
+                                     normalize_small_alef)
 from maha.constants import ALEF, ALEF_VARIATIONS, EMPTY, SPACE
 
 

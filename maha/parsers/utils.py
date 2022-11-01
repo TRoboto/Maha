@@ -3,16 +3,9 @@ from __future__ import annotations
 __all__ = ["convert_to_number_if_possible"]
 
 
-from maha.constants import (
-    ARABIC_COMMA,
-    ARABIC_DECIMAL_SEPARATOR,
-    ARABIC_THOUSANDS_SEPARATOR,
-    COMMA,
-    DOT,
-    EMPTY,
-    PERCENT_SIGN,
-    SPACE,
-)
+from maha.constants import (ARABIC_COMMA, ARABIC_DECIMAL_SEPARATOR,
+                            ARABIC_THOUSANDS_SEPARATOR, COMMA, DOT, EMPTY,
+                            PERCENT_SIGN, SPACE)
 
 
 def convert_to_number_if_possible(value: str) -> int | float | None:
