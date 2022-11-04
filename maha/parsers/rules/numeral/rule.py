@@ -14,27 +14,16 @@ __all__ = [
 
 from functools import reduce
 
-from maha.expressions import EXPRESSION_DECIMAL, EXPRESSION_INTEGER, EXPRESSION_SPACE
+from maha.expressions import (EXPRESSION_DECIMAL, EXPRESSION_INTEGER,
+                              EXPRESSION_SPACE)
 from maha.parsers.rules.ordinal.values import ALEF_LAM
 from maha.parsers.templates import FunctionValue
 from maha.parsers.utils import convert_to_number_if_possible
-from maha.rexy import (
-    ExpressionGroup,
-    named_group,
-    non_capturing_group,
-    optional_non_capturing_group,
-)
+from maha.rexy import (ExpressionGroup, named_group, non_capturing_group,
+                       optional_non_capturing_group)
 
-from ..common import (
-    HALF,
-    QUARTER,
-    THIRD,
-    THREE_QUARTERS,
-    TWO_THIRDS,
-    WAW_CONNECTOR,
-    combine_patterns,
-    spaced_patterns,
-)
+from ..common import (HALF, QUARTER, THIRD, THREE_QUARTERS, TWO_THIRDS,
+                      WAW_CONNECTOR, combine_patterns, spaced_patterns)
 from .values import *
 
 NUMERAL_VALUES_GROUP_NAME = "numeral_values"

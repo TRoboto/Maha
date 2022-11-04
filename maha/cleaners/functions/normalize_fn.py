@@ -8,26 +8,13 @@ __all__ = ["normalize", "normalize_lam_alef", "normalize_small_alef"]
 
 
 import maha.cleaners.functions as functions
-from maha.constants import (
-    ALEF,
-    ALEF_MADDA_ABOVE,
-    ALEF_SUPERSCRIPT,
-    ALEF_VARIATIONS,
-    ARABIC_LIGATURES,
-    ARABIC_LIGATURES_NORMALIZED,
-    EMPTY,
-    HEH,
-    LAM,
-    LAM_ALEF_VARIATIONS,
-    LAM_ALEF_VARIATIONS_NORMALIZED,
-    MADDAH_ABOVE,
-    SPACE,
-    TEH_MARBUTA,
-    WAW,
-    WAW_VARIATIONS,
-    YEH,
-    YEH_VARIATIONS,
-)
+from maha.constants import (ALEF, ALEF_MADDA_ABOVE, ALEF_SUPERSCRIPT,
+                            ALEF_VARIATIONS, ARABIC_LIGATURES,
+                            ARABIC_LIGATURES_NORMALIZED, EMPTY, HEH, LAM,
+                            LAM_ALEF_VARIATIONS,
+                            LAM_ALEF_VARIATIONS_NORMALIZED, MADDAH_ABOVE,
+                            SPACE, TEH_MARBUTA, WAW, WAW_VARIATIONS, YEH,
+                            YEH_VARIATIONS)
 from maha.expressions import EXPRESSION_ALL_SPACES
 
 

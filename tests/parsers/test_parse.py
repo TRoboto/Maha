@@ -1,14 +1,7 @@
 import pytest
 
-from maha.constants import (
-    ALEF_SUPERSCRIPT,
-    ARABIC,
-    ARABIC_NUMBERS,
-    BEH,
-    EMPTY,
-    FATHA,
-    KASRA,
-)
+from maha.constants import (ALEF_SUPERSCRIPT, ARABIC, ARABIC_NUMBERS, BEH,
+                            EMPTY, FATHA, KASRA)
 from maha.parsers.functions import parse
 from maha.parsers.templates import Dimension, DimensionType
 from maha.rexy import Expression, ExpressionGroup

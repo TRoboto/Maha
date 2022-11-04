@@ -3,18 +3,9 @@
 __all__ = ["EXPRESSION_ARABIC_HASHTAGS", "EXPRESSION_ARABIC_MENTIONS"]
 import re
 
-from maha.constants import (
-    ALL_HARAKAT,
-    AND_SIGN,
-    ARABIC_LETTERS,
-    ARABIC_NUMBERS,
-    AT_SIGN,
-    ENGLISH_NUMBERS,
-    HASHTAG,
-    PUNCTUATIONS,
-    TATWEEL,
-    UNDERSCORE,
-)
+from maha.constants import (ALL_HARAKAT, AND_SIGN, ARABIC_LETTERS,
+                            ARABIC_NUMBERS, AT_SIGN, ENGLISH_NUMBERS, HASHTAG,
+                            PUNCTUATIONS, TATWEEL, UNDERSCORE)
 from maha.rexy import Expression
 
 EXPRESSION_ARABIC_HASHTAGS = Expression(

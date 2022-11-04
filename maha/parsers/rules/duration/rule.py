@@ -14,20 +14,13 @@ __all__ = [
 ]
 
 
-from maha.parsers.rules.numeral.rule import (
-    EXPRESSION_NUMERAL_MAP,
-    RULE_NUMERAL,
-    _parse_numeral,
-)
+from maha.parsers.rules.numeral.rule import (EXPRESSION_NUMERAL_MAP,
+                                             RULE_NUMERAL, _parse_numeral)
 from maha.parsers.templates import FunctionValue, Unit
 from maha.rexy import ExpressionGroup, named_group, non_capturing_group
 
-from ..common import (
-    FRACTIONS,
-    combine_patterns,
-    get_fractions_of_unit_pattern,
-    spaced_patterns,
-)
+from ..common import (FRACTIONS, combine_patterns,
+                      get_fractions_of_unit_pattern, spaced_patterns)
 from .template import *
 from .values import *
 

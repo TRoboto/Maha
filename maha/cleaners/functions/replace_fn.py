@@ -18,19 +18,8 @@ from typing import Callable
 # To enjoy infinite width lookbehind
 import regex as re
 
-from maha.constants import (
-    ARABIC_LETTERS,
-    ARABIC_NUMBERS,
-    BEH,
-    EMPTY,
-    ENGLISH_NUMBERS,
-    FEH,
-    KAF,
-    LAM,
-    SPACE,
-    TEH,
-    WAW,
-)
+from maha.constants import (ARABIC_LETTERS, ARABIC_NUMBERS, BEH, EMPTY,
+                            ENGLISH_NUMBERS, FEH, KAF, LAM, SPACE, TEH, WAW)
 from maha.rexy import Expression, ExpressionGroup
 
 

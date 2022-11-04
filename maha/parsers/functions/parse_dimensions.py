@@ -3,14 +3,8 @@ from __future__ import annotations
 __all__ = ["parse_dimension"]
 
 
-from maha.parsers.rules import (
-    RULE_DISTANCE,
-    RULE_DURATION,
-    RULE_NAME,
-    RULE_NUMERAL,
-    RULE_ORDINAL,
-    RULE_TIME,
-)
+from maha.parsers.rules import (RULE_DISTANCE, RULE_DURATION, RULE_NAME,
+                                RULE_NUMERAL, RULE_ORDINAL, RULE_TIME)
 from maha.parsers.templates import Dimension, DimensionType
 from maha.rexy import Expression
 

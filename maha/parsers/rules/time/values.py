@@ -5,50 +5,25 @@ import maha.parsers.rules.numeral.values as numvalues
 import maha.parsers.rules.ordinal.rule as ordinal
 from maha.constants import ARABIC_COMMA, COMMA, LAM, WAW, arabic, english
 from maha.expressions import EXPRESSION_SPACE, EXPRESSION_SPACE_OR_NONE
-from maha.parsers.rules.duration.values import (
-    ONE_DAY,
-    ONE_HOUR,
-    ONE_MINUTE,
-    ONE_MONTH,
-    ONE_WEEK,
-    ONE_YEAR,
-    SEVERAL_DAYS,
-    SEVERAL_HOURS,
-    SEVERAL_MINUTES,
-    SEVERAL_MONTHS,
-    SEVERAL_WEEKS,
-    SEVERAL_YEARS,
-    TWO_DAYS,
-    TWO_HOURS,
-    TWO_MINUTES,
-    TWO_MONTHS,
-    TWO_WEEKS,
-    TWO_YEARS,
-)
-from maha.parsers.rules.ordinal.values import ALEF_LAM, ALEF_LAM_OPTIONAL, ONE_PREFIX
+from maha.parsers.rules.duration.values import (ONE_DAY, ONE_HOUR, ONE_MINUTE,
+                                                ONE_MONTH, ONE_WEEK, ONE_YEAR,
+                                                SEVERAL_DAYS, SEVERAL_HOURS,
+                                                SEVERAL_MINUTES,
+                                                SEVERAL_MONTHS, SEVERAL_WEEKS,
+                                                SEVERAL_YEARS, TWO_DAYS,
+                                                TWO_HOURS, TWO_MINUTES,
+                                                TWO_MONTHS, TWO_WEEKS,
+                                                TWO_YEARS)
+from maha.parsers.rules.ordinal.values import (ALEF_LAM, ALEF_LAM_OPTIONAL,
+                                               ONE_PREFIX)
 from maha.parsers.templates import FunctionValue, Value
 from maha.parsers.templates.value_expressions import MatchedValue
-from maha.rexy import (
-    Expression,
-    ExpressionGroup,
-    named_group,
-    non_capturing_group,
-    optional_non_capturing_group,
-)
+from maha.rexy import (Expression, ExpressionGroup, named_group,
+                       non_capturing_group, optional_non_capturing_group)
 
-from ..common import (
-    AFTER,
-    AFTER_NEXT,
-    ALL_ALEF,
-    BEFORE,
-    BEFORE_PREVIOUS,
-    ELLA,
-    FRACTIONS,
-    IN_FROM_AT,
-    NEXT,
-    PREVIOUS,
-    spaced_patterns,
-)
+from ..common import (AFTER, AFTER_NEXT, ALL_ALEF, BEFORE, BEFORE_PREVIOUS,
+                      ELLA, FRACTIONS, IN_FROM_AT, NEXT, PREVIOUS,
+                      spaced_patterns)
 from .template import TimeInterval, TimeValue
 
 

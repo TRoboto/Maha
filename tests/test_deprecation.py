@@ -1,6 +1,7 @@
 import pytest
 
-from maha.deprecation import deprecated_default, deprecated_fn, deprecated_param
+from maha.deprecation import (deprecated_default, deprecated_fn,
+                              deprecated_param)
 
 
 def _get_warning_msg(recwarn):

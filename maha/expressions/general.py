@@ -16,20 +16,10 @@ __all__ = [
 
 import re
 
-from maha.constants import (
-    AND_SIGN,
-    ARABIC_COMMA,
-    ARABIC_DECIMAL_SEPARATOR,
-    ARABIC_NUMBERS,
-    ARABIC_THOUSANDS_SEPARATOR,
-    AT_SIGN,
-    COMMA,
-    ENGLISH_NUMBERS,
-    HASHTAG,
-    PUNCTUATIONS,
-    SPACE,
-    UNDERSCORE,
-)
+from maha.constants import (AND_SIGN, ARABIC_COMMA, ARABIC_DECIMAL_SEPARATOR,
+                            ARABIC_NUMBERS, ARABIC_THOUSANDS_SEPARATOR,
+                            AT_SIGN, COMMA, ENGLISH_NUMBERS, HASHTAG,
+                            PUNCTUATIONS, SPACE, UNDERSCORE)
 from maha.rexy import Expression
 
 EXPRESSION_HASHTAGS = Expression(

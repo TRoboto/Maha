@@ -10,19 +10,12 @@ from abc import ABC, abstractmethod
 from functools import partial
 from typing import Callable
 
-from maha.cleaners.functions import (
-    connect_single_letter_word,
-    contains,
-    contains_repeated_substring,
-    contains_single_letter_word,
-    keep,
-    normalize,
-    reduce_repeated_substring,
-    remove,
-    replace,
-    replace_expression,
-    replace_pairs,
-)
+from maha.cleaners.functions import (connect_single_letter_word, contains,
+                                     contains_repeated_substring,
+                                     contains_single_letter_word, keep,
+                                     normalize, reduce_repeated_substring,
+                                     remove, replace, replace_expression,
+                                     replace_pairs)
 from maha.rexy import Expression, ExpressionGroup
 
 from .utils import ObjectGet

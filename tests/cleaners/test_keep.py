@@ -1,13 +1,10 @@
 import pytest
 
-from maha.cleaners.functions import (
-    keep,
-    keep_arabic_characters,
-    keep_arabic_letters,
-    keep_arabic_letters_with_harakat,
-    keep_arabic_with_english_numbers,
-    keep_strings,
-)
+from maha.cleaners.functions import (keep, keep_arabic_characters,
+                                     keep_arabic_letters,
+                                     keep_arabic_letters_with_harakat,
+                                     keep_arabic_with_english_numbers,
+                                     keep_strings)
 from maha.constants import ARABIC_LETTERS, ARABIC_NUMBERS, BEH, DOT, SPACE
 
 

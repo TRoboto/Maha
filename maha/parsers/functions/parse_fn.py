@@ -4,37 +4,18 @@ from __future__ import annotations
 
 __all__ = ["parse", "parse_expression"]
 
-from maha.constants import (
-    ALL_HARAKAT,
-    ARABIC,
-    ARABIC_LETTERS,
-    ARABIC_LIGATURES,
-    ARABIC_NUMBERS,
-    ARABIC_PUNCTUATIONS,
-    EMPTY,
-    ENGLISH,
-    ENGLISH_CAPITAL_LETTERS,
-    ENGLISH_LETTERS,
-    ENGLISH_NUMBERS,
-    ENGLISH_PUNCTUATIONS,
-    ENGLISH_SMALL_LETTERS,
-    HARAKAT,
-    NUMBERS,
-    PUNCTUATIONS,
-    SPACE,
-    TATWEEL,
-)
-from maha.expressions import (
-    EXPRESSION_ARABIC_HASHTAGS,
-    EXPRESSION_ARABIC_MENTIONS,
-    EXPRESSION_EMAILS,
-    EXPRESSION_EMOJIS,
-    EXPRESSION_ENGLISH_HASHTAGS,
-    EXPRESSION_ENGLISH_MENTIONS,
-    EXPRESSION_HASHTAGS,
-    EXPRESSION_LINKS,
-    EXPRESSION_MENTIONS,
-)
+from maha.constants import (ALL_HARAKAT, ARABIC, ARABIC_LETTERS,
+                            ARABIC_LIGATURES, ARABIC_NUMBERS,
+                            ARABIC_PUNCTUATIONS, EMPTY, ENGLISH,
+                            ENGLISH_CAPITAL_LETTERS, ENGLISH_LETTERS,
+                            ENGLISH_NUMBERS, ENGLISH_PUNCTUATIONS,
+                            ENGLISH_SMALL_LETTERS, HARAKAT, NUMBERS,
+                            PUNCTUATIONS, SPACE, TATWEEL)
+from maha.expressions import (EXPRESSION_ARABIC_HASHTAGS,
+                              EXPRESSION_ARABIC_MENTIONS, EXPRESSION_EMAILS,
+                              EXPRESSION_EMOJIS, EXPRESSION_ENGLISH_HASHTAGS,
+                              EXPRESSION_ENGLISH_MENTIONS, EXPRESSION_HASHTAGS,
+                              EXPRESSION_LINKS, EXPRESSION_MENTIONS)
 from maha.parsers.templates import Dimension, DimensionType, TextExpression
 from maha.rexy import Expression, ExpressionGroup
 
